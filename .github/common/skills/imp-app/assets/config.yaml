@@ -1,0 +1,64 @@
+# Configuration for the imp-app skill.
+#
+# ONE top-level key: targets - one entry per machine this app is delivered to. It is the same shape
+# a skill that owns a single app gives its own `targets` list, a name and an appDir and a config per
+# destination, because a target is THIS SAME APP on another machine, and two things that differ only
+# in where they sit should not be described in two vocabularies.
+#
+# THERE IS NO `app:` BLOCK HERE, and that is the one place this file departs from that shape. A skill
+# that owns one app writes that app's appDir and its base app.config.json values into this file. This
+# skill owns none: the prompt's second line names the app dir, and THAT app dir's own
+# app.config.json is the base a target's `config` is applied over - so the local half belongs on
+# disk, beside the app, rather than here. Nothing about the app being worked on is written down in
+# this file, which is what lets one skill carry many apps.
+#
+# THE INDENTATION IS THE RULE. A key inside a `config` block is an app.config.json key and reaches
+# the app; a key outside one never does. That is checkable by looking, which a naming prefix
+# carrying the same meaning is not.
+#
+# NAMING A TARGET IS NOT OPTIONAL. `deploy` with no fourth line is refused and lists these names;
+# `deploy` with `all` is how you say every one of them. Writing to somebody else's machine is not a
+# default, and a path typed into a prompt is unreviewed input that reaches a filesystem - possibly
+# theirs. This file is the reviewed list.
+#
+# Only this skill's Python reads it - deploy_app.py, and nothing else. The APP never does: it
+# resolves every value against its own app.config.json instead, which is what lets its directory be
+# copied to a target and run there by someone who has none of this. A component that finds no file
+# here treats that as NORMAL, not fatal - in the app dir and on a target there is none.
+#
+# A `deploy` writes the CODE and only the code: server.js, app.js, app.config.json, start.cmd,
+# README.txt, public\ and scripts\. The app dir's docs\ and tests\ stay in the app dir, because that
+# is the source of record and a fault found on a target is reproduced there. A target's own data\,
+# logs\ and temp\ are ITS own - what it downloaded, what its runs printed - and overwriting them
+# takes away work it did for itself.
+
+targets:
+
+  # No target is registered yet, and an empty list is a working state: `vibe`, `reverse`, `update`,
+  # `test` and `start` never read this file. Only `deploy` does, and with nothing here it stops and
+  # says so rather than guessing at a destination.
+  #
+  # Add one entry per destination, in this shape:
+  #
+  # - name: ftp-server
+  #
+  #   # Where the code goes on that machine. UNLIKE every other path in this workspace this is NOT
+  #   # relative to the workspace root - it is a folder on another machine, which is the whole
+  #   # point. Anything this machine can already write to: a UNC share, a mounted volume, a synced
+  #   # folder. A destination whose parent is not reachable is reported unreachable and skipped,
+  #   # and the other targets still get their copy.
+  #   appDir: \\fileserver\apps\InvCov
+  #
+  #   # The app.config.json values that are true THERE and false in the app dir - the same keys that
+  #   # app dir's own app.config.json carries, and only the ones that differ. They are written over
+  #   # its values on the way out, so nothing about this machine is remembered anywhere but here: a
+  #   # hand edit made over there is replaced by the next deploy.
+  #   config:
+  #     # Give it its own port when the app dir's is already bound on that machine.
+  #     port: 8801
+  #     # Loopback is what the app ships with. Widening it exposes the app to that machine's
+  #     # network - say so plainly to whoever asked for it.
+  #     host: 127.0.0.1
+  #     # Where the python kernel is on that machine, when it is not simply on PATH. null means
+  #     # "find your own" and is not a claim that a path was checked.
+  #     python: null

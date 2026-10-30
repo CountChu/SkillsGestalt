@@ -1,0 +1,116 @@
+/* Hub page.
+
+   No CDN, no web font, no image - the page opens with no network beyond the server that rendered
+   it. System fonts only, for the same reason.
+
+   Design 2.4: every button is styled IDENTICALLY. A link this page cannot navigate to, and a link
+   the hub serves itself, get the same rule as every other. The hub cannot know how the reader
+   arrived, so a marking that is right for one reader would be a lie to the next; the fact lives in
+   /healthz instead.
+
+   The page's element inventory is in references/Wireframe.md, not here. */
+
+:root {
+  color-scheme: light dark;
+  --bg: #f6f7f9;
+  --card: #ffffff;
+  --fg: #1f2328;
+  --muted: #57606a;
+  --border: #d0d7de;
+  --accent: #0969da;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --card: #161b22;
+    --fg: #e6edf3;
+    --muted: #8b949e;
+    --border: #30363d;
+    --accent: #4493f8;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+main {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 40px 48px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .12);
+}
+
+h1 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+main > p {
+  margin: 0 0 28px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+}
+
+a {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 220px;
+  max-width: 320px;
+  padding: 14px 24px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  text-align: left;
+}
+
+a:hover {
+  filter: brightness(1.1);
+}
+
+a:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
+
+.label {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* Design 2.1: the URL is shown, not hidden. A wrong host or port is this app's entire failure
+   mode, and a reader cannot diagnose what they cannot see. */
+.url {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 12px;
+  opacity: .85;
+  word-break: break-all;
+}
+
+.note {
+  font-size: 12px;
+  opacity: .8;
+}
+
+.empty { color: var(--muted); }

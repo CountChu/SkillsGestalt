@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<!-- 範本：由 check-wiki-doc 的 scripts/build_dependency_graph.py 填入資料，規則見 references/dependency-graph.md。請勿手改產出的檔案。 -->
+<style>
+:root {
+  --bg: #f6f5f1; --surface: #ffffff; --ink: #1f2328; --muted: #6a6f78; --line: #dcd8cf;
+  --edge: #8b9099; --accent: #2563eb; --warn: #c2410c; --private: #7c3aed;
+  --sel-bg: #2563eb; --sel-ink: #ffffff;
+  --node-ext: #efece5; --code: #f0ede6; --mark: #fff1a8; --canvas: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15171b; --surface: #1e2126; --ink: #e6e8eb; --muted: #9ba1a9; --line: #373b43;
+    --edge: #7e848d; --accent: #6ea2ff; --warn: #fb923c; --private: #b692f6;
+    --sel-bg: #6ea2ff; --sel-ink: #10131a;
+    --node-ext: #1b1e23; --code: #2a2e35; --mark: #5c4d12; --canvas: #1e2126;
+  }
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 14px/1.55 -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  display: flex; flex-direction: column;
+}
+header {
+  padding: 14px 20px 10px; border-bottom: 1px solid var(--line); background: var(--surface);
+  display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center;
+}
+header h1 { font-size: 17px; margin: 0; font-weight: 650; }
+.meta { color: var(--muted); font-size: 12px; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--muted); align-items: center; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.tools { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+input[type=search] {
+  font: inherit; padding: 5px 10px; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--bg); color: var(--ink); width: 180px;
+}
+button {
+  font: inherit; font-size: 13px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--surface); color: var(--ink); cursor: pointer;
+}
+button:hover { border-color: var(--accent); }
+main { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 400px); }
+main > * { min-width: 0; }
+aside { border-left: 1px solid var(--line); background: var(--surface); overflow-y: auto; padding: 16px 18px 32px; }
+aside h2 { font-size: 16px; margin: 0 0 6px; line-height: 1.4; }
+aside h3 { font-size: 13px; color: var(--muted); font-weight: 600; margin: 18px 0 6px; }
+.eyebrow { font-size: 11px; letter-spacing: .06em; color: var(--muted); margin: 0 0 4px; }
+.link { border: 0; padding: 0; background: none; color: var(--accent); font: inherit; cursor: pointer; text-align: left; }
+.link:hover { text-decoration: underline; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.chip { font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); }
+.chip.private { color: var(--private); border-color: var(--private); }
+.chip.warn { color: var(--warn); border-color: var(--warn); }
+.note { color: var(--muted); font-size: 13px; margin: 8px 0; }
+.alert { color: var(--warn); font-size: 13px; margin: 8px 0; }
+.term { border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; margin: 8px 0; background: var(--bg); }
+.term .name { font-weight: 600; }
+.term .route { color: var(--muted); font-size: 12px; margin: 2px 0 4px; }
+.term dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 2px 8px; font-size: 13px; }
+.term dt { color: var(--muted); }
+.term dd { margin: 0; }
+.rows { list-style: none; margin: 0; padding: 0; }
+.rows li { display: flex; justify-content: space-between; gap: 8px; padding: 5px 0; border-bottom: 1px dashed var(--line); }
+.rows .n { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .92em; background: var(--code); padding: 0 4px; border-radius: 4px; }
+mark { background: var(--mark); color: inherit; padding: 0 2px; }
+.hint { color: var(--muted); }
+.fatal { padding: 24px; color: var(--warn); }
+
+/* the graph is mermaid's own SVG; interaction only layers highlight / dim styles on top of it */
+#graph { min-height: 0; overflow: hidden; background: var(--canvas); }
+#graph > svg { display: block; width: 100%; height: 100%; max-width: none !important; }
+#graph .edgeLabels > .edgeLabel, #graph .edgeLabels > .edgeLabel * { cursor: pointer; }
+#graph .edgeLabels > .edgeLabel:hover .labelBkg,
+#graph .edgeLabels > .edgeLabel.hl .labelBkg { outline: 2px solid var(--accent); outline-offset: 1px; border-radius: 3px; }
+#graph .edgePaths > path { pointer-events: visibleStroke; cursor: pointer; }
+#graph g.node { cursor: pointer; }
+#graph .edgePaths > path, #graph .edgeLabels > .edgeLabel, #graph g.node { transition: opacity .15s; }
+#graph svg.focus .edgePaths > path:not(.hl),
+#graph svg.focus .edgeLabels > .edgeLabel:not(.hl),
+#graph svg.focus g.node:not(.hl) { opacity: .15; }
+#graph .edgePaths > path.hl { stroke: var(--accent) !important; }
+#graph g.node.hl :is(rect, circle, polygon, path) { stroke: var(--accent) !important; stroke-width: 3px !important; }
+/* the document the user clicked: filled background, not just an outline */
+#graph g.node.sel :is(rect, circle, polygon, path) { fill: var(--sel-bg) !important; stroke: var(--sel-bg) !important; stroke-width: 3px !important; }
+#graph g.node.sel :is(.nodeLabel, .label, p, span, div) { color: var(--sel-ink) !important; }
+#graph g.node.sel :is(text, tspan) { fill: var(--sel-ink) !important; }
+
+@media (max-width: 760px) {
+  main { grid-template-columns: minmax(0, 1fr); grid-template-rows: 62vh auto; }
+  aside { border-left: 0; border-top: 1px solid var(--line); }
+  .tools { margin-left: 0; width: 100%; }
+  input[type=search] { flex: 1; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+  </div>
+  <div class="legend" id="legend"></div>
+  <div class="tools">
+    <input type="search" id="search" placeholder="搜尋術語…" aria-label="搜尋術語">  </div>
+</header>
+<main>
+  <div id="graph" role="img" aria-label="文件依賴圖"></div>
+  <aside id="panel" aria-live="polite"></aside>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script><script>
+const DATA = /*__GRAPH_DATA__*/null;
+
+const $ = (id) => document.getElementById(id);
+const panel = $("panel");
+const nodeById = Object.fromEntries(DATA.nodes.map((n) => [n.id, n]));
+
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+// the Markdown subset the architecture and plan documents use inside table cells
+const md = (s) => esc(s)
+  .replace(/`([^`]+)`/g, "<code>$1</code>")
+  .replace(/==([^=]+)==/g, "<mark>$1</mark>")
+  .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+  .replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, "$2")
+  .replace(/\[\[([^\]]+)\]\]/g, "$1")
+  .replace(/&lt;br\s*\/?&gt;/g, "<br>");
+const bare = (s) => String(s).replace(/`/g, "");
+const tierOf = (count) => DATA.tiers.find((t) => (t.min == null || count >= t.min) && (t.max == null || count <= t.max));
+
+// ---- header ----
+$("title").textContent = `${DATA.title} — 文件依賴圖`;
+$("meta").textContent = `依〈文件依賴狀態表〉產生`
+  + (DATA.tableUpdated ? ` · 表最近更新 ${DATA.tableUpdated}` : "")
+  + ` · 產生於 ${DATA.generated} · ${DATA.nodes.length} 個節點、${DATA.edges.length} 條邊`;
+const sample = (dash, width) =>
+  `<svg width="28" height="8"><line x1="0" y1="4" x2="28" y2="4" stroke="var(--edge)" stroke-width="${width}" ${dash ? `stroke-dasharray="${dash}"` : ""}/></svg>`;
+$("legend").innerHTML = DATA.tiers.map((t) =>
+  `<span>${sample(t.arrow === "-.->" ? "3 3" : "", t.arrow === "==>" ? 3.5 : 1.5)}${esc(t.label)} ${esc(t.text)}</span>`).join("")
+  + `<span>數字旁「私有」：私有下層</span><span>圓形：未納管</span>`;
+
+if (typeof mermaid === "undefined") {
+  $("graph").innerHTML = '<p class="fatal">載入不到 mermaid（需要網路連線到 cdn.jsdelivr.net）。</p>';
+  throw new Error("libraries not loaded");
+}
+
+// ---- graph: render the architecture document's mermaid code as-is ----
+let svg = null;
+const edgeEls = [];   // edge index → { path, label }
+const nodeEls = {};   // mermaid node ID → <g class="node">
+
+async function render() {
+  const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+  mermaid.initialize({ startOnLoad: false, theme: dark ? "dark" : "default", securityLevel: "strict" });
+  try {
+    const { svg: markup } = await mermaid.render("depgraph-svg", DATA.mermaid);
+    $("graph").innerHTML = markup;
+  } catch (err) {
+    $("graph").innerHTML = `<p class="fatal">mermaid 無法繪製這段程式碼：${esc(err.message || err)}</p>`;
+    return;
+  }
+  svg = $("graph").querySelector("svg");
+  svg.removeAttribute("style");
+  svg.setAttribute("width", "100%");
+  svg.setAttribute("height", "100%");
+  // mermaid's viewBox stays, so the graph scales with the window on its own — no zoom, no pan
+  svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+
+  // mermaid numbers edge paths by link order (`L_<from>_<to>_<n>`) and emits labels in the same order
+  svg.querySelectorAll(".edgePaths > path").forEach((p) => {
+    const m = p.id.match(/_(\d+)$/);
+    if (m) (edgeEls[+m[1]] ??= {}).path = p;
+  });
+  svg.querySelectorAll(".edgeLabels > .edgeLabel").forEach((g, i) => { (edgeEls[i] ??= {}).label = g; });
+  svg.querySelectorAll("g.node").forEach((g) => {
+    const m = g.id.match(/flowchart-(.+)-\d+$/);
+    if (m && nodeById[m[1]]) { nodeEls[m[1]] = g; g.dataset.node = m[1]; }
+  });
+  DATA.edges.forEach((e) => {
+    const els = edgeEls[e.index] || {};
+    [els.path, els.label].forEach((el) => { if (el) el.dataset.edge = e.index; });
+  });
+}
+
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => location.reload());
+
+// ---- selection ----
+function focus(edgeIdx, nodeIds, selected) {
+  if (!svg) return;
+  svg.querySelectorAll(".hl, .sel").forEach((el) => el.classList.remove("hl", "sel"));
+  svg.classList.add("focus");
+  edgeIdx.forEach((i) => { const els = edgeEls[i] || {}; els.path?.classList.add("hl"); els.label?.classList.add("hl"); });
+  nodeIds.forEach((id) => nodeEls[id]?.classList.add("hl"));
+  if (selected) nodeEls[selected]?.classList.add("sel");
+}
+function clearFocus() {
+  if (!svg) return;
+  svg.classList.remove("focus");
+  svg.querySelectorAll(".hl, .sel").forEach((el) => el.classList.remove("hl", "sel"));
+}
+
+const nodeLink = (id) => `<button class="link" data-node="${esc(id)}">${esc(nodeById[id].name)}</button>`;
+const edgeLink = (e, text) => `<button class="link" data-edge="${e.index}">${text}</button>`;
+const edgeName = (e) => `${esc(e.up)} → ${esc(e.down)}`;
+
+function termCard(t, q) {
+  const route = t.via ? `出處 ${esc(t.src)} · 經由 ${esc(t.via)}` : `出處 ${esc(t.src)}`;
+  let name = md(t.name);
+  if (q) name = name.replace(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"), "<mark>$1</mark>");
+  return `<div class="term"><div class="name">${name}${t.public ? ` <span class="chip">公開 ${esc(t.public)}</span>` : ""}</div>
+    <div class="route">${route}</div>
+    <dl><dt>定義</dt><dd>${md(t.definition) || "—"}</dd><dt>本層用法</dt><dd>${md(t.usage) || "—"}</dd></dl></div>`;
+}
+
+function showEdge(i) {
+  const e = DATA.edges[i];
+  focus([i], [e.source, e.target]);
+  const tier = tierOf(e.count);
+  panel.innerHTML = `<p class="eyebrow">依賴邊</p>
+    <h2>${nodeLink(e.source)} → ${nodeLink(e.target)}</h2>
+    <div class="chips"><span class="chip">術語數 ${e.count}</span>
+      <span class="chip">${tier ? esc(tier.label) : "級距未涵蓋"}</span>
+      ${e.private ? '<span class="chip private">私有</span>' : ""}
+      ${e.status ? `<span class="chip${e.count === 0 ? " warn" : ""}">狀態 ${esc(e.status)}</span>` : ""}</div>
+    ${e.note ? `<p class="note">${md(e.note)}</p>` : ""}
+    ${e.scanned !== e.count ? `<p class="alert">表上 術語數 ${e.count}，上層第 2 節掃到 ${e.scanned} 列——〈文件依賴狀態表〉待回填。</p>` : ""}
+    <h3>借用的術語（${e.terms.length}）</h3>
+    ${e.terms.length ? e.terms.map((t) => termCard(t)).join("") : '<p class="hint">這條邊沒有承載任何術語。</p>'}`;
+}
+
+function showNode(id) {
+  const n = nodeById[id];
+  const down = DATA.edges.filter((e) => e.source === id);
+  const up = DATA.edges.filter((e) => e.target === id);
+  focus([...down, ...up].map((e) => e.index), [id, ...down.map((e) => e.target), ...up.map((e) => e.source)], id);
+  const list = (edges, other) => edges.length
+    ? `<ul class="rows">${edges.map((e) => `<li>${nodeLink(e[other])}<span class="n">${edgeLink(e, `${e.count} 個術語`)}</span></li>`).join("")}</ul>`
+    : '<p class="hint">無</p>';
+  panel.innerHTML = `<p class="eyebrow">${n.managed ? `納管文件 · 階層 ${n.level ?? "—"}` : "未納管"}</p>
+    <h2>${esc(n.name)}</h2>
+    <div class="chips"><span class="chip">借入 ${down.reduce((s, e) => s + e.count, 0)}</span><span class="chip">借出 ${up.reduce((s, e) => s + e.count, 0)}</span></div>
+    <h3>依賴（下層）</h3>${list(down, "target")}
+    <h3>被依賴（上層）</h3>${list(up, "source")}`;
+}
+
+function showOverview() {
+  clearFocus();
+  const heaviest = [...DATA.edges].sort((a, b) => b.count - a.count).slice(0, 5);
+  const warnings = DATA.edges.filter((e) => e.count === 0 || e.scanned !== e.count);
+  panel.innerHTML = `<p class="eyebrow">總覽</p>
+    <h2>點選邊上的數字，展開那條邊借用的術語</h2>
+    <p class="hint">點選文件看它的上下層；搜尋框可找出某個術語走哪幾條邊。圖隨視窗大小縮放；點空白處或按 Esc 回到這裡。</p>
+    <h3>最重的邊</h3>
+    <ul class="rows">${heaviest.map((e) => `<li>${edgeLink(e, edgeName(e))}<span class="n">${e.count}</span></li>`).join("")}</ul>
+    <h3>待處理</h3>
+    ${warnings.length ? `<ul class="rows">${warnings.map((e) => `<li>${edgeLink(e, edgeName(e))}<span class="n">${e.count === 0 ? "零借用" : `表 ${e.count}／掃 ${e.scanned}`}</span></li>`).join("")}</ul>` : '<p class="hint">無——每條邊都有術語，且與表上的 術語數 相符。</p>'}`;
+}
+
+function showSearch(q) {
+  const needle = q.toLowerCase();
+  const hits = DATA.edges.map((e) => ({ e, terms: e.terms.filter((t) => bare(t.name).toLowerCase().includes(needle)) })).filter((h) => h.terms.length);
+  if (!hits.length) {
+    clearFocus();
+    panel.innerHTML = `<p class="eyebrow">搜尋</p><h2>找不到「${esc(q)}」</h2><p class="hint">只比對術語名稱。</p>`;
+    return;
+  }
+  focus(hits.map((h) => h.e.index), hits.flatMap((h) => [h.e.source, h.e.target]));
+  const count = hits.reduce((s, h) => s + h.terms.length, 0);
+  panel.innerHTML = `<p class="eyebrow">搜尋</p><h2>「${esc(q)}」出現在 ${hits.length} 條邊、${count} 列</h2>`
+    + hits.map(({ e, terms }) => `<h3>${edgeLink(e, edgeName(e))}</h3>${terms.map((t) => termCard(t, q)).join("")}`).join("");
+}
+
+$("graph").addEventListener("click", (ev) => {
+  $("search").value = "";
+  const hit = ev.target.closest("[data-edge],[data-node]");
+  if (!hit) showOverview();
+  else if (hit.dataset.edge != null) showEdge(+hit.dataset.edge);
+  else showNode(hit.dataset.node);
+});
+panel.addEventListener("click", (ev) => {
+  const b = ev.target.closest("[data-edge],[data-node]");
+  if (!b) return;
+  $("search").value = "";
+  if (b.dataset.edge != null) showEdge(+b.dataset.edge); else showNode(b.dataset.node);
+});
+$("search").addEventListener("input", (ev) => { const q = ev.target.value.trim(); q ? showSearch(q) : showOverview(); });
+document.addEventListener("keydown", (ev) => { if (ev.key === "Escape") { $("search").value = ""; showOverview(); } });
+
+render().then(showOverview);
+</script>
+</body>
+</html>

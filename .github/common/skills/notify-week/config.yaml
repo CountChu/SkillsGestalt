@@ -1,0 +1,50 @@
+# notify-week default configuration.
+#
+# `tasks:` is a list — each entry defines one independent weekly reminder
+# (its own name, schedule, and message). Invoking the skill without an inline
+# message (e.g. just `/notify-week`) sets up a Scheduled Task for EVERY entry
+# in this list.
+#
+# You can also:
+#   - set up just one entry by naming its `taskName` in the prompt, or
+#   - create a one-off reminder by passing a message in the prompt (which does
+#     not modify this file).
+#
+# Add another reminder by appending a new `- taskName: ...` block to the list.
+# Each `message` may be multi-line and multi-language (English + 中文).
+
+tasks:
+  - taskName: notify-week-hife-sg
+    title: "Weekly Reminder - HIFE access -> Security Group (SG)"
+    dayOfWeek: Monday
+    timeOfDay: "09:00"
+    message: |
+      Do NOT send a request for HIFE access.
+
+      Instead, reach out to Ranjana to be added to the Security Group (SG).
+      After that you should have access to Bug.
+
+      - HIFE access expires in 6 months.
+      - If you are in the SG, access is permanent until you are excluded.
+
+      If you already submitted a HIFE request, please cancel it.
+
+      ------------------------------------------------------------
+
+      請不要送出 HIFE access 的申請。
+
+      請改為聯絡 Ranjana，把你加入 Security Group (SG)。
+      加入之後你就應該能存取 Bug。
+
+      - HIFE access 六個月後會過期。
+      - 只要你在 SG 內，權限就是永久有效（除非被移除）。
+
+      如果你已經送出了 HIFE 申請，請取消。
+
+  # Example of a second reminder (uncomment and edit to enable):
+  # - taskName: notify-week-standup
+  #   title: "Weekly Standup Reminder"
+  #   dayOfWeek: Friday
+  #   timeOfDay: "10:00"
+  #   message: |
+  #     Post your weekly status update before the team sync.

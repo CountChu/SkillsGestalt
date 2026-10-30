@@ -1,0 +1,37 @@
+# Virtual environments
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+*.code-workspace
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Secrets
+.env
+
+# Skill run outputs
+checkpoints/
+artifacts/
+wiki/
+
+.obsidian/
+database/
+temp/
+
+# Local configuration: copy config.example.yaml to config.yaml
+/config.yaml
+
+# Previews that mermaid-view writes on this machine
+*.mermaid.html

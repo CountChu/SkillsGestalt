@@ -1,0 +1,180 @@
+# Skill config for imp-home.
+#
+# Two top-level keys, and the split between them is the whole idea of this skill:
+#
+#   homes  - the SEED for one hub, keyed by the hub name the prompt gives on the line after the
+#            `setup` command. The key is NOT derived from the target directory: one entry may seed
+#            several targets, and a target may be named something its seed is not. Only `setup`
+#            reads it, and only once: it supplies the port, the title and the starting link list
+#            for a target that does not exist yet. After that the target's own app.config.json owns
+#            those values, so changing an entry here does NOT reach a target already set up.
+#
+#            Because the port lives here, two targets seeded from one entry both get that port -
+#            and two hubs cannot both bind it. Give the second one its own entry, or change its
+#            port in its own app.config.json afterwards.
+#
+#   apps   - the app registry: a skill name mapped to where that skill assembles its app. It is
+#            what lets a prompt say `mounts: imp-bios-logs` instead of typing a path, and it is the
+#            reviewed list a mount source is checked against. A skill that is not here is a stop.
+#
+# Only Python reads this file. A built hub resolves every value against its own app.config.json
+# instead, which is what lets its directory be moved as a whole.
+
+homes:
+
+  # The hub the example prompts seed from. The example target happens to share its name, but that
+  # is a convenience, not a rule - `setup` takes this key from the prompt, not from the directory.
+  #
+  # This skill is the sole owner of artifacts\bios-home as of 2026-09-16. The biosHome* keys that
+  # used to describe it in .github\dedi-apps\config.yaml were retired that day and a pointer note
+  # left in their place, so that directory has exactly one claimant. imp-bios-home no longer builds.
+  bios-home:
+
+    # The port this hub listens on. It binds to loopback unless server.js is started with an
+    # explicit --host. It must not collide with any other app that may be up at the same time.
+    # Seed only: once built, the port lives in the target's app.config.json.
+    port: 8791
+
+    # The page heading and the browser tab. Seed only, as above.
+    title: BIOS Home
+
+    # The starting buttons, in render order. Each entry is a label and the URL it opens. An entry
+    # carrying `mount` is served by the hub itself - its href is then a path on this origin, and
+    # that path is the mount prefix.
+    #
+    # A `mounts:` line on a `setup` prompt rewrites exactly the mount entries of this list,
+    # resolving each named skill through `apps` below. On a `gen` or `update` prompt the same line
+    # is a change request applied to the TARGET's app.config.json, not to this file.
+    links:
+      - label: BIOS Log Downloads
+        href: /bios-logs/
+        mount:
+          appDir: artifacts\bios-logs
+          skill: imp-bios-logs
+        note: the locally built dashboard, served by this hub instead of its own port
+      - label: BIOS Log Search
+        href: /bios-logs-search/
+        mount:
+          appDir: artifacts\bios-logs-search-app
+          skill: imp-bios-logs-search
+        note: the locally built search page, served by this hub instead of its own port
+      - label: Boot Times
+        href: /boot-times/
+        mount:
+          appDir: artifacts\boot-times-app
+          skill: imp-boot-times
+        note: the locally built boot-time charts, served by this hub instead of its own port
+
+  # The InvestForge launcher. Its appDir paths are relative to the InvestForge workspace root,
+  # just as bios-home's are relative to its own. Port 3100 is the one the retired InvHome used,
+  # and the one imp-inv-ctl's config names as InvHome's.
+  inv-home:
+    port: 3100
+    title: InvHome
+    links:
+      # One mount serves InvCtl under /inv-ctl/; both buttons open it. Only the first carries
+      # `mount` - a prefix can be claimed once - and the second is a plain same-origin link into
+      # it that picks the other dodo file through InvCtl's own ?file= query.
+      - label: InvCtl · dodo.py
+        href: /inv-ctl/?file=..%2FInv%2Fdodo.py
+        mount:
+          appDir: InvCtl
+          skill: imp-inv-ctl
+        note: the dodo control surface for Inv/dodo.py, served by this hub instead of its own port
+      - label: InvCtl · task.py
+        href: /inv-ctl/?file=..%2FInv%2Ftask.py
+        note: the dodo control surface for Inv/task.py, through the same mount
+      - label: InvDatabase
+        href: http://localhost:3000
+      - label: InvFinSight
+        href: http://127.0.0.1:8137
+      - label: InvTechRank
+        href: http://127.0.0.1:3300
+
+apps:
+
+  # The name a `mounts:` line may use -> where that app was assembled, which skill owns it, and the
+  # defaults that turn the name into a link entry. A wrong path here is a 503 at that prefix, not a
+  # crash.
+  #
+  # The key is the name, not necessarily a skill. A skill that assembles exactly one app is named by
+  # itself, and every entry below that predates this was written that way. A skill that assembles
+  # many - `imp-app` builds a different app for every directory it is pointed at - has no single
+  # appDir to be keyed by, so its apps are keyed by their own names instead.
+  #
+  # `skill` is therefore written on every entry rather than inferred from the key: the hub reports
+  # it on the page a failed mount serves, and a mount whose `app.js` is missing is a pending run of
+  # that skill. Inferring an owner from a key that is not a skill name would name a skill that does
+  # not exist.
+
+  imp-bios-logs:
+    skill: imp-bios-logs
+    appDir: artifacts\bios-logs
+    label: BIOS Log Downloads
+    href: /bios-logs/
+    note: the locally built dashboard, served by this hub instead of its own port
+
+  imp-bios-logs-search:
+    skill: imp-bios-logs-search
+    appDir: artifacts\bios-logs-search-app
+    label: BIOS Log Search
+    href: /bios-logs-search/
+    note: the locally built search page, served by this hub instead of its own port
+
+  imp-boot-times:
+    skill: imp-boot-times
+    appDir: artifacts\boot-times-app
+    label: Boot Times
+    href: /boot-times/
+    note: the locally built boot-time charts, served by this hub instead of its own port
+
+  imp-inv-ctl:
+    skill: imp-inv-ctl
+    appDir: InvCtl
+    label: InvCtl · dodo.py
+    href: /inv-ctl/?file=..%2FInv%2Fdodo.py
+    note: the dodo control surface for Inv/dodo.py, served by this hub instead of its own port
+
+  imp-inv-database:
+    skill: imp-inv-database
+    appDir: InvDatabase
+    label: InvDatabase
+    href: /inv-database/
+    note: the data browser for InvDatabase/data, served by this hub instead of its own port
+
+  imp-inv-tech-rank:
+    skill: imp-inv-tech-rank
+    appDir: InvTechRank
+    label: InvTechRank
+    href: /inv-tech-rank/
+    note: the curated tech-rank list and its Score Sum view, served by this hub instead of its own port
+
+  imp-inv-fin-sight:
+    skill: imp-inv-fin-sight
+    appDir: InvFinSight
+    label: InvFinSight
+    href: /inv-fin-sight/
+    note: the financial-statement reader and ROC / EY calculator, served by this hub instead of its own port
+
+  # Assembled by a skill that builds many apps, so each is named by itself rather than by its
+  # skill. Every entry from here down is one of those.
+  InvDataflow:
+    skill: imp-app
+    appDir: InvDataflow
+    label: InvDataflow
+    href: /inv-dataflow/
+    note: what every dodo task reads and writes, and the whole run joined into one network, served by this hub instead of its own port
+
+  InvCov:
+    skill: imp-app
+    appDir: InvCov
+    label: InvCov
+    href: /inv-cov/
+    note: how closely two indices move together over their common trading days, and at which lag, served by this hub instead of its own port
+
+  InvIndexAnalyzer:
+    skill: imp-app
+    appDir: InvIndexAnalyzer
+    label: InvIndexAnalyzer
+    href: /inv-index-analyzer/
+    note: whether an index really behaves differently in some month of the year, significance included, served by this hub instead of its own port

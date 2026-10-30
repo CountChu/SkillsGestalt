@@ -1,0 +1,7 @@
+# Workspace configuration of SkillsGestalt: the skills that run here read it in their Step 0.
+# Copy this file to config.yaml at the workspace root, and set wikiDir. config.yaml is not in git.
+# A relative path is relative to the workspace root, where this file is.
+wikiDir: /path/to/your/ObsidianVault   # the Obsidian vault for the MD reports, and the Skills Dashboard in dashboard/skills.md; vaultName is its last path segment
+skillGroups:
+  common: .github/common       # the shared skills, rules, templates and scripts that every workspace uses
+  external: .github/external   # skills that come from outside, such as eli5
