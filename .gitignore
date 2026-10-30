@@ -35,3 +35,6 @@ temp/
 
 # Previews that mermaid-view writes on this machine
 *.mermaid.html
+
+# The private names that scripts/publish_snapshot.py scans for: never published
+/publish-keywords.local.txt

@@ -7,7 +7,7 @@ task 檔的格式與摘要表的維護方式，見 [task-rules.md](../.github/co
 
 | Task | Raised | Title | Status | Depends on |
 | --- | --- | --- | --- | --- |
-| [[Task 78]] | 2026-10-30 | 把 SkillsGestalt 公開到 GitHub，排除 checkpoints 與公司內部資訊 | 🔄 | — |
+| [[Task 78]] | 2026-10-30 | 把 SkillsGestalt 公開到 GitHub，排除 checkpoints 與公司內部資訊 | ✅ | — |
 | [[Task 77]] | 2026-10-20 | 拆出 SKILL-Compile.md，並替 compile-skill 寫 README | ✅ | — |
 | [[Task 76]] | 2026-10-20 | skill-writing.md 加一條規則：skill 執行的程式不呼叫 LLM | ⬜ | — |
 | [[Task 75]] | 2026-10-20 | 讓 check_rsdc.py 與 depends_on.py 分辨範例引用 | ⬜ | — |

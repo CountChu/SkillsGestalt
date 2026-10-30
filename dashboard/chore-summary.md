@@ -7,6 +7,7 @@ chore 檔的格式與摘要表的維護方式，見 [chore-rules.md](../.github/
 
 | Chore | Started | Title | 何時要做 | 上次執行 | Status |
 | --- | --- | --- | --- | --- | --- |
+| [[Chore 3]] | 2026-10-30 | 發佈到 GitHub | 使用者要求發佈到 GitHub 時 | 2026-10-30 | 🔁 |
 | [[Chore 2]] | 2026-10-18 | keep-English 稽核 | tw-keep-english.md 換了版本，和上次稽核的版本不同 | 2026-10-20 | 🔁 |
 | [[Chore 1]] | 2026-10-18 | 集中重記 ste-custom.md | 當天改過 ste-custom.md，而且當天的修改都做完了 | 2026-10-30 | 🔁 |
 

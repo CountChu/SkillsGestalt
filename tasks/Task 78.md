@@ -1,6 +1,6 @@
 # Task 78 - 把 SkillsGestalt 公開到 GitHub，排除 checkpoints 與公司內部資訊
 
-**Status**：進行中——決定只推 `public` 分支上的快照；本機的檔案都準備好了，還沒建 repo、也還沒推。
+**Status**：完成——2026-10-30 公開到 GitHub；之後的發佈由 [[Chore 3]] 做，每次發佈前掃描、使用者確認之後才推。
 **Raised**：2026-10-30，使用者要把 SkillsGestalt 公開到自己的 GitHub，名稱 SkillsGestalt，排除 `checkpoints/`。
 **Depends on**：—
 
@@ -35,6 +35,12 @@
   - 工作 vault 的名稱：ask-note、check-skill 與中文版、gen-imp-app、imp-home 與中文版，以及 [SKILL-tmp.md](../.github/common/templates/SKILL-tmp.md) 與中文版，說明 `vaultName` 時用的例子換成 `MyVault`。
     範本換了一個字，記錄它指紋的 8 份 README（asd-ste、check-skill、compile-skill、gen-skill，各含中文版）讀過改動仍然成立，重記之後 `depends_on.py check` 都是 UNCHANGED；範本的 `check_ste.py --ste` PASS，三組中文版與四組 README 的 `check_parity.py` 都是 0 failure。
   - gen-skill 照它 README 的「When the Skill Is Changed」跑了檢查：中英對照 `check_parity.py` 0 failure，`depends_on.py check` 都是 UNCHANGED，check-skill 的掃描正常；只改了範例的網址，所以略過「用 gen-skill 產生一個暫用的 skill」那一項。
+
+### 第一次發佈（2026-10-30）
+
+- 公開的 repo：<https://github.com/CountChu/SkillsGestalt>，預設分支 `main`。
+- 快照 commit `b2c697a`，沒有 parent，作者 CountChu，取自 master 的 `9629f0a`，共 264 個檔。
+- 本機加了遠端 `origin`，`public` 分支追蹤 `origin/main`；master 沒有推。
 
 ### 不宜公開的內容（2026-10-30 掃描 HEAD）
 
@@ -73,22 +79,20 @@
 - **ste-dictionary.json 放進公開版**：使用者的決定。
   它是從規格 Part 2 做成的字典，而規格的版權頁寫明未經 ASD 書面授權不得複製全部或部分內容；README 寫明它由規格做成，規格本身要向 ASD 取得。
 
-### 要決定的
+### 之後的發佈
 
-1. 之後怎麼防止公司資訊再寫進 repo：例如在發佈前固定跑一次上面的掃描，或把它做成發佈的一步。
-   公開之後，下一個快照若帶進這類內容，就直接公開了。
-
-### 發佈的步驟
-
-每次發佈，在根目錄照下面做；全程不切換分支，所以不影響其他 session 的工作區。
-
-1. 以 master 的 HEAD 做一份暫時的 index，拿掉排除的路徑，寫出 tree：
-   `GIT_INDEX_FILE=<暫存檔> git read-tree HEAD`，再 `git rm -r --cached --quiet external .github/external`，再 `git write-tree`。
-2. 用上面的掃描方法，以 `git grep <tree>` 掃那個 tree，確認找不到公司內部資訊、`checkpoints/`、規格的 PDF 與 eli5。
-3. 以 `git commit-tree <tree>` 做快照 commit：第一次沒有 parent，之後以 `-p public` 接在上一個快照後面；再以 `git update-ref refs/heads/public <commit>` 更新 `public`。
-4. `git push origin public:main`。
+- 「之後怎麼防止公司資訊再寫進 repo」由 [[Chore 3]] 處理：每次發佈前，[publish_snapshot.py](../scripts/publish_snapshot.py) 掃描要公開的 tree，使用者看過變動、同意之後才推。
+- 原本記在這裡的發佈步驟搬到 [[Chore 3]]，改由程式做。
+- 掃描用的工作代號放在不進 git 的 `publish-keywords.local.txt`，因為這些名稱本身就不能公開。
 
 ## 4. 驗證
+
+2026-10-30 第一次發佈的結果：
+
+- 推之前掃描快照的 tree：公司內部資訊、私有 IP、個人路徑、token 都是 0 筆；找得到的網址只有 VS Code 官方文件、contoso 的範例與本 task 的搜尋條件。
+- GitHub 上：只有 1 個 commit；264 個檔裡沒有 `checkpoints/`、`external/`、`.github/external/`、`config.yaml`、預覽檔或 PDF。
+
+每次發佈都要再確認：
 
 - 推上去之後，GitHub 上的檔案與歷史搜尋不到上面任何一類內部資訊。
 - GitHub 上沒有 `checkpoints/`。
@@ -96,7 +100,8 @@
 
 ## 5. 與其他 task 的關係
 
-—
+- [[Chore 3]]：本 task 建立的發佈 chore。
+- [[Task 26]]：ASD-STE100 的 PDF 不放進公開版，記在它的日誌。
 
 ## 6. 日誌
 
@@ -108,3 +113,5 @@
 - gen-skill、write-note、imp-app、ask-note 的公司內部資訊換成範例值；checking-criteria 確認是公開網址，移到「不必改的」。
 - 工作 vault 的名稱換成 `MyVault`，8 份 README 重記範本的指紋；「要判斷是否算內部資訊的」一節處理完，拿掉。
 - 決定只推 `public` 分支上的快照，以及作者、本機專用的檔案、README 與 LICENSE、要排除的路徑；`config.yaml` 與預覽檔不再進 git，加上 README、LICENSE 與 `config.example.yaml`。
+- 第一次發佈：以 master 的 `9629f0a` 做出快照 `b2c697a`，建立公開的 repo，推到 `main`；GitHub 上確認只有 1 個 commit，也沒有排除的路徑。
+- 建立 [[Chore 3]] 與 [publish_snapshot.py](../scripts/publish_snapshot.py)，發佈的步驟搬過去；本 task 完成。
