@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
-"""Make a release of this workspace for its public repository: a snapshot of master, scanned before it leaves.
+"""Make a release of this workspace for its public repository: a snapshot of m1, scanned before it leaves.
 
-The public repository carries no history of master. Each release is one commit on the local branch
-`public`, whose tree is the tree of master with the private paths taken out; only `public` is pushed,
-to `main` of the remote `origin`. Nothing here switches a branch or touches the working tree, so other
-sessions can go on working on master while a release is made.
+The public repository carries no history of the working branch m1. Each release is one commit on the
+local branch `main`, whose tree is the tree of m1 with the private paths taken out; only `main` is pushed,
+to `main` of the remote `origin`. After a release m1 starts again from it: the old history of m1 is kept
+in the tag archive/m1-<release>, and m1 becomes one commit on the release that puts back the private
+paths, so `git diff main m1` shows only them and what is not published yet. Nothing here switches a
+branch or touches the working tree, so other sessions can go on working on m1 while a release is made.
 
   check     build the tree of the release, scan it, and list what changed since the last release.
             It writes nothing. Exit 0 when the scan finds nothing, 1 when it finds something.
   publish   after a person has read what `check` printed: build the same tree again, scan it again,
-            make the snapshot commit on `public`, and push it (unless --no-push).
+            make the snapshot commit on `main`, push it (unless --no-push), and start m1 again from it.
 
 The scan looks at the text of every file of the tree for:
 
@@ -42,7 +44,8 @@ from pathlib import Path
 
 EXCLUDED = ['external', '.github/external']
 PRIVATE_PATH = re.compile(r'^(checkpoints/|external/|\.github/external/|config\.yaml$)|\.mermaid\.html$|\.pdf$', re.I)
-BRANCH = 'public'
+BRANCH = 'main'
+WORK = 'm1'
 REMOTE, REMOTE_BRANCH = 'origin', 'main'
 KEYWORDS = 'publish-keywords.local.txt'
 
@@ -127,6 +130,27 @@ def last_release() -> str | None:
     return r.stdout.strip() or None
 
 
+def restart_work(source: str, release: str, co_author: str | None) -> None:
+    """Start WORK again from the release, when WORK is still at the source of it.
+
+    The new commit has the tree of the source, so the working tree and the index stay as they are.
+    """
+    tip = git('rev-parse', f'refs/heads/{WORK}').strip()
+    if tip != source:
+        print(f'{WORK} is at {tip[:7]}, not at the source {source[:7]}: it keeps its history')
+        return
+    tag = f'archive/{WORK}-{release[:7]}'
+    git('tag', '-a', tag, '-m', f'The history of {WORK} up to the release {release[:7]}', source)
+    message = (f'chore 3: {WORK} starts again from {BRANCH} {release[:7]} - the files that are never published\n\n'
+               f'{", ".join(e + "/" for e in EXCLUDED)}, which the snapshots leave out. '
+               f'The history before it is in the tag {tag}.\n')
+    if co_author:
+        message += f'\nCo-Authored-By: {co_author}\n'
+    commit = git('commit-tree', f'{source}^{{tree}}', '-p', release, '-F', '-', data=message.encode()).strip()
+    git('update-ref', f'refs/heads/{WORK}', commit, source)
+    print(f'{WORK}: {commit[:7]} on {release[:7]}; the old history is in {tag}')
+
+
 def report(source: str, tree: str, keywords: list[str]) -> bool:
     print(f'source: {source[:12]} ({git("log", "-1", "--format=%s", source).strip()[:70]})')
     print(f'tree:   {tree}')
@@ -152,8 +176,8 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest='cmd', required=True)
     c = sub.add_parser('check', help='build and scan the tree of the release; write nothing')
-    c.add_argument('--source', default='master', help='the commit to release (default: master)')
-    p = sub.add_parser('publish', help='make the snapshot commit on public and push it')
+    c.add_argument('--source', default=WORK, help=f'the commit to release (default: {WORK})')
+    p = sub.add_parser('publish', help='make the snapshot commit on main and push it')
     p.add_argument('--source', required=True, help='the commit that check printed')
     p.add_argument('--tree', required=True, help='the tree that check printed')
     p.add_argument('--co-author', help='a Co-Authored-By trailer for the commit message, "Name <email>"')
@@ -174,7 +198,7 @@ def main() -> None:
     if not report(source, tree, keywords):
         sys.exit(1)
     prev = last_release()
-    message = f'SkillsGestalt {datetime.date.today().isoformat()}\n\nFrom master {source[:12]}.\n'
+    message = f'SkillsGestalt {datetime.date.today().isoformat()}\n\nFrom m1 {source[:12]}.\n'
     if a.co_author:
         message += f'\nCo-Authored-By: {a.co_author}\n'
     commit = git('commit-tree', tree, *(['-p', prev] if prev else []), '-F', '-', data=message.encode()).strip()
@@ -182,9 +206,10 @@ def main() -> None:
     print(f'release: {commit[:7]} on {BRANCH}' + (f', after {prev[:7]}' if prev else ''))
     if a.no_push:
         print(f'not pushed: git push {REMOTE} {BRANCH}:{REMOTE_BRANCH}')
-        return
-    git('push', REMOTE, f'{BRANCH}:{REMOTE_BRANCH}')
-    print(f'pushed: {BRANCH} -> {REMOTE}/{REMOTE_BRANCH}')
+    else:
+        git('push', REMOTE, f'{BRANCH}:{REMOTE_BRANCH}')
+        print(f'pushed: {BRANCH} -> {REMOTE}/{REMOTE_BRANCH}')
+    restart_work(source, commit, a.co_author)
 
 
 if __name__ == '__main__':

@@ -6,6 +6,12 @@ Instructions for an agent that works in this workspace.
   Update the twin with the [chinese](.github/common/skills/chinese/SKILL.md) skill: it translates only what changed since the twin's last commit, then checks the two against each other.
 - **When you create or edit a Markdown file in the repo, follow [md-style.md](.github/common/rules/md-style.md).**
 
+## Branches
+
+平常在 `m1` 上工作；本機的 `main` 只放發佈到 GitHub 的快照，不要在上面 commit。
+2026-10-30 之前的 commit 在 tag `archive/master`，之後每次發佈前的在 `archive/m1-<快照>`：文件裡引用的舊 hash 到那裡查。
+發佈照 [Chore 3](chores/Chore%203.md) 的步驟。
+
 ## Tasks
 
 跨 session 的待辦在 `tasks/`，摘要表在 `dashboard/task-summary.md`。

@@ -101,6 +101,7 @@
 ## 5. 與其他 task 的關係
 
 - [[Chore 3]]：本 task 建立的發佈 chore。
+- [[Task 79]]：之後把本機分支 `master` 改名為 `m1`、`public` 改名為 `main`；本 task 的紀錄照當時的名稱。
 - [[Task 26]]：ASD-STE100 的 PDF 不放進公開版，記在它的日誌。
 
 ## 6. 日誌
@@ -115,3 +116,4 @@
 - 決定只推 `public` 分支上的快照，以及作者、本機專用的檔案、README 與 LICENSE、要排除的路徑；`config.yaml` 與預覽檔不再進 git，加上 README、LICENSE 與 `config.example.yaml`。
 - 第一次發佈：以 master 的 `9629f0a` 做出快照 `b2c697a`，建立公開的 repo，推到 `main`；GitHub 上確認只有 1 個 commit，也沒有排除的路徑。
 - 建立 [[Chore 3]] 與 [publish_snapshot.py](../scripts/publish_snapshot.py)，發佈的步驟搬過去；本 task 完成。
+- [[Task 79]] 把本機分支改名：`master` 改為 `m1`，`public` 改為 `main`；本檔的紀錄照當時的名稱，只在「與其他 task 的關係」加上它。
