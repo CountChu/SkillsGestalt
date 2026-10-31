@@ -21,7 +21,7 @@ InvestForge 的 CLAUDE.md 全部是英文；[task-rules.md](../.github/common/ru
 - 照原本的中文逐句翻譯，不照 InvestForge 的句子。
 - 不建中文版 `CLAUDE-tw.md`：它是給 agent 讀的，InvestForge 也沒有。
 - 以 ASD-STE100 寫，過 `check_ste.py`；中文的術語都換成英文，檔名與路徑照舊。
-- Branches 一節的 tag 說明與 [[publish-github]] 的連結一起翻成英文。
+- Branches 一節的 tag 說明與 [[publish-gestalt]] 的連結一起翻成英文。
 
 ## 4. 驗證
 
@@ -38,6 +38,10 @@ InvestForge 的 CLAUDE.md 全部是英文；[task-rules.md](../.github/common/ru
 —
 
 ## 7. 日誌
+
+### 2026-10-31
+
+- [[Task 91]] 把 chore `publish-github` 改名為 `publish-gestalt`：本檔的連結跟著改，意思不變。
 
 ### 2026-10-30
 

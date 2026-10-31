@@ -34,7 +34,7 @@
 - [check_chores.py](../.github/common/scripts/check_chores.py) 改寫：以名稱取代編號；別的 agency 的列由 `config.yaml` 的 `agencies` 找到定義檔，比對 Title 與何時要做；檢查摘要表的執行紀錄與上次執行；不再檢查連續編號與空號；仍只用標準函式庫，`agencies` 由程式自己讀；新加 `--config`，預設是摘要表所在資料夾的上一層的 `config.yaml`。
 - 三個 chore 用 `git mv` 改名，標題改成 `# <name> - <標題>`，`6. 執行紀錄` 搬到 [dashboard/chore-summary.md](../dashboard/chore-summary.md) 的 `## 執行紀錄`（日期從 `###` 變成 `####`）；步驟裡的執行紀錄、commit 前綴與 checkpoints 路徑跟著改；keep-english 的報告搬到 `checkpoints/chores/keep-english/`。
 - `config.example.yaml` 與本機的 `config.yaml` 的 `keepEnglishChore` 改成 `keep-english`；[gen_claude_md.py](../.github/common/scripts/gen_claude_md.py) 把它連到 `chores/<name>.md`，本 agency 沒有這個檔時，從 `agencies` 找到唯一有它的 agency，連結寫成從根目錄起算的相對路徑。
-- CLAUDE-local.md 的發佈連結改成 [[publish-github]]，重新產生 CLAUDE.md；`publish_snapshot.py` 的 commit 前綴改成 `chore publish-github: `。
+- CLAUDE-local.md 的發佈連結改成 [[publish-gestalt]]，重新產生 CLAUDE.md；`publish_snapshot.py` 的 commit 前綴改成 `chore publish-github: `。
 - 29 個 task 檔的 `[[Chore N]]` 改成新名稱，各加一行日誌；本檔說明對照關係的地方改成純文字；Task 26 的 Markdown 連結改成 `../chores/publish-github.md`。
   task 檔裡寫在 inline code 的 `chores/Chore N.md` 與 commit 前綴是當時的紀錄，照舊。
 
@@ -101,6 +101,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-10-31
+
+- [[Task 91]] 把 chore `publish-github` 改名為 `publish-gestalt`：本檔的連結跟著改，意思不變。
 
 ### 2026-10-30
 

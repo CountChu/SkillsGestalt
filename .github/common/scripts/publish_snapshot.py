@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Make a release of this workspace for its public repository: a snapshot of the work branch, scanned before it leaves.
 
-It serves the private chore publish-github of SkillsGestalt and no other agency: the branch main,
+It serves the private chore publish-gestalt of SkillsGestalt and no other agency: the branch main,
 the remote origin, the keyword file, the paths it leaves out and the subject of a snapshot are
 SkillsGestalt's, written here as they are. It lives in the common skill group only because a chore has no
 program of its own. Run it from the root of SkillsGestalt.
@@ -21,6 +21,9 @@ branch or touches the working tree, so other sessions can go on working on WORK 
   publish   after a person has read what `check` printed: build the same tree again, scan it again,
             make the snapshot commit on `main`, push it (unless --no-push), and start WORK again from it.
             Give it the work, the source and the tree that `check` printed, and a summary of the changes.
+  incoming  after `git fetch`: list what origin/main has that the local main has not, scan its tree and
+            the author and committer of each new commit. It writes nothing; the chore pull-gestalt then
+            moves main and rebases WORK by hand. Exit 0 when the scan finds nothing, 1 when it finds something.
 
 The message of a snapshot commit is `SkillsGestalt yyyy-mm-dd`, then the summary that --summary or --summary-file gives,
 then the work branch and the commit that the snapshot comes from. `check` lists the commits of WORK since
@@ -28,7 +31,8 @@ the last release, to write the summary from.
 
 The scan looks at the text of every file of the tree for:
 
-  - an email address, except the made-up and no-reply ones (EMAIL_ALLOWED)
+  - an email address, except the made-up and no-reply ones (EMAIL_ALLOWED) and the one of IDENTITY,
+    which every snapshot carries anyway
   - a private IP address (10.x.x.x, 172.16-31.x.x, 192.168.x.x)
   - an Azure DevOps organization: a host under visualstudio.com, or a path under dev.azure.com,
     except the public documentation and the made-up contoso examples (ADO_ALLOWED)
@@ -40,6 +44,21 @@ The scan looks at the text of every file of the tree for:
 
 It also checks that no private path is in the tree: checkpoints/, the paths of EXCLUDED, the root
 config.yaml, a *.mermaid.html preview, a PDF.
+
+The author and the committer go out with each commit, and the scan of the files does not see them. So
+a snapshot does not take them from the git settings of the computer that makes it, which can be a work
+identity: its author and committer are IDENTITY, the one every snapshot on GitHub has, unless the config.yaml at the
+root gives an identity of its own, with both of its keys:
+
+  identity:
+    name: CountChu
+    email: <the email>
+
+ Only the snapshot does;
+the commit that starts WORK again stays local and keeps the git settings. `check` prints IDENTITY, and
+`check` and `publish` look for each word of the keyword file in it, should it ever be changed to a work
+identity; `incoming` does the same for the author and the committer of each new commit. A finding names
+only the field, never its value.
 
 Exit status: 0 no finding; 1 a finding; 2 the command is malformed, git fails, the keyword file is
 missing, or the tree changed between `check` and `publish`.
@@ -60,8 +79,12 @@ PRIVATE_PATH = re.compile(r'^(checkpoints/|external/|\.github/external/|config\.
 BRANCH = 'main'
 REMOTE, REMOTE_BRANCH = 'origin', 'main'
 KEYWORDS = 'publish-keywords.local.txt'
+IDENTITY = ('CountChu', 'visualge@gmail.com')   # the author and committer of every snapshot
+CONFIG = 'config.yaml'
+ACTIVE, ACTIVE_FROM = IDENTITY, 'publish_snapshot.py'   # IDENTITY, or the identity of config.yaml
 # The commit that starts the work branch again after a release: it is not a change, so it is not in the list of commits.
-RESTART = re.compile(r'^chore publish-github: \S+ starts again from ')
+# publish-github is the old name of the chore, and a work branch can still hold a restart commit with it.
+RESTART = re.compile(r'^chore (?:publish-gestalt|publish-github): \S+ starts again from ')
 
 # The last label of the domain is letters, so a package version such as mermaid@11.4.1 is not taken for one.
 EMAIL = re.compile(r'[A-Za-z0-9._%+-]+@((?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,})(?![A-Za-z0-9.-])')
@@ -128,7 +151,8 @@ def scan(tree: str, keywords: list[str]) -> list[str]:
     for path, text in blobs(tree):
         for n, line in enumerate(text.split('\n'), 1):
             hits = []
-            hits += [('email', m.group(0)) for m in EMAIL.finditer(line) if not EMAIL_ALLOWED.match(m.group(1))]
+            hits += [('email', m.group(0)) for m in EMAIL.finditer(line)
+                     if not EMAIL_ALLOWED.match(m.group(1)) and m.group(0) not in (IDENTITY[1], ACTIVE[1])]
             hits += [('private IP', m.group(0)) for m in PRIVATE_IP.finditer(line)]
             hits += [('Azure DevOps', m.group(0)) for m in ADO.finditer(line) if not ADO_ALLOWED.match(m.group(0))]
             hits += [('home directory', m.group(0)) for m in HOME.finditer(line) if set(m.group(2)) != {'.'}]
@@ -177,7 +201,7 @@ def restart_work(work: str, source: str, release: str, day: datetime.date, co_au
     if r.stdout.strip():
         print(f'{tag} moves: it was at {r.stdout.strip()[:7]}, whose history git gc may now remove')
     git('tag', '-a', '-f', tag, '-m', f'The history of {work} up to the release {release[:7]}', source)
-    message = (f'chore publish-github: {work} starts again from {BRANCH} {release[:7]} - the files that are never published\n\n'
+    message = (f'chore publish-gestalt: {work} starts again from {BRANCH} {release[:7]} - the files that are never published\n\n'
                f'{", ".join(e + "/" for e in EXCLUDED)}, which the snapshots leave out. '
                f'The history before it is in the tag {tag}.\n')
     if co_author:
@@ -187,12 +211,95 @@ def restart_work(work: str, source: str, release: str, day: datetime.date, co_au
     print(f'{work}: {commit[:7]} on {release[:7]}; the old history is in {tag}')
 
 
+def identity_findings(idents: list[tuple[str, str]], keywords: list[str], fix: str) -> list[str]:
+    """Each (label, "Name <email>") that holds a word of the keyword file - named by its label only."""
+    kw = re.compile('|'.join(re.escape(k) for k in keywords), re.I) if keywords else None
+    return [f'{label}: holds a word of {KEYWORDS} - {fix}' for label, ident in idents if kw and kw.search(ident)]
+
+
+def config_identity(config: Path) -> tuple[str, str] | None:
+    """The name and the email under "identity:" of config.yaml, or None when it has no identity. Read by
+    hand, as the rest of this script needs no YAML: one level, a # comment allowed. Exit 2 when only one of
+    the two keys is there: half of an identity would be someone else's."""
+    if not config.is_file():
+        return None
+    found: dict[str, str] = {}
+    inside = seen = False
+    for line in config.read_text(encoding='utf-8-sig').split('\n'):
+        bare = re.sub(r'\s+#.*$', '', line).rstrip()
+        if not bare or bare.lstrip().startswith('#'):
+            continue
+        if not bare.startswith((' ', '\t')):
+            inside = bare == 'identity:'
+            seen = seen or inside
+            continue
+        if inside and ':' in bare:
+            key, value = (x.strip().strip('"\'') for x in bare.split(':', 1))
+            found[key] = value
+    if not seen:
+        return None
+    if not found.get('name') or not found.get('email'):
+        print(f'{config}: identity needs both name and email', file=sys.stderr)
+        sys.exit(2)
+    return found['name'], found['email']
+
+
+def snapshot_identity() -> list[tuple[str, str]]:
+    """The author and the committer of a snapshot: ACTIVE, whatever the git settings are."""
+    return [(label, f'{ACTIVE[0]} <{ACTIVE[1]}>') for label in ('author', 'committer')]
+
+
+def snapshot_env() -> dict:
+    """The environment that makes git write ACTIVE as the author and the committer."""
+    name, email = ACTIVE
+    return {**os.environ, 'GIT_AUTHOR_NAME': name, 'GIT_AUTHOR_EMAIL': email,
+            'GIT_COMMITTER_NAME': name, 'GIT_COMMITTER_EMAIL': email}
+
+
+def incoming(upstream: str, keywords: list[str]) -> bool:
+    """What upstream has that the local main has not: its commits, the scan of their identities and of the
+    tree of upstream, and the files that change. True when nothing is found."""
+    up = git('rev-parse', '--verify', f'{upstream}^{{commit}}').strip()
+    here = git('rev-parse', '--verify', f'refs/heads/{BRANCH}^{{commit}}').strip()
+    print(f'{BRANCH}: {here[:7]}, {upstream}: {up[:7]}')
+    if up == here:
+        print(f'nothing to pull: {BRANCH} is at {upstream}')
+        return True
+    base = git('merge-base', here, up).strip()
+    if base == up:
+        print(f'nothing to pull: {BRANCH} is ahead of {upstream}, and publish-gestalt pushes it')
+        return True
+    if base != here:
+        print(f'{BRANCH} and {upstream} diverged at {base[:7]}: the history of {upstream} was rewritten. '
+              f'Reset {BRANCH} to it, and rebase the work branch onto it')
+    log = git('log', '--reverse', '--format=%H%x00%s%x00%an <%ae>%x00%cn <%ce>', f'{base}..{up}').splitlines()
+    print(f'new commits of {upstream}: {len(log)}')
+    findings = []
+    for line in log:
+        sha, subject, author, committer = line.split('\0')
+        print(f'  {sha[:7]} {subject[:70]}')
+        findings += [f'{sha[:7]} {f}' for f in identity_findings([('author', author), ('committer', committer)], keywords,
+                                                                 'the computer that published it must set git user.name and user.email')]
+    tree = git('rev-parse', f'{up}^{{tree}}').strip()
+    findings += scan(tree, keywords)
+    changes = git('diff', '--name-status', f'{base}^{{tree}}', tree).splitlines()
+    print(f'changes since {base[:7]}: {len(changes)} file(s)')
+    for c in changes:
+        print(f'  {c}')
+    for f in findings:
+        print(f'[FIND] {f}')
+    print(f'scan: {"nothing found" if not findings else f"{len(findings)} finding(s)"}')
+    return not findings
+
+
 def report(work: str, source: str, tree: str, keywords: list[str]) -> bool:
     print(f'work:   {work}')
     print(f'source: {source[:12]} ({git("log", "-1", "--format=%s", source).strip()[:70]})')
     print(f'tree:   {tree}')
     print(f'keywords: {len(keywords)} from {KEYWORDS}')
-    findings = scan(tree, keywords)
+    print(f'identity: {ACTIVE[0]} <{ACTIVE[1]}> from {ACTIVE_FROM}, the author and committer of the snapshot')
+    fix = 'change identity in config.yaml' if ACTIVE_FROM == CONFIG else 'change IDENTITY in publish_snapshot.py'
+    findings = identity_findings(snapshot_identity(), keywords, fix) + scan(tree, keywords)
     for f in findings:
         print(f'[FIND] {f}')
     print(f'scan: {"nothing found" if not findings else f"{len(findings)} finding(s)"}')
@@ -231,9 +338,13 @@ def main() -> None:
                         'breaks an argument at its line ends. A blank line divides paragraphs')
     p.add_argument('--co-author', help='a Co-Authored-By trailer for the commit message, "Name <email>"')
     p.add_argument('--no-push', action='store_true', help='make the commit, but do not push')
-    for s in (c, p):
+    i = sub.add_parser('incoming', help='after git fetch: list and scan what origin/main has that main has not; write nothing')
+    i.add_argument('--upstream', default=f'{REMOTE}/{REMOTE_BRANCH}', help=f'the branch to compare with (default: {REMOTE}/{REMOTE_BRANCH})')
+    for s in (c, p, i):
         s.add_argument('--keywords', type=Path, default=Path(KEYWORDS), help=f'the keyword file (default: {KEYWORDS})')
     a = ap.parse_args()
+    if a.cmd == 'incoming':
+        sys.exit(0 if incoming(a.upstream, read_keywords(a.keywords)) else 1)
 
     summary = getattr(a, 'summary', None)
     if getattr(a, 'summary_file', None):
@@ -242,6 +353,10 @@ def main() -> None:
         print('--summary is empty: write what changed since the last release', file=sys.stderr)
         sys.exit(2)
     keywords = read_keywords(a.keywords)
+    global ACTIVE, ACTIVE_FROM
+    own = config_identity(Path(CONFIG))
+    if own:
+        ACTIVE, ACTIVE_FROM = own, CONFIG
     work = work_branch(a.work)
     source = git('rev-parse', '--verify', f'{a.source or work}^{{commit}}').strip()
     tree = build_tree(source)
@@ -258,7 +373,8 @@ def main() -> None:
     message = f'SkillsGestalt {day.isoformat()}\n\n{summary.strip()}\n\nFrom {work} {source[:12]}.\n'
     if a.co_author:
         message += f'\nCo-Authored-By: {a.co_author}\n'
-    commit = git('commit-tree', tree, *(['-p', prev] if prev else []), '-F', '-', data=message.encode()).strip()
+    commit = git('commit-tree', tree, *(['-p', prev] if prev else []), '-F', '-', data=message.encode(),
+                 env=snapshot_env()).strip()
     git('update-ref', f'refs/heads/{BRANCH}', commit, prev or '')
     print(f'release: {commit[:7]} on {BRANCH}' + (f', after {prev[:7]}' if prev else ''))
     if a.no_push:

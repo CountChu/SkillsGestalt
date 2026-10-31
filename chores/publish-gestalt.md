@@ -1,4 +1,4 @@
-# publish-github - 發佈到 GitHub
+# publish-gestalt - 發佈到 GitHub
 
 **Status**：使用中——每次發佈先跑 `check`，使用者看過變動、同意之後才 `publish`。
 **Started**：2026-10-30，SkillsGestalt 公開到 GitHub 之後，發佈要重複做；做法由 [[Task 78]] 定下，也由它建立本 chore。
@@ -27,6 +27,7 @@ work branch 不推，要設 `branch.<work branch>.pushRemote no_push`，在它�
 
 ### 準備
 
+- 先做 [[pull-gestalt]]：本機的 `main` 落後 GitHub 的 `main` 時，push 會被拒絕，或蓋掉另一台電腦發佈的快照。
 - 根目錄要有本機的關鍵字檔 `publish-keywords.local.txt`：一行一個不能公開的組織、專案或產品名稱。
   [.gitignore](../.gitignore) 排除它，因為這些名稱本身就不能公開；沒有它，程式不掃描，以 `2` 結束。
   新發現不能公開的名稱，就加進這個檔。
@@ -45,10 +46,10 @@ work branch 不推，要設 `branch.<work branch>.pushRemote no_push`，在它�
 4. 執行 `python {skillGroups.common}/scripts/publish_snapshot.py publish --work <check 印出的 work> --source <check 印出的 source> --tree <check 印出的 tree> --summary-file <摘要檔> --co-author "<agent 的名稱與 email>"`。
    它重做一次 tree，和 `check` 那次不同就以 `2` 結束，表示 work branch 在這之間有了新的 commit，要回到第 1 步。
    相同的話，它再掃描一次，建一個快照 commit 接在本機的 `main` 後面，推到 `origin` 的 `main`。
-   最後它讓 work branch 從新的快照重新開始，commit 以 `chore publish-github: ` 開頭；work branch 在這之間有了新的 commit 時，它不動 work branch，只印出來，work branch 留著原本的歷史，到下次發佈再重新開始。
-   作者與 committer 取自 git 的 `user.name` 與 `user.email`。
+   最後它讓 work branch 從新的快照重新開始，commit 以 `chore publish-gestalt: ` 開頭；work branch 在這之間有了新的 commit 時，它不動 work branch，只印出來，work branch 留著原本的歷史，到下次發佈再重新開始。
+   快照的作者與 committer 是根目錄 `config.yaml` 的 `identity`（`name` 與 `email` 兩個都要寫），沒有就是 `publish_snapshot.py` 的 `IDENTITY`，不受這台電腦的 git 設定影響；讓 work branch 重新開始的那個 commit 不推出去，仍用 git 的 `user.name` 與 `user.email`。
 5. 到 GitHub 確認：`gh api "repos/CountChu/SkillsGestalt/commits?sha=main" --jq '.[0].sha'` 是新的快照，`gh api "repos/CountChu/SkillsGestalt/git/trees/main?recursive=1"` 裡沒有排除的路徑。
-6. 在摘要表 `## 執行紀錄` 的 `### publish-github` 下記下這次發佈，並更新摘要表的「上次執行」；commit 以 `chore publish-github: ` 開頭。
+6. 在摘要表 `## 執行紀錄` 的 `### publish-gestalt` 下記下這次發佈，並更新摘要表的「上次執行」；commit 以 `chore publish-gestalt: ` 開頭。
 
 ### 已決定的
 
@@ -71,3 +72,4 @@ work branch 不推，要設 `branch.<work branch>.pushRemote no_push`，在它�
 - [[Task 78]]：建立本 chore，也記下公開時做的決定與第一次發佈。
 - [[Task 79]]：把本機分支 `master` 改名為 `m1`、`public` 改名為 `main`，並讓 `m1` 從 `main` 重新開始。
 - [[Task 26]]：ASD-STE100 的 PDF 留在 `m1` 的 git，不放進公開版（2026-10-30 決定）。
+- [[Task 91]]：2026-10-31 把名稱從 `publish-github` 改成 `publish-gestalt`；git 歷史裡以 `chore publish-github: ` 開頭的 commit 也是本 chore 的。

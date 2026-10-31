@@ -17,7 +17,7 @@ PDF 在 [external/ASD-STE100_ISSUE9.pdf](../external/ASD-STE100_ISSUE9.pdf)，�
 ### 已決定（2026-10-30）
 
 - **PDF 留在 git**：維持現狀，不移出追蹤，也不改寫歷史。
-  本機的 `m1` 不推到任何 remote；公開版由 [publish-github](../chores/publish-github.md) 發佈，它的 `publish_snapshot.py` 把 `external/` 排除在快照外，也擋下任何 `.pdf`。
+  本機的 `m1` 不推到任何 remote；公開版由 [publish-gestalt](../chores/publish-gestalt.md) 發佈，它的 `publish_snapshot.py` 把 `external/` 排除在快照外，也擋下任何 `.pdf`。
 - **字典 JSON 維持公開**：照 [[Task 78]] 公開時的決定，不再改。
   沒有它，公開版的 asd-ste 在 Step 0 就會停下。
 
@@ -65,7 +65,7 @@ PDF 在 [external/ASD-STE100_ISSUE9.pdf](../external/ASD-STE100_ISSUE9.pdf)，�
 
 - [[Task 23]]：建立 asd-ste；本項原是它的待辦第 3 項。
 - [[Task 78]]：公開到 GitHub 時決定 PDF 不放進公開版，字典 JSON 公開。
-- [[publish-github]]：發佈時排除 `external/` 與任何 `.pdf`；它第 5 章那一行改成本 task 的決定。
+- [[publish-gestalt]]：發佈時排除 `external/` 與任何 `.pdf`；它第 5 章那一行改成本 task 的決定。
 
 ## 6. 知識
 
@@ -73,10 +73,14 @@ PDF 在 [external/ASD-STE100_ISSUE9.pdf](../external/ASD-STE100_ISSUE9.pdf)，�
 
 ## 7. 日誌
 
+### 2026-10-31
+
+- [[Task 91]] 把 chore `publish-github` 改名為 `publish-gestalt`：本檔的連結跟著改，意思不變。
+
 ### 2026-10-30
 
 - 使用者決定：PDF 留在 git，字典 JSON 維持公開。
-  現況一章加上「已決定」與 2026-10-30 的狀況，舊的現況標成 2026-10-12；驗證一章寫上兩項檢查；[[publish-github]] 第 5 章那一行改成已決定的寫法。
+  現況一章加上「已決定」與 2026-10-30 的狀況，舊的現況標成 2026-10-12；驗證一章寫上兩項檢查；[[publish-gestalt]] 第 5 章那一行改成已決定的寫法。
 - [[Task 78]] 把 SkillsGestalt 公開到 GitHub 時，決定 PDF 不放進公開版；本機的 git 仍保留它，是否留在 git 中仍未決定。
 - [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
 

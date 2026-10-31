@@ -4,7 +4,7 @@
 > [[ste-custom]]  `2026-10-30`  `8cc2e2061175`
 
 > This file is in ASD-STE100 Simplified Technical English (STE), Issue 9.
-> Technical words: agency, audit, chore, command, commit, day, document, English, entry, file, Forge, git, hash, list, publish, repository, root, script, session, skill, snapshot, summary, table, tag, template, term, text, twin, version.
+> Technical words: agency, audit, branch, chore, clone, command, commit, day, document, English, entry, file, Forge, git, hash, list, publish, repository, root, script, session, skill, snapshot, summary, table, tag, template, term, text, twin, version.
 
 Instructions for an agent that works in this agency.
 A script makes this file from the template `.github/common/templates/CLAUDE-tmp.md` and the `CLAUDE-local.md` at the root.
@@ -64,10 +64,11 @@ Each Forge does the chore [follow-gestalt](chores/follow-gestalt.md) for these e
 ## Branches
 
 Do your work on `m1`.
+In a different clone, you can do your work on a different branch.
 The local `main` contains only the snapshots that go to GitHub.
 Do not commit on it.
 
 The commits before 2026-10-30 are in the tag `archive/master`.
-The commits before each subsequent release are in `archive/m1-<yymmdd>`, with one tag for each day.
+The commits before each subsequent release are in `archive/<branch>-<yymmdd>`, for example `archive/m1-261030`, with one tag for each day.
 To find a hash that a document refers to, look in these tags.
-To publish, follow the steps of [publish-github](chores/publish-github.md).
+To publish, follow the steps of [publish-gestalt](chores/publish-gestalt.md).

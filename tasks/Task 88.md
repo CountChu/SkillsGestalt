@@ -36,7 +36,7 @@
 - [[Task 81]]：術語表的 agency、Gestalt 與 Forge。
 - [[Task 84]]、[[Task 85]]、[[Task 86]]、[[Task 87]]：Forge 接上時要用的機制。
 - BookMaster 改成新的機制，在 BookMaster 自己的 tasks 做；它可以當指南的第一個試用者。
-- GitHub 上的公開版還停在 `258940e`，之後的機制都還沒發佈；發佈照 [[publish-github]]，由使用者決定時機。
+- GitHub 上的公開版還停在 `258940e`，之後的機制都還沒發佈；發佈照 [[publish-gestalt]]，由使用者決定時機。
 
 ## 6. 知識
 
@@ -50,3 +50,4 @@
 - [[Task 88.1]] 完成，本 task 改成進行中。
 - [[Task 88.2]] 完成：`forge-setup.md` 與中文版。
 - [[Task 88.3]] 完成：`CHANGES.md` 與 [[follow-gestalt]]；本 task 完成。
+- [[Task 91]] 把 chore `publish-github` 改名為 `publish-gestalt`：本檔的連結跟著改，意思不變。

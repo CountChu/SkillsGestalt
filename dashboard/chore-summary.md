@@ -8,7 +8,8 @@ chore 檔的格式與摘要表的維護方式，見 [chore-rules.md](../.github/
 | Chore | Started | Title | 何時要做 | 上次執行 | Status |
 | --- | --- | --- | --- | --- | --- |
 | [[follow-gestalt]] | 2026-10-31 | 跟上 Gestalt 的改動 | `{skillGroups.common}/CHANGES.md` 有比上次處理的那一筆新的條目 | — | 🔁 |
-| [[publish-github]] | 2026-10-30 | 發佈到 GitHub | 使用者要求發佈到 GitHub 時 | 2026-10-30 | 🔁 |
+| [[pull-gestalt]] | 2026-10-31 | 把 GitHub 上的新快照拿進工作分支 | 發佈之前、git fetch 看到新快照時，或使用者要求時 | 2026-10-31 | 🔁 |
+| [[publish-gestalt]] | 2026-10-30 | 發佈到 GitHub | 使用者要求發佈到 GitHub 時 | 2026-10-31 | 🔁 |
 | [[keep-english]] | 2026-10-18 | keep-English 稽核 | tw-keep-english.md 換了版本，和上次稽核的版本不同 | 2026-10-30 | 🔁 |
 | [[rerecord-ste-custom]] | 2026-10-18 | 集中重記 ste-custom.md | 當天改過 ste-custom.md，而且當天的修改都做完了 | 2026-10-30 | 🔁 |
 
@@ -18,7 +19,22 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 
 ## 執行紀錄
 
-### publish-github
+### pull-gestalt
+
+#### 2026-10-31
+
+- 第一次，在 [[Task 89]] 照手動步驟做：GitHub 的 `main` 有另一台電腦從 `countdell` 發佈的 `4765af0`，作者與 committer 是工作的身分。
+  經使用者同意，在本機做出同樣檔案、訊息與時間、作者改成 CountChu 的 `4d2c5db`，以 `--force-with-lease` 換掉 GitHub 上的 `4765af0`。
+- 本機 `main` 從 `93b4e1e` 移到 `4d2c5db`；舊的 `m1`（`e0365fc`）存成 tag `archive/m1-261031-pull`；`m1` 的 3 個 commit rebase 到 `4d2c5db` 上，沒有衝突；`external/` 與 `.github/external/` 仍在。
+- 新快照把 task 改成七章：只在 `m1` 上的 [[Task 89]] 插入 `6. 知識`；CLAUDE.md 重新產生。
+
+### publish-gestalt
+
+#### 2026-10-31
+
+- 以 `m1` 的 `b2e967f` 做出快照 `93b4e1e`，接在 `258940e` 之後，推到 `main`；變動 63 個檔，新增 23、改名 3、刪除 1、修改 36，來自 [[Task 26]]、[[Task 79]] 到 [[Task 88]]，以及 keep-english 與上次 publish-github 的執行紀錄。
+  `check` 與 `publish` 的掃描都是 `nothing found`。
+  `m1` 跟著從 `93b4e1e` 重新開始（`b9933dd`），舊的在 tag `archive/m1-261031`；GitHub 上確認：`main` 有 4 個 commit，最新的是 `93b4e1e`，tree 和本機做出的 `e5c202f` 相同，289 個檔裡沒有排除的路徑。
 
 #### 2026-10-30
 

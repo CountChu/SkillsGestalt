@@ -6,3 +6,6 @@ skillGroups:
   common: .github/common       # the shared skills, rules, templates and scripts that every workspace uses
   external: .github/external   # skills that come from outside, such as eli5
 keepEnglishChore: keep-english   # the chore that audits the 繁體中文 twins when tw-keep-english.md changes its version; CLAUDE.md links it
+# identity:                 # the author and committer of each snapshot that publish-gestalt makes; without it, IDENTITY in publish_snapshot.py
+#   name: Your Name
+#   email: you@example.com

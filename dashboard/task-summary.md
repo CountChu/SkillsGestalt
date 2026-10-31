@@ -7,6 +7,9 @@ task 檔的格式與摘要表的維護方式，見 [task-rules.md](../.github/co
 
 | Task | Raised | Title | Status | Depends on |
 | --- | --- | --- | --- | --- |
+| [[Task 91]] | 2026-10-31 | chore publish-github 改名為 publish-gestalt | ✅ | — |
+| [[Task 90]] | 2026-10-31 | 快照的作者與 committer 由 publish_snapshot.py 指定 | ✅ | [[Task 89]] ✅ |
+| [[Task 89]] | 2026-10-31 | 設計 chore pull-gestalt：把 GitHub 上的新快照拿進 m1 | ✅ | — |
 | [[Task 88]] | 2026-10-31 | 讓別的 agency 能自己接上 SkillsGestalt | ✅ | — |
 | ├─ [[Task 88.1]] | 2026-10-31 | Forge 用的 config.yaml 範本 | ✅ | — |
 | ├─ [[Task 88.2]] | 2026-10-31 | 接上 SkillsGestalt 的指南 forge-setup.md | ✅ | [[Task 88.1]] ✅ |

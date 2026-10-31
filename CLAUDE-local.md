@@ -17,4 +17,4 @@ Do not commit on it.
 The commits before 2026-10-30 are in the tag `archive/master`.
 The commits before each subsequent release are in `archive/<branch>-<yymmdd>`, for example `archive/m1-261030`, with one tag for each day.
 To find a hash that a document refers to, look in these tags.
-To publish, follow the steps of [publish-github](chores/publish-github.md).
+To publish, follow the steps of [publish-gestalt](chores/publish-gestalt.md).
