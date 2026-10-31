@@ -70,7 +70,11 @@ reformat-md 沒有 README.md：先讀 [skill-writing.md](../.github/common/rules
 - [[Task 56]]：md-style 巡檢的 chore；本 task 修好之前，巡檢會漏掉這種一行多句，但不會誤報。
 - [[Task 24]]：替其餘 skill 加上 README.md；若它先做完，「改 reformat-md 時」改讀 reformat-md 的 README.md。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-30
 

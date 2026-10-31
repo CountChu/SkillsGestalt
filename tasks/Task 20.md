@@ -150,7 +150,11 @@ README.md 的讀者也包括修改 skill 的 agent，為了讓 agent 真的會�
 - [[Task 22]]：讓 gen-skill、check-skill 與 SKILL 範本跟上本 task 的拆分。
 - [[Task 24]]：把其餘 skill 改成新格式。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-18
 

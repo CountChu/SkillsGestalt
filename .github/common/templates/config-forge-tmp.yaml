@@ -13,4 +13,7 @@ skillGroups:
   external:                                 # skills from outside the agencies, if any
 agencies:
   SkillsGestalt: "{GESTALT_ROOT}"           # the root of SkillsGestalt: check_chores.py finds there the chores this agency does
+# tasksDir: "{WIKI_DIR}/tasks"                         # set only if the tasks are not in tasks/ at the root, for example in the vault
+# taskSummary: "{WIKI_DIR}/dashboard/task-summary.md"  # set only if the summary table is not dashboard/task-summary.md at the root; it does not have to be beside tasksDir
+# choreSummary: "{WIKI_DIR}/dashboard/chore-summary.md" # set only if the chore summary table is not dashboard/chore-summary.md at the root
 keepEnglishChore: keep-english              # the chore that audits the 繁體中文 twins when tw-keep-english.md changes; CLAUDE.md links it. Remove the line if this agency does not do it

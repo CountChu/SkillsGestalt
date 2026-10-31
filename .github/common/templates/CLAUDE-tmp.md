@@ -35,25 +35,25 @@ When the version of the list changes, do the keep-English chore, {keepEnglishCho
 
 ## Tasks
 
-The tasks that continue from one session to a different session are in `tasks/`.
-Their summary table is `dashboard/task-summary.md`.
+The tasks that continue from one session to a different session are in `{tasksDir}/`.
+Their summary table is `{taskSummary}`.
 To add or change a task, follow [task-rules.md]({skillGroups.common}/rules/task-rules.md).
 After a change, run this command from the root:
 
 ```bash
-python {skillGroups.common}/scripts/check_tasks.py --summary dashboard/task-summary.md --tasks-dir tasks
+python {skillGroups.common}/scripts/check_tasks.py --summary {taskSummary!q} --tasks-dir {tasksDir!q}
 ```
 
 ## Chores
 
 The work that you must do again each time that a condition occurs is in `chores/`.
-Its summary table is `dashboard/chore-summary.md`.
+Its summary table is `{choreSummary}`.
 Read this table first to find the chore that you must do.
 To add, change or do a chore, follow [chore-rules.md]({skillGroups.common}/rules/chore-rules.md).
 After a change, run this command from the root:
 
 ```bash
-python {skillGroups.common}/scripts/check_chores.py --summary dashboard/chore-summary.md --chores-dir chores
+python {skillGroups.common}/scripts/check_chores.py --summary {choreSummary!q} --chores-dir chores
 ```
 
 {CLAUDE-local}

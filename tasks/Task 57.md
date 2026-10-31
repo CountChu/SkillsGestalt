@@ -42,7 +42,11 @@
 - [[Task 44]]、[[Task 47]]、[[Task 49]]、[[Task 51]]：四次 Technical words 的清理。
 - [[Task 38]]：us-spelling.json 與美式拼法的檢查。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-30
 

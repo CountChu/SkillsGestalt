@@ -50,7 +50,11 @@ tw-keep-english 的原文第 114 行寫「where one can be searched for without 
 - [[Task 32]]：審 2.3 時提出。
 - [[Task 47]]：前一天把 phrase 收進專案核准詞，本 task 照同樣的做法。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-17
 

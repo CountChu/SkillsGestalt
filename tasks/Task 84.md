@@ -114,7 +114,11 @@
 - [[Task 81]]：術語表定義了 agency、Gestalt 與 Forge；模板用這些名稱。
 - InvestForge 與 BookMaster 改成以模板產生 CLAUDE.md，在它們自己的 tasks 做。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-30
 

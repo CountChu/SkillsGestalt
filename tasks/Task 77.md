@@ -92,7 +92,11 @@
 - [[Task 73]]：SKILL-tw.md 改到的句子把「腳本」改成 script，該檔的稽核數字會比它記下的少。
 - [[Task 24]]：compile-skill 的 SKILL.md 沒有 Dataflow 一節，屬於它要改的 skill 格式。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-21
 

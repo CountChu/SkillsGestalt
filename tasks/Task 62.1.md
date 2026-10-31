@@ -68,7 +68,11 @@
 - [[Task 63]]：中文版留英文的新詞要不要加進 keep-English list。
 - [[rerecord-ste-custom]]：兩份規則檔也記錄 ste-custom.md，ste-custom.md 再改時一起重記。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-30
 

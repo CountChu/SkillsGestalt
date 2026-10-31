@@ -71,7 +71,11 @@ scratch-rules.md 原文第 21 行有「since that is the habit this replaces」�
 - [[Task 55]]：依賴巡檢的 chore 還沒建立，這次的依賴方在 task 裡直接重記。
 - [[Task 59]]：順帶發現的 app 由它加進 tw-keep-english。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-18
 

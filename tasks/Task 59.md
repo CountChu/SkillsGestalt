@@ -60,7 +60,11 @@ compile-skill 的 Tasks-tw.md 有 2 處「應用程式」，翻的是英文的 a
 - [[Task 32.8]]：同一天在改 tw-keep-english 的 Technical words，兩邊分開提交。
 - [[Task 60]]：處理順帶發現的 fenced blocks FAIL。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-18
 

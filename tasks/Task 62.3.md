@@ -57,7 +57,11 @@
 - [[Task 62.4]]、[[Task 62.5]]：把 task 與 chore 搬進本 task 建好的地方；[[Task 62.5]] 也建 InvestForge 的 `chores/`。
 - [[Task 62.7]]：做完之後，這裡的 session 不再在 InvestForge commit。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-18
 

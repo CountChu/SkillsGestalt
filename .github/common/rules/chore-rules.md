@@ -24,6 +24,9 @@ When you make, change or stop a chore, record this work as a task.
   It has an opening paragraph, the table, the legend of the icons, and the run records.
   Read the table first, to find the chore that you must do.
   Then open only that chore.
+- **A workspace can keep the summary table in a different file, for example in its vault.**
+  Then set `choreSummary` in `config.yaml`.
+  `CLAUDE.md` gives the path and the command of the check with this value.
 - **A chore does work on the files of the workspace that does it.**
   A workspace can do a chore of an agency if it uses the skill group of that agency.
   A workspace does not do the chores of a workspace that uses its skill group.

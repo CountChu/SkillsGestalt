@@ -56,7 +56,11 @@
 - [[Task 43]]：把 technical term 改稱 term。
 - [[Task 46]]：MermaidView-RSDC 的「**Terms**」標籤先不動，本 task 的那一處也跟著它。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-18
 

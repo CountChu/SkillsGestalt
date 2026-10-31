@@ -7,6 +7,8 @@ Forge 以 chore [follow-gestalt](../../chores/follow-gestalt.md) 處理這裡的
 
 ### 2026-10-31
 
+- **task 多了「取消」狀態與 `6. 知識` 章**（`00e333e`）：Status 可以是 `取消`，圖示 ⊘；task 檔固定七章，`5. 與其他 task 的關係` 之後是 `6. 知識`，日誌改為 `7. 日誌`。`check_tasks.py` 對只有六章的 task 報 FAIL。
+  Forge 要做：每個 task 檔在 `## 6. 日誌` 前插入 `## 6. 知識`（內容 `—`），並把 `## 6. 日誌` 改成 `## 7. 日誌`；摘要表的圖例加上 `⊘ 取消`。SkillsGestalt 自己的 108 個 task 已改好。
 - **新的 chore follow-gestalt**（Task 88.3）：Forge 以它處理本檔的條目。
   Forge 要做：在 `dashboard/chore-summary.md` 加一列文字的 `follow-gestalt`，Title 與何時要做照 SkillsGestalt 的 `chores/follow-gestalt.md`；`config.yaml` 要有 `agencies.SkillsGestalt`。
 

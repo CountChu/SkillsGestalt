@@ -96,7 +96,11 @@
 - [[Task 84]]：`keepEnglishChore` 與 `gen_claude_md.py` 的連結。
 - InvestForge 的 chore 改成用名稱，在它自己的 tasks 做：`check_chores.py` 已經改了，InvestForge 的 `Chore 1.md` 與 `[[Chore 1]]` 那一列在它改之前會 FAIL。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-30
 

@@ -82,7 +82,11 @@
 - [[Task 78]]：建立 `publish_snapshot.py` 與 [[publish-github]]。
 - [[Task 85]]：別的 agency 做本 agency 的 chore；程式在 skill group 裡，別的 agency 才拿得到。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-30
 

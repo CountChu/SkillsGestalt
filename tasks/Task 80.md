@@ -33,7 +33,11 @@ InvestForge 的 CLAUDE.md 全部是英文；[task-rules.md](../.github/common/ru
 
 - [[Task 79]]：加了 Branches 一節。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-30
 

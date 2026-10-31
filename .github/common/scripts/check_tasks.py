@@ -18,12 +18,12 @@ A task file opens with its heading and its two lines:
 
   # Task N - <title>
 
-  **Status**：<尚未開始|進行中|完成>——<the detail>
+  **Status**：<尚未開始|進行中|完成|取消>——<the detail>
   **Raised**：<YYYY-MM-DD>，<why it was raised>
   **Depends on**：<[[Task M]]、[[Task K]]，or —>
 
 Then the numbered chapters, in this order: "## 1. 背景", "## 2. 現況", "## 3. 要做的", "## 4. 驗證",
-"## 5. 與其他 task 的關係", "## 6. 日誌" ("###" inside them is free; a chapter with nothing to say holds "—").
+"## 5. 與其他 task 的關係", "## 6. 知識", "## 7. 日誌" ("###" inside them is free; a chapter with nothing to say holds "—").
 The log holds one "### YYYY-MM-DD" section per day, each recording what changed that day, newest first;
 the oldest is the day the task was raised.
 
@@ -37,7 +37,7 @@ a tree line before its link: "└─ " for the last sub task of its task, "├�
 
   | Task | Raised | Title | Status | Depends on |
   |---|---|---|---|---|
-  | [[Task N]] | <YYYY-MM-DD> | <title> | <⬜|🔄|✅> | <links, or —> |
+  | [[Task N]] | <YYYY-MM-DD> | <title> | <⬜|🔄|✅|⊘> | <links, or —> |
 
 The table is read instead of the files, so a row that disagrees with its file misleads exactly where
 it is relied on; and several sessions edit these files at once, so nothing else notices when one of
@@ -53,7 +53,7 @@ them leaves them apart. What a program can compare, this script compares:
   5. titles      each row's Title is its file's title
   6. lines       each file has its Status line and its Raised line, a date on the latter
   7. dates       each row's Raised is its file's
-  8. icons       each row's icon is its Status line's word: 尚未開始 ⬜, 進行中 🔄, 完成 ✅
+  8. icons       each row's icon is its Status line's word: 尚未開始 ⬜, 進行中 🔄, 完成 ✅, 取消 ⊘
   9. legend      the legend of the icons follows the table
   10. references each wikilink and relative Markdown link in a task file lands on a file that exists - a
                  wikilink by file name anywhere in the vault (--vault, else the folder with .obsidian, else the folder holding both the summary and the tasks);
@@ -65,7 +65,7 @@ them leaves them apart. What a program can compare, this script compares:
   14. icons       the icon after each link in a Depends on cell is the icon that task's own row has now
   15. day sections each file has "### YYYY-MM-DD" sections, one per day, a real date each, newest first,
                  and the oldest is the day on its Raised line
-  16. chapters   each file has the numbered "##" chapters, in order, and its day sections are inside the last one (6. 日誌)
+  16. chapters   each file has the numbered "##" chapters, in order, and its day sections are inside the last one (7. 日誌)
 
 What it cannot judge - what a task says, how far its background was looked into, whether it is done -
 stays with whoever edits the files.
@@ -96,12 +96,12 @@ STATUS_RE = re.compile(r'^\*\*Status\*\*：(.+?)——')
 RAISED_RE = re.compile(r'^\*\*Raised\*\*：(\d{4}-\d{2}-\d{2})')
 DEPENDS_RE = re.compile(r'^\*\*Depends on\*\*：(.*?)\s*$')
 FILE_DEP_RE = re.compile(rf'\[\[Task ({ID})\]\]')
-ROW_DEP_RE = re.compile(rf'^\[\[Task ({ID})\]\] (⬜|🔄|✅)$')
+ROW_DEP_RE = re.compile(rf'^\[\[Task ({ID})\]\] (⬜|🔄|✅|⊘)$')
 WIKI_RE = re.compile(r'!?\[\[([^\]|#]+)(?:#[^\]|]*)?(?:\|[^\]]*)?\]\]')
 DAY_RE = re.compile(r'^### (\d{4}-\d{2}-\d{2})\s*$')
 NONE = '—'
 MD_LINK_RE = re.compile(r'\]\(([^)\s]+)\)')
-ICONS = {'尚未開始': '⬜', '進行中': '🔄', '完成': '✅'}
+ICONS = {'尚未開始': '⬜', '進行中': '🔄', '完成': '✅', '取消': '⊘'}
 LEGEND = 'Status：⬜ 尚未開始'
 GAP_PREFIX = '空號：'
 GAP_ITEM_RE = re.compile(r'^[1-9]\d*(?:\.[1-9]\d*)?$')
@@ -309,7 +309,7 @@ def main() -> None:
     rep.check(not titles, "each row's Title is its file's title", titles)
     rep.check(not missing, 'each file has a Status line and a Raised line with a date', missing)
     rep.check(not dates, "each row's Raised is its file's", dates)
-    rep.check(not icons, "each row's icon is its Status line's word: 尚未開始 ⬜, 進行中 🔄, 完成 ✅", icons)
+    rep.check(not icons, "each row's icon is its Status line's word: 尚未開始 ⬜, 進行中 🔄, 完成 ✅, 取消 ⊘", icons)
 
     # 9. legend
     tail = next((l for l in lines[after:] if l.strip()), '')
@@ -422,7 +422,7 @@ def main() -> None:
     rep.check(not days, 'each file has one "### YYYY-MM-DD" section per day, newest first, the oldest being its Raised day', days)
 
     # 16. numbered chapters
-    FIXED = ['1. 背景', '2. 現況', '3. 要做的', '4. 驗證', '5. 與其他 task 的關係', '6. 日誌']
+    FIXED = ['1. 背景', '2. 現況', '3. 要做的', '4. 驗證', '5. 與其他 task 的關係', '6. 知識', '7. 日誌']
     secs = []
     for n in order:
         heads2, first_day, fenced = [], None, False
@@ -437,7 +437,7 @@ def main() -> None:
         if names2 != FIXED:
             secs.append(f'Task {n}: "##" chapters {names2}, expected {FIXED}')
         elif first_day is not None and first_day < heads2[-1][0]:
-            secs.append(f'Task {n}: a day section comes before "## {FIXED[-1]}"')
+            secs.append(f'Task {n}: a day section comes before "## {names2[-1]}"')
     rep.check(not secs, 'each file has the numbered "##" chapters in order: ' + ', '.join(FIXED) + '; day sections are inside the last', secs)
 
     print(f'\nverdict: {"PASS" if not rep.failed else "FAIL"} - {rep.passed} passed, {rep.failed} failed')

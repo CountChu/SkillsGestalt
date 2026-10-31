@@ -4,7 +4,7 @@
 > [[ste-custom]]  `2026-10-30`  `8cc2e2061175`
 
 > This file is in ASD-STE100 Simplified Technical English (STE), Issue 9.
-> Technical words: blob, chapter, chore, column, command, commit, content, day, directory, document, file, format, heading, hunk, icon, index, legend, line, link, list, lowercase, note, paragraph, path, prefix, repository, root, section, sentence, session, shell, skill, stage, status, subject, summary, table, term, text, title, tree line, twin, vault, wikilink, word, workspace.
+> Technical words: blob, chapter, chore, column, command, commit, content, day, directory, document, file, format, heading, hunk, icon, index, legend, line, link, list, lowercase, note, paragraph, path, prefix, repository, root, section, sentence, session, shell, skill, stage, status, subject, summary, table, term, text, title, topic, tree line, twin, vault, wikilink, word, workspace.
 
 These rules tell how to write the tasks of a workspace, and how to keep their summary table.
 A task is work that continues after one session, and that becomes complete.
@@ -21,6 +21,13 @@ Work that you must do again each time that a condition occurs is a chore, not a 
   It has an opening paragraph, the table and the legend of the status icons.
   Read the table first.
   Then open only the task that you need.
+- **A workspace can keep its tasks in a different directory, for example in its vault.**
+  Then set `tasksDir` in `config.yaml`.
+- **A workspace can also keep the summary table in a different file.**
+  Then set `taskSummary` in `config.yaml`.
+  The summary table can be in a directory that is not the directory of the tasks.
+  You can set one of the two values, or the two values.
+  `CLAUDE.md` gives the paths and the command of the check with these values.
 - **A workspace keeps only its own tasks.**
   A task records the work on the files of its own workspace.
   A workspace can refer to the tasks of a workspace if it uses the skill group of that workspace.
@@ -50,7 +57,7 @@ A task file has this format:
 ```
 # Task N - 標題
 
-**Status**：<尚未開始|進行中|完成>——<一行結論>
+**Status**：<尚未開始|進行中|完成|取消>——<一行結論>
 **Raised**：yyyy-mm-dd，<為什麼提出>
 **Depends on**：[[Task M]]、[[Task K]]，沒有就寫 —
 
@@ -59,17 +66,29 @@ A task file has this format:
 ## 3. 要做的
 ## 4. 驗證
 ## 5. 與其他 task 的關係
-## 6. 日誌
+## 6. 知識
+### 適合寫成新 topic
+### 適合併進現有 topic
+### 不算知識
+## 7. 日誌
 ### yyyy-mm-dd
 ```
 
-- **The six `##` chapters have the numbers 1 to 6 and these names, in this sequence.**
+- **The seven `##` chapters have the numbers 1 to 7 and these names, in this sequence.**
   If a chapter has no content, write `—` in it.
   Do not remove the chapter.
 - **In `2. 現況`, divide the information into sections with `###` headings.**
   The Status line gives only a short result, in one line.
   Put the other information in `2. 現況` and in `3. 要做的`.
-- **In `6. 日誌`, write one section `### yyyy-mm-dd` for each day, with the changes of that day.**
+- **In `6. 知識`, write the information from this task that you can write into a topic of `write-topic`.**
+  Use the three `###` sections of the format.
+  In `適合寫成新 topic`, give the title, the content and the source of a new topic.
+  In `適合併進現有 topic`, give the topic and the information to add to it.
+  In `不算知識`, give the facts that are only for this work, for example the path of one file.
+  Also give there a problem of a tool, which a different task must repair.
+- **When you write an item of `6. 知識` into a topic, put ✅ before it and a wikilink to the topic.**
+  If you did not examine the task for this information, write only `—` in the chapter.
+- **In `7. 日誌`, write one section `### yyyy-mm-dd` for each day, with the changes of that day.**
   Put the newest date first.
   If you change the task again on the same day, add to the section of that day.
   The last day section in the file always has the date of the Raised line.
@@ -103,7 +122,7 @@ A task file has this format:
 - **Only the number shows that a sub task is a part of its task.**
   Do not add a line for it.
   The Depends on line of a task does not give its sub tasks.
-- **A sub task has the same format as a task**: the Status, Raised and Depends on lines, and the six chapters.
+- **A sub task has the same format as a task**: the Status, Raised and Depends on lines, and the seven chapters.
 - **Write the content of a sub task only in the sub task.**
   Also write its subsequent records only there.
   The task keeps only the list of its sub tasks, and the rules and decisions for all of them.
@@ -123,8 +142,13 @@ A task file has this format:
 - **The Depends on column gives the links of the Depends on line, each with the current icon of its task**, for example `[[Task 1]] ✅`.
 - **When the status of a task changes, change its Status line and its icon in the table.**
   Also change its icon in the Depends on column of each row that has a link to it.
-- **The status icons are ⬜ for 尚未開始, 🔄 for 進行中, and ✅ for 完成.**
+- **The status icons are ⬜ for 尚未開始, 🔄 for 進行中, ✅ for 完成, and ⊘ for 取消.**
   The legend below the table gives them.
+- **Use 取消 when you stop a task and do not complete it.**
+  In the Status line, give the cause, for example `取消——改由 [[Task 7]] 處理`.
+  Keep the file of the task and its row in the table.
+  Examine each task that has a link to it in its Depends on line.
+  If you cannot do that task now, change its Depends on line.
 
 ## Commits
 

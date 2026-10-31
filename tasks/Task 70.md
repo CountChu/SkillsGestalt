@@ -73,7 +73,11 @@ InvestForge 的 SKILL.md 也照抄了舊範本，例如 Honour 標籤有 6 份�
 - [[Task 66]]：README 的共用句子，和本 task 是同一件事的另一半。
 - [[Task 38]]：美式拼法的規則；SKILL.md 裡的 Honour 標籤在本 task 改成 Honor。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-30
 

@@ -98,7 +98,11 @@ chinese、write-note 與 write-topic 沒有 README.md：先讀 [skill-writing.md
 - [[Task 32]]：本 task 改到它正在審的 tw-keep-english 草稿（2.3），也讓宣告 `[[ste-custom]]` 的草稿要重跑 Step 3，包括正在審的 report-md-rules（2.5）。
 - [[Task 35]]：建立 ste-custom.md，當時取名 STE customization。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-18
 

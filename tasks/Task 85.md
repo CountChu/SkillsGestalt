@@ -104,7 +104,11 @@
 - [[Task 81]]：術語表的 agency；`agencies` 的名稱照它。
 - 各 Forge 改用 [[keep-english]]，在它們自己的 tasks 做，不在本 task 改。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-30
 

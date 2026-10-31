@@ -106,7 +106,11 @@ asd-ste 的 [ste-rules.md](../.github/common/skills/asd-ste/references/ste-rules
 - [[Task 43]]：把 STE customization 改稱 project-approved words，本 task 再加上 rules。
 - [[Task 49]]：把 false 與 false alarm 收進專案核准詞，草稿第 148 行因此改回 without false alarms，不再是雙重否定。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-18
 

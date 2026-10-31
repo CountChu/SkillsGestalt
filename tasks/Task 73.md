@@ -40,7 +40,11 @@
 - [[keep-english]]：本 task 的來源。
 - [[Task 63]]：task、chore 等新詞要不要加進 keep-English list；清單一改就換版本，[[keep-english]] 要再跑。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-30
 

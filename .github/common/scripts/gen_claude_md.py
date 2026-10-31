@@ -21,6 +21,12 @@ The template is read as written, but for:
                       [keep-english](chores/keep-english.md) when the agency has it, else the same file of
                       the one agency of config.yaml's agencies that has it, linked relative to the root.
                       Without that setting, each line that holds it goes
+  {tasksDir}          tasksDir in config.yaml, or tasks when it is not set: the folder of the tasks
+  {taskSummary}       taskSummary in config.yaml, or dashboard/task-summary.md when it is not set
+  {tasksDir!q}        the same, in double quotes when the value holds a space - for a command;
+  {taskSummary!q}     the two are set apart: the tasks and the summary can each be anywhere, such as in the vault
+  {choreSummary}      choreSummary in config.yaml, or dashboard/chore-summary.md when it is not set
+  {choreSummary!q}    the same, in double quotes when the value holds a space - for a command
   {{name}}            {name}, as it is: for a sentence that has to show a placeholder
   {CLAUDE-local-top}  a line of its own, replaced by the top part of CLAUDE-local.md
   {CLAUDE-local}      a line of its own, replaced by the rest of CLAUDE-local.md
@@ -62,6 +68,8 @@ TOP_SLOT = '{CLAUDE-local-top}'
 CHORE = '{keepEnglishChore}'
 WORDS = '> Technical words: '
 LITERAL = re.compile(r'\{\{([^{}]+)\}\}')
+TASK_PATHS = {'tasksDir': 'tasks', 'taskSummary': 'dashboard/task-summary.md', 'choreSummary': 'dashboard/chore-summary.md'}
+TASK_PATH = re.compile(r'\{(tasksDir|taskSummary|choreSummary)(!q)?\}')
 GROUP = re.compile(r'\{skillGroups\.(\w+)\}')
 LINK_GROUP = re.compile(r'\]\(\{skillGroups\.(\w+)\}')
 
@@ -136,6 +144,9 @@ def render(root: Path) -> str:
 
     kept: list[str] = []
     text = LITERAL.sub(lambda m: (kept.append(m.group(1)), f'\0{len(kept) - 1}\0')[1], text)
+    paths = {k: str(config.get(k) or v) for k, v in TASK_PATHS.items()}
+    text = TASK_PATH.sub(lambda m: f'"{paths[m.group(1)]}"' if m.group(2) and any(c.isspace() for c in paths[m.group(1)])
+                         else paths[m.group(1)], text)
     missing = sorted({m.group(1) for m in GROUP.finditer(text)} - groups.keys())
     if missing:
         fail(f'the template uses skillGroups.{", skillGroups.".join(missing)}, which config.yaml does not set')

@@ -24,6 +24,9 @@ chore 是每次它的條件成立就要做的工作。
   它有開頭說明、表格、圖示的說明，以及執行紀錄。
   先讀這張表，找出該做的 chore。
   再只開那個 chore。
+- **workspace 也可以把摘要表放在別的檔案，例如它的 vault。**
+  這時在 `config.yaml` 設 `choreSummary`。
+  `CLAUDE.md` 會用這個值寫出路徑與檢查的指令。
 - **chore 做的是在做它的那個 workspace 的檔案上的工作。**
   一個 workspace 用了某個 agency 的 skill group，就可以做那個 agency 的 chore。
   workspace 不做用了它的 skill group 的那些 workspace 的 chore。

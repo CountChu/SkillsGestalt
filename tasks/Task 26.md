@@ -67,7 +67,11 @@ PDF 在 [external/ASD-STE100_ISSUE9.pdf](../external/ASD-STE100_ISSUE9.pdf)，�
 - [[Task 78]]：公開到 GitHub 時決定 PDF 不放進公開版，字典 JSON 公開。
 - [[publish-github]]：發佈時排除 `external/` 與任何 `.pdf`；它第 5 章那一行改成本 task 的決定。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-30
 

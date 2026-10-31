@@ -46,7 +46,11 @@
 - [[Task 61]]：規則只寫一次；它的第 4 組是 checking-criteria 重述 README-tmp「只畫執行時讀寫的資料」這一句。
 - [[Task 24]]：其餘 skill 改成新格式時照 README-tmp 寫 README，Dataflow 也照它畫。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-18
 

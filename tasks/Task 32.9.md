@@ -79,7 +79,11 @@
 - [[Task 59]]：同一天把 app 收進 keep-English list，版本改成 261018；alias 這次照樣用這個版號。
 - [[keep-english]]：keep-English list 換版本之後稽核所有中文版；261018 這一版還沒稽核過，下次會一併涵蓋 app 與 alias。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-30
 

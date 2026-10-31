@@ -1,22 +1,30 @@
 #!/usr/bin/env python3
-"""Make a release of this workspace for its public repository: a snapshot of m1, scanned before it leaves.
+"""Make a release of this workspace for its public repository: a snapshot of the work branch, scanned before it leaves.
 
-It serves the private chore publish-github of SkillsGestalt and no other agency: the branches m1 and main,
+It serves the private chore publish-github of SkillsGestalt and no other agency: the branch main,
 the remote origin, the keyword file, the paths it leaves out and the subject of a snapshot are
 SkillsGestalt's, written here as they are. It lives in the common skill group only because a chore has no
 program of its own. Run it from the root of SkillsGestalt.
 
-The public repository carries no history of the working branch m1. Each release is one commit on the
-local branch `main`, whose tree is the tree of m1 with the private paths taken out; only `main` is pushed,
-to `main` of the remote `origin`. After a release m1 starts again from it: the old history of m1 is kept
-in the tag archive/m1-<yymmdd> of the day of the release, and m1 becomes one commit on the release that
-puts back the private paths, so `git diff main m1` shows only them and what is not published yet. Nothing here switches a
-branch or touches the working tree, so other sessions can go on working on m1 while a release is made.
+The work branch is the branch that --work names, by default the branch that is checked out: m1 in the
+workspace, or a different branch in a different clone. It cannot be `main`. Below, WORK stands for it.
+
+The public repository carries no history of the work branch. Each release is one commit on the
+local branch `main`, whose tree is the tree of WORK with the private paths taken out; only `main` is pushed,
+to `main` of the remote `origin`. After a release WORK starts again from it: the old history of WORK is kept
+in the tag archive/WORK-<yymmdd> of the day of the release, and WORK becomes one commit on the release that
+puts back the private paths, so `git diff main WORK` shows only them and what is not published yet. Nothing here switches a
+branch or touches the working tree, so other sessions can go on working on WORK while a release is made.
 
   check     build the tree of the release, scan it, and list what changed since the last release.
             It writes nothing. Exit 0 when the scan finds nothing, 1 when it finds something.
   publish   after a person has read what `check` printed: build the same tree again, scan it again,
-            make the snapshot commit on `main`, push it (unless --no-push), and start m1 again from it.
+            make the snapshot commit on `main`, push it (unless --no-push), and start WORK again from it.
+            Give it the work, the source and the tree that `check` printed, and a summary of the changes.
+
+The message of a snapshot commit is `SkillsGestalt yyyy-mm-dd`, then the summary that --summary or --summary-file gives,
+then the work branch and the commit that the snapshot comes from. `check` lists the commits of WORK since
+the last release, to write the summary from.
 
 The scan looks at the text of every file of the tree for:
 
@@ -50,9 +58,10 @@ from pathlib import Path
 EXCLUDED = ['external', '.github/external']
 PRIVATE_PATH = re.compile(r'^(checkpoints/|external/|\.github/external/|config\.yaml$)|\.mermaid\.html$|\.pdf$', re.I)
 BRANCH = 'main'
-WORK = 'm1'
 REMOTE, REMOTE_BRANCH = 'origin', 'main'
 KEYWORDS = 'publish-keywords.local.txt'
+# The commit that starts the work branch again after a release: it is not a change, so it is not in the list of commits.
+RESTART = re.compile(r'^chore publish-github: \S+ starts again from ')
 
 # The last label of the domain is letters, so a package version such as mermaid@11.4.1 is not taken for one.
 EMAIL = re.compile(r'[A-Za-z0-9._%+-]+@((?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,})(?![A-Za-z0-9.-])')
@@ -135,32 +144,51 @@ def last_release() -> str | None:
     return r.stdout.strip() or None
 
 
-def restart_work(source: str, release: str, day: datetime.date, co_author: str | None) -> None:
-    """Start WORK again from the release, when WORK is still at the source of it.
+def work_branch(name: str | None) -> str:
+    """The work branch: `name`, or the branch that is checked out. Never BRANCH, never a detached HEAD."""
+    if name is None:
+        r = subprocess.run(['git', 'symbolic-ref', '-q', '--short', 'HEAD'], capture_output=True, text=True)
+        name = r.stdout.strip()
+        if not name:
+            print('HEAD is detached: check out the work branch, or give --work', file=sys.stderr)
+            sys.exit(2)
+    if name == BRANCH:
+        print(f'{BRANCH} has only the releases and cannot be the work branch: '
+              f'check out the work branch, or give --work', file=sys.stderr)
+        sys.exit(2)
+    if subprocess.run(['git', 'rev-parse', '--verify', '-q', f'refs/heads/{name}'], capture_output=True).returncode:
+        print(f'{name}: no such local branch', file=sys.stderr)
+        sys.exit(2)
+    return name
+
+
+def restart_work(work: str, source: str, release: str, day: datetime.date, co_author: str | None) -> None:
+    """Start the work branch again from the release, when it is still at the source of it.
 
     The new commit has the tree of the source, so the working tree and the index stay as they are.
     One tag is kept for each day: a second release on the same day moves the tag of that day.
     """
-    tip = git('rev-parse', f'refs/heads/{WORK}').strip()
+    tip = git('rev-parse', f'refs/heads/{work}').strip()
     if tip != source:
-        print(f'{WORK} is at {tip[:7]}, not at the source {source[:7]}: it keeps its history')
+        print(f'{work} is at {tip[:7]}, not at the source {source[:7]}: it keeps its history')
         return
-    tag = f'archive/{WORK}-{day:%y%m%d}'
+    tag = f'archive/{work}-{day:%y%m%d}'
     r = subprocess.run(['git', 'rev-parse', '--verify', '-q', f'refs/tags/{tag}^{{commit}}'], capture_output=True, text=True)
     if r.stdout.strip():
         print(f'{tag} moves: it was at {r.stdout.strip()[:7]}, whose history git gc may now remove')
-    git('tag', '-a', '-f', tag, '-m', f'The history of {WORK} up to the release {release[:7]}', source)
-    message = (f'chore publish-github: {WORK} starts again from {BRANCH} {release[:7]} - the files that are never published\n\n'
+    git('tag', '-a', '-f', tag, '-m', f'The history of {work} up to the release {release[:7]}', source)
+    message = (f'chore publish-github: {work} starts again from {BRANCH} {release[:7]} - the files that are never published\n\n'
                f'{", ".join(e + "/" for e in EXCLUDED)}, which the snapshots leave out. '
                f'The history before it is in the tag {tag}.\n')
     if co_author:
         message += f'\nCo-Authored-By: {co_author}\n'
     commit = git('commit-tree', f'{source}^{{tree}}', '-p', release, '-F', '-', data=message.encode()).strip()
-    git('update-ref', f'refs/heads/{WORK}', commit, source)
-    print(f'{WORK}: {commit[:7]} on {release[:7]}; the old history is in {tag}')
+    git('update-ref', f'refs/heads/{work}', commit, source)
+    print(f'{work}: {commit[:7]} on {release[:7]}; the old history is in {tag}')
 
 
-def report(source: str, tree: str, keywords: list[str]) -> bool:
+def report(work: str, source: str, tree: str, keywords: list[str]) -> bool:
+    print(f'work:   {work}')
     print(f'source: {source[:12]} ({git("log", "-1", "--format=%s", source).strip()[:70]})')
     print(f'tree:   {tree}')
     print(f'keywords: {len(keywords)} from {KEYWORDS}')
@@ -178,6 +206,11 @@ def report(source: str, tree: str, keywords: list[str]) -> bool:
         print(f'changes since the last release {prev[:7]}: {len(changes)} file(s)')
         for c in changes:
             print(f'  {c}')
+        commits = [l for l in git('log', '--reverse', '--format=%h %s', f'{prev}..{source}').splitlines()
+                   if not RESTART.match(l.split(' ', 1)[1])]
+        print(f'commits of {work} since the last release: {len(commits)}')
+        for l in commits:
+            print(f'  {l}')
     return not findings
 
 
@@ -185,30 +218,44 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest='cmd', required=True)
     c = sub.add_parser('check', help='build and scan the tree of the release; write nothing')
-    c.add_argument('--source', default=WORK, help=f'the commit to release (default: {WORK})')
+    c.add_argument('--work', help='the work branch (default: the branch that is checked out)')
+    c.add_argument('--source', help='the commit to release (default: the tip of the work branch)')
     p = sub.add_parser('publish', help='make the snapshot commit on main and push it')
+    p.add_argument('--work', required=True, help='the work branch that check printed')
     p.add_argument('--source', required=True, help='the commit that check printed')
     p.add_argument('--tree', required=True, help='the tree that check printed')
+    m = p.add_mutually_exclusive_group(required=True)
+    m.add_argument('--summary', help='the summary of the changes for the body of the commit message')
+    m.add_argument('--summary-file', type=Path,
+                   help='a UTF-8 file with the summary; use it for more than one line, because a .bat shim of python '
+                        'breaks an argument at its line ends. A blank line divides paragraphs')
     p.add_argument('--co-author', help='a Co-Authored-By trailer for the commit message, "Name <email>"')
     p.add_argument('--no-push', action='store_true', help='make the commit, but do not push')
     for s in (c, p):
         s.add_argument('--keywords', type=Path, default=Path(KEYWORDS), help=f'the keyword file (default: {KEYWORDS})')
     a = ap.parse_args()
 
+    summary = getattr(a, 'summary', None)
+    if getattr(a, 'summary_file', None):
+        summary = a.summary_file.read_text(encoding='utf-8')
+    if a.cmd == 'publish' and not summary.strip():
+        print('--summary is empty: write what changed since the last release', file=sys.stderr)
+        sys.exit(2)
     keywords = read_keywords(a.keywords)
-    source = git('rev-parse', '--verify', f'{a.source}^{{commit}}').strip()
+    work = work_branch(a.work)
+    source = git('rev-parse', '--verify', f'{a.source or work}^{{commit}}').strip()
     tree = build_tree(source)
     if a.cmd == 'check':
-        sys.exit(0 if report(source, tree, keywords) else 1)
+        sys.exit(0 if report(work, source, tree, keywords) else 1)
 
     if tree != a.tree:
         print(f'the tree of {source[:12]} is {tree}, not {a.tree}: run check again', file=sys.stderr)
         sys.exit(2)
-    if not report(source, tree, keywords):
+    if not report(work, source, tree, keywords):
         sys.exit(1)
     prev = last_release()
     day = datetime.date.today()
-    message = f'SkillsGestalt {day.isoformat()}\n\nFrom m1 {source[:12]}.\n'
+    message = f'SkillsGestalt {day.isoformat()}\n\n{summary.strip()}\n\nFrom {work} {source[:12]}.\n'
     if a.co_author:
         message += f'\nCo-Authored-By: {a.co_author}\n'
     commit = git('commit-tree', tree, *(['-p', prev] if prev else []), '-F', '-', data=message.encode()).strip()
@@ -219,7 +266,7 @@ def main() -> None:
     else:
         git('push', REMOTE, f'{BRANCH}:{REMOTE_BRANCH}')
         print(f'pushed: {BRANCH} -> {REMOTE}/{REMOTE_BRANCH}')
-    restart_work(source, commit, day, a.co_author)
+    restart_work(work, source, commit, day, a.co_author)
 
 
 if __name__ == '__main__':

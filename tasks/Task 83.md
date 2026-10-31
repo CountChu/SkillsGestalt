@@ -95,7 +95,11 @@
 - [[Task 82]]：建立 agency-rules.md 與 CLAUDE.md 的 `@` import；本 task 確保它的路徑對。
 - InvestForge 與 BookMaster 的 CLAUDE.md 接上 `check_claude_md.py`，在它們自己的 tasks 做。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-30
 

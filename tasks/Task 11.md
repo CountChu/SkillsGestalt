@@ -57,7 +57,11 @@ RSDC-Standard-tw 歷史條目裡的 7 處「範本」也改了，不發新版本
 
 與其他項的關係：Task 9（另外三份 twin 的修正）與 Task 10（chinese skill 承接 RSDC twin 的規則）也都在動 twin 與 chinese skill，可以排在同一次處理。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-18
 

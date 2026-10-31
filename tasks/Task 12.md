@@ -133,7 +133,11 @@ HTTP API 與 Mountable Handler（對 CLI 與 Rule Constants）；Directory Struc
 
 後續工作另開 [[Task 17]]（gen-rsdc-app 與 imp-app 跟上範本、執行 RSDC Checker）與 [[Task 18]]（已寫好的 RSDC 跟上範本）。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-18
 

@@ -80,7 +80,11 @@ InvestForge 就是照這些 step 建立的 Forge。
 
 —
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-31
 
@@ -99,7 +103,7 @@ InvestForge 就是照這些 step 建立的 Forge。
 | --- | --- | --- | --- | --- |
 | [[Task 1]] | 2026-10-31 | 接上 SkillsGestalt | 🔄 | — |
 
-Status：⬜ 尚未開始　🔄 進行中　✅ 完成。
+Status：⬜ 尚未開始　🔄 進行中　✅ 完成　⊘ 取消。
 ```
 
 第 6 步的 `dashboard/chore-summary.md`：

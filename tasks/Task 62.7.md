@@ -43,7 +43,11 @@
 - Task 11 @ InvestForge：建立 InvestForge 的依賴巡檢 chore；建好、跑過一次之後，本 task 才能做。
 - [[rerecord-ste-custom]]：第 1 步跟著改。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-30
 

@@ -41,7 +41,11 @@ gen-rsdc-skill 的 [SKILL.md](../.github/common/skills/gen-rsdc-skill/SKILL.md) 
 - [[Task 18]]：它的「驗證」要求引用 RSDC 的每一份 SKILL.md 都 PASS，gen-rsdc-skill 這一項要等本 task。
 - [[Task 77]]：compile-skill 的 SKILL.md 不再連到 SkillCompiler-RSDC，`--skill` 因此判 FAIL。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-20
 

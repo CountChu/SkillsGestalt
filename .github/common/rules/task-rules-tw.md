@@ -4,7 +4,7 @@
 > [[ste-custom]]  `2026-10-30`  `8cc2e2061175`
 
 > 本檔案以 ASD-STE100 Simplified Technical English（STE）第 9 版寫成。
-> 技術用字：blob、chapter、chore、column、command、commit、content、day、directory、document、file、format、heading、hunk、icon、index、legend、line、link、list、lowercase、note、paragraph、path、prefix、repository、root、section、sentence、session、shell、skill、stage、status、subject、summary、table、term、text、title、tree line、twin、vault、wikilink、word、workspace。
+> 技術用字：blob、chapter、chore、column、command、commit、content、day、directory、document、file、format、heading、hunk、icon、index、legend、line、link、list、lowercase、note、paragraph、path、prefix、repository、root、section、sentence、session、shell、skill、stage、status、subject、summary、table、term、text、title、topic、tree line、twin、vault、wikilink、word、workspace。
 
 這些規則說明怎麼寫一個 workspace 的 task，以及怎麼維護它們的摘要表。
 task 是一次 session 結束之後仍要繼續、而且會完成的工作。
@@ -21,6 +21,13 @@ task 是一次 session 結束之後仍要繼續、而且會完成的工作。
   它有開頭說明、表格，以及狀態圖示的圖例。
   先讀這張表。
   再只開你需要的那個 task。
+- **workspace 也可以把 task 放在別的目錄，例如它的 vault。**
+  這時在 `config.yaml` 設 `tasksDir`。
+- **workspace 也可以把摘要表放在別的檔案。**
+  這時在 `config.yaml` 設 `taskSummary`。
+  摘要表可以放在 task 以外的目錄。
+  這兩個值可以只設一個，也可以兩個都設。
+  `CLAUDE.md` 會用這兩個值寫出路徑與檢查的指令。
 - **workspace 只放它自己的 task。**
   task 記錄的是在它自己 workspace 的檔案上做的工作。
   一個 workspace 用了另一個 workspace 的 skill group，就可以提到那個 workspace 的 task。
@@ -50,7 +57,7 @@ task 檔的格式如下：
 ```
 # Task N - 標題
 
-**Status**：<尚未開始|進行中|完成>——<一行結論>
+**Status**：<尚未開始|進行中|完成|取消>——<一行結論>
 **Raised**：yyyy-mm-dd，<為什麼提出>
 **Depends on**：[[Task M]]、[[Task K]]，沒有就寫 —
 
@@ -59,17 +66,29 @@ task 檔的格式如下：
 ## 3. 要做的
 ## 4. 驗證
 ## 5. 與其他 task 的關係
-## 6. 日誌
+## 6. 知識
+### 適合寫成新 topic
+### 適合併進現有 topic
+### 不算知識
+## 7. 日誌
 ### yyyy-mm-dd
 ```
 
-- **六個 `##` 章依序編號 1 到 6，章名就是這些。**
+- **七個 `##` 章依序編號 1 到 7，章名就是這些。**
   沒有內容的章，寫 `—`。
   不要拿掉這一章。
 - **在 `2. 現況` 裡，用 `###` 標題把內容分成小節。**
   Status 行只寫一行簡短的結論。
   其他內容寫在 `2. 現況` 與 `3. 要做的`。
-- **在 `6. 日誌` 裡，每天寫一個 `### yyyy-mm-dd` section，記錄那一天的改動。**
+- **在 `6. 知識` 裡，寫這個 task 中可以寫進 `write-topic` 的 topic 的內容。**
+  用格式裡的三個 `###` section。
+  在 `適合寫成新 topic` 裡，寫新 topic 的標題、內容與來源。
+  在 `適合併進現有 topic` 裡，寫要併進哪個 topic，以及要補的內容。
+  在 `不算知識` 裡，寫只屬於這次工作的事實，例如某一個檔案的路徑。
+  該由另一個 task 修的工具問題，也寫在那裡。
+- **`6. 知識` 的一個項目寫進 topic 之後，在它前面加上 ✅，並加一個連到那個 topic 的 wikilink。**
+  還沒檢視過這個 task 的這類內容時，這一章只寫 `—`。
+- **在 `7. 日誌` 裡，每天寫一個 `### yyyy-mm-dd` section，記錄那一天的改動。**
   新的日期放在前面。
   同一天再改這個 task，就補在那一天的 section。
   檔案裡最後一個日期 section 一定是 Raised 行的日期。
@@ -103,7 +122,7 @@ task 檔的格式如下：
 - **只靠編號表示 sub task 屬於哪個 task。**
   不要為此另加一行。
   task 的 Depends on 行不列它的 sub task。
-- **sub task 的格式和 task 一樣**：Status、Raised、Depends on 三行，以及六章。
+- **sub task 的格式和 task 一樣**：Status、Raised、Depends on 三行，以及七章。
 - **sub task 的內容只寫在那個 sub task。**
   之後的紀錄也只寫在那裡。
   task 本身只留 sub task 清單，以及所有 sub task 共用的規則與決定。
@@ -123,8 +142,13 @@ task 檔的格式如下：
 - **Depends on 欄重複 Depends on 行的連結，每個連結後面接那個 task 現在的圖示**，例如 `[[Task 1]] ✅`。
 - **task 的狀態改變時，改它自己的 Status 行與表中的圖示。**
   每個連到它的列，Depends on 欄中它的圖示也要改。
-- **狀態圖示是：⬜ 尚未開始、🔄 進行中、✅ 完成。**
+- **狀態圖示是：⬜ 尚未開始、🔄 進行中、✅ 完成、⊘ 取消。**
   表下方的圖例列出它們。
+- **task 停下來、不會完成時，用「取消」。**
+  在 Status 行寫明原因，例如 `取消——改由 [[Task 7]] 處理`。
+  保留這個 task 的檔案，以及它在表中的那一列。
+  檢查 Depends on 行連到它的每個 task。
+  那個 task 現在不能做時，改它的 Depends on 行。
 
 ## Commits
 

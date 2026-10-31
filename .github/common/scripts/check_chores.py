@@ -272,11 +272,13 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--summary', required=True, type=Path, help='the chore-summary.md to check')
     ap.add_argument('--chores-dir', type=Path, help='the folder of the <name>.md files (default: the summary own folder)')
-    ap.add_argument('--config', type=Path, help='the config.yaml whose agencies to look in (default: the one beside the folder of the summary)')
+    ap.add_argument('--config', type=Path, help='the config.yaml whose agencies to look in (default: the one beside the folder of the summary, else the one in the current folder)')
     ap.add_argument('--vault', type=Path, help='the folder wikilinks resolve in (default: nearest ancestor with .obsidian)')
     a = ap.parse_args()
     folder = a.chores_dir or a.summary.parent
     config = a.config or a.summary.resolve().parent.parent / 'config.yaml'
+    if not a.config and not config.is_file() and Path('config.yaml').is_file():
+        config = Path('config.yaml')  # a summary outside the workspace, such as in the vault: run from the root
     try:
         lines, rows, after = read_summary(a.summary)
         if folder.exists() and not folder.is_dir():

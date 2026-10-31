@@ -65,7 +65,11 @@ system/
 - **[[Task 18.2]]**（2026-10-20）：對齊 SkillCompiler-RSDC，本 task 引用的節號同一次改成對齊後的節號。
   §2.1 *Artifact Types and Flow* 依引用的內容改成 §2.1 *Terminology* 或 §2.2 *Artifact Types*，§2.4 *CLI* 改成 §2.7 *CLI*，§2.1 *Active Prompt Rule for Cognitive Steps* 改成 §2.7 *CLI* 與 §2.8 *Invariants*。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-20
 

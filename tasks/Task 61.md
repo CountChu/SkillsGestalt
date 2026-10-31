@@ -132,7 +132,11 @@
 - [[Task 56]]：md-style 巡檢的 chore；本 task 做完之後，決定重複檢查要不要併進去。
 - [[Task 32.10]]：審 README-tmp 時決定保留規則的名稱 scripted-versus-not，skill-writing 補上這個名稱交給本 task（要做的第 5 項）。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-30
 

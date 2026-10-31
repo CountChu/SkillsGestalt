@@ -46,7 +46,11 @@ check-skill 現在要求每個 skill 都有一份以 [README-tmp.md](../.github/
 
 - [[Task 54]]：依賴本 task——其餘 skill 改成新格式之後，才建立 Chore 3，定期以 check-skill 檢查每個 skill。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-30
 

@@ -47,7 +47,11 @@ program 也是這樣：RSDC-Standard、tw-keep-english 與 skill-writing 的草�
 
 —
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-18
 

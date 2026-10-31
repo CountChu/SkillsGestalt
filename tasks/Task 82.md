@@ -81,7 +81,11 @@
 - [[Task 81]]：術語表定義了 agency、Gestalt 與 Forge；共用檔用這些名稱。
 - InvestForge 與 BookMaster 的 CLAUDE.md 要改成引用共用檔，在它們自己的 tasks 開 task，不在本 task 改。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-30
 

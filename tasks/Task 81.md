@@ -62,7 +62,11 @@ InvestForge 透過 `config.yaml` 的 `skillGroups.common` 使用 SkillsGestalt �
 - InvestForge 的文件若要改，在 InvestForge 自己的 tasks 開 task，不在本 task 改。
 - [[keep-english]]：keep-English list 換成 261030 版，下一次 keep-English 稽核該做了。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-30
 

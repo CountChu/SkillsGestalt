@@ -176,7 +176,11 @@ reformat-md 沒有 README.md，改它時照 [skill-writing.md](../.github/common
 - [[Task 32]]：本 task 的來源；它依賴本 task，本 task 完成之前不審核其餘 10 份草稿。
 - [[Task 31]]：產生 11 份草稿；本 task 加上拼法檢查之後，要對它們重跑。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-19
 

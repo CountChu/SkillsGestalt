@@ -43,7 +43,11 @@
 - [[Task 62.1]]：把 keep-English 的要求寫進 task-rules。
 - [[keep-english]]：稽核中文版的 keep-English 譯法；task 檔不在它的範圍。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-30
 

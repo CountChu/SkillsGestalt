@@ -192,7 +192,11 @@ task-summary.md 的導言與圖例已經照這個寫法改了（2026-10-11）。
 - reformat_md.py 的兩個斷句問題：[[Task 36]]。
 - StopPriceChecker-RSDC-tw.md 的 2 條 shared-line WARN：[[Task 32]]。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-18
 

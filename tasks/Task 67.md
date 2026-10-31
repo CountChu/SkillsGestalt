@@ -73,7 +73,11 @@ SKILL-tmp 是 [[Task 32]] 第一份有 frontmatter 的草稿；以後替任何 S
 - [[Task 32.11]]：SKILL-tmp 的草稿；它的 Step 7 要等本 task 做完。
 - [[Task 62.7]]：也要改 asd-ste 的 Step 7，兩個 task 會改到同一份 SKILL.md 與 README；本 task 做完時它還沒開始。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-19
 

@@ -96,7 +96,11 @@ compile-skill 的 `Tasks.md` 是 2026-10-04 寫的，比這個 workspace 的第�
 - **[[Task 70]]**：它把 SKILL.md 的共用句子換成 STE template 的寫法，也會改 compile-skill 的 SKILL.md 與中文版；兩個 task 不要同時改這兩份檔。
 - **[[Task 9]]**（2026-10-10 完成）：第 27 行的表格有連到 Tasks-tw.md 的 Markdown link，刪檔時照「要做的」第 4 點改。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-20
 

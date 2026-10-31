@@ -54,7 +54,11 @@
 - [[Task 18.2]]：使用者在這裡提出，並決定 Compiler 留在 SkillCompiler 的系統內。
 - [[Task 77]]：compile SOP 只寫 agent 的判斷，程式由 SKILL.md 執行；RSDC 3.1 那兩句要不要跟著改，留給本 task。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-21
 

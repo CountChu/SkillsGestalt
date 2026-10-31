@@ -116,7 +116,7 @@ task 檔的格式與摘要表的維護方式，見 [task-rules.md](../.github/co
 | [[Task 2]] | 2026-10-09 | 兩份 RSDC 範本的 Naming and Data Structures 對齊標準 | ✅ | — |
 | [[Task 1]] | 2026-10-09 | 決定 Skill Source 是否改名為 Skill MD File | ✅ | — |
 
-Status：⬜ 尚未開始　🔄 進行中　✅ 完成。
+Status：⬜ 尚未開始　🔄 進行中　✅ 完成　⊘ 取消。
 每一項的細節（例如「尚未決定」）寫在它自己的 **Status** 行。
 Depends on：這個 task 開始之前要先完成的 task，後面的圖示是那個 task 現在的狀態；— 表示沒有。
 空號：18.1、18.3、18.4、18.5、18.6、28、29、30、37。

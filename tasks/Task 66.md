@@ -41,7 +41,11 @@ gen-skill 寫新 skill 的 `README.md` 時，整份抄 [README-tmp.md](../.githu
 - [[Task 32.11]]：SKILL-tmp 取代之後，SKILL.md 的共用句子交給 [[Task 70]]。
 - [[Task 70]]：SKILL.md 的共用句子，和本 task 是同一件事的另一半。
 
-## 6. 日誌
+## 6. 知識
+
+—
+
+## 7. 日誌
 
 ### 2026-10-19
 
