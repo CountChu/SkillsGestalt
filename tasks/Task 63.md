@@ -10,7 +10,7 @@
 - [[Task 62.1]] 的 `task-rules-tw.md` 與 `chore-rules-tw.md` 留英文的新詞：task、sub task、chore、wikilink、vault、session，以及 git 的 stage、index、blob、HEAD。
 - 清單已有 stage 一列，但它說的是 RSDC 的 Dataflow 裡的 stage，不是 git 的 stage。
 - 已有先例：13 份中文版把 vault 留英文、5 份把 session 留英文，清單都沒有它們的列。
-- 清單一改就換版本；[[Chore 2]] 在清單換版本之後，要對所有中英對照稽核一次。
+- 清單一改就換版本；[[keep-english]] 在清單換版本之後，要對所有中英對照稽核一次。
 
 ## 2. 現況
 
@@ -36,9 +36,13 @@
 ## 5. 與其他 task 的關係
 
 - [[Task 62.1]]：本 task 的來源。
-- [[Chore 2]]：清單換版本之後要跑。
+- [[keep-english]]：清單換版本之後要跑。
 
 ## 6. 日誌
+
+### 2026-10-30
+
+- [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
 
 ### 2026-10-18
 

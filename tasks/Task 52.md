@@ -41,7 +41,7 @@
 4. README 的 When the Skill Is Changed：draft.py 與 ste-custom.md 兩處、已寫出的產出，以及改完要跑的檢查。
 5. 三份中文版照 chinese skill 跟著改。
 6. 照 README 跑它列出的檢查。
-   ste-custom.md 這次也改了，22 份照新的做法，等當天最後一次修改之後由 `recheck` 一次重記，另一個 commit；這件例行工作由 [[Chore 1]] 接手。
+   ste-custom.md 這次也改了，22 份照新的做法，等當天最後一次修改之後由 `recheck` 一次重記，另一個 commit；這件例行工作由 [[rerecord-ste-custom]] 接手。
 
 ## 4. 驗證
 
@@ -53,9 +53,13 @@
 
 - [[Task 50]]：每份 STE 檔都宣告 `[[ste-custom]]`，所以 ste-custom.md 一改就是 22 份。
 - [[Task 51]]、[[Task 32.6]]：2026-10-18 另外兩次修改 ste-custom.md。
-- [[Chore 1]]：執行本 task 定下的集中重記，每次的結果記在那裡；由 [[Task 53]] 建立。
+- [[rerecord-ste-custom]]：執行本 task 定下的集中重記，每次的結果記在那裡；由 [[Task 53]] 建立。
 
 ## 6. 日誌
+
+### 2026-10-30
+
+- [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
 
 ### 2026-10-18
 

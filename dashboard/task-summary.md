@@ -7,6 +7,18 @@ task 檔的格式與摘要表的維護方式，見 [task-rules.md](../.github/co
 
 | Task | Raised | Title | Status | Depends on |
 | --- | --- | --- | --- | --- |
+| [[Task 88]] | 2026-10-31 | 讓別的 agency 能自己接上 SkillsGestalt | ✅ | — |
+| ├─ [[Task 88.1]] | 2026-10-31 | Forge 用的 config.yaml 範本 | ✅ | — |
+| ├─ [[Task 88.2]] | 2026-10-31 | 接上 SkillsGestalt 的指南 forge-setup.md | ✅ | [[Task 88.1]] ✅ |
+| └─ [[Task 88.3]] | 2026-10-31 | 改了會影響 Forge 的東西時怎麼通知 | ✅ | — |
+| [[Task 87]] | 2026-10-30 | chore 不放自己的程式，只呼叫 skill group 裡的 | ✅ | [[Task 86]] ✅ |
+| [[Task 86]] | 2026-10-30 | chore 改用名稱，不用編號，和 skill 一樣 | ✅ | [[Task 85]] ✅ |
+| [[Task 85]] | 2026-10-30 | 讓 Forge 像使用 skill 一樣使用本 agency 的 chore，以 {agencies.X} 定位 | ✅ | — |
+| [[Task 84]] | 2026-10-30 | 由 CLAUDE-tmp.md 與 CLAUDE-local.md 產生 CLAUDE.md | ✅ | [[Task 82]] ✅、[[Task 83]] ✅ |
+| [[Task 83]] | 2026-10-30 | CLAUDE.md 裡 common 的路徑要和 config.yaml 一致 | ✅ | [[Task 82]] ✅ |
+| [[Task 82]] | 2026-10-30 | 把每個 agency 共通的 CLAUDE.md 規則抽成 common 的一份規則檔 | ✅ | — |
+| [[Task 81]] | 2026-10-30 | 術語表：Agency、Gestalt 與 Forge | ✅ | — |
+| [[Task 80]] | 2026-10-30 | 根目錄的 CLAUDE.md 改寫成英文 | ✅ | — |
 | [[Task 79]] | 2026-10-30 | 本機分支改名：master 改為 m1，public 改為 main | ✅ | — |
 | [[Task 78]] | 2026-10-30 | 把 SkillsGestalt 公開到 GitHub，排除 checkpoints 與公司內部資訊 | ✅ | — |
 | [[Task 77]] | 2026-10-20 | 拆出 SKILL-Compile.md，並替 compile-skill 寫 README | ✅ | — |
@@ -74,7 +86,7 @@ task 檔的格式與摘要表的維護方式，見 [task-rules.md](../.github/co
 | └─ [[Task 32.11]] | 2026-10-12 | SKILL-tmp | ✅ | [[Task 64]] ✅、[[Task 67]] ✅ |
 | [[Task 31]] | 2026-10-12 | 交給 asd-ste 為 .github/common 的 references、rules、templates 產生 STE 草稿 | ✅ | [[Task 33]] ✅、[[Task 34]] ✅、[[Task 35]] ✅ |
 | [[Task 27]] | 2026-10-12 | 確認在桌面版刪除 session 時是否會觸發 SessionEnd hook | ⬜ | — |
-| [[Task 26]] | 2026-10-12 | 決定 ASD-STE100 規格的 PDF 是否留在 git 中 | ⬜ | — |
+| [[Task 26]] | 2026-10-12 | 決定 ASD-STE100 規格的 PDF 是否留在 git 中 | ✅ | — |
 | [[Task 25]] | 2026-10-12 | 舊檔中的 `___PLACEHOLDER___` 一律視為錯誤 | ✅ | [[Task 15]] ✅ |
 | [[Task 24]] | 2026-10-11 | 把其餘 skill 改成 SKILL.md 與 README.md 的新格式 | ⬜ | [[Task 22]] ✅、[[Task 32]] ✅ |
 | [[Task 23]] | 2026-10-11 | 建立 asd-ste skill：把 Markdown 改寫成 ASD-STE100 STE | ✅ | — |

@@ -48,10 +48,14 @@
 
 - [[Task 24]]：本 task 依賴它——其餘 skill 改成新格式之後，檢查才有意義。
 - [[Task 32]]：Task 24 依賴它——2.10、2.11 以 STE 版取代 README-tmp 與 SKILL-tmp。
-- [[Task 53]]：建立 chore 制度；[[Chore 1]] 與 [[Chore 2]] 是前兩個 chore。
+- [[Task 53]]：建立 chore 制度；[[rerecord-ste-custom]] 與 [[keep-english]] 是前兩個 chore。
 - [[Task 40]]：記下 asd-ste 那一列的兩個 ❌，等使用者決定 description 怎麼改。
 
 ## 6. 日誌
+
+### 2026-10-30
+
+- [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
 
 ### 2026-10-20
 

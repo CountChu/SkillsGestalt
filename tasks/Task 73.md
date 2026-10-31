@@ -1,7 +1,7 @@
 # Task 73 - 照 keep-English 稽核改中文版的譯法：261018 版
 
-**Status**：尚未開始——2026-10-20 [[Chore 2]] 的稽核找到 19 份中文版、264 行警告，還沒改。
-**Raised**：2026-10-20，[[Chore 2]] 第一次稽核：keep-English list 換成 261018 版之後，沒被改到的中文版還有清單不要的譯法。
+**Status**：尚未開始——2026-10-20 [[keep-english]] 的稽核找到 19 份中文版、264 行警告，還沒改。
+**Raised**：2026-10-20，[[keep-english]] 第一次稽核：keep-English list 換成 261018 版之後，沒被改到的中文版還有清單不要的譯法。
 **Depends on**：—
 
 ## 1. 背景
@@ -37,11 +37,15 @@
 
 ## 5. 與其他 task 的關係
 
-- [[Chore 2]]：本 task 的來源。
-- [[Task 63]]：task、chore 等新詞要不要加進 keep-English list；清單一改就換版本，[[Chore 2]] 要再跑。
+- [[keep-english]]：本 task 的來源。
+- [[Task 63]]：task、chore 等新詞要不要加進 keep-English list；清單一改就換版本，[[keep-english]] 要再跑。
 
 ## 6. 日誌
 
+### 2026-10-30
+
+- [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
+
 ### 2026-10-20
 
-- 建立：[[Chore 2]] 第一次稽核之後開的。
+- 建立：[[keep-english]] 第一次稽核之後開的。

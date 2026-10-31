@@ -1,6 +1,6 @@
 # Task 78 - 把 SkillsGestalt 公開到 GitHub，排除 checkpoints 與公司內部資訊
 
-**Status**：完成——2026-10-30 公開到 GitHub；之後的發佈由 [[Chore 3]] 做，每次發佈前掃描、使用者確認之後才推。
+**Status**：完成——2026-10-30 公開到 GitHub；之後的發佈由 [[publish-github]] 做，每次發佈前掃描、使用者確認之後才推。
 **Raised**：2026-10-30，使用者要把 SkillsGestalt 公開到自己的 GitHub，名稱 SkillsGestalt，排除 `checkpoints/`。
 **Depends on**：—
 
@@ -81,8 +81,8 @@
 
 ### 之後的發佈
 
-- 「之後怎麼防止公司資訊再寫進 repo」由 [[Chore 3]] 處理：每次發佈前，[publish_snapshot.py](../scripts/publish_snapshot.py) 掃描要公開的 tree，使用者看過變動、同意之後才推。
-- 原本記在這裡的發佈步驟搬到 [[Chore 3]]，改由程式做。
+- 「之後怎麼防止公司資訊再寫進 repo」由 [[publish-github]] 處理：每次發佈前，[publish_snapshot.py](../.github/common/scripts/publish_snapshot.py) 掃描要公開的 tree，使用者看過變動、同意之後才推。
+- 原本記在這裡的發佈步驟搬到 [[publish-github]]，改由程式做。
 - 掃描用的工作代號放在不進 git 的 `publish-keywords.local.txt`，因為這些名稱本身就不能公開。
 
 ## 4. 驗證
@@ -100,7 +100,7 @@
 
 ## 5. 與其他 task 的關係
 
-- [[Chore 3]]：本 task 建立的發佈 chore。
+- [[publish-github]]：本 task 建立的發佈 chore。
 - [[Task 79]]：之後把本機分支 `master` 改名為 `m1`、`public` 改名為 `main`；本 task 的紀錄照當時的名稱。
 - [[Task 26]]：ASD-STE100 的 PDF 不放進公開版，記在它的日誌。
 
@@ -115,5 +115,7 @@
 - 工作 vault 的名稱換成 `MyVault`，8 份 README 重記範本的指紋；「要判斷是否算內部資訊的」一節處理完，拿掉。
 - 決定只推 `public` 分支上的快照，以及作者、本機專用的檔案、README 與 LICENSE、要排除的路徑；`config.yaml` 與預覽檔不再進 git，加上 README、LICENSE 與 `config.example.yaml`。
 - 第一次發佈：以 master 的 `9629f0a` 做出快照 `b2c697a`，建立公開的 repo，推到 `main`；GitHub 上確認只有 1 個 commit，也沒有排除的路徑。
-- 建立 [[Chore 3]] 與 [publish_snapshot.py](../scripts/publish_snapshot.py)，發佈的步驟搬過去；本 task 完成。
+- 建立 [[publish-github]] 與 [publish_snapshot.py](../.github/common/scripts/publish_snapshot.py)，發佈的步驟搬過去；本 task 完成。
 - [[Task 79]] 把本機分支改名：`master` 改為 `m1`，`public` 改為 `main`；本檔的紀錄照當時的名稱，只在「與其他 task 的關係」加上它。
+- [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
+- [[Task 87]] 把 `publish_snapshot.py` 搬進 `.github/common/scripts/`：本檔連到它的連結改成新的路徑。

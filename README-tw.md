@@ -3,6 +3,13 @@
 共用的 agent skill、它們遵循的規則，以及檢查它們的 script。
 英文版是 [README.md](README.md)。
 
+## Gestalt and Forge
+
+SkillsGestalt 是 Gestalt：以 skill 本身為主題的 agency。
+以其他主題為主的 agency，例如 InvestForge，是 Forge，它使用本 repository 的 skill。
+[glossary.md](.github/common/references/glossary.md) 說明這些 term。
+要建立一個 Forge，照 [forge-setup.md](.github/common/references/forge-setup.md) 做。
+
 ## What Is Here
 
 - [.github/common/skills/](.github/common/skills/)：skill，每個 skill 一個資料夾。

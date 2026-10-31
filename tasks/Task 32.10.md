@@ -24,7 +24,7 @@
 - **gen-skill 會抄進範本的 STE 檔頭**（2026-10-18）：gen-skill 的 Step 5 整份抄 README 範本，header note 兩行會留在新的 README，把它標成 STE 檔。
   使用者決定另開 [[Task 64]] 改 gen-skill，在本草稿取代原檔之前做完；SKILL-tmp（[[Task 32.11]]）也一樣。
 - **其他只列進審核重點**：第 22 行把並列寫成因果、第 42 行與第 179–180 行的 so that 變成 thus、第 107 行會抄進每份 README 的句子、第 170 行多了 `[FAIL]`，以及標題裡清冊不問的 Tracked、Dependencies（[[Task 41]]）。
-- **提交**：本 workspace 與 InvestForge 各一個 commit，前綴 `task 32.10`；ste-custom.md 今天還可能再改，[[Chore 1]] 等當天最後一次修改之後再跑。
+- **提交**：本 workspace 與 InvestForge 各一個 commit，前綴 `task 32.10`；ste-custom.md 今天還可能再改，[[rerecord-ste-custom]] 等當天最後一次修改之後再跑。
 - **第二輪的三項 `[?]`**（2026-10-18）：使用者把英文第 4 點的第 22、107、179–180 行標 `[?]`。
   使用者問第 22 行的 this file 指什麼：指照範本寫出的那份 README，範本正文是用它的口吻寫的。
   使用者決定把正文的 this file 都改成 this README.md，第 22 行寫「SKILL.md does not have a link to this README.md, thus no run reads it.」。
@@ -86,9 +86,13 @@
 - [[Task 61]]：第 22 行「SKILL.md 不連到 README」也是 skill-writing 第二條說的事，屬於規則重複的檢查。
 - [[Task 65]]：本草稿取代原檔之後，對照 DFD.md 檢查範本的 Dataflow 一節。
 - [[Task 66]]：取代之後，三份 README 照舊範本抄的共用句子換成新範本的寫法。
-- [[Chore 1]]：ste-custom.md 有改動的日子集中重記一次，本草稿與它的中文版也在其中。
+- [[rerecord-ste-custom]]：ste-custom.md 有改動的日子集中重記一次，本草稿與它的中文版也在其中。
 
 ## 6. 日誌
+
+### 2026-10-30
+
+- [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
 
 ### 2026-10-19
 

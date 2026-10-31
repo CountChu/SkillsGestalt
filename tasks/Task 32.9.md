@@ -21,19 +21,19 @@
   Technical words 拿掉 search；已取代的 DFD.md 與中文版也拿掉，記錄 DFD.md 的 16 份讀過都仍成立、重記。
 - **其他只列進審核重點**：第 24 行的「每個指令第一次就寫對」、第 56 行拿掉的 Exception、第 50 行的 cause、第 97–98 行的 agents，以及第 17、25、26 行加上的行內程式碼。
   標題裡的 Pick、narrowed、banned、Print 字典沒有收錄，清冊不問（[[Task 41]]），也列進審核重點。
-- **提交**：本 workspace 與 InvestForge 各一個 commit，前綴 `task 32.9`；ste-custom.md 今天還可能再改，[[Chore 1]] 等當天最後一次修改之後再跑。
+- **提交**：本 workspace 與 InvestForge 各一個 commit，前綴 `task 32.9`；ste-custom.md 今天還可能再改，[[rerecord-ste-custom]] 等當天最後一次修改之後再跑。
 - **第二輪的 `[?]` 與 `[x]`**（2026-10-18）：使用者把英文第 4 點的第 56 行標 `[?]`、第 50 行標 `[x]`。
   第 56 行：原文以粗體的「Exception —」和上一項的「Default:」成對，exception 字典不核准、也沒有替代字，草稿原本寫「But if」。
   使用者看過說明之後，決定把 exception 收進 ste-custom.md，意思是「a case that a rule or a default does not include」。
   草稿改成「**Exception: if `rg` cannot isolate the one range that you want, use `sed -n 'A,Bp'`.**」，冒號和「Default:」一樣；中文版寫「**例外：如果 `rg` 無法只取出你要的那一段，就用 `sed -n 'A,Bp'`。**」。
   第 50 行照使用者同意的建議改成「That 97% is the purpose of this rule.」，中文版寫「那 97% 就是這條規則的目的。」，和原文中文版的「目的」一致。
-  其他用到 exception 的只有 RSDC-Standard 的複合技術用字 exception path 與標籤 Exception Paths，照舊；一個 commit，前綴 `task 32.9`，[[Chore 1]] 照舊等當天最後一次修改。
+  其他用到 exception 的只有 RSDC-Standard 的複合技術用字 exception path 與標籤 Exception Paths，照舊；一個 commit，前綴 `task 32.9`，[[rerecord-ste-custom]] 照舊等當天最後一次修改。
 - **alias 收進 keep-English list**（2026-10-18）：使用者把中文第 2 點的 alias 一項標 `[?]`：原文中文版第 11 行保留英文 alias，草稿中文版第 25 行寫「別名」，alias 不在清單上。
   使用者問能不能把 alias 放進技術用字；技術用字只管英文 STE 檔能用哪些字，中文正文怎麼寫由 keep-English list 決定，同一份草稿中文版的 binary、directory、filter 等技術用字也都翻成中文。
   使用者選擇在清單加上第三個條件：它是一個指令的名稱，替它取的中文詞會對不上執行指令時打的名稱。
   STE 只核准名詞的 type，所以英文寫成「the name that you write to operate the command」。
   清單加上 alias 一列：Replaces 寫「別名」，Flagged 寫「—」，因為「別名」也是「類別名稱」的一部分；Technical words 加上 alias，版本維持 261018，同一天的改動共用一個版號。
-  草稿中文版第 25 行改回 alias；在本 task 裡做，一個 commit，前綴 `task 32.9`，[[Chore 2]] 照它的時機跑。
+  草稿中文版第 25 行改回 alias；在本 task 裡做，一個 commit，前綴 `task 32.9`，[[keep-english]] 照它的時機跑。
 
 ### 進度
 
@@ -60,7 +60,7 @@
   `draft.py dependents` 以本 workspace、InvestForge 與 BookMaster 為 root，沒有文件記錄 tools.md。
   檢查：`check_ste.py --ste` PASS，沒有警告；parity check 0 failure、0 warning，原文中文版第 40 行的三則 keep-English 警告也沒有了；兩份的 `depends_on.py check` 都是 UNCHANGED。
   [[Task 31]] 表格裡指向兩份草稿的連結改成行內程式碼，並註明已取代。
-  另外 20 份的 ste-custom 紀錄仍是舊的：使用者說今天可能還會改 ste-custom.md，[[Chore 1]] 等當天最後一次修改之後再跑。
+  另外 20 份的 ste-custom 紀錄仍是舊的：使用者說今天可能還會改 ste-custom.md，[[rerecord-ste-custom]] 等當天最後一次修改之後再跑。
 
 ## 3. 要做的
 
@@ -75,11 +75,15 @@
 - [[Task 50]]：審核前把第 24 行的雙重否定改成肯定句。
 - [[Task 41]]：標題裡字典沒有收錄的字，清冊不問。
 - [[Task 32.1]]：DFD 已取代原檔；search 收進 ste-custom.md 之後，它的 Technical words 拿掉 search。
-- [[Chore 1]]：ste-custom.md 有改動的日子集中重記一次，本草稿與它的中文版也在其中。
+- [[rerecord-ste-custom]]：ste-custom.md 有改動的日子集中重記一次，本草稿與它的中文版也在其中。
 - [[Task 59]]：同一天把 app 收進 keep-English list，版本改成 261018；alias 這次照樣用這個版號。
-- [[Chore 2]]：keep-English list 換版本之後稽核所有中文版；261018 這一版還沒稽核過，下次會一併涵蓋 app 與 alias。
+- [[keep-english]]：keep-English list 換版本之後稽核所有中文版；261018 這一版還沒稽核過，下次會一併涵蓋 app 與 alias。
 
 ## 6. 日誌
+
+### 2026-10-30
+
+- [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
 
 ### 2026-10-18
 

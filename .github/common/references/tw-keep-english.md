@@ -1,11 +1,11 @@
 # Terms Kept in English in 繁體中文 Twins
 
-> Version: 261018
+> Version: 261030
 > [[ASD-STE100_ISSUE9.pdf]]  `2026-10-18`  `d1f4ea9e7cd6`
 > [[ste-custom]]  `2026-10-30`  `8cc2e2061175`
 
 > This file is in ASD-STE100 Simplified Technical English (STE), Issue 9.
-> Technical words: agent, alias, app, argument, automated, baseline, caller, canonical skill invocation, cell, character, checkpoint, class, clean mode, clock, cognitive, column, command, command line, commit, context, contract, data structure, delimiter, design document, diff, docstring, document, epoch, event, exit status, external input, fence, fenced block, file, fingerprint, flag, folded block scalar, frontmatter, glossary, handler, handoff, hard break, hash, heading, here-string, hexagon, hook, hunk, idempotent-only mode, identifier, import, inline code, inline-code span, interactive, interpolation, introspection, line, line break, link, link target, list, match, math, MD report, metadata, no-op, non-breaking space, null, one-run data, operating system, pairing line, parse, path, pattern, pipe, placeholder, plain scalar, process, prose, raw mode, record, regular expression, rendering, repository, request, route, scalar, schema, script, second, section, section partial, sentence, separator, session, shell, skill, span, spelling, stage, stale, statement, step, string, string literal, style, table, template, term, text, token, traceback, twin, variable, verdict, version, wiki, wireframe, word, word character, workflow, workspace.
+> Technical words: agency, agent, alias, app, argument, automated, baseline, caller, canonical skill invocation, cell, character, checkpoint, class, clean mode, clock, cognitive, column, command, command line, commit, context, contract, data structure, delimiter, design document, diff, docstring, document, epoch, event, exit status, external input, fence, fenced block, file, fingerprint, flag, folded block scalar, Forge, frontmatter, Gestalt, glossary, handler, handoff, hard break, hash, heading, here-string, hexagon, hook, hunk, idempotent-only mode, identifier, import, inline code, inline-code span, interactive, interpolation, introspection, line, line break, link, link target, list, match, math, MD report, metadata, no-op, non-breaking space, null, one-run data, operating system, pairing line, parse, path, pattern, pipe, placeholder, plain scalar, process, prose, raw mode, record, regular expression, rendering, repository, request, route, scalar, schema, script, second, section, section partial, sentence, separator, session, shell, skill, span, spelling, stage, stale, statement, step, string, string literal, style, table, template, term, text, token, traceback, twin, variable, verdict, version, wiki, wireframe, word, word character, workflow, workspace.
 
 Each `-tw` twin keeps the terms of the list that follows in English in its prose.
 Examples of a twin are the `SKILL-tw.md` of a skill, the `-RSDC-tw.md` of a design document and the `-tw.md` of a wireframe.
@@ -66,6 +66,7 @@ Thus, a person reads each warning, and then makes a decision.
 
 | Term | Replaces | Flagged | Why it stays English |
 |---|---|---|---|
+| agency | 代理機構, 機構 | 代理機構 | It is the name of a type of item in the glossary, and it has no standard Chinese rendering. |
 | agent | 代理人, 代理 | 代理人 | Twins use two renderings for it, and it is the name of a role. |
 | alias | 別名 | — | It is the name of a command of the shell: a Chinese word for it does not agree with the command `alias`. |
 | app | 應用, 應用程式 | — | It is the name of a type in the system, and twins use two renderings for it: 應用, and the English word app. |
@@ -88,7 +89,9 @@ Thus, a person reads each warning, and then makes a decision.
 | fence | 圍欄, 柵欄 | 圍欄, 柵欄 | It is the name of the line that opens or closes a fenced block, and it has no standard Chinese rendering. |
 | fenced block | 程式碼區塊, 圍欄區塊 | 程式碼區塊, 圍欄區塊 | Twins use two renderings for it, and it is the name of a part of a Markdown file that a twin copies without a change. |
 | folded block scalar | 摺疊區塊純量, 折疊式區塊 | — | It is the name of a YAML scalar style, and it has no standard Chinese rendering. |
+| Forge | 工坊, 鍛造坊 | 工坊, 鍛造坊 | It is the name of a type of agency in the glossary, and it has no standard Chinese rendering. |
 | frontmatter | 前置資料, 頁首資訊, 前言 | 前置資料, 頁首資訊 | Twins use two renderings for it, and it is the name of a part of a file that the checks parse. |
+| Gestalt | 完形, 格式塔 | 格式塔 | It is the name of a type of agency in the glossary. Twins can use two renderings for it, and 完形 is correct in a sentence that gives the sense of the German word. |
 | glossary | 詞彙表, 術語表 | 詞彙表, 術語表 | Twins use three renderings for it: 詞彙表, 術語表, and the English word glossary. |
 | handler | 處理器, 處理常式, 處理函式 | 處理器, 處理常式, 處理函式 | It is the name of the code that a program uses for one type of input or event, and twins use three renderings for it. |
 | handoff | 交棒 | 交棒 | It is the name of an outcome. |

@@ -37,7 +37,7 @@
   - 新的 `known_names` 以 `git ls-files --cached --others --exclude-standard` 列出檔案，再去掉已刪掉的；不在 git repo 或沒有 git 時改用 `rglob`。
   - docstring 寫明空號那一行、check 1 的新規則，以及 check 10 在 git repo 裡看哪些檔。
 - task-rules.md、chore-rules.md 與中文版：Numbers 一節加上空號那一行的規則；`check_ste.py --ste` PASS，`check_parity.py` 0 failure。
-  ste-custom.md 有別的 session 還沒 commit 的改動（run 成為專案核准詞），那個 session 也在改兩份規則的 Technical words；兩份的 ste-custom 紀錄不在本 task 重記，留給那個 session 與 [[Chore 1]]。
+  ste-custom.md 有別的 session 還沒 commit 的改動（run 成為專案核准詞），那個 session 也在改兩份規則的 Technical words；兩份的 ste-custom 紀錄不在本 task 重記，留給那個 session 與 [[rerecord-ste-custom]]。
 
 ## 3. 要做的
 
@@ -77,6 +77,10 @@
 - [[Task 62.4]]：搬走 task 之前，要先做完本 task；搬走時把 9 個號碼寫進空號那一行，並在圖例的說明加一句。
 
 ## 6. 日誌
+
+### 2026-10-30
+
+- [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
 
 ### 2026-10-18
 

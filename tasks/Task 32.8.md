@@ -31,7 +31,7 @@
     RSDC-Standard 第 359 行的 programming 一起收進，意思是「the work of writing a program, as in "the programming style"」。
   - 在本 task 裡做，不另開 task：三份 STE 檔的 Technical words 拿掉 program，RSDC-Standard 再拿掉 programming，各自的中文版同步；RSDC-Standard 只改文字，版本維持 261016，和 [[Task 47]] 一樣。
   - 記錄 RSDC-Standard.md 的 8 份讀過都仍成立、重記；InvestForge 的 StopPriceChecker-RSDC 兩份有別的 session 還沒提交的改動，只提交檔頭紀錄那一行。
-  - 其他 20 份的 ste-custom 紀錄等本草稿取代、當天不再改 ste-custom.md 之後，由 [[Chore 1]] 集中重記。
+  - 其他 20 份的 ste-custom 紀錄等本草稿取代、當天不再改 ste-custom.md 之後，由 [[rerecord-ste-custom]] 集中重記。
   - 提交：本 workspace 與 InvestForge 各一個 commit，前綴 `task 32.8`。
 - **刪掉兩處重複**（2026-10-18）：使用者問草稿中文版第 19、26 行是否重複，再要找出其他重複的規則。
   找到三處，都是原文本來就重複：「SKILL.md 不連到 README，所以執行不會讀它」（原文第 9、13 行）、「README 說明哪些檔案要一起改」（原文第 9、12 行）、「Purpose 寫在 README、不寫在 SKILL.md，因為執行用不到」（原文第 12、29 行）。
@@ -42,12 +42,12 @@
   字典沒有收錄這個詞，形容詞與副詞也不能當技術用字；中文版跟著英文檔，英文沒有的字，中文版不能自己加。
   使用者決定把 deterministic（adj）與 deterministically（adv）收進 ste-custom.md，意思是「that always gives the same output for the same input, as a step that a script can do」。
   草稿第 39 行照原文的句型改成「If a program can do a step deterministically, the step operates a script.」，中文版寫「如果程式能以 deterministic 方式做某個 step」，和原文中文版一致。
-  tw-keep-english 的 Technical words 拿掉 deterministic，中文版同步，版本維持 261018；其他 20 份的 ste-custom 紀錄照舊等取代之後由 [[Chore 1]] 重記；一個 commit，前綴 `task 32.8`。
+  tw-keep-english 的 Technical words 拿掉 deterministic，中文版同步，版本維持 261018；其他 20 份的 ste-custom 紀錄照舊等取代之後由 [[rerecord-ste-custom]] 重記；一個 commit，前綴 `task 32.8`。
 
 ### 進度
 
 - skill-writing：2026-10-18 以 Step 6 產生對照頁送審，連結是 `http://127.0.0.1:8790/rules-skill-writing/`。
-  Step 3 原本已是最新：[[Chore 1]] 當天重記過，ste-custom 指紋 `3c5050b6a240`；兩處改好之後重跑 PASS，沒有警告，多了 depend 的 `[INFO]`；`[[ASD-STE100_ISSUE9.pdf]]` 與 `[[ste-custom]]` 重記，指紋不變。
+  Step 3 原本已是最新：[[rerecord-ste-custom]] 當天重記過，ste-custom 指紋 `3c5050b6a240`；兩處改好之後重跑 PASS，沒有警告，多了 depend 的 `[INFO]`；`[[ASD-STE100_ISSUE9.pdf]]` 與 `[[ste-custom]]` 重記，指紋不變。
   草稿中文版照 chinese skill 只改 change set 的 2 行，`check_parity.py` 0 failure，`diff_md.py --verify` PASS。
   審核重點英文 5 項、中文 4 項，共 16 個審核狀態、61 個行號：檔頭、標題用字、送審前已改的兩處、三處句意、結構與中文版的譯法。
   補上 glossary 的定義之後（同日）：Step 3 先因一段 7 句 FAIL，空一行之後 PASS，沒有警告；兩對中英對照 `check_parity.py` 0 failure，草稿那一對 `diff_md.py --verify` PASS，原文那一對報原文中文版第 17、18 行在英文改動範圍之外，是刻意把「術語表」改成 glossary。
@@ -77,7 +77,7 @@
   它們引用的是 step 怎麼寫、scripted-versus-not 那條規則與 check-skill 的準則 1.4、1.7、1.10–1.14，STE 版的規則相同，讀過都仍成立，重記（新指紋 `dc4fdbb634cb`）。
   檢查：`check_ste.py --ste` PASS，沒有警告；parity check 0 failure、0 warning，原文中文版「腳本」的那則警告也沒有了；6 份 README 的 `depends_on.py check` 都是 UNCHANGED。
   [[Task 31]] 表格裡指向兩份草稿的連結改成行內程式碼，並註明已取代。
-  另外 20 份的 ste-custom 紀錄仍是舊的：使用者說今天可能還會改 ste-custom.md，[[Chore 1]] 等當天最後一次修改之後再跑。
+  另外 20 份的 ste-custom 紀錄仍是舊的：使用者說今天可能還會改 ste-custom.md，[[rerecord-ste-custom]] 等當天最後一次修改之後再跑。
 
 ## 3. 要做的
 
@@ -93,9 +93,13 @@
 - [[Task 41]]：Technical words 裡的 program 字典不核准，`check_ste.py` 不提醒；第二輪改由 ste-custom.md 核准，Task 41 的清單拿掉它。
 - [[Task 47]]：把 phrase 收進專案核准詞的做法，program 與 programming 照著做。
 - [[Task 61]]：審本草稿時刪掉兩處重複之後提出，檢查所有定規則的 md 之間重複的規則；skill-writing 取代原檔之後，也在它的範圍內。
-- [[Chore 1]]：ste-custom.md 有改動的日子集中重記一次，本草稿與它的中文版也在其中。
+- [[rerecord-ste-custom]]：ste-custom.md 有改動的日子集中重記一次，本草稿與它的中文版也在其中。
 
 ## 6. 日誌
+
+### 2026-10-30
+
+- [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
 
 ### 2026-10-18
 

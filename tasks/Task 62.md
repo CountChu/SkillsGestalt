@@ -7,14 +7,14 @@
 ## 1. 背景
 
 - 只有 SkillsGestalt 有 `tasks/`、`chores/` 與兩張摘要表；InvestForge 沒有，它的工作也記在這裡。
-- 2026-10-18 查的結果：51 個 task 檔與 [[Chore 2]] 提到 InvestForge。
+- 2026-10-18 查的結果：51 個 task 檔與 [[keep-english]] 提到 InvestForge。
   - 主題就是 InvestForge 的東西：9 個，其中 3 個已完成，見 [[Task 62.4]]。
-  - 一半是 InvestForge：[[Task 18]] 的 5 個 sub task 隨 [[Task 62.4]] 搬走；[[Task 32]]、[[Task 38]]、[[Task 54]]、[[Task 55]] 與 [[Chore 2]] 見 [[Task 62.5]]。
+  - 一半是 InvestForge：[[Task 18]] 的 5 個 sub task 隨 [[Task 62.4]] 搬走；[[Task 32]]、[[Task 38]]、[[Task 54]]、[[Task 55]] 與 [[keep-english]] 見 [[Task 62.5]]。
   - 只在紀錄裡提到：其餘 37 個，都已完成，記的是當時順手改了 InvestForge 的哪些檔、commit 是哪一個。
 - 這些提及一直冒出來，有兩個原因。
   - 上游的 task 直接改下游的檔：這裡改了共用的標準、範本或清單，就順手去 InvestForge 重記指紋或改中文版，commit 也用這裡的編號。
     InvestForge 的 git log 有 40 個 `task N:` commit，用的都是這裡的編號：14、18、19、28、32、32.8、33、44–48。
-    asd-ste 的 Step 7 明文要問還有哪些 workspace 用這個 skill group，把它們加成 `--root`；[[Chore 1]] 的第 1 步也一樣。
+    asd-ste 的 Step 7 明文要問還有哪些 workspace 用這個 skill group，把它們加成 `--root`；[[rerecord-ste-custom]] 的第 1 步也一樣。
   - 借 InvestForge 的設定：這裡沒有 `config.yaml`，check-skill 一直借 InvestForge 的（[[Task 7]]、[[Task 35]]、[[Task 39]]、[[Task 50]]）；Skills Dashboard 也在 InvestForge 的 `wikiDir` 裡。
 - task 記在這裡，就在 SkillsGestalt 的 session 裡接手。
   那種 session 載入的是這裡的 CLAUDE.md 與 memory，看不到 InvestForge 的 CLAUDE.md，也看不到它自己的 19 條 memory。
@@ -76,6 +76,10 @@
 - [[Task 63]]：[[Task 62.1]] 另開，決定中文版留英文的新詞要不要加進 keep-English list。
 
 ## 6. 日誌
+
+### 2026-10-30
+
+- [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
 
 ### 2026-10-20
 

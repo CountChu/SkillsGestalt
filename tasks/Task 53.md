@@ -1,6 +1,6 @@
 # Task 53 - 建立 chore：會重複做的例行工作
 
-**Status**：完成——2026-10-18 建立，同日做完：chore 有了自己的資料夾、規則、摘要表與 `check_chores.py`，並建立 [[Chore 1]] 與 [[Chore 2]]。
+**Status**：完成——2026-10-18 建立，同日做完：chore 有了自己的資料夾、規則、摘要表與 `check_chores.py`，並建立 [[rerecord-ste-custom]] 與 [[keep-english]]。
 **Raised**：2026-10-18，[[Task 52]] 定下的集中重記，是每次 ste-custom.md 有改動的日子都要再做的例行工作，放在 task 裡會變成「完成了卻還要一直做」；使用者決定另立 chore，有自己的編號與摘要表。
 **Depends on**：—
 
@@ -22,8 +22,8 @@ task 是做完就結束的工作，狀態是尚未開始、進行中、完成。
 - 摘要表的欄：Chore、Started、Title、何時要做、上次執行、Status。
 - 檢查：另寫 `check_chores.py`，和 `check_tasks.py` 分開。
 - commit 前綴：chore 的執行是 `chore N: `，小寫；建立 chore 制度的修改記在本 task，前綴 `task 53: `。
-- 第一個 chore：[[Chore 1]] 集中重記 ste-custom.md，建好之後馬上跑第一次。
-- 第二個 chore：[[Chore 2]] keep-English 稽核，同日由使用者提出，記在本 task。
+- 第一個 chore：[[rerecord-ste-custom]] 集中重記 ste-custom.md，建好之後馬上跑第一次。
+- 第二個 chore：[[keep-english]] keep-English 稽核，同日由使用者提出，記在本 task。
   - 何時要做：tw-keep-english.md 換了版本，和上次稽核的版本不同；261016 這一版不稽核，第一次等下一版。
   - 範圍：SkillsGestalt 與 InvestForge 的全部中英對照，不含 tw-keep-english 自己的兩份與 checkpoints。
   - 工具：共用的 `.github/common/scripts/audit_keep_english.py`，不動 chinese skill；完整清單存在 `checkpoints/chores/chore-2/`，執行紀錄只寫總數與和上一份的差異。
@@ -45,8 +45,8 @@ task 是做完就結束的工作，狀態是尚未開始、進行中、完成。
 1. 寫 `chores/CLAUDE.md`、`dashboard/chore-summary.md` 與 `chores/Chore 1.md`。
 2. 寫 `.github/common/scripts/check_chores.py`。
 3. 根目錄的 CLAUDE.md 加上 Chores 一節；tasks/CLAUDE.md 註明例行工作寫成 chore。
-4. [[Task 52]] 的關係一章加上 [[Chore 1]]。
-5. 跑 [[Chore 1]] 的第一次，結果單獨一個 commit，前綴 `chore 1: `。
+4. [[Task 52]] 的關係一章加上 [[rerecord-ste-custom]]。
+5. 跑 [[rerecord-ste-custom]] 的第一次，結果單獨一個 commit，前綴 `chore 1: `。
 
 ## 4. 驗證
 
@@ -55,18 +55,22 @@ task 是做完就結束的工作，狀態是尚未開始、進行中、完成。
 
 ## 5. 與其他 task 的關係
 
-- [[Task 52]]：定下集中重記的做法，由 [[Chore 1]] 接手執行。
-- [[Chore 1]]：本 task 建立的第一個 chore。
+- [[Task 52]]：定下集中重記的做法，由 [[rerecord-ste-custom]] 接手執行。
+- [[rerecord-ste-custom]]：本 task 建立的第一個 chore。
 
 ## 6. 日誌
+
+### 2026-10-30
+
+- [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
 
 ### 2026-10-18
 
 - 建立。
-- 同日做完：chore 的資料夾、規則、摘要表、`check_chores.py` 與 [[Chore 1]]；[[Task 52]] 的關係一章加上 [[Chore 1]]。
+- 同日做完：chore 的資料夾、規則、摘要表、`check_chores.py` 與 [[rerecord-ste-custom]]；[[Task 52]] 的關係一章加上 [[rerecord-ste-custom]]。
 - 驗證：`check_chores.py` 14 項 PASS，`check_tasks.py` 18 項 PASS。
   在副本上把摘要表的標題、圖示、上次執行改錯，執行紀錄排成舊的在前，再放一個多的檔案：`check_chores.py` 以 1 結束，逐項指出這五處。
-- [[Chore 2]]：使用者決定再收一件例行工作，記在本 task；寫了 `audit_keep_english.py` 與 Chore 2。
+- [[keep-english]]：使用者決定再收一件例行工作，記在本 task；寫了 `audit_keep_english.py` 與 Chore 2。
   驗證：`due --baseline 261016` 印出 not due、以 1 結束；沒給 baseline 時印出 due。
   把報告寫到 scratchpad 試跑一次：67 對中英對照，47 份中文版有 605 行警告，「英文也寫中文」4 行（MermaidView-RSDC 的「角色」與 InvestForge 兩份 SKILL 的「過期」等）；最多的是 script 的「腳本」294 行、step 的「步驟」202 行。
   再放一份較早、少一筆又多一筆的報告：比對印出 1 筆 `[NEW]` 與 1 筆 `[GONE]`。

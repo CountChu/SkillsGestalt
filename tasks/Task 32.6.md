@@ -33,7 +33,7 @@
   merge 收進 ste-custom.md 之後，記錄它的 22 份都重新檢查：6 份草稿重跑 Step 3 都 PASS，除了本草稿多了 false、merge、update 的 `[INFO]`，報告和之前相同；5 份 STE 檔的 `check_ste.py --ste` PASS，警告和之前相同。
   22 份都重記 `[[ste-custom]]`（新指紋 `87b027217859`），`depends_on.py check` 都是 UNCHANGED；ste-custom 中英兩份 `check_parity.py` 0 failure。
   註記改寫兩項 `[x]` 與中文對應的兩項，註明第二輪已改，行號跟著減 1；對照頁重建，仍是 14 項、41 個行號，已通過的 3 項維持通過，其餘 11 項待審。
-  [[Task 52]] 改了 ste-custom.md 之後，[[Chore 1]] 當天集中重記（2026-10-18）：草稿與中文版重記 `[[ste-custom]]`（新指紋 `3c5050b6a240`），Step 3 PASS、沒有警告，`step_3` 已存；對照頁也已重建，仍是 14 項，3 項通過、11 項待審。
+  [[Task 52]] 改了 ste-custom.md 之後，[[rerecord-ste-custom]] 當天集中重記（2026-10-18）：草稿與中文版重記 `[[ste-custom]]`（新指紋 `3c5050b6a240`），Step 3 PASS、沒有警告，`step_3` 已存；對照頁也已重建，仍是 14 項，3 項通過、11 項待審。
 - 取代（2026-10-18）：第二輪 14 項全部通過；Step 3 記下的 ste-custom 指紋仍是現在的 `3c5050b6a240`，所以 Step 7 不必先重跑 Step 3 與 Step 6。
   `draft.py replace` 把草稿與它的中文版寫回 report-yaml-rules.md 與 report-yaml-rules-tw.md，檔頭註記刪成兩行，再刪掉兩份草稿；兩份都是 44 行。
   `draft.py dependents` 以本 workspace、InvestForge 與 BookMaster 為 root，只找到 asd-ste 的 README.md 與 README-tw.md；它們引用的是 YAML checkpoint 的格式與必要欄位，STE 版的規則相同，讀過都仍成立，重記（新指紋 `5bca1fce746c`）。
@@ -59,16 +59,20 @@
 - [[Task 44]]：2026-10-16 審 report-yaml-rules（2.6）時開出——rule 收進專案核准詞，同日做完；2.3、2.5 的草稿也因此改了 Technical words 那一行。
 - [[Task 52]]：Step 6、7 一開始比對 `step_3` 的 `custom_fingerprint`，ste-custom.md 改過就先重跑 Step 3；取代本草稿時會用到。
 - [[Task 53]]：建立 chore 制度，例行的重記寫成 chore。
-- [[Chore 1]]：ste-custom.md 有改動的日子集中重記一次，本草稿與它的中文版也在其中。
+- [[rerecord-ste-custom]]：ste-custom.md 有改動的日子集中重記一次，本草稿與它的中文版也在其中。
 
 ## 6. 日誌
+
+### 2026-10-30
+
+- [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
 
 ### 2026-10-18
 
 - 從 [[Task 32]] 拆出：原本是它要做的 2.6；屬於這份檔案的內容搬到這裡，內容沒有改。
 - report-yaml-rules（2.6）：[[Task 50]] 決定每份 STE 檔都宣告 `[[ste-custom]]`，草稿與中文版補上並記錄，Step 3 PASS，對照頁重建（註記的草稿行號加 1，兩項「檔頭」改寫）。
 - 第二輪：兩項 `[x]` 改好——第 35–36 行用 false 併成一句，第 46 行寫 merge or update；merge 收進 ste-custom.md，22 份重檢、重記，對照頁重建。
-- [[Chore 1]] 集中重記 ste-custom：草稿 Step 3 PASS，對照頁重建；這個檔的 Status、要做的與關係跟著更新。
+- [[rerecord-ste-custom]] 集中重記 ste-custom：草稿 Step 3 PASS，對照頁重建；這個檔的 Status、要做的與關係跟著更新。
 - 第二輪審核 14 項全部通過，由 Step 7 取代原檔與它的中文版；asd-ste 的 README 兩份重記，[[Task 31]] 表格的草稿連結改成行內程式碼。
 
 ### 2026-10-16

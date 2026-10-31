@@ -66,9 +66,13 @@
 - [[Task 62.2]]：規則檔已經照改過之後的腳本寫編號規則，腳本要跟上。
 - [[Task 62.3]]：InvestForge 的根目錄 CLAUDE.md 照本 task 的寫法指向規則檔，不建資料夾裡的 CLAUDE.md。
 - [[Task 63]]：中文版留英文的新詞要不要加進 keep-English list。
-- [[Chore 1]]：兩份規則檔也記錄 ste-custom.md，ste-custom.md 再改時一起重記。
+- [[rerecord-ste-custom]]：兩份規則檔也記錄 ste-custom.md，ste-custom.md 再改時一起重記。
 
 ## 6. 日誌
+
+### 2026-10-30
+
+- [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
 
 ### 2026-10-18
 

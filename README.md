@@ -3,6 +3,13 @@
 Shared agent skills, the rules that they follow, and the scripts that check them.
 The Traditional Chinese version is [README-tw.md](README-tw.md).
 
+## Gestalt and Forge
+
+SkillsGestalt is the Gestalt: the agency that has the skills as its subject.
+An agency that has a different subject, for example InvestForge, is a Forge, and it uses the skills of this repository.
+[glossary.md](.github/common/references/glossary.md) gives these terms.
+To make a Forge, follow [forge-setup.md](.github/common/references/forge-setup.md).
+
 ## What Is Here
 
 - [.github/common/skills/](.github/common/skills/): the skills, one directory for each skill.

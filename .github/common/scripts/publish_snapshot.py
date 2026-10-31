@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 """Make a release of this workspace for its public repository: a snapshot of m1, scanned before it leaves.
 
+It serves the private chore publish-github of SkillsGestalt and no other agency: the branches m1 and main,
+the remote origin, the keyword file, the paths it leaves out and the subject of a snapshot are
+SkillsGestalt's, written here as they are. It lives in the common skill group only because a chore has no
+program of its own. Run it from the root of SkillsGestalt.
+
 The public repository carries no history of the working branch m1. Each release is one commit on the
 local branch `main`, whose tree is the tree of m1 with the private paths taken out; only `main` is pushed,
 to `main` of the remote `origin`. After a release m1 starts again from it: the old history of m1 is kept
-in the tag archive/m1-<release>, and m1 becomes one commit on the release that puts back the private
-paths, so `git diff main m1` shows only them and what is not published yet. Nothing here switches a
+in the tag archive/m1-<yymmdd> of the day of the release, and m1 becomes one commit on the release that
+puts back the private paths, so `git diff main m1` shows only them and what is not published yet. Nothing here switches a
 branch or touches the working tree, so other sessions can go on working on m1 while a release is made.
 
   check     build the tree of the release, scan it, and list what changed since the last release.
@@ -130,18 +135,22 @@ def last_release() -> str | None:
     return r.stdout.strip() or None
 
 
-def restart_work(source: str, release: str, co_author: str | None) -> None:
+def restart_work(source: str, release: str, day: datetime.date, co_author: str | None) -> None:
     """Start WORK again from the release, when WORK is still at the source of it.
 
     The new commit has the tree of the source, so the working tree and the index stay as they are.
+    One tag is kept for each day: a second release on the same day moves the tag of that day.
     """
     tip = git('rev-parse', f'refs/heads/{WORK}').strip()
     if tip != source:
         print(f'{WORK} is at {tip[:7]}, not at the source {source[:7]}: it keeps its history')
         return
-    tag = f'archive/{WORK}-{release[:7]}'
-    git('tag', '-a', tag, '-m', f'The history of {WORK} up to the release {release[:7]}', source)
-    message = (f'chore 3: {WORK} starts again from {BRANCH} {release[:7]} - the files that are never published\n\n'
+    tag = f'archive/{WORK}-{day:%y%m%d}'
+    r = subprocess.run(['git', 'rev-parse', '--verify', '-q', f'refs/tags/{tag}^{{commit}}'], capture_output=True, text=True)
+    if r.stdout.strip():
+        print(f'{tag} moves: it was at {r.stdout.strip()[:7]}, whose history git gc may now remove')
+    git('tag', '-a', '-f', tag, '-m', f'The history of {WORK} up to the release {release[:7]}', source)
+    message = (f'chore publish-github: {WORK} starts again from {BRANCH} {release[:7]} - the files that are never published\n\n'
                f'{", ".join(e + "/" for e in EXCLUDED)}, which the snapshots leave out. '
                f'The history before it is in the tag {tag}.\n')
     if co_author:
@@ -198,7 +207,8 @@ def main() -> None:
     if not report(source, tree, keywords):
         sys.exit(1)
     prev = last_release()
-    message = f'SkillsGestalt {datetime.date.today().isoformat()}\n\nFrom m1 {source[:12]}.\n'
+    day = datetime.date.today()
+    message = f'SkillsGestalt {day.isoformat()}\n\nFrom m1 {source[:12]}.\n'
     if a.co_author:
         message += f'\nCo-Authored-By: {a.co_author}\n'
     commit = git('commit-tree', tree, *(['-p', prev] if prev else []), '-F', '-', data=message.encode()).strip()
@@ -209,7 +219,7 @@ def main() -> None:
     else:
         git('push', REMOTE, f'{BRANCH}:{REMOTE_BRANCH}')
         print(f'pushed: {BRANCH} -> {REMOTE}/{REMOTE_BRANCH}')
-    restart_work(source, commit, a.co_author)
+    restart_work(source, commit, day, a.co_author)
 
 
 if __name__ == '__main__':

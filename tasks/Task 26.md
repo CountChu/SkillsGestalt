@@ -1,6 +1,6 @@
 # Task 26 - 決定 ASD-STE100 規格的 PDF 是否留在 git 中
 
-**Status**：尚未開始——要由使用者決定，還沒有決定。
+**Status**：完成——PDF 留在本機 `m1` 的 git，不放進公開版；字典 JSON 維持公開。
 **Raised**：2026-10-12，從 [[Task 23]] 的待辦移出。
 **Depends on**：—
 
@@ -14,7 +14,20 @@ PDF 在 [external/ASD-STE100_ISSUE9.pdf](../external/ASD-STE100_ISSUE9.pdf)，�
 
 ## 2. 現況
 
-**目前的狀況（2026-10-12）**
+### 已決定（2026-10-30）
+
+- **PDF 留在 git**：維持現狀，不移出追蹤，也不改寫歷史。
+  本機的 `m1` 不推到任何 remote；公開版由 [publish-github](../chores/publish-github.md) 發佈，它的 `publish_snapshot.py` 把 `external/` 排除在快照外，也擋下任何 `.pdf`。
+- **字典 JSON 維持公開**：照 [[Task 78]] 公開時的決定，不再改。
+  沒有它，公開版的 asd-ste 在 Step 0 就會停下。
+
+### 2026-10-30 的狀況
+
+- repo 有 remote `origin`，也就是 <https://github.com/CountChu/SkillsGestalt>，只推 `main` 的快照。
+- PDF 在 `m1`，也在 tag `archive/master` 與 `archive/m1-261030` 的歷史中；`main` 與 GitHub 上的 `main` 都沒有它。
+- `ste-dictionary.json` 在 `main`，已經在 GitHub 上公開。
+
+### 2026-10-12 的狀況
 
 - repo 沒有任何 remote，所以 PDF 只在本機的 git 歷史中，還沒有經由 git 散布出去。
   repo 放在 Dropbox 資料夾裡，檔案本身會隨 Dropbox 同步，這一點與 git 無關。
@@ -33,6 +46,8 @@ PDF 在 [external/ASD-STE100_ISSUE9.pdf](../external/ASD-STE100_ISSUE9.pdf)，�
 2. 字典 JSON：是否一起處理。
    移出 git 時，其他 clone 要先用 `convert_spec.py` 從 PDF 重建它，asd-ste 才能執行。
 
+兩項都已在 2026-10-30 決定，見現況一章；不改任何檔案。
+
 **牽涉的檔案**
 
 - [external/ASD-STE100_ISSUE9.pdf](../external/ASD-STE100_ISSUE9.pdf)
@@ -41,19 +56,25 @@ PDF 在 [external/ASD-STE100_ISSUE9.pdf](../external/ASD-STE100_ISSUE9.pdf)，�
 
 ## 4. 驗證
 
-—
+- `git ls-files external/ASD-STE100_ISSUE9.pdf` 仍列出這個檔：PDF 留在 `m1` 的 git。
+- `git ls-tree -r --name-only origin/main | grep -i '\.pdf$'` 沒有輸出：公開版沒有任何 PDF。
 
 ## 5. 與其他 task 的關係
 
 **與其他 task 的關係**
 
 - [[Task 23]]：建立 asd-ste；本項原是它的待辦第 3 項。
+- [[Task 78]]：公開到 GitHub 時決定 PDF 不放進公開版，字典 JSON 公開。
+- [[publish-github]]：發佈時排除 `external/` 與任何 `.pdf`；它第 5 章那一行改成本 task 的決定。
 
 ## 6. 日誌
 
 ### 2026-10-30
 
+- 使用者決定：PDF 留在 git，字典 JSON 維持公開。
+  現況一章加上「已決定」與 2026-10-30 的狀況，舊的現況標成 2026-10-12；驗證一章寫上兩項檢查；[[publish-github]] 第 5 章那一行改成已決定的寫法。
 - [[Task 78]] 把 SkillsGestalt 公開到 GitHub 時，決定 PDF 不放進公開版；本機的 git 仍保留它，是否留在 git 中仍未決定。
+- [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
 
 ### 2026-10-18
 

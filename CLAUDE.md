@@ -1,22 +1,42 @@
 # SkillsGestalt
 
-Instructions for an agent that works in this workspace.
+> [[ASD-STE100_ISSUE9.pdf]]  `2026-10-30`  `d1f4ea9e7cd6`
+> [[ste-custom]]  `2026-10-30`  `8cc2e2061175`
 
-- **A Markdown file with a `-tw.md` beside it has a 繁體中文 twin, and a change to the English file goes into the twin in the same run.**
-  Update the twin with the [chinese](.github/common/skills/chinese/SKILL.md) skill: it translates only what changed since the twin's last commit, then checks the two against each other.
-- **When you create or edit a Markdown file in the repo, follow [md-style.md](.github/common/rules/md-style.md).**
+> This file is in ASD-STE100 Simplified Technical English (STE), Issue 9.
+> Technical words: agency, audit, chore, command, commit, day, document, English, entry, file, Forge, git, hash, list, publish, repository, root, script, session, skill, snapshot, summary, table, tag, template, term, text, twin, version.
 
-## Branches
+Instructions for an agent that works in this agency.
+A script makes this file from the template `.github/common/templates/CLAUDE-tmp.md` and the `CLAUDE-local.md` at the root.
+Do not change this file.
+To change a rule for each agency, change the template.
+To change a rule for only this agency, change `CLAUDE-local.md`.
+Then, and after each change to the `config.yaml` at the root, run this command from the root:
 
-平常在 `m1` 上工作；本機的 `main` 只放發佈到 GitHub 的快照，不要在上面 commit。
-2026-10-30 之前的 commit 在 tag `archive/master`，之後每次發佈前的在 `archive/m1-<快照>`：文件裡引用的舊 hash 到那裡查。
-發佈照 [Chore 3](chores/Chore%203.md) 的步驟。
+```bash
+python .github/common/scripts/gen_claude_md.py
+```
+
+## Markdown
+
+When you write or change a Markdown file in the repository, follow [md-style.md](.github/common/rules/md-style.md).
+
+## 繁體中文 twins
+
+A Markdown file with a `-tw.md` adjacent to it has a 繁體中文 twin.
+Put each change to the English file into the twin in the same run.
+Use the [chinese](.github/common/skills/chinese/SKILL.md) skill to change the twin.
+It translates only the text that changed after the last commit of the twin, and then it compares the two files.
+
+A twin keeps the terms of [tw-keep-english.md](.github/common/references/tw-keep-english.md) in English.
+When the version of the list changes, do the keep-English chore, [keep-english](chores/keep-english.md): it audits all the twins against the list.
 
 ## Tasks
 
-跨 session 的待辦在 `tasks/`，摘要表在 `dashboard/task-summary.md`。
-要新增或修改 task，照 [task-rules.md](.github/common/rules/task-rules.md) 做。
-規則裡的 `{skillGroups.common}` 照根目錄的 `config.yaml`（不進 git，範本是 [config.example.yaml](config.example.yaml)），在這個 workspace 是 `.github/common`，所以改完後從根目錄執行：
+The tasks that continue from one session to a different session are in `tasks/`.
+Their summary table is `dashboard/task-summary.md`.
+To add or change a task, follow [task-rules.md](.github/common/rules/task-rules.md).
+After a change, run this command from the root:
 
 ```bash
 python .github/common/scripts/check_tasks.py --summary dashboard/task-summary.md --tasks-dir tasks
@@ -24,10 +44,30 @@ python .github/common/scripts/check_tasks.py --summary dashboard/task-summary.md
 
 ## Chores
 
-會重複做的例行工作在 `chores/`，摘要表在 `dashboard/chore-summary.md`：先讀這張表，看哪一項該做了。
-要新增、修改或執行 chore，照 [chore-rules.md](.github/common/rules/chore-rules.md) 做。
-改完後從根目錄執行：
+The work that you must do again each time that a condition occurs is in `chores/`.
+Its summary table is `dashboard/chore-summary.md`.
+Read this table first to find the chore that you must do.
+To add, change or do a chore, follow [chore-rules.md](.github/common/rules/chore-rules.md).
+After a change, run this command from the root:
 
 ```bash
 python .github/common/scripts/check_chores.py --summary dashboard/chore-summary.md --chores-dir chores
 ```
+
+## Settings of This Agency
+
+The `config.yaml` at the root is not in git, and [config.example.yaml](config.example.yaml) is its template.
+A change in the `common` skill group can make work for a Forge, or a `FAIL` in a check of a Forge.
+For such a change, add an entry to [CHANGES.md](.github/common/CHANGES.md).
+Each Forge does the chore [follow-gestalt](chores/follow-gestalt.md) for these entries.
+
+## Branches
+
+Do your work on `m1`.
+The local `main` contains only the snapshots that go to GitHub.
+Do not commit on it.
+
+The commits before 2026-10-30 are in the tag `archive/master`.
+The commits before each subsequent release are in `archive/m1-<yymmdd>`, with one tag for each day.
+To find a hash that a document refers to, look in these tags.
+To publish, follow the steps of [publish-github](chores/publish-github.md).

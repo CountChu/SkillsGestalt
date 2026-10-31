@@ -109,7 +109,7 @@
 2. ✅ 逐份讀範圍內的 18 份，找出掃描抓不到、換了說法的重複，同樣逐組決定（2026-10-30）。
 3. ✅ 每改一份，照它的種類做該做的事（2026-10-30）：
    - STE 檔（DFD、RSDC-Standard、tw-keep-english、md-style、report-md-rules、report-yaml-rules、scratch-rules）：`check_ste.py --ste` 重查，中文版照 chinese skill 跟著改，記錄它的文件讀過之後重記；RSDC-Standard 與 tw-keep-english 還要照各自的版本規則決定換不換版。
-   - skill 裡的檔（ste-rules、ste-custom、checking-criteria）：先讀那個 skill 的 README 的 When the Skill Is Changed，照它改，並跑它列的檢查；ste-custom 改了，照 [[Chore 1]] 當天集中重記。
+   - skill 裡的檔（ste-rules、ste-custom、checking-criteria）：先讀那個 skill 的 README 的 When the Skill Is Changed，照它改，並跑它列的檢查；ste-custom 改了，照 [[rerecord-ste-custom]] 當天集中重記。
    - 還在 [[Task 32]] 審的 4 份：等取代原檔之後再改。
 4. ✅ 做完之後，決定重複檢查要不要做成 chore：併進 [[Task 56]] 的 md-style 巡檢，或另開一個。
    使用者決定併進 [[Task 56]]，只用字詞相近的掃描，範圍是這 18 份；已決定保留的重述列在 Task 56，巡檢時跳過（2026-10-30）。
@@ -142,6 +142,7 @@
 - 檢查與重記：STE 檢查、中英對照、一句一行都通過；重記 42 筆，ste-custom 以 `draft.py recheck` 重記 26 份。
 - 英式拼法記進 [[Task 56]]。
 - 重複檢查併進 [[Task 56]]，本 task 完成。
+- [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
 
 ### 2026-10-18
 

@@ -20,7 +20,7 @@
   第 40 行改成「Also, if you use `git clean -fd` after a commit, it removes the file, and does not get your approval first.」，第 19 行的 JSON 檔改成「a JSON file that the run uses before it writes its outputs」。
 - **own 收進專案核准詞**（2026-10-18）：使用者決定把 own 收進 ste-custom.md，詞性 adj 與 pron，兩種用法各寫一句意思；記在本 task，不另開 task。
   第 21 行改成「Each of these outputs has its own path.」，和原文一樣；中文版寫「各有自己的路徑」。
-  宣告 ste-custom 的其他 STE 檔，照 [[Chore 1]] 在當天 ste-custom.md 的修改都做完之後一次重記。
+  宣告 ste-custom 的其他 STE 檔，照 [[rerecord-ste-custom]] 在當天 ste-custom.md 的修改都做完之後一次重記。
 - **make 與 create**（2026-10-18）：這一項標 `[?]`；解釋之後，使用者決定擴大 ste-custom 裡 create 的核准意思，加上新的目錄，Why 欄補記這次的決定。
   草稿第 15 行改成「create it」、第 25 行改成「created」，和原文一樣；中文版第 15 行本來就寫「建立」，第 25 行的「產生」改成「建立」。
   其他還沒審完的草稿，原文寫 create、草稿寫 make 的地方，審到那一份時再看。
@@ -45,7 +45,7 @@
 ## 3. 要做的
 
 ✅ 2026-10-18 審核通過，由 Step 7 取代原檔，[[Task 32]] 的「每取代一份要一併做的」也做完。
-今天 ste-custom.md 加上 own、擴大 create 之後，其他宣告它的 STE 檔照使用者的決定交給 [[Chore 1]]，在取代之後集中重記。
+今天 ste-custom.md 加上 own、擴大 create 之後，其他宣告它的 STE 檔照使用者的決定交給 [[rerecord-ste-custom]]，在取代之後集中重記。
 
 ## 4. 驗證
 
@@ -55,9 +55,13 @@
 ## 5. 與其他 task 的關係
 
 - [[Task 40]]：審本草稿時，使用者問同意某一項的建議該標 `[v]` 還是 `[x]`；它的第 9 項把答案寫進對照頁與 asd-ste 的 SKILL.md。
-- [[Chore 1]]：ste-custom.md 有改動的日子集中重記一次；本 task 加上 own、擴大 create 的那兩次也由它重記。
+- [[rerecord-ste-custom]]：ste-custom.md 有改動的日子集中重記一次；本 task 加上 own、擴大 create 的那兩次也由它重記。
 
 ## 6. 日誌
+
+### 2026-10-30
+
+- [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
 
 ### 2026-10-18
 

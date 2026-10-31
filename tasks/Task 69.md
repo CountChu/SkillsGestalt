@@ -8,7 +8,7 @@
 
 - [task-rules.md](../.github/common/rules/task-rules.md) 要求 task 檔像 TW twin 一樣，把 [tw-keep-english.md](../.github/common/references/tw-keep-english.md) 列出的每個 term 留英文。
   這條規則是 2026-10-18 由 [[Task 62.1]] 寫進去的，大部分 task 檔寫在它之前。
-- 中文版有兩個工具檢查：chinese skill 的 `check_parity.py --keep`，以及 [[Chore 2]] 跑的 `audit_keep_english.py`。
+- 中文版有兩個工具檢查：chinese skill 的 `check_parity.py --keep`，以及 [[keep-english]] 跑的 `audit_keep_english.py`。
   `audit_keep_english.py` 只看旁邊有 `-tw.md` 的檔，task 檔沒有 TW twin，不在它的範圍；`check_tasks.py` 也不查。
 
 ## 2. 現況
@@ -41,9 +41,13 @@
 - [[Task 68]]：本 task 的來源；它先改了 pairing line 的譯法。
 - [[Task 63]]：可能在清單加上 task、chore 等新詞；它先做完的話，本 task 的盤點要包括這些詞。
 - [[Task 62.1]]：把 keep-English 的要求寫進 task-rules。
-- [[Chore 2]]：稽核中文版的 keep-English 譯法；task 檔不在它的範圍。
+- [[keep-english]]：稽核中文版的 keep-English 譯法；task 檔不在它的範圍。
 
 ## 6. 日誌
+
+### 2026-10-30
+
+- [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
 
 ### 2026-10-19
 

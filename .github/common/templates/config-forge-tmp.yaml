@@ -1,0 +1,16 @@
+# Configuration of a Forge: an agency that uses the common skill group of SkillsGestalt, the Gestalt.
+# Copy this file to config.yaml at the root of the workspace, and replace each {PLACEHOLDER}.
+# The steps to make a Forge are in {skillGroups.common}/references/forge-setup.md.
+# A relative path starts at the root of the workspace; a path can start with ~, the home directory.
+# Keep the quotes around a value that starts with {: without them, YAML reads it as a mapping.
+# The terms agency, Gestalt, Forge, wiki and skill group are in {skillGroups.common}/references/glossary.md.
+
+wikiDir: "{WIKI_DIR}"             # the Obsidian vault of this agency, where its skills write notes and reports
+wikiRootDir: "{WIKI_ROOT_DIR}"    # the folder that holds the vaults of all the agencies; a check of a wikilink looks in all of it
+skillGroups:
+  common: "{GESTALT_ROOT}/.github/common"   # the common skill group of SkillsGestalt: skills, rules, templates and scripts
+  dedi: .claude                             # the skills of this agency only, in .claude/skills/
+  external:                                 # skills from outside the agencies, if any
+agencies:
+  SkillsGestalt: "{GESTALT_ROOT}"           # the root of SkillsGestalt: check_chores.py finds there the chores this agency does
+keepEnglishChore: keep-english              # the chore that audits the 繁體中文 twins when tw-keep-english.md changes; CLAUDE.md links it. Remove the line if this agency does not do it
