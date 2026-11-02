@@ -69,10 +69,10 @@
 提出時問了 8 個問題，決定如下：
 
 - **範圍**：4 份原檔，都沒有 frontmatter。
-  - [report-yaml-rules.md](../.github/common/rules/report-yaml-rules.md)（17 行）
-  - [report-md-rules.md](../.github/common/rules/report-md-rules.md)（61 行）
-  - [md-style.md](../.github/common/rules/md-style.md)（76 行）
-  - [tw-keep-english.md](../.github/common/references/tw-keep-english.md)（82 行）
+  - [report-yaml-rules.md](../skill-groups/common/rules/report-yaml-rules.md)（17 行）
+  - [report-md-rules.md](../skill-groups/common/rules/report-md-rules.md)（61 行）
+  - [md-style.md](../skill-groups/common/rules/md-style.md)（76 行）
+  - [tw-keep-english.md](../skill-groups/common/references/tw-keep-english.md)（82 行）
 - **做法**：照 chinese skill 的流程為每一份寫出 `-tw.md`，放在原檔旁邊。
 - **原檔不動**：不在原檔加「它的繁體中文 twin 是…」那一句，和 [[Task 33]] 的決定一致。
 - **順序**：照 Task 31 用到它們的順序——report-yaml-rules（2.1）、report-md-rules（2.5）、md-style（2.6）、tw-keep-english（第 3 步）。
@@ -115,6 +115,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

@@ -1,6 +1,6 @@
 # Task 85 - 讓 Forge 像使用 skill 一樣使用本 agency 的 chore，以 {agencies.X} 定位
 
-**Status**：完成——2026-10-30 [chore-rules.md](../.github/common/rules/chore-rules.md) 與中文版加上「使用檔」的規則與 `agencies` 設定；[[keep-english]] 不再綁定本 agency，報告搬到 `checkpoints/chores/keep-english/`；`check_chores.py` 與 `gen_claude_md.py` 不必改。
+**Status**：完成——2026-10-30 [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 與中文版加上「使用檔」的規則與 `agencies` 設定；[[keep-english]] 不再綁定本 agency，報告搬到 `checkpoints/chores/keep-english/`；`check_chores.py` 與 `gen_claude_md.py` 不必改。
 各 Forge 改用 Chore 2，在它們自己的 tasks 做。
 **Raised**：2026-10-30，比較本 agency 的 [[keep-english]] 與 InvestForge 的 keep-English 稽核：兩份逐字幾乎相同，只差稽核哪一邊的檔；使用者希望 chore 的用法和 skill 一樣，定義在一處，各 agency 拿來用。
 **Depends on**：—
@@ -11,7 +11,7 @@
 - chore 現在每個 agency 各寫一份：[[keep-english]] 是本 agency 的 keep-English 稽核；[[Task 62.5]] 把它的範圍縮回本 agency 之後，InvestForge 另寫了一份幾乎相同的。
   兩份會各自分岔，和 [[Task 82]] 之前的 CLAUDE.md 一樣。
 - `{skillGroups.common}` 指的是 skill group（`.github/common`），不是 agency 的根目錄；chore 在 agency 根目錄的 `chores/`，跟著 agency 走，不屬於 skill group。
-- [chore-rules.md](../.github/common/rules/chore-rules.md) 已允許一個 workspace 引用它所用的 skill group 所在 workspace 的 chore，文字寫成 `Chore N @ <workspace>`；不允許反方向。
+- [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 已允許一個 workspace 引用它所用的 skill group 所在 workspace 的 chore，文字寫成 `Chore N @ <workspace>`；不允許反方向。
   所以 Forge 使用本 agency 的 chore 合乎現行規則；本 agency 不知道哪些 Forge 在用。
 
 ## 2. 現況
@@ -30,7 +30,7 @@
 
 ### 2026-10-30 做完之後
 
-- [chore-rules.md](../.github/common/rules/chore-rules.md) 與中文版新增一節 A Chore of a Different Workspace：
+- [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 與中文版新增一節 A Chore of a Different Workspace：
   - 要做另一個 workspace 的 chore，在自己的 `chores/` 放一個使用檔，編號是自己的；1 到 4 章各一行「照 Chore N @ <agency> 的同一章」，第 1 章另寫 `{agencies.<agency>}/chores/Chore N.md`；「6. 執行紀錄」記自己的執行，摘要表照常有一列。
   - `config.yaml` 的 `agencies` 給出那些 agency 的根目錄。
   - 有不只一個 workspace 在做的 chore，第 1 到 4 章不寫任何一個 workspace 的值：路徑寫 `{skillGroups.common}`，報告目錄的名稱不含 chore 編號；每個 workspace 在自己的根目錄做，報告、執行紀錄與 commit 留在自己那裡。
@@ -42,7 +42,7 @@
 
 - 使用者要求：chore 若要 checkpoints，路徑是 `checkpoints/chores/<agency>/chore-<N>`。
 - `<agency>` 與 `<N>` 指寫出 step 的那個 chore：Chore 2 @ SkillsGestalt 一律是 `checkpoints/chores/SkillsGestalt/chore-2`，別的 agency 用使用檔來做時，也在它自己的根目錄下用同一個路徑；所以定義裡可以直接寫這個路徑。
-- 這條規則適用於每個用到 checkpoints 的 chore，寫在 [chore-rules.md](../.github/common/rules/chore-rules.md) 與中文版的 The Chore File 一節；它取代上面「報告目錄的名稱不含 chore 編號」那一句。
+- 這條規則適用於每個用到 checkpoints 的 chore，寫在 [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 與中文版的 The Chore File 一節；它取代上面「報告目錄的名稱不含 chore 編號」那一句。
 - [[keep-english]] 的兩條指令與執行紀錄改成這個路徑，報告從 `checkpoints/chores/keep-english/` 搬過去，`due` 仍是 not due。
 
 ## 3. 要做的
@@ -73,7 +73,7 @@
 
 ### 步驟
 
-1. [chore-rules.md](../.github/common/rules/chore-rules.md) 與中文版：加上使用別的 agency 的 chore 的規則、`agencies` 設定、定義與執行狀態各放哪裡、摘要表那一列的寫法。
+1. [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 與中文版：加上使用別的 agency 的 chore 的規則、`agencies` 設定、定義與執行狀態各放哪裡、摘要表那一列的寫法。
 2. `check_chores.py`：接受 `Chore N @ <agency>` 的列，以 `agencies` 找到那個檔。
 3. `gen_claude_md.py`：支援 `{agencies.X}`，並把 `keepEnglishChore: Chore N @ <agency>` 換成連到 `{agencies.<agency>}/chores/Chore%20N.md` 的相對連結；沒有 `@` 時照舊連到本 agency。
 4. [[keep-english]]：路徑改寫 `{skillGroups.common}`，報告目錄改成中性的名稱，「3. 怎麼做」的提交步驟改成不帶本 agency 的編號與 task；舊的報告搬到新的目錄或在執行紀錄註明。
@@ -109,6 +109,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-30
 

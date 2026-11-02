@@ -6,7 +6,7 @@
 
 ## 1. 目的
 
-每份 STE 檔與草稿都在檔頭記錄 [ste-custom.md](../.github/common/skills/asd-ste/references/ste-custom.md) 的指紋，所以 ste-custom.md 一改，它們全部報 CHANGED。
+每份 STE 檔與草稿都在檔頭記錄 [ste-custom.md](../skill-groups/common/skills/asd-ste/references/ste-custom.md) 的指紋，所以 ste-custom.md 一改，它們全部報 CHANGED。
 一天只集中重檢、重記一次：指紋照樣可靠，同一件事也不會每改一次就重記一輪。
 
 ## 2. 何時要做

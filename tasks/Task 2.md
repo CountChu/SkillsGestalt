@@ -6,14 +6,14 @@
 
 ## 1. 背景
 
-[RSDC 標準](../.github/common/references/RSDC-Standard.md)（Version 261010）把 **Naming and Data Structures** 列為第 2 章的主題之一：命名規範、metadata 的解析規則，以及 261010 加入的兩條——代碼標籤（code label）是契約、每個數字都寫明精度。
+[RSDC 標準](../skill-groups/common/references/RSDC-Standard.md)（Version 261010）把 **Naming and Data Structures** 列為第 2 章的主題之一：命名規範、metadata 的解析規則，以及 261010 加入的兩條——代碼標籤（code label）是契約、每個數字都寫明精度。
 標準沒有給它省略的條件（只有 Hierarchy 有）。
 另外，Dataflow 的 **Placement** 規則要求 Dataflow 排在每一個引用 stage 名稱的節之前。
 兩份範本原本都沒有完全做到：
 
-- **[RSDC-Skill-System-tmp.md](../.github/common/skills/gen-rsdc-skill/assets/RSDC-Skill-System-tmp.md)** 有 `## 2.2 Data Structures`，是從 StopPriceChecker-RSDC 的章節順序繼承來的。
+- **[RSDC-Skill-System-tmp.md](../skill-groups/common/skills/gen-rsdc-skill/assets/RSDC-Skill-System-tmp.md)** 有 `## 2.2 Data Structures`，是從 StopPriceChecker-RSDC 的章節順序繼承來的。
   名稱少了 "Naming"；而且它排在 `## 2.3 Dataflow` 之前，Part 欄卻要寫 stage 名稱，違反 Placement 規則。
-- **[RSDC-App-tmp.md](../.github/common/skills/gen-rsdc-app/assets/RSDC-App-tmp.md)** 從第一版（2026-09-24）起就沒有這一節。
+- **[RSDC-App-tmp.md](../skill-groups/common/skills/gen-rsdc-app/assets/RSDC-App-tmp.md)** 從第一版（2026-09-24）起就沒有這一節。
   app 的資料契約分散在 2.1 Artifact Types、2.3 HTTP API 的 Takes／Answers 欄與 2.5 Config Schemas；代碼標籤與精度只是 2.1 裡的一段，命名規範與解析規則沒有位置。
 
 ## 2. 現況
@@ -75,6 +75,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

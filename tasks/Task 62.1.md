@@ -34,7 +34,7 @@
 
 ### 結果（2026-10-18）
 
-- [task-rules.md](../.github/common/rules/task-rules.md)（154 行）與 [chore-rules.md](../.github/common/rules/chore-rules.md)（134 行）：STE，`check_ste.py --ste` PASS，沒有 warning。
+- [task-rules.md](../skill-groups/common/rules/task-rules.md)（154 行）與 [chore-rules.md](../skill-groups/common/rules/chore-rules.md)（134 行）：STE，`check_ste.py --ste` PASS，沒有 warning。
   檔頭的兩筆 STE 紀錄由 `depends_on.py record` 寫入，`depends_on.py check` 都是 UNCHANGED。
   兩份只寫「照 md-style.md」，不重述它的規則。
 - 中文版 `task-rules-tw.md` 與 `chore-rules-tw.md`：照 chinese skill，FULL，line for line；`check_parity.py --keep` 都是 0 failure、沒有 warning。
@@ -48,7 +48,7 @@
 
 1. ✅ 在 `.github/common/rules/` 寫英文的規則檔：`tasks/CLAUDE.md` 與 `chores/CLAUDE.md` 中與 workspace 無關的部分，加上第 1 章只記在 memory 的做法。
    路徑一律從 workspace 的根目錄算起；common 的路徑寫成 `{skillGroups.common}`，不點名任何一個 workspace。
-2. ✅ 中文版照 [chinese](../.github/common/skills/chinese/SKILL.md) skill 寫。
+2. ✅ 中文版照 [chinese](../skill-groups/common/skills/chinese/SKILL.md) skill 寫。
 3. ✅ 根目錄 CLAUDE.md 直接指向規則檔，刪掉 `tasks/CLAUDE.md` 與 `chores/CLAUDE.md`，改連到它們的 51 個檔。
 4. ✅ memory 的 workspace-tasks-md 與 task-commit-prefix 改成指向規則檔，不再重複規則的內容。
 5. ✅ 使用者看過兩份規則檔與中文版。
@@ -73,6 +73,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-30
 

@@ -8,17 +8,17 @@
 
 ### 決定之前要知道的
 
-問題：[RSDC-Skill-System-tmp.md](../.github/common/skills/gen-rsdc-skill/assets/RSDC-Skill-System-tmp.md) 的 2.2 Dataflow（Task 2 之前是 2.3）除了 Flowchart（DFD）與它的圖例，還有 Stage Read/Write Table、Data Read/Write Rules、Order Imposed by the Data、Exception Paths 四個部分。
+問題：[RSDC-Skill-System-tmp.md](../skill-groups/common/skills/gen-rsdc-skill/assets/RSDC-Skill-System-tmp.md) 的 2.2 Dataflow（Task 2 之前是 2.3）除了 Flowchart（DFD）與它的圖例，還有 Stage Read/Write Table、Data Read/Write Rules、Order Imposed by the Data、Exception Paths 四個部分。
 DFD 已經畫出每個 stage 讀寫哪些資料，這四個部分還有存在的必要嗎？
 
 決定之前要知道的：
 
 - **它們是標準要求的。**
-  [RSDC 標準](../.github/common/references/RSDC-Standard.md) Dataflow 的 **Required content** 第 2～5 項就是這四個部分（第 1 項是 Flowchart，第 6 項是 Draw a stage open）。
+  [RSDC 標準](../skill-groups/common/references/RSDC-Standard.md) Dataflow 的 **Required content** 第 2～5 項就是這四個部分（第 1 項是 Flowchart，第 6 項是 Draw a stage open）。
   只從範本刪掉，就是偏離標準；要刪，應該先改標準（EN 與 tw，並發一個新版本）。
-  [RSDC-App-tmp.md](../.github/common/skills/gen-rsdc-app/assets/RSDC-App-tmp.md) 的 2.2 Dataflow 也有同樣這四部分，要一起決定。
+  [RSDC-App-tmp.md](../skill-groups/common/skills/gen-rsdc-app/assets/RSDC-App-tmp.md) 的 2.2 Dataflow 也有同樣這四部分，要一起決定。
 - **已有前例。**
-  SKILL template（[SKILL-tmp.md](../.github/common/templates/SKILL-tmp.md)）的 `# Dataflow` 已改成只有一張圖與圖例、不附表格或分段，gen-rsdc-skill 的 Step 8 與 RSDC Checker 的 `check_skill` 也跟著改了；理由是 skill 的每個 step 已經寫明它讀寫什麼。
+  SKILL template（[SKILL-tmp.md](../skill-groups/common/templates/SKILL-tmp.md)）的 `# Dataflow` 已改成只有一張圖與圖例、不附表格或分段，gen-rsdc-skill 的 Step 8 與 RSDC Checker 的 `check_skill` 也跟著改了；理由是 skill 的每個 step 已經寫明它讀寫什麼。
   system 的 RSDC 沒有對應的 step 敘述，這個理由能不能套用，要另外判斷。
 - **各部分有哪些內容是 DFD 畫不出來的**——刪掉之前，這些要先找到別的位置，否則就遺失：
   - **Stage Read/Write Table**：每個 stage 讀什麼、寫什麼、誰接著讀，大致都能從圖上讀出，是最可能真正多餘的一項。
@@ -61,7 +61,7 @@ skill 引用的全是規則（例如「Holding Judge 整份重寫 Check Table，
 ### 牽涉的檔案
 
 - **牽涉的檔案**：
-  - 標準：`RSDC-Standard.md` 與 tw 的 Dataflow 一項；可能還有 [DFD.md](../.github/common/references/DFD.md)。
+  - 標準：`RSDC-Standard.md` 與 tw 的 Dataflow 一項；可能還有 [DFD.md](../skill-groups/common/references/DFD.md)。
   - 範本：RSDC-Skill-System-tmp 與 tw 的 2.2；RSDC-App-tmp 與 tw 的 2.2。
   - RSDC Checker（`.github/common/skills/gen-rsdc-skill/scripts/check_rsdc.py`）：從範本讀取 Dataflow 的各部分標題，並比對 `STAGE_HEADER`、`DATA_HEADER`、`ORDER_SENTENCE`、`EXCEPTION_LABELS` 這些固定字串。
     「每個 stage 都有元件執行」的檢查，stage 名稱也是從 Stage Read/Write Table 取得——刪掉這張表，就要改從圖上的圓角框取得。
@@ -91,6 +91,10 @@ skill 引用的全是規則（例如「Holding Judge 整份重寫 Check Table，
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

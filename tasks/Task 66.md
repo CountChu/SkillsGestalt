@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-gen-skill 寫新 skill 的 `README.md` 時，整份抄 [README-tmp.md](../.github/common/templates/README-tmp.md)，所以每份新格式的 README 都有一批和範本相同的共用句子。
+gen-skill 寫新 skill 的 `README.md` 時，整份抄 [README-tmp.md](../skill-groups/common/templates/README-tmp.md)，所以每份新格式的 README 都有一批和範本相同的共用句子。
 2026-10-19 [[Task 32.10]] 把 README-tmp 換成 STE 版，範本的說法改了，已經寫好的 README 還是舊的說法。
 `check_parity.py` 只檢查和範本完全相同的行，所以這些舊句子不會被報出來，也不會再被檢查。
 
@@ -16,9 +16,9 @@ gen-skill 寫新 skill 的 `README.md` 時，整份抄 [README-tmp.md](../.githu
 
 範本的行號指取代前的 README-tmp.md，也就是 commit `3f62423` 那一版。
 
-- [asd-ste/README.md](../.github/common/skills/asd-ste/README.md)：18 行，第 13–16、26–29、159、160、182、204、326、327、429、438、445、475 行。
-- [check-skill/README.md](../.github/common/skills/check-skill/README.md)：20 行，第 12–15、24–27、97、98、107、126、181、182、225、229、230、234、235、249 行。
-- [gen-skill/README.md](../.github/common/skills/gen-skill/README.md)：22 行，第 11–14、23–26、93、94、104、123、169、173、174、213、215–217、222、223、236 行。
+- [asd-ste/README.md](../skill-groups/common/skills/asd-ste/README.md)：18 行，第 13–16、26–29、159、160、182、204、326、327、429、438、445、475 行。
+- [check-skill/README.md](../skill-groups/common/skills/check-skill/README.md)：20 行，第 12–15、24–27、97、98、107、126、181、182、225、229、230、234、235、249 行。
+- [gen-skill/README.md](../skill-groups/common/skills/gen-skill/README.md)：22 行，第 11–14、23–26、93、94、104、123、169、173、174、213、215–217、222、223、236 行。
 - 三份的中文版各有對應的行。
 - 牽涉的範本句子有 22 句：舊範本第 13–16、25–28、68、70、75、86、110、114、115、147、149–151、156、157、172 行。
 - 第 18、63、66 行新舊範本相同，不必改。
@@ -46,6 +46,10 @@ gen-skill 寫新 skill 的 `README.md` 時，整份抄 [README-tmp.md](../.githu
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-19
 

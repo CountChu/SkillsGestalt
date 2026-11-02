@@ -7,7 +7,7 @@
 ## 1. 背景
 
 - InvestForge 已經實際使用 SkillsGestalt：`skillGroups.common` 指向本 repo 的 `.github/common`，CLAUDE.md 由 `CLAUDE-local.md` 與模板產生，keep-English 稽核透過 `agencies` 做 [[keep-english]]；`gen_claude_md.py --check` 與 `check_chores.py` 都是 PASS。
-- 但怎麼接上，散在 [[Task 82]] 到 [[Task 87]]、[chore-rules.md](../.github/common/rules/chore-rules.md) 與 [CLAUDE-tmp.md](../.github/common/templates/CLAUDE-tmp.md) 裡，README 的 Getting Started 只講本 repo 自己。
+- 但怎麼接上，散在 [[Task 82]] 到 [[Task 87]]、[chore-rules.md](../skill-groups/common/rules/chore-rules.md) 與 [CLAUDE-tmp.md](../skill-groups/common/templates/AGENTS-tmp.md) 裡，README 的 Getting Started 只講本 repo 自己。
 - `config.example.yaml` 是本 repo 自己的例子，沒有 Forge 會用到的 `agencies`，也沒說明每個鍵。
 - Forge 直接讀本 repo 的工作目錄，本 repo 一改，Forge 立刻跟著變；[[Task 86]] 改了 `check_chores.py`，InvestForge 就有一陣子 FAIL，靠手動通知 Task 13 @ InvestForge 的 session 才修好。
 
@@ -43,6 +43,11 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標從 `CLAUDE-local.md`、`CLAUDE-tmp.md`、`gen_claude_md.py` 改成改名後的 `AGENTS-local.md`、`AGENTS-tmp.md`、`gen_agents_md.py`，字句沒有改（[[Task 97.2]]）。
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-31
 

@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-[reformat_md.py](../.github/common/skills/reformat-md/scripts/reformat_md.py) 的第 10 個轉換（每個句子一行）有兩處不符合 [md-style.md](../.github/common/rules/md-style.md) 對句子的定義。
+[reformat_md.py](../skill-groups/common/skills/reformat-md/scripts/reformat_md.py) 的第 10 個轉換（每個句子一行）有兩處不符合 [md-style.md](../skill-groups/common/rules/md-style.md) 對句子的定義。
 Task 19 轉換時繞過了它們，沒有修工具。
 
 ## 2. 現況
@@ -27,7 +27,7 @@ Task 19 轉換時繞過了它們，沒有修工具。
 - 句號、空格之後若是 ASCII 以外的符號（Unicode 的 So、Sm 類，例如 ⌘、→），或含連字號的小寫名稱（例如 mermaid-view、gen-skill），就是新句子的開頭。
 - 仍認不出的：沒有連字號的小寫名稱（例如 pathlib）。
   引號裡的句號即使是整句的結尾也不斷句：`He said "Stop." Then it ran.` 留在同一行，照 md-style.md 的字面規則。
-- 新增 [test_reformat.py](../.github/common/skills/reformat-md/scripts/test_reformat.py)，15 個例子：該斷的、不該斷的，以及 [[Task 42]] 的 `$$`；每個例子再跑一次，確認沒有變化。
+- 新增 [test_reformat.py](../skill-groups/common/skills/reformat-md/scripts/test_reformat.py)，15 個例子：該斷的、不該斷的，以及 [[Task 42]] 的 `$$`；每個例子再跑一次，確認沒有變化。
 - [[Task 19]] 的兩處繞法不必還原：改成 inline code 的訊息不受影響；MermaidView-RSDC.md 手動加的 4 個換行，和工具現在的斷法一致。
 
 ## 3. 要做的
@@ -57,6 +57,10 @@ Task 19 轉換時繞過了它們，沒有修工具。
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-30
 

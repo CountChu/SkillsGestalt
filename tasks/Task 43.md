@@ -7,8 +7,8 @@
 ## 1. 背景
 
 背景：這幾個名稱分屬兩個面向。
-英文 STE 檔能用哪些字：**technical word**（技術用字，STE 規則 1.5、1.12 的技術名詞與技術動詞，見 asd-ste 的 House Rule 6），以及 **STE customization**（[ste-custom.md](../.github/common/skills/asd-ste/references/ste-custom.md)，本專案在 Issue 9 之外核准的字，見 House Rule 11）。
-中文版要不要保留英文：[tw-keep-english.md](../.github/common/references/tw-keep-english.md) 規則裡的 **technical term**（它的中文版寫「技術詞」，chinese skill 的中文版寫「技術術語」），以及判定要保留英文、列進表格的 **keep-English list**。
+英文 STE 檔能用哪些字：**technical word**（技術用字，STE 規則 1.5、1.12 的技術名詞與技術動詞，見 asd-ste 的 House Rule 6），以及 **STE customization**（[ste-custom.md](../skill-groups/common/skills/asd-ste/references/ste-custom.md)，本專案在 Issue 9 之外核准的字，見 House Rule 11）。
+中文版要不要保留英文：[tw-keep-english.md](../skill-groups/common/references/tw-keep-english.md) 規則裡的 **technical term**（它的中文版寫「技術詞」，chinese skill 的中文版寫「技術術語」），以及判定要保留英文、列進表格的 **keep-English list**。
 technical term 和 technical word 只差一個字，中文的「技術詞」和「技術用字」也是；customization 則看不出它其實就是核准字，只是由本專案核准，所以不算技術用字。
 
 ## 2. 現況
@@ -74,7 +74,7 @@ technical term 和 technical word 只差一個字，中文的「技術詞」和�
   - write-note 的 SKILL.md 第 158 行、write-topic 的 SKILL.md 第 126 行；這兩個 skill 沒有中文版，也沒有 README。
 - STE customization：
   - asd-ste 的 SKILL.md、README.md 與兩者的中文版：glossary、CONFIGURATION、Step 1 到 Step 3，以及 Dataflow 的節點。
-  - [ste-rules.md](../.github/common/skills/asd-ste/references/ste-rules.md) 第 8、16、225、239、243 行，其中第 239 行是 House Rule 11 的標題；記錄它的 asd-ste SKILL.md 與中文版重記。
+  - [ste-rules.md](../skill-groups/common/skills/asd-ste/references/ste-rules.md) 第 8、16、225、239、243 行，其中第 239 行是 House Rule 11 的標題；記錄它的 asd-ste SKILL.md 與中文版重記。
   - ste-custom.md 與中文版的標題。
   - `check_ste.py` 的 docstring、註解與 `--custom` 的說明文字。
 - 連帶要做的：
@@ -84,7 +84,7 @@ technical term 和 technical word 只差一個字，中文的「技術詞」和�
 **改 skill 時**
 
 asd-ste 有 README.md：先讀它的 When the Skill Is Changed，照它一起改、跑它列的檢查。
-chinese、write-note 與 write-topic 沒有 README.md：先讀 [skill-writing.md](../.github/common/rules/skill-writing.md)。
+chinese、write-note 與 write-topic 沒有 README.md：先讀 [skill-writing.md](../skill-groups/common/rules/skill-writing.md)。
 中文版照 chinese skill 只翻改動的部分，再以 `check_parity.py` 對照。
 
 ## 4. 驗證
@@ -103,6 +103,10 @@ chinese、write-note 與 write-topic 沒有 README.md：先讀 [skill-writing.md
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

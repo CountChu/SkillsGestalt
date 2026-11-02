@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-背景：[tw-keep-english.md](../.github/common/references/tw-keep-english.md) 261010 新增的術語是 frontmatter、placeholder、inline code、fenced block、template、twin、verdict、skill、folded block scalar、plain scalar。
+背景：[tw-keep-english.md](../skill-groups/common/references/tw-keep-english.md) 261010 新增的術語是 frontmatter、placeholder、inline code、fenced block、template、twin、verdict、skill、folded block scalar、plain scalar。
 依清單本身的規則，它們有一種以上的譯法在用，或指稱系統中的某種類型或角色；而且在既有 twin 裡，保留英文本來就是多數（例如 template 有 81 處英文，範本 13 處）。
 這些只是 `[WARN]`，不會讓 parity check 失敗；它們指出同一個概念在不同 twin 裡有不同寫法。
 
@@ -21,12 +21,12 @@ RSDC-Standard-tw 歷史條目裡的 7 處「範本」也改了，不發新版本
 
 | Twin | 被標記的譯法 → 應保留的英文 | 所在的行（2026-10-10） |
 |---|---|---|
-| [RSDC-Standard-tw.md](../.github/common/references/RSDC-Standard-tw.md) | 範本 → template | L105、107、121、125、126、139、147 |
-| [check-skill 的 SKILL-tw.md](../.github/common/skills/check-skill/SKILL-tw.md) | 佔位符 → placeholder；行內程式碼 → inline code | L170；L173 |
-| [checking-criteria-tw.md](../.github/common/skills/check-skill/references/checking-criteria-tw.md) | 行內程式碼 → inline code；佔位符 → placeholder | L28、87；L42 |
-| [gen-skill 的 SKILL-tw.md](../.github/common/skills/gen-skill/SKILL-tw.md) | 範本 → template；雙胞胎 → twin | L22、146；L4、43、152、154 |
-| [imp-app 的 SKILL-tw.md](../.github/common/skills/imp-app/SKILL-tw.md) | 孿生檔 → twin | L61、63、105 |
-| [Wireframe-tw.md](../.github/common/skills/imp-home/references/Wireframe-tw.md) | 孿生檔 → twin | L3 |
+| [RSDC-Standard-tw.md](../skill-groups/common/references/RSDC-Standard-tw.md) | 範本 → template | L105、107、121、125、126、139、147 |
+| [check-skill 的 SKILL-tw.md](../skill-groups/common/skills/check-skill/SKILL-tw.md) | 佔位符 → placeholder；行內程式碼 → inline code | L170；L173 |
+| [checking-criteria-tw.md](../skill-groups/common/skills/check-skill/references/checking-criteria-tw.md) | 行內程式碼 → inline code；佔位符 → placeholder | L28、87；L42 |
+| [gen-skill 的 SKILL-tw.md](../skill-groups/common/skills/gen-skill/SKILL-tw.md) | 範本 → template；雙胞胎 → twin | L22、146；L4、43、152、154 |
+| [imp-app 的 SKILL-tw.md](../skill-groups/common/skills/imp-app/SKILL-tw.md) | 孿生檔 → twin | L61、63、105 |
+| [Wireframe-tw.md](../skill-groups/common/skills/imp-home/references/Wireframe-tw.md) | 孿生檔 → twin | L3 |
 
 **同幾份 twin 裡還有清單 261005 就有的舊警告**，不屬於本項，可以順手一起處理：check-skill 的 twin「確定性」1 行；gen-skill 的 twin「確定性」1 行、「步驟」1 行；imp-app 的 twin「代理人」1 行、「確定性」4 行、「過期」1 行、「步驟」26 行；Wireframe-tw「過期」1 行。
 
@@ -62,6 +62,10 @@ RSDC-Standard-tw 歷史條目裡的 7 處「範本」也改了，不發新版本
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

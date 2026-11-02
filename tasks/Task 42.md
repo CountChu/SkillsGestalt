@@ -6,8 +6,8 @@
 
 ## 1. 背景
 
-背景：reformat-md 的轉換 10 把正文的每一句各放在一行，但 [reformat_md.py](../.github/common/skills/reformat-md/scripts/reformat_md.py) 的 `is_prose()` 遇到含 `$$` 的行，就當成不是正文，整行略過。
-[md-style.md](../.github/common/rules/md-style.md) 讓獨立成行的數學式維持原樣，指的是 `$$...$$` 自成一行的數學式；這個判斷卻連 inline code 裡的 `$$` 也算進去。
+背景：reformat-md 的轉換 10 把正文的每一句各放在一行，但 [reformat_md.py](../skill-groups/common/skills/reformat-md/scripts/reformat_md.py) 的 `is_prose()` 遇到含 `$$` 的行，就當成不是正文，整行略過。
+[md-style.md](../skill-groups/common/rules/md-style.md) 讓獨立成行的數學式維持原樣，指的是 `$$...$$` 自成一行的數學式；這個判斷卻連 inline code 裡的 `$$` 也算進去。
 md-style.md 第 12 行（數學式的規則）與第 44 行（轉換 7）都在 inline code 裡寫了 `$$`，所以一行有好幾句，以 `--mode clean` 重新排版也不會變。
 md-style 的 STE 草稿已經把這兩行拆成一句一行，取代之後 md-style.md 本身不再有這個情形，但其他檔案仍可能有。
 
@@ -17,17 +17,17 @@ md-style 的 STE 草稿已經把這兩行拆成一句一行，取代之後 md-st
 
 ### 現況查核（2026-10-20）
 
-- [reformat_md.py](../.github/common/skills/reformat-md/scripts/reformat_md.py) 第 438 行的 `is_prose()` 仍以 `"$$" in s` 判斷，連 inline code 裡的 `$$` 也算，問題仍在。
+- [reformat_md.py](../skill-groups/common/skills/reformat-md/scripts/reformat_md.py) 第 438 行的 `is_prose()` 仍以 `"$$" in s` 判斷，連 inline code 裡的 `$$` 也算，問題仍在。
 - 實測的方法：把 `is_prose()` 改成先拿掉 inline code 再找 `$$`，以修正版與原版對同一批檔案的副本各跑一次 `--mode clean`，比對兩邊的結果。
-- 本 workspace 含 `$$` 的 md 有 5 份，修正後只有一份會變：check-wiki-doc 的 [checking-criteria.md](../.github/common/skills/check-wiki-doc/references/checking-criteria.md) 第 266 行，多拆出一行。
+- 本 workspace 含 `$$` 的 md 有 5 份，修正後只有一份會變：check-wiki-doc 的 [checking-criteria.md](../skill-groups/common/skills/check-wiki-doc/references/checking-criteria.md) 第 266 行，多拆出一行。
 - InvestForge 含 `$$` 的 md 有 11 份，`$$` 全在 inline code 裡的只有一行：report-cash-level 的 `SKILL.md` 第 93 行。
 - 這兩份都沒有中文版，所以不必一起重排 twin。
 - reformat-md 仍沒有 README.md。
 
 ### 做了什麼（2026-10-30）
 
-- [reformat_md.py](../.github/common/skills/reformat-md/scripts/reformat_md.py) 新增 `outside_code()`，`is_prose()` 判斷 `$$` 之前先拿掉 inline code，照「已決定」的做法。
-- check-wiki-doc 的 [checking-criteria.md](../.github/common/skills/check-wiki-doc/references/checking-criteria.md) 第 266 行拆成兩行。
+- [reformat_md.py](../skill-groups/common/skills/reformat-md/scripts/reformat_md.py) 新增 `outside_code()`，`is_prose()` 判斷 `$$` 之前先拿掉 inline code，照「已決定」的做法。
+- check-wiki-doc 的 [checking-criteria.md](../skill-groups/common/skills/check-wiki-doc/references/checking-criteria.md) 第 266 行拆成兩行。
 - InvestForge 的 report-cash-level `SKILL.md` 第 93 行只有一句，修好之後也不會拆開，所以不必重排。
   這份檔案的其他地方本來就不是一句一行，新舊兩版都會改，和本 task 無關。
 
@@ -51,7 +51,7 @@ md-style 的 STE 草稿已經把這兩行拆成一句一行，取代之後 md-st
 
 **改 reformat-md 時**
 
-reformat-md 沒有 README.md：先讀 [skill-writing.md](../.github/common/rules/skill-writing.md)，改好之後以 `check_reformat.py` 確認重新排版只改了換行與換行周圍的空格。
+reformat-md 沒有 README.md：先讀 [skill-writing.md](../skill-groups/common/rules/skill-writing.md)，改好之後以 `check_reformat.py` 確認重新排版只改了換行與換行周圍的空格。
 動手時 reformat-md 若已有 README.md（[[Task 24]]），就照它的 When the Skill Is Changed 做。
 
 ## 4. 驗證
@@ -75,6 +75,10 @@ reformat-md 沒有 README.md：先讀 [skill-writing.md](../.github/common/rules
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-30
 

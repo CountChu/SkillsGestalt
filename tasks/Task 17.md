@@ -6,10 +6,10 @@
 
 ## 1. 背景
 
-[App 範本](../.github/common/skills/gen-rsdc-app/assets/RSDC-App-tmp.md)在 Task 12 改了三件 skill 會碰到的事：
+[App 範本](../skill-groups/common/skills/gen-rsdc-app/assets/RSDC-App-tmp.md)在 Task 12 改了三件 skill 會碰到的事：
 
 - **可省略的節**：2.6 Derivation Rules 與 4.4 Platform Traps 標為 Optional，範本開頭寫明 app 沒有可寫的內容就省略，之後各節依序遞補。
-  [gen-rsdc-app](../.github/common/skills/gen-rsdc-app/SKILL.md) 寫 design pair 的規則卻是「範本有的節都寫，沒有的都不寫」，沒有提到 Optional。
+  [gen-rsdc-app](../skill-groups/common/skills/gen-rsdc-app/SKILL.md) 寫 design pair 的規則卻是「範本有的節都寫，沒有的都不寫」，沒有提到 Optional。
 - **4.5 Verification Obligations 改成以主張為列**：表頭是 `| Claim | Rule | Proven by | Performed by |`，3.1 的每個 component 至少出現在一列，尚未證明的主張標 *not verified*。
   gen-rsdc-app（EN、tw 各 6 處）與 imp-app（各 10 處）仍以「每個 component 一列 acceptance」描述它：字彙表的 **acceptance**、寫 design pair 時「每個 component 一列」、交回與記錄的 Components 表的 Acceptance 欄，以及 imp-app 的 update（Step 3）補改 acceptance 列、test（Step 4）從 acceptance 列讀出 Component。
   gen-imp-app 的字彙表也有 **acceptance**。
@@ -58,6 +58,10 @@ Task 14 的第 2 期（在新位置做範本對齊）已由 Task 12 做完；它
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

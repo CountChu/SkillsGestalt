@@ -9,7 +9,7 @@
 update 不在 STE Issue 9 的字典裡，既不核准，也不列為不核准。
 report-md-rules.md 第二節的標題是「Update MD report file」，標題要照抄，所以草稿把 update 當成電腦作業的技術動詞（STE 規則 1.12），列在 `Technical words:`。
 `check_ste.py` 只在內文找技術用字（見 [[Task 41]]），所以只在標題用到時會報「listed but never used」；2026-10-16 第二輪把第 14 行改成用 update 之後，這則 WARN 才消失。
-使用者決定照 create 的做法，把 update 收進 [ste-custom.md](../.github/common/skills/asd-ste/references/ste-custom.md)：專案核准詞不列為技術用字（House Rule 11）。
+使用者決定照 create 的做法，把 update 收進 [ste-custom.md](../skill-groups/common/skills/asd-ste/references/ste-custom.md)：專案核准詞不列為技術用字（House Rule 11）。
 
 ## 2. 現況
 
@@ -57,6 +57,10 @@ report-md-rules.md 第二節的標題是「Update MD report file」，標題要�
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

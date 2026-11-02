@@ -7,14 +7,14 @@
 ## 1. 背景
 
 提議：RSDC-Skill-System-tmp 與 RSDC-App-tmp（EN 與 tw 都改）第 2 章的 Dataflow 裡，把名為 **Flowchart** 的部分改稱 **DFD**。
-那張圖本來就是 DFD（標準與 [DFD.md](../.github/common/references/DFD.md) 都這麼說），"Flowchart" 這個名稱容易讓人以為是一般流程圖。
+那張圖本來就是 DFD（標準與 [DFD.md](../skill-groups/common/references/DFD.md) 都這麼說），"Flowchart" 這個名稱容易讓人以為是一般流程圖。
 
 ### 評估
 
 評估（2026-10-09）：**值得改**，但 RSDC Checker 要一起改成不依賴名稱。
 
 - **名稱說錯了圖的種類。**
-  這張圖是 DFD：標準說 Dataflow "is drawn as a DFD"，[DFD.md](../.github/common/references/DFD.md) 開頭就是 "A DFD — data flow diagram — is how every flow in these documents is drawn"，圖例講的也是 DFD 的形狀與線。
+  這張圖是 DFD：標準說 Dataflow "is drawn as a DFD"，[DFD.md](../skill-groups/common/references/DFD.md) 開頭就是 "A DFD — data flow diagram — is how every flow in these documents is drawn"，圖例講的也是 DFD 的形狀與線。
   flowchart 一般指控制流程圖——接下來做什麼、在哪裡分岔——而不是資料往哪裡流。
   這個名稱多半是從 mermaid 的語法 `flowchart TB` 帶過來的。
 - **在 MermaidView-RSDC 已經造成混淆。**
@@ -43,9 +43,9 @@
 
 要改的地方（2026-10-09 搜尋的結果）：
 
-- **[RSDC-Skill-System-tmp.md](../.github/common/skills/gen-rsdc-skill/assets/RSDC-Skill-System-tmp.md)**：第 93 行的 `### Flowchart` 小節標題；tw 檔同一行，標題兩邊要逐字相同。
-- **[RSDC-App-tmp.md](../.github/common/skills/gen-rsdc-app/assets/RSDC-App-tmp.md)**：第 67 行的粗體小標 `**Flowchart.**`；tw 檔是 `**Flowchart。**`。
-- **標準**：[RSDC-Standard.md](../.github/common/references/RSDC-Standard.md) 第 40 行 Dataflow 的 Required content 第 1 項就叫 **Flowchart**（"a DFD of the stages"），tw 同一行。
+- **[RSDC-Skill-System-tmp.md](../skill-groups/common/skills/gen-rsdc-skill/assets/RSDC-Skill-System-tmp.md)**：第 93 行的 `### Flowchart` 小節標題；tw 檔同一行，標題兩邊要逐字相同。
+- **[RSDC-App-tmp.md](../skill-groups/common/skills/gen-rsdc-app/assets/RSDC-App-tmp.md)**：第 67 行的粗體小標 `**Flowchart.**`；tw 檔是 `**Flowchart。**`。
+- **標準**：[RSDC-Standard.md](../skill-groups/common/references/RSDC-Standard.md) 第 40 行 Dataflow 的 Required content 第 1 項就叫 **Flowchart**（"a DFD of the stages"），tw 同一行。
   範本只改不動標準，兩邊的名稱就不一致；建議標準一起改，並發一個新版本、在 "Changes in This Version" 記下。
 - **RSDC Checker**（`.github/common/skills/gen-rsdc-skill/scripts/check_rsdc.py`）：第 494 行寫死 `'Flowchart' in part_at`，Dataflow 的部分名稱雖然從範本讀取（`DATAFLOW_PARTS`），這一處沒有。
   只改範本不改這裡，圖的檢查（hexagon、圓角框、節點形狀、藍線、圖例）會悄悄全部跳過，卻不報錯；而且 Task 3 之後 stage 名稱也從這張圖取得，「每個 stage 都有元件執行」與 stage 清單的比對也會跟著跳過。
@@ -98,6 +98,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

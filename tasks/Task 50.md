@@ -8,7 +8,7 @@
 
 ste-custom.md 原本只有專案核准詞的表格，標題是 Project-Approved Words（[[Task 43]] 取的名稱）。
 ASD-STE100 Issue 9 的 Part 1 共 9 節寫作規則，沒有一條提到雙重否定；唯一提到否定的是第 7 節的說明，要求安全指示寫出 DO NOT。
-asd-ste 的 [ste-rules.md](../.github/common/skills/asd-ste/references/ste-rules.md) 有 11 條 House Rules，是 skill 自己的寫法約定；使用者為本專案決定的規則，從此放在 ste-custom.md。
+asd-ste 的 [ste-rules.md](../skill-groups/common/skills/asd-ste/references/ste-rules.md) 有 11 條 House Rules，是 skill 自己的寫法約定；使用者為本專案決定的規則，從此放在 ste-custom.md。
 
 ## 2. 現況
 
@@ -111,6 +111,10 @@ asd-ste 的 [ste-rules.md](../.github/common/skills/asd-ste/references/ste-rules
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

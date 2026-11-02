@@ -6,9 +6,9 @@
 
 ## 1. 背景
 
-- [md-style.md](../.github/common/rules/md-style.md) 規定散文一個句子一行、英文用美式拼法（[[Task 38]]）等；根目錄的 CLAUDE.md 要求建立或修改 md 時照它寫。
+- [md-style.md](../skill-groups/common/rules/md-style.md) 規定散文一個句子一行、英文用美式拼法（[[Task 38]]）等；根目錄的 CLAUDE.md 要求建立或修改 md 時照它寫。
 - [[Task 19]] 讓範圍內的每一份 md 都改成一句一行；之後新寫、改過的檔，只有寫的人自己檢查。
-- 在副本上以 reformat-md 的 `reformat_md.py --mode clean` 試跑，就看得出一份檔哪幾行不是一句一行；美式拼法有 [us-spelling.json](../.github/common/references/us-spelling.json) 可以對照。
+- 在副本上以 reformat-md 的 `reformat_md.py --mode clean` 試跑，就看得出一份檔哪幾行不是一句一行；美式拼法有 [us-spelling.json](../skill-groups/common/references/us-spelling.json) 可以對照。
 - [[Task 61]] 讓定規則的 md 裡重複的規則只寫一次；之後新加的重述，沒有定期檢查。
 - `reformat_md.py` 還有兩個已知的斷句問題（[[Task 36]]、[[Task 42]]）：修好之前，巡檢會漏掉那幾種一行多句，但不會誤報。
 
@@ -47,10 +47,10 @@
 
 ## 3. 要做的
 
-1. 決定「要決定的」五項，照 [chore-rules.md](../.github/common/rules/chore-rules.md) 建立 chore 與摘要表的一列。
+1. 決定「要決定的」五項，照 [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 建立 chore 與摘要表的一列。
 2. 需要的話，寫巡檢腳本；重複規則的掃描要不要寫成工具，也在這時決定。
 3. 跑第一次。
-   第一次的對象包括 [[Task 61]] 讀規則檔時找到的英式拼法（2026-10-30）：[ste-rules.md](../.github/common/skills/asd-ste/references/ste-rules.md) 的 judgement，[checking-criteria.md](../.github/common/skills/check-skill/references/checking-criteria.md) 的 judgement、honours、behaviour、capitalising、artefact、colour。
+   第一次的對象包括 [[Task 61]] 讀規則檔時找到的英式拼法（2026-10-30）：[ste-rules.md](../skill-groups/common/skills/asd-ste/references/ste-rules.md) 的 judgement，[checking-criteria.md](../skill-groups/common/skills/check-skill/references/checking-criteria.md) 的 judgement、honours、behaviour、capitalising、artefact、colour。
    checking-criteria 把 skill-writing 的「scripted-versus-not」叫作 script-versus-judgement，改拼法時一起決定名稱。
 
 ## 4. 驗證
@@ -72,6 +72,10 @@
 
 ## 7. 日誌
 
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
+
 ### 2026-10-30
 
 - [[Task 61]] 讀規則檔時找到的英式拼法，記進要做的第 3 項。
@@ -81,4 +85,4 @@
 ### 2026-10-18
 
 - 建立。
-- 第 3 章連到的 `chores/CLAUDE.md` 已刪除，改連 [chore-rules.md](../.github/common/rules/chore-rules.md)（[[Task 62.1]]）。
+- 第 3 章連到的 `chores/CLAUDE.md` 已刪除，改連 [chore-rules.md](../skill-groups/common/rules/chore-rules.md)（[[Task 62.1]]）。

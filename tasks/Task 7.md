@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-問題：[gen-rsdc-skill 的 SKILL.md](../.github/common/skills/gen-rsdc-skill/SKILL.md) 的 `# Dataflow` 照 SKILL template 畫出 Workflow 實際的讀寫後，`scan_skill.py` 回報兩類問題，check-skill 的 [checking-criteria.md](../.github/common/skills/check-skill/references/checking-criteria.md) 第 6 節第 4、6 項都會把它們判為 issue。
+問題：[gen-rsdc-skill 的 SKILL.md](../skill-groups/common/skills/gen-rsdc-skill/SKILL.md) 的 `# Dataflow` 照 SKILL template 畫出 Workflow 實際的讀寫後，`scan_skill.py` 回報兩類問題，check-skill 的 [checking-criteria.md](../skill-groups/common/skills/check-skill/references/checking-criteria.md) 第 6 節第 4、6 項都會把它們判為 issue。
 圖沒有畫錯：問題出在 workflow 本身的設計。
 
 **原因**：
@@ -39,7 +39,7 @@
 下文的清單是舊的結果，問題的性質不變。
 之後又在 Step 0 之後新增 Step 1 - Locate the Skill Source and Its RSDC，原 Step 1–9 改為 Step 2–10，現在是 Step 0–10；原本由 Step 0 讀 Skill Source，現在由新的 Step 1 讀，兩類問題的數量都沒有變。
 
-**併入 chinese skill（2026-10-10）**：為 [chinese skill](../.github/common/skills/chinese/SKILL.md) 加上 `# Dataflow` 後，`scan_skill.py` 報出同樣兩類問題，原因也相同：
+**併入 chinese skill（2026-10-10）**：為 [chinese skill](../skill-groups/common/skills/chinese/SKILL.md) 加上 `# Dataflow` 後，`scan_skill.py` 報出同樣兩類問題，原因也相同：
 
 - `multi_writer_records`：TW twin——Step 2 - Translate into the TW Twin 寫出它，Step 3 - Parity Check 檢查不通過時就地修正它（「寫 → 檢查並修正」的循環）。
 - `reads_of_later_writes`，兩處（就地修改既有的檔案）：keep-English list——Step 1 讀取，Step 2 才在其中新增術語；TW twin——Step 2 覆寫前讀取舊檔，只為了保留標題的 `（繁體中文）` 後綴，Step 3 之後再修正它。
@@ -78,7 +78,7 @@
 
 **選項**：
 
-1. **修訂規則**：在 [DFD.md](../.github/common/references/DFD.md) 的 "What Counts as a Defect"，以及 check-skill 準則第 6 節第 4、6 項，承認兩種情況——一個 step 當場修正它剛檢查過的檔案；一份就地修改的檔案，前面的 step 讀到的是它執行前的狀態——並讓 `scan_skill.py` 分辨得出來（例如由圖上的標記指出）。
+1. **修訂規則**：在 [DFD.md](../skill-groups/common/references/DFD.md) 的 "What Counts as a Defect"，以及 check-skill 準則第 6 節第 4、6 項，承認兩種情況——一個 step 當場修正它剛檢查過的檔案；一份就地修改的檔案，前面的 step 讀到的是它執行前的狀態——並讓 `scan_skill.py` 分辨得出來（例如由圖上的標記指出）。
    要注意：DFD.md 反對多寫入者的理由是「重跑其中一個，會悄悄抹掉另一個的結果」。
    就地修正不會抹掉別人的結果；但 Step 3 是整份重寫（它會先問），重跑它確實會抹掉 Step 4、5、7、9 的修正。
    DFD.md 屬於 RSDC standard，改它要在 `RSDC-Standard.md` 的 "Changes in This Version" 記下版本。
@@ -96,7 +96,7 @@
   chinese 的 `SKILL.md` 與 tw 的 `# Dataflow`（圖例的最後一行）；選 2 的話還有它的 Step 1 與 Step 2。
   日後其他有檢查並修正循環、或會就地修改檔案的 skill 加上 Dataflow 時，也會遇到同樣的問題。
 
-**另一件相關的小事**：gen-rsdc-skill 的 Dataflow 圖例引用 [SkillCompiler-RSDC](../.github/common/skills/compile-skill/references/SkillCompiler-RSDC.md) §2.3 *Dataflow*（Step 1、9 畫成雙邊框，因為它們執行的 Source Scanner 屬於 SkillCompiler 這個 RSDC system）。
+**另一件相關的小事**：gen-rsdc-skill 的 Dataflow 圖例引用 [SkillCompiler-RSDC](../skill-groups/common/skills/compile-skill/references/SkillCompiler-RSDC.md) §2.3 *Dataflow*（Step 1、9 畫成雙邊框，因為它們執行的 Source Scanner 屬於 SkillCompiler 這個 RSDC system）。
 SkillCompiler-RSDC 還是舊格式；用現在的 RSDC 範本重寫後，Dataflow 會是 2.2，這個引用就過期了，而目前沒有任何檢查會發現。
 
 留下的：
@@ -124,6 +124,10 @@ SkillCompiler-RSDC 還是舊格式；用現在的 RSDC 範本重寫後，Dataflo
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

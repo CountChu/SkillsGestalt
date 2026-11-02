@@ -23,7 +23,7 @@
 - **要改的引用**（2026-10-09 搜尋的結果）：
   - 標準本身與 twin：第 3 行互相連結。
     261008 的 changelog 提到 twin 的舊檔名，那是歷史紀錄，可以保留。
-  - [DFD.md](../.github/common/references/DFD.md) 與 tw：各 2 處連結。
+  - [DFD.md](../skill-groups/common/references/DFD.md) 與 tw：各 2 處連結。
   - 兩份範本與 tw：每份寫成的文件都會保留的 wiki link `> [[RSDC-Responsibilities]]`，以及範本區塊中的路徑。
     RSDC Checker 從範本讀取要保留的 wiki link，範本一改，Checker 就會要求新名稱。
   - skill：gen-rsdc-skill（`SKILL.md` 的 description、字彙表、CONFIGURATION、Step 0，與 tw）、imp-app（CONFIGURATION、Step 0，與 tw）、gen-imp-app（CONFIGURATION）、imp-home（CONFIGURATION，與 tw）。
@@ -73,6 +73,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

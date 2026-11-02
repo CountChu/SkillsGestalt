@@ -7,7 +7,7 @@
 ## 1. 背景
 
 問題：gen-rsdc-skill 原本由兩個 step 寫出並檢查 RSDC twin（`<system name>-RSDC-tw.md`）：Step 7 - Write the RSDC Twin 與 Step 8 - Check the RSDC Pair（原文在 commit `3f18282` 的 `.github/common/skills/gen-rsdc-skill/SKILL.md`）。
-2026-10-10 這兩個 step 拿掉了，RSDC twin 改由 [chinese skill](../.github/common/skills/chinese/SKILL.md) 撰寫。
+2026-10-10 這兩個 step 拿掉了，RSDC twin 改由 [chinese skill](../skill-groups/common/skills/chinese/SKILL.md) 撰寫。
 RSDC 沒有 frontmatter，chinese skill 會逐行翻譯它，逐行對齊本來就做得到；但 RSDC twin 還有幾條專有的規則，它不知道。
 
 **重新整理（2026-10-10）**：寫下這一項之後又有多次更新，以下是整理後的現況。
@@ -174,6 +174,10 @@ Task 14 擔心的「逐行對齊」chinese 已經做到，不必等這一項；�
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

@@ -7,7 +7,7 @@
 ## 1. 背景
 
 - check-skill 對一個 skill 做 6 項檢查：Template alignment、Config conformance、Description accuracy、Terminology usage、Cross-platform compatibility 與 Dataflow。
-  每檢查一次，[update_dashboard.py](../.github/common/skills/check-skill/scripts/update_dashboard.py) 就把結果合併進 Skills Dashboard 中那個 skill 的一列。
+  每檢查一次，[update_dashboard.py](../skill-groups/common/skills/check-skill/scripts/update_dashboard.py) 就把結果合併進 Skills Dashboard 中那個 skill 的一列。
 - Skills Dashboard 是 wiki 裡的 `dashboard/skills.md`，在 `wikiDir`（iCloud 的 Obsidian vault InvLlmWiki）底下，不在 git 裡。
   repo 裡的 `dashboard/skill-dashboard.html` 是另一份，記的是 skill 的 token 用量。
 - 2026-10-18 的現況：表上只有 asd-ste 一列，2026-10-14 檢查，Verdict 是 ❌ 2 · 0——description 超過 1024 字元，也沒提到 Step 6 會啟動審核伺服器。
@@ -35,7 +35,7 @@
 
 ## 3. 要做的
 
-1. 照 [chore-rules.md](../.github/common/rules/chore-rules.md) 決定「要決定的」五項，建立 `chores/Chore 3.md` 與摘要表的一列。
+1. 照 [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 決定「要決定的」五項，建立 `chores/Chore 3.md` 與摘要表的一列。
 2. 需要的話，寫找過期 skill 的腳本。
 3. 跑 Chore 3 的第一次。
 
@@ -57,6 +57,10 @@
 
 ## 7. 日誌
 
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
+
 ### 2026-10-30
 
 - [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
@@ -72,4 +76,4 @@
 ### 2026-10-18
 
 - 建立：背景記下 Skills Dashboard 的位置與現況；範圍定為兩個 skill group，其餘五項做的時候再決定。
-- 第 3 章連到的 `chores/CLAUDE.md` 已刪除，改連 [chore-rules.md](../.github/common/rules/chore-rules.md)（[[Task 62.1]]）。
+- 第 3 章連到的 `chores/CLAUDE.md` 已刪除，改連 [chore-rules.md](../skill-groups/common/rules/chore-rules.md)（[[Task 62.1]]）。

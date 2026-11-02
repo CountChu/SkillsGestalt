@@ -9,7 +9,7 @@
 chinese skill 替有 frontmatter 的檔案寫中文版時，在 frontmatter 下面加一行 pairing line，連回英文檔；每一份 SKILL.md 都是這樣。
 例如 SKILL-tmp-tw.md 第 6 行是 `本文件為 [SKILL-tmp.md](.github/common/templates/SKILL-tmp.md) 的繁體中文版。`。
 asd-ste 草稿的中文版也由 chinese skill 寫成，所以它的 pairing line 連到草稿：SKILL-tmp-ste-tw.md 第 6 行連到 SKILL-tmp-ste.md。
-[draft.py](../.github/common/skills/asd-ste/scripts/draft.py) 的 `replace` 把草稿中文版寫到原檔中文版的位置，只把檔頭註記刪成兩行，pairing line 照舊，接著刪掉草稿。
+[draft.py](../skill-groups/common/skills/asd-ste/scripts/draft.py) 的 `replace` 把草稿中文版寫到原檔中文版的位置，只把檔頭註記刪成兩行，pairing line 照舊，接著刪掉草稿。
 取代之後，原檔中文版的 pairing line 連到已刪除的 SKILL-tmp-ste.md；`check_parity.py` 找不到連回 SKILL-tmp.md 的 pairing line，報「pairing line present」失敗。
 SKILL-tmp 是 [[Task 32]] 第一份有 frontmatter 的草稿；以後替任何 SKILL.md 寫 STE 草稿，都會遇到同樣的問題。
 
@@ -38,9 +38,9 @@ SKILL-tmp 是 [[Task 32]] 第一份有 frontmatter 的草稿；以後替任何 S
 
 ### 結果（2026-10-19）
 
-- [draft.py](../.github/common/skills/asd-ste/scripts/draft.py)：`tidy()` 收到草稿與原檔的檔名時，以 `pairing_line()` 找有 frontmatter 的中文版的 pairing line，以 `point_back()` 把它指回原檔，並傳回它在寫出的檔案中的行號；docstring 與 exit status 一併寫上。
-- [SKILL.md](../.github/common/skills/asd-ste/SKILL.md)：DEDICATED TERMINOLOGY 加上 pairing line；Step 7 寫上 replace 把 TW twin 的 pairing line 指回 source file，以及找不到它時以 `1` 結束。
-- [README.md](../.github/common/skills/asd-ste/README.md)：照上面的三處改。
+- [draft.py](../skill-groups/common/skills/asd-ste/scripts/draft.py)：`tidy()` 收到草稿與原檔的檔名時，以 `pairing_line()` 找有 frontmatter 的中文版的 pairing line，以 `point_back()` 把它指回原檔，並傳回它在寫出的檔案中的行號；docstring 與 exit status 一併寫上。
+- [SKILL.md](../skill-groups/common/skills/asd-ste/SKILL.md)：DEDICATED TERMINOLOGY 加上 pairing line；Step 7 寫上 replace 把 TW twin 的 pairing line 指回 source file，以及找不到它時以 `1` 結束。
+- [README.md](../skill-groups/common/skills/asd-ste/README.md)：照上面的三處改。
 - 中文版照 chinese skill 改：SKILL-tw.md 逐個標題比對，變更集是 DEDICATED TERMINOLOGY 與 Step 7 兩節，沿用原有的譯文，只譯改到的句子；README-tw.md 是 line for line，三個 hunk，fenced 的兩行逐字照抄。
 
 ### 驗證（2026-10-19）
@@ -58,7 +58,7 @@ SKILL-tmp 是 [[Task 32]] 第一份有 frontmatter 的草稿；以後替任何 S
 
 ## 3. 要做的
 
-1. ✅ 先讀 asd-ste 的 [README.md](../.github/common/skills/asd-ste/README.md) 的 When the Skill Is Changed 與 [skill-writing.md](../.github/common/rules/skill-writing.md)，照它改，並跑它列出的檢查。
+1. ✅ 先讀 asd-ste 的 [README.md](../skill-groups/common/skills/asd-ste/README.md) 的 When the Skill Is Changed 與 [skill-writing.md](../skill-groups/common/rules/skill-writing.md)，照它改，並跑它列出的檢查。
 2. ✅ `draft.py replace` 把草稿中文版的 pairing line 指回原檔：連結的文字與目標，都把草稿的檔名換成原檔的檔名。
 3. ✅ SKILL.md 的 Step 7 與 README 說明 replace 做的事的地方，一併寫上 pairing line；中文版照 chinese skill 跟著改。
 4. ✅ 在 [[Task 32.11]] 以 Step 7 取代 SKILL-tmp 之前做完。
@@ -78,6 +78,10 @@ SKILL-tmp 是 [[Task 32]] 第一份有 frontmatter 的草稿；以後替任何 S
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-19
 

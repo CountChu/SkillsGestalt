@@ -1,6 +1,6 @@
 # Task 18 - 讓已寫好的 RSDC 跟上對齊後的範本
 
-**Status**：進行中——這裡的 3 份中 [[Task 18.7]] 與 [[Task 18.2]] 已對齊，[[Task 18.8]] 還沒對齊；InvestForge 的 5 份在 Task 2 @ InvestForge。
+**Status**：完成——這裡的 3 份 RSDC 都已對齊；InvestForge 的 5 份在 Task 2 @ InvestForge。
 **Raised**：2026-10-10，從 [[Task 12]] 拆出：兩份範本對齊之後，已寫好的 RSDC 都還是舊形狀。
 **Depends on**：[[Task 12]]、[[Task 10]]、[[Task 33]]
 
@@ -31,19 +31,19 @@
 
 - [[Task 18.2]] ✅ SkillCompiler-RSDC
 - [[Task 18.7]] ✅ Home-RSDC（imp-home 的 seed）
-- [[Task 18.8]] ⬜ MermaidView-RSDC
+- [[Task 18.8]] ✅ MermaidView-RSDC
 
 ### 共用規則
 
 - **一次對齊一份，照 template 手動改**：節號改了，引用它的地方同一次一起改（2026-10-18 決定）。
 - **加上 template 連結**：在檔頭引用區、連到標準的連結之下，加上它所用的 template——`> [[RSDC-Skill-System-tmp]]` 或 `> [[RSDC-App-tmp]]`——並以 `depends_on.py record <RSDC> --target "[[…]]" --config config.yaml` 記下指紋；之後重寫 twin 時，chinese 會照 template twin 的寫法抄共用句子。
-  [[Task 18.8]] 還沒有這一行，所以 `check_rsdc.py` 單獨檢查會多一項 FAIL；沒有連結的 App 形狀 RSDC（如 MermaidView），Checker 會退回 Skill-System template，要用 `--template` 指定。
+  沒有這一行的 App 形狀 RSDC，`check_rsdc.py` 單獨檢查會多一項 FAIL，而且 Checker 會退回 Skill-System template，要用 `--template` 指定；[[Task 18.8]] 在 2026-10-31 對齊時加上了這一行。
 - **指紋以 `depends_on.py check` 為準**：對齊時用 `depends_on.py record` 記下當時的指紋。
 - **中文版照 chinese skill 更新**：與 template 共用的句子，照抄 template 的中文版。
 
 ### 要決定的
 
-1. [[Task 18.8]] 最後一節「How This Version Came About」怎麼處理，見 [[Task 58]]。
+1. [[Task 18.8]] 的待決事項，包括最後一節「How This Version Came About」怎麼處理，2026-10-31 都已決定，見 [[Task 18.8]] 的「已決定」。
 
 ## 4. 驗證
 
@@ -76,6 +76,11 @@
 —
 
 ## 7. 日誌
+
+### 2026-10-31
+
+- 「要決定的」第 1 項移到 [[Task 18.8]]：它在那裡和其他待決事項列在一起，這裡改成連過去。
+- [[Task 18.8]] 對齊完成，三個 sub task 都 ✅，本 task 完成。
 
 ### 2026-10-20
 

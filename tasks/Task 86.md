@@ -15,7 +15,7 @@
 ### 2026-10-30 用到 chore 編號的地方
 
 - 本 agency 的三個 chore：`chores/Chore 1.md`（集中重記 ste-custom.md）、`Chore 2.md`（keep-English 稽核）、`Chore 3.md`（發佈到 GitHub）。
-- [chore-rules.md](../.github/common/rules/chore-rules.md) 與中文版：檔名 `Chore N.md`、標題 `# Chore N - 標題`、Numbers 一節（從 1 開始、不重用、`空號：` 那一行）、摘要表照編號由新到舊、commit 前綴 `chore N: `、跨 agency 的 `Chore N @ <agency>`、使用檔、checkpoints 的 `chore-<N>`。
+- [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 與中文版：檔名 `Chore N.md`、標題 `# Chore N - 標題`、Numbers 一節（從 1 開始、不重用、`空號：` 那一行）、摘要表照編號由新到舊、commit 前綴 `chore N: `、跨 agency 的 `Chore N @ <agency>`、使用檔、checkpoints 的 `chore-<N>`。
 - `check_chores.py`：約 40 處和編號有關，例如檔名格式、連續編號、空號、排序與 `[[Chore N]]` 的連結。
 - [dashboard/chore-summary.md](../dashboard/chore-summary.md)：每一列 `[[Chore N]]`。
 - task 檔裡有 112 個 `[[Chore N]]` 的連結；CLAUDE-local.md、CLAUDE.md、`config.example.yaml`、`gen_claude_md.py`、`dashboard/task-summary.md` 也有。
@@ -23,7 +23,7 @@
 
 ### 2026-10-30 做完之後
 
-- [chore-rules.md](../.github/common/rules/chore-rules.md) 與中文版：
+- [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 與中文版：
   - Files：檔名是名稱加 `.md`；摘要表除了表格與圖例，還有執行紀錄；workspace 可以做它所用的 skill group 所屬 agency 的 chore。
   - 新的 Names 一節取代 Numbers：小寫字母、數字與連字號，以字母開頭；所有 agency 裡沒有兩個 chore 同名；可以改名，由那個 task 改連結與執行紀錄；停用的檔案留著，名稱不再用；拿掉 `空號：` 那一行。
   - Links：本 workspace 的 chore 用 `[[<name>]]`，別的 agency 的 chore 寫成文字的名稱；task 仍是 `Task N @ <workspace>`。
@@ -31,9 +31,9 @@
   - The Chore File：五章，拿掉 `6. 執行紀錄`；checkpoints 放在 `checkpoints/chores/<name>`。
   - The Summary Table：照 Started 排、新的在前、同日照名稱；圖例下面 `## 執行紀錄`，每個 chore 一個 `### <name>`，裡面每天一個 `#### yyyy-mm-dd`。
   - Commits：`chore <name>: `。
-- [check_chores.py](../.github/common/scripts/check_chores.py) 改寫：以名稱取代編號；別的 agency 的列由 `config.yaml` 的 `agencies` 找到定義檔，比對 Title 與何時要做；檢查摘要表的執行紀錄與上次執行；不再檢查連續編號與空號；仍只用標準函式庫，`agencies` 由程式自己讀；新加 `--config`，預設是摘要表所在資料夾的上一層的 `config.yaml`。
+- [check_chores.py](../skill-groups/common/scripts/check_chores.py) 改寫：以名稱取代編號；別的 agency 的列由 `config.yaml` 的 `agencies` 找到定義檔，比對 Title 與何時要做；檢查摘要表的執行紀錄與上次執行；不再檢查連續編號與空號；仍只用標準函式庫，`agencies` 由程式自己讀；新加 `--config`，預設是摘要表所在資料夾的上一層的 `config.yaml`。
 - 三個 chore 用 `git mv` 改名，標題改成 `# <name> - <標題>`，`6. 執行紀錄` 搬到 [dashboard/chore-summary.md](../dashboard/chore-summary.md) 的 `## 執行紀錄`（日期從 `###` 變成 `####`）；步驟裡的執行紀錄、commit 前綴與 checkpoints 路徑跟著改；keep-english 的報告搬到 `checkpoints/chores/keep-english/`。
-- `config.example.yaml` 與本機的 `config.yaml` 的 `keepEnglishChore` 改成 `keep-english`；[gen_claude_md.py](../.github/common/scripts/gen_claude_md.py) 把它連到 `chores/<name>.md`，本 agency 沒有這個檔時，從 `agencies` 找到唯一有它的 agency，連結寫成從根目錄起算的相對路徑。
+- `config.example.yaml` 與本機的 `config.yaml` 的 `keepEnglishChore` 改成 `keep-english`；[gen_claude_md.py](../skill-groups/common/scripts/gen_agents_md.py) 把它連到 `chores/<name>.md`，本 agency 沒有這個檔時，從 `agencies` 找到唯一有它的 agency，連結寫成從根目錄起算的相對路徑。
 - CLAUDE-local.md 的發佈連結改成 [[publish-gestalt]]，重新產生 CLAUDE.md；`publish_snapshot.py` 的 commit 前綴改成 `chore publish-github: `。
 - 29 個 task 檔的 `[[Chore N]]` 改成新名稱，各加一行日誌；本檔說明對照關係的地方改成純文字；Task 26 的 Markdown 連結改成 `../chores/publish-github.md`。
   task 檔裡寫在 inline code 的 `chores/Chore N.md` 與 commit 前綴是當時的紀錄，照舊。
@@ -42,7 +42,7 @@
 
 - InvestForge 照新寫法改好之後（Task 15 @ InvestForge），只做別的 agency 的 chore，`chores/` 變成空的；git 不追蹤空資料夾，重新 clone 就沒有 `chores/`，而 `check_chores.py` 遇到不是資料夾的 `--chores-dir` 就以 `2` 結束。
 - `check_chores.py` 把不存在的 `chores/` 當成沒有檔案，開頭那行印出它不存在；`--chores-dir` 指到一個檔案時照舊以 `2` 結束；有 `[[<name>]]` 的列卻沒有檔時照舊 FAIL。
-- [chore-rules.md](../.github/common/rules/chore-rules.md) 與中文版的 Files 加一句：只做別的 agency 的 chore 的 workspace，可以沒有 `chores/`。
+- [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 與中文版的 Files 加一句：只做別的 agency 的 chore 的 workspace，可以沒有 `chores/`。
 
 ## 3. 要做的
 
@@ -69,7 +69,7 @@
 
 ### 步驟
 
-1. [chore-rules.md](../.github/common/rules/chore-rules.md) 與中文版：檔名、標題、命名規則取代 Numbers 一節、摘要表的排序、commit 前綴、跨 agency 的寫法、使用檔、checkpoints 的路徑。
+1. [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 與中文版：檔名、標題、命名規則取代 Numbers 一節、摘要表的排序、commit 前綴、跨 agency 的寫法、使用檔、checkpoints 的路徑。
 2. `check_chores.py`：以名稱取代編號的檢查，例如檔名、標題、排序、連結。
 3. 三個 chore 檔改名、改標題與內文；報告搬到新的 checkpoints 路徑。
 4. 摘要表、task 檔、CLAUDE-local.md、`config.example.yaml`、本機的 `config.yaml`、`gen_claude_md.py` 改成新名稱，重新產生 CLAUDE.md。
@@ -101,6 +101,11 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標從 `CLAUDE-local.md`、`CLAUDE-tmp.md`、`gen_claude_md.py` 改成改名後的 `AGENTS-local.md`、`AGENTS-tmp.md`、`gen_agents_md.py`，字句沒有改（[[Task 97.2]]）。
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-31
 

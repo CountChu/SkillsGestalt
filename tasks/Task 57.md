@@ -8,7 +8,7 @@
 
 - Technical words 的清理：[[Task 44]]、[[Task 47]]、[[Task 49]]、[[Task 51]] 都是「某個字收進專案核准詞，再把它從每份 STE 檔與草稿的 Technical words 拿掉」，2026-10-16 到 10-18 做了四次。
   `check_ste.py` 其實會以 `[INFO] technical words the dictionary approves anyway` 說出清單裡已經核准的字，但 `draft.py recheck` 只印 FAIL 與 WARN，所以 [[rerecord-ste-custom]] 跑完也看不到。
-- 拼法清單：asd-ste 的 README 寫著 [us-spelling.json](../.github/common/references/us-spelling.json) 加了字，就要重查每份 STE 檔；但 STE 檔的檔頭沒有記錄它的指紋，改了不會報 CHANGED，也就沒有人知道該重查。
+- 拼法清單：asd-ste 的 README 寫著 [us-spelling.json](../skill-groups/common/references/us-spelling.json) 加了字，就要重查每份 STE 檔；但 STE 檔的檔頭沒有記錄它的指紋，改了不會報 CHANGED，也就沒有人知道該重查。
 
 ## 2. 現況
 
@@ -26,7 +26,7 @@
 ## 3. 要做的
 
 1. 決定「要決定的」三項。
-2. 改 `draft.py recheck`；先讀 asd-ste 的 [README.md](../.github/common/skills/asd-ste/README.md) 的 When the Skill Is Changed，照它改並跑它列出的檢查。
+2. 改 `draft.py recheck`；先讀 asd-ste 的 [README.md](../skill-groups/common/skills/asd-ste/README.md) 的 When the Skill Is Changed，照它改並跑它列出的檢查。
 3. 改 [[rerecord-ste-custom]] 的「何時要做」與「怎麼做」，摘要表跟著改。
 
 ## 4. 驗證
@@ -47,6 +47,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-30
 

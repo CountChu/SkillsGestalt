@@ -10,7 +10,7 @@
 改名必須涵蓋以下範圍，一個檔案才會始終只有一個名稱：
 
 - **這個術語屬於 compile-skill。**
-  **Skill Source** 是 [SkillCompiler-RSDC.md](../.github/common/skills/compile-skill/references/SkillCompiler-RSDC.md) 的一種 artifact type（§2.1 *Artifact Types and Flow*），通篇使用，也出現在它的 twin、compile-skill 的 `SKILL.md` 與其 twin，以及 `scan_source.py` 與 `check_compiled.py` 印出的訊息中。
+  **Skill Source** 是 [SkillCompiler-RSDC.md](../skill-groups/common/skills/compile-skill/references/SkillCompiler-RSDC.md) 的一種 artifact type（§2.1 *Artifact Types and Flow*），通篇使用，也出現在它的 twin、compile-skill 的 `SKILL.md` 與其 twin，以及 `scan_source.py` 與 `check_compiled.py` 印出的訊息中。
   在那裡，這個詞帶著一組對比：Skill Source 是 compiler 轉成 Compiled Script 的那一方。
   改名要從那份 design document 開始，並且要刻意決定保留或放棄這組對比。
 - **gen-rsdc-skill 借用了它。**
@@ -60,6 +60,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

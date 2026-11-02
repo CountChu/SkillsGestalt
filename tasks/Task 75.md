@@ -6,12 +6,12 @@
 
 ## 1. 背景
 
-gen-rsdc-skill 的 [SKILL.md](../.github/common/skills/gen-rsdc-skill/SKILL.md) 只有第 260 行真的引用 SkillCompiler-RSDC（§2.3 *Dataflow*）。
+gen-rsdc-skill 的 [SKILL.md](../skill-groups/common/skills/gen-rsdc-skill/SKILL.md) 只有第 260 行真的引用 SkillCompiler-RSDC（§2.3 *Dataflow*）。
 第 587 行與第 599 行的 §2.7 *Presentation Contract*、§2.6 *The Verdict* 與 §2.6 *Derivation Rules*，是在教 target skill 怎麼引用它自己的 RSDC，是範例。
 兩支程式都把它們當成對 SkillCompiler-RSDC 的引用：
 
-- [check_rsdc.py](../.github/common/skills/gen-rsdc-skill/scripts/check_rsdc.py) 的 `--skill` 檢查，把 SKILL.md 裡的每一個 § 引用都對照到 `--rsdc` 指定的 RSDC。
-- [depends_on.py](../.github/common/scripts/depends_on.py) 的 `cited` 依節名對照，所以 gen-rsdc-skill 記下的指紋也涵蓋 SkillCompiler-RSDC 的 Derivation Rules 與 Presentation Contract；這兩節一改，gen-rsdc-skill 就被判為 CHANGED。
+- [check_rsdc.py](../skill-groups/common/skills/gen-rsdc-skill/scripts/check_rsdc.py) 的 `--skill` 檢查，把 SKILL.md 裡的每一個 § 引用都對照到 `--rsdc` 指定的 RSDC。
+- [depends_on.py](../skill-groups/common/scripts/depends_on.py) 的 `cited` 依節名對照，所以 gen-rsdc-skill 記下的指紋也涵蓋 SkillCompiler-RSDC 的 Derivation Rules 與 Presentation Contract；這兩節一改，gen-rsdc-skill 就被判為 CHANGED。
 
 ## 2. 現況
 
@@ -27,7 +27,7 @@ gen-rsdc-skill 的 [SKILL.md](../.github/common/skills/gen-rsdc-skill/SKILL.md) 
 
 1. 決定怎麼讓程式認出範例引用，例如範例的那一行不算，或範例用不同的寫法。
 2. 照決定改 `check_rsdc.py` 與 `depends_on.py`；兩支都改的話，`cited` 的說明（docstring 與 check-md-deps 的 SKILL.md）跟著改。
-3. 若改的是範例的寫法，gen-rsdc-skill 的 SKILL.md 與中文版照 [chinese](../.github/common/skills/chinese/SKILL.md) skill 一起改。
+3. 若改的是範例的寫法，gen-rsdc-skill 的 SKILL.md 與中文版照 [chinese](../skill-groups/common/skills/chinese/SKILL.md) skill 一起改。
 
 ## 4. 驗證
 
@@ -46,6 +46,10 @@ gen-rsdc-skill 的 [SKILL.md](../.github/common/skills/gen-rsdc-skill/SKILL.md) 
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-20
 

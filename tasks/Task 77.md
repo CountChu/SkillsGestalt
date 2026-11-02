@@ -6,13 +6,13 @@
 
 ## 1. 背景
 
-- compile-skill 每次編譯，[SKILL.md](../.github/common/skills/compile-skill/SKILL.md) 的 Step 2 都要讀 SkillCompiler-RSDC 的第 2 到 4 章。
+- compile-skill 每次編譯，[SKILL.md](../skill-groups/common/skills/compile-skill/SKILL.md) 的 Step 2 都要讀 SkillCompiler-RSDC 的第 2 到 4 章。
   RSDC 約 70KB，其中 Presentation Contract、Verification Obligations 與 Defects 等和編譯無關，讀它們是浪費 token。
 - 使用者的看法：system 與 agent 互不認識，由 skill 調控。
   RSDC 寫 system，以及 compile 做什麼、給 skill 的介面；agent 一步一步怎麼做，寫在另一份給 skill 引用的文件。
 - 執行時讀的檔要自給自足：skill 引用的文件若再引用 RSDC，執行 skill 時就會把 RSDC 拉進來。
   所以新文件不連到 RSDC，「它依 RSDC 寫成」這層關係寫在 README；SKILL.md 不連到 README，執行時不會讀它。
-- compile-skill 還沒有 README.md，而 [skill-writing.md](../.github/common/rules/skill-writing.md) 要求每個 skill 都有一份照 README-tmp.md 寫的 README。
+- compile-skill 還沒有 README.md，而 [skill-writing.md](../skill-groups/common/rules/skill-writing.md) 要求每個 skill 都有一份照 README-tmp.md 寫的 README。
 
 ## 2. 現況
 
@@ -48,11 +48,11 @@
 
 ### 進度
 
-- [SKILL-Compile.md](../.github/common/skills/compile-skill/references/SKILL-Compile.md)：199 行，Terms and Rules 之後是 Step 1 到 Step 4，每一步以 Input 開頭；metadata 的 JSON 範例照抄 RSDC 2.4。
-  中文版照 [chinese](../.github/common/skills/chinese/SKILL.md) skill 更新：第一版逐行翻譯，判定 FULL；改成四步時判定 INCREMENTAL，翻譯 34 行、逐字保留 165 行。
+- [SKILL-Compile.md](../skill-groups/common/skills/compile-skill/references/SKILL-Compile.md)：199 行，Terms and Rules 之後是 Step 1 到 Step 4，每一步以 Input 開頭；metadata 的 JSON 範例照抄 RSDC 2.4。
+  中文版照 [chinese](../skill-groups/common/skills/chinese/SKILL.md) skill 更新：第一版逐行翻譯，判定 FULL；改成四步時判定 INCREMENTAL，翻譯 34 行、逐字保留 165 行。
 - compile-skill 的 SKILL.md：DEDICATED TERMINOLOGY、MUST FOLLOW 與 Workflow 改寫，Step 1 與 Step 3 又執行程式、依 exit code 決定下一步，15 處引用 SOP 的 step；Workflow 開頭的 Purpose 說明與各 step 的 Purpose 移到 README。
   中文版照 chinese skill 更新，判定 INCREMENTAL；改到的句子把「腳本」「術語表」改成 script、glossary，檔頭的引用區拿掉。
-- compile-skill 的 [README.md](../.github/common/skills/compile-skill/README.md)：Dataflow 有 30 個箭頭，藍色的是 10、11、13、14、19、24 與 25；SOP 連到 Step 2、3、4，Step 3 與 Step 4 修正時會整份重寫 Compiled Script。
+- compile-skill 的 [README.md](../skill-groups/common/skills/compile-skill/README.md)：Dataflow 有 30 個箭頭，藍色的是 10、11、13、14、19、24 與 25；SOP 連到 Step 2、3、4，Step 3 與 Step 4 修正時會整份重寫 Compiled Script。
   檔頭記下 RSDC 被引用 14 節的指紋 `0ac8fa44bb74`；中文版照 chinese skill 逐行翻譯，改成四步時判定 INCREMENTAL。
 
 ### 順帶發現
@@ -98,6 +98,10 @@
 
 ## 7. 日誌
 
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
+
 ### 2026-10-21
 
 - 使用者問 RSDC 要不要跟著改：這次不改；3.1 第 593 行與 3.2 第 604 行要不要寫成由 skill 調控，留給 [[Task 76]]。
@@ -109,6 +113,6 @@
 - 更正「2026-10-20 查的結果」關於 README 的一行：原本說 asd-ste 的 README 是用 STE 寫的先例，是把內文的 ASD-STE100 誤當成 STE 檔；那幾份 README 都是一般英文（[[Task 64]]）。
 - 使用者改了做法：RSDC 這次的修改全部恢復，SkillCompiler-Compile.md 改名為 SKILL-Compile.md，照 RSDC 以 Step 1 到 Step 5 寫成 SOP、不寫原由；又回答了兩輪共 8 個問題，「已決定（2026-10-20）」改寫成現在的做法。
 - 寫好 SKILL-Compile.md 與中文版，SKILL.md 與中文版改成只指向 SOP，README 與中文版跟著改並重記 RSDC 的指紋；在 [[Task 75]] 記下 compile-skill 的 `--skill` FAIL。
-- 照「順帶發現」改 [check-md-deps](../.github/common/skills/check-md-deps/SKILL.md) 的 SKILL.md 與中文版：Step 3 的 record 範例改成對 compile-skill 的 README.md 記錄 `[[SkillCompiler-RSDC]]`，因為對 SKILL.md 執行舊範例時，`depends_on.py record` 會以 `2` 結束；中文版照 chinese skill 更新，判定 INCREMENTAL，`check_parity.py` 0 failure，`diff_md.py --verify` PASS，兩份以 `reformat_md.py --mode clean` 重排都沒有差異。
+- 照「順帶發現」改 [check-md-deps](../skill-groups/common/skills/check-md-deps/SKILL.md) 的 SKILL.md 與中文版：Step 3 的 record 範例改成對 compile-skill 的 README.md 記錄 `[[SkillCompiler-RSDC]]`，因為對 SKILL.md 執行舊範例時，`depends_on.py record` 會以 `2` 結束；中文版照 chinese skill 更新，判定 INCREMENTAL，`check_parity.py` 0 failure，`diff_md.py --verify` PASS，兩份以 `reformat_md.py --mode clean` 重排都沒有差異。
 - 使用者問 SOP 能不能只寫 LLM 的判斷、呼叫 script 交給 SKILL；回答了兩輪共 8 個問題，「已決定（2026-10-20）」改寫：SOP 改成四步，程式都由 SKILL.md 執行。
 - SOP 與中文版、SKILL.md 與中文版、README 與中文版照新的分工改寫；RSDC 與 README 記下的指紋都不用動。

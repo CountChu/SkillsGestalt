@@ -19,7 +19,7 @@
 
 ### 2026-10-31 做完之後
 
-- [publish_snapshot.py](../.github/common/scripts/publish_snapshot.py)：
+- [publish_snapshot.py](../skill-groups/common/scripts/publish_snapshot.py)：
   - 常數 `IDENTITY = ('CountChu', '<個人 email>')`，和 `BRANCH`、`REMOTE` 放在一起；`publish` 做快照 commit 時，以它設定 `GIT_AUTHOR_NAME`、`GIT_AUTHOR_EMAIL`、`GIT_COMMITTER_NAME`、`GIT_COMMITTER_EMAIL`。
   - 讓工作分支重新開始的 commit 照舊用 git 的設定。
   - `check` 與 `publish` 印出 `identity:`，並以關鍵字檔檢查 `IDENTITY`；`[FIND]` 的提示是「改 `publish_snapshot.py` 的 `IDENTITY`」；`incoming` 的提示仍是發佈那台電腦要設 git。
@@ -85,6 +85,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-31
 

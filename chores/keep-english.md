@@ -6,7 +6,7 @@
 
 ## 1. 目的
 
-[tw-keep-english.md](../.github/common/references/tw-keep-english.md) 列出中文版必須保留英文的術語，它的 Flagged 欄是不該出現的譯法，例如 script 的「腳本」、step 的「步驟」。
+[tw-keep-english.md](../skill-groups/common/references/tw-keep-english.md) 列出中文版必須保留英文的術語，它的 Flagged 欄是不該出現的譯法，例如 script 的「腳本」、step 的「步驟」。
 每次清單改版，沒被改到的中文版不會被重新檢查，就會和清單愈來愈不一致；稽核一次找出全部的落差，交給使用者決定要不要改。
 
 ## 2. 何時要做
@@ -14,7 +14,7 @@
 - tw-keep-english.md 的 Version 行換了版本，和上次稽核用的版本不同；清單或它的規則改了，它就換版本。
 - 看出該做了：從 workspace 的根目錄跑 `python {skillGroups.common}/scripts/audit_keep_english.py due --keep {skillGroups.common}/references/tw-keep-english.md --out checkpoints/chores/keep-english --baseline 261016`，印出 due、以 0 結束，就是該做了。
 - 還沒有任何一份報告時，以 `--baseline` 的 261016 當上次的版本：2026-10-18 決定 261016 這一版不稽核，等下一版。
-- 別的 agency 也照本 chore 做：每個 agency 在自己的根目錄執行，只稽核自己的中英對照，報告與執行紀錄留在自己那裡，見 [chore-rules.md](../.github/common/rules/chore-rules.md)。
+- 別的 agency 也照本 chore 做：每個 agency 在自己的根目錄執行，只稽核自己的中英對照，報告與執行紀錄留在自己那裡，見 [chore-rules.md](../skill-groups/common/rules/chore-rules.md)。
   `{skillGroups.common}` 照執行的 agency 的 `config.yaml` 代換。
 
 ## 3. 怎麼做

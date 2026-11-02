@@ -66,7 +66,7 @@
 
 **做了什麼**（第一步）：
 
-- **共用腳本** [depends_on.py](../.github/common/scripts/depends_on.py)，三個指令：
+- **共用腳本** [depends_on.py](../skill-groups/common/scripts/depends_on.py)，三個指令：
   - `check`：逐一比對，判定 `UNCHANGED`／`CHANGED`／`NO_RECORD`／`NOTHING_CITED`／`MISSING`，不寫入；有變更時 exit 1，找不到檔案時 exit 2。
   - `record`：重讀並確認之後才執行，在每個連結後面寫入確認的日期與目前的指紋；`--target` 只記一個依賴，而且它得先在檔頭引用區宣告——宣告由寫文件的人（或 step）負責，紀錄才是腳本的事。
     不會改 twin，只提醒 twin 有自己的檔頭引用區。
@@ -106,7 +106,7 @@
 **牽涉的檔案**（若要做）：
 
 - 檢查：`.github/common/skills/check-skill/scripts/scan_skill.py`、`.github/common/skills/gen-rsdc-skill/scripts/check_rsdc.py`（`--skill` 與 pair 檢查）、`.github/common/skills/compile-skill/scripts/check_compiled.py`（可當作現成的參考實作）。
-- 規則：`.github/common/references/RSDC-Standard.md` 與 tw 的 Core Writing Principle（單向依賴）；[DFD.md](../.github/common/references/DFD.md) 已寫明「文件之間的引用不畫成線」，所以這種依賴不畫在 Dataflow 裡，要另外找地方說明。
+- 規則：`.github/common/references/RSDC-Standard.md` 與 tw 的 Core Writing Principle（單向依賴）；[DFD.md](../skill-groups/common/references/DFD.md) 已寫明「文件之間的引用不畫成線」，所以這種依賴不畫在 Dataflow 裡，要另外找地方說明。
 - skill：gen-rsdc-skill 的 Step 2 與 imp-app 的 Step 0（版本比對）；gen-rsdc-skill 的 Step 9（引用檢查）。
 - 與 Task 6（tasks skill）、Task 7 有關：Task 6 若建檢查腳本，這支腳本可以共用；Task 7 的 check-skill 檢查也在同一支 `scan_skill.py`。
 
@@ -126,6 +126,10 @@ imp-app 的範本比對已改由它執行 `depends_on.py check`，不再是 agen
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

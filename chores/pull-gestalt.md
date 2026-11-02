@@ -32,8 +32,8 @@ SkillsGestalt 可能在不只一台電腦上，各有自己的工作分支，例
 6. 本機的 `main` 移到 `origin/main`：`git branch -f main origin/main`。
 7. 把 `<work>` rebase 到新的 `main`：`git rebase --onto main <第 5 步記下的 main> <work>`。
    衝突時停下來，把衝突的檔給使用者看，問怎麼解；`dashboard/` 的摘要表通常是兩邊都留。
-8. 確認不公開的路徑還在：`git diff --name-status main <work>` 要有 `external/` 與 `.github/external/`。
-9. 從根目錄跑 `python {skillGroups.common}/scripts/gen_claude_md.py`，再跑 CLAUDE.md 給出的 `check_tasks.py` 與 `check_chores.py`。
+8. 確認不公開的路徑還在：`git diff --name-status main <work>` 要有 `external/` 與 `skill-groups/external/`。
+9. 從根目錄跑 `python {skillGroups.common}/scripts/gen_agents_md.py`，再跑 AGENTS.md 給出的 `check_tasks.py` 與 `check_chores.py`。
    新快照改了規則或格式時，只在 `<work>` 上的檔可能過不了，例如還沒發佈的 task；照新快照的 `CHANGES.md` 改它們。
 10. 在摘要表 `## 執行紀錄` 的 `### pull-gestalt` 下記一筆：拿進來的快照、tag、衝突與改了什麼；摘要表的「上次執行」改成當天。
     commit 以 `chore pull-gestalt: ` 開頭。
@@ -42,7 +42,7 @@ SkillsGestalt 可能在不只一台電腦上，各有自己的工作分支，例
 
 - `python {skillGroups.common}/scripts/publish_snapshot.py incoming` 印出 `nothing to pull`。
 - `main` 是 `<work>` 的祖先，`git diff --name-status main <work>` 只有不公開的路徑與還沒發佈的改動。
-- `gen_claude_md.py --check`、`check_tasks.py` 與 `check_chores.py` 都是 PASS。
+- `gen_agents_md.py --check`、`check_tasks.py` 與 `check_chores.py` 都是 PASS。
 
 ## 5. 與其他 task、chore 的關係
 

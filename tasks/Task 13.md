@@ -7,7 +7,7 @@
 ## 1. 背景
 
 依賴格式（Task 8）：文件開頭的檔頭引用區，每一行一個連結，後面依序是 `cited`（只算引用到的節時才寫）、確認的日期與指紋，例如 `` > [[SkillCompiler-RSDC]]  `cited`  `2026-10-10`  `bd7932a83cd3` ``。
-讀寫它的是共用的 [depends_on.py](../.github/common/scripts/depends_on.py)。
+讀寫它的是共用的 [depends_on.py](../skill-groups/common/scripts/depends_on.py)。
 
 ## 2. 現況
 
@@ -21,7 +21,7 @@ compile-skill 與 gen-skill 兩列要等觸發條件，移到 [[Task 16]]。
 - **gen-rsdc-app**（Task 14 從 imp-app 的 `reverse` 抽出）：Step 0 對它的 design template `RSDC-App-tmp.md` 執行 `check`，範本落後於標準就停下；寫 design pair 時保留範本檔頭那兩行（範本的刪除指示寫明只留上面連到標準的連結）。
   imp-app 的 `reverse` 改由它寫 design pair，自己不再讀寫依賴格式。
 - **chinese**：連結目標與 inline code 都原樣抄進 twin，所以 twin 帶著同一份紀錄；但它不執行 `record`（見下表）。
-- **check-md-deps**（2026-10-10 新增，[SKILL.md](../.github/common/skills/check-md-deps/SKILL.md)）：檢查任何 md 的依賴是否過時、格式是否正確。
+- **check-md-deps**（2026-10-10 新增，[SKILL.md](../skill-groups/common/skills/check-md-deps/SKILL.md)）：檢查任何 md 的依賴是否過時、格式是否正確。
   它的 `scan_md_deps.py` 給出每個依賴的判定與格式問題，判為 CHANGED 時再列出確認日之後的 commit、確認當時的版本（找不到就標為近似）與被引用之節的差異；skill 依 check-wiki-doc 的報告格式，就 Format、Recorded、Current、Twin 四項提出編號的修改意見，使用者以編號同意後才修改，`record` 也一樣。
   不產出 MD report 或 YAML checkpoint。
   **Twin**（2026-10-10 加入）：目標檔旁邊有 `<name>-tw.md` 時，scanner 以命令執行 chinese 的 `diff_md.py`（Twin Differ），依 git 判斷 twin 是否跟上——`UNCHANGED`、`INCREMENTAL`（附 change set）、`FULL`（附原因，例如 twin 從沒 commit 過，或 twin 自己有未 commit 的修改）或 `UNCHECKED`；Step 3 對使用者指名的 twin 建議執行 chinese skill。
@@ -54,6 +54,10 @@ compile-skill 與 gen-skill 兩列要等觸發條件，移到 [[Task 16]]。
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

@@ -1,6 +1,6 @@
 # Task 88.3 - 改了會影響 Forge 的東西時怎麼通知
 
-**Status**：完成——2026-10-31 會影響 Forge 的改動記在 [CHANGES.md](../.github/common/CHANGES.md)，Forge 以 chore [[follow-gestalt]] 處理；寫條目的規則在本 repo 的 CLAUDE-local.md；Task 82 到 88 的改動補記成第一批條目。
+**Status**：完成——2026-10-31 會影響 Forge 的改動記在 [CHANGES.md](../skill-groups/common/CHANGES.md)，Forge 以 chore [[follow-gestalt]] 處理；寫條目的規則在本 repo 的 CLAUDE-local.md；Task 82 到 88 的改動補記成第一批條目。
 **Raised**：2026-10-31，[[Task 88]] 拆出的第 3 步：本 repo 一改，Forge 立刻跟著變，卻沒有規則說要怎麼告知。
 **Depends on**：—
 
@@ -12,11 +12,11 @@
 
 ## 2. 現況
 
-- [CHANGES.md](../.github/common/CHANGES.md)：繁體中文，沒有英文版；開頭說明「會影響」的意思與格式，每天一個 `### yyyy-mm-dd`，新的在前，每一筆寫改了什麼、commit 與「Forge 要做」。
+- [CHANGES.md](../skill-groups/common/CHANGES.md)：繁體中文，沒有英文版；開頭說明「會影響」的意思與格式，每天一個 `### yyyy-mm-dd`，新的在前，每一筆寫改了什麼、commit 與「Forge 要做」。
   第一批條目補記 2026-10-30 的改動（CLAUDE.md 由模板產生、`keepEnglishChore`、chore 改用名稱、沒有 `chores/` 也可以、chore 不放自己的程式），以及 2026-10-31 的 follow-gestalt 本身；被同一天取代的做法（`agency-rules.md`、使用檔）只在取代它的那一筆提到。
 - [[follow-gestalt]]：定義在本 repo，Forge 透過 `agencies` 做；何時要做是 `CHANGES.md` 有比上次處理的那一筆新的條目；怎麼做是照條目做、重新產生 CLAUDE.md、跑兩個檢查、在摘要表記下處理到哪一筆。
   本 repo 的摘要表也有它的一列（每個 chore 檔都要有一列），上次執行是 —，本 repo 自己不做。
-- [CLAUDE-local.md](../CLAUDE-local.md) 的 Settings of This Agency 加兩句：`common` 的改動會讓 Forge 要做事或檢查出現 `FAIL` 時，在 CHANGES.md 記一筆；每個 Forge 做 follow-gestalt 處理這些條目；重新產生 CLAUDE.md。
+- [CLAUDE-local.md](../AGENTS-local.md) 的 Settings of This Agency 加兩句：`common` 的改動會讓 Forge 要做事或檢查出現 `FAIL` 時，在 CHANGES.md 記一筆；每個 Forge 做 follow-gestalt 處理這些條目；重新產生 CLAUDE.md。
 
 ## 3. 要做的
 
@@ -50,6 +50,11 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標從 `CLAUDE-local.md`、`CLAUDE-tmp.md`、`gen_claude_md.py` 改成改名後的 `AGENTS-local.md`、`AGENTS-tmp.md`、`gen_agents_md.py`，字句沒有改（[[Task 97.2]]）。
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-31
 

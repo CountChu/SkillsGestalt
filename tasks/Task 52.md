@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-每份 STE 檔與草稿都在檔頭記錄 [ste-custom.md](../.github/common/skills/asd-ste/references/ste-custom.md) 的日期與指紋（[[Task 50]]），所以 ste-custom.md 一改，22 份都報 CHANGED。
+每份 STE 檔與草稿都在檔頭記錄 [ste-custom.md](../skill-groups/common/skills/asd-ste/references/ste-custom.md) 的日期與指紋（[[Task 50]]），所以 ste-custom.md 一改，22 份都報 CHANGED。
 2026-10-18 它改了 3 次（[[Task 50]]、[[Task 51]]、[[Task 32.6]] 的 merge），10-12 以來共 15 次；每次都把 22 份重檢、重記一輪。
 只記日期分不出同一天的先後：00:30 核對過、記成 2026-10-18 的檔，看不出 11:21 與 11:46 那兩次修改，所以指紋留著，改的是重記的時機。
 
@@ -60,6 +60,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-30
 

@@ -9,7 +9,7 @@
 - 要 `--config` 的工具：check-skill 的 `scan_skill.py`，以及 `depends_on.py record ... --config config.yaml`。
 - 借用的紀錄：[[Task 7]]、[[Task 35]]、[[Task 39]] 與 [[Task 50]]。
   [[Task 7]] 也記了另一種做法：臨時寫一份只有 `skillGroups: {common: <workspace>/.github/common}` 的 config。
-- check-skill 的 [update_dashboard.py](../.github/common/skills/check-skill/scripts/update_dashboard.py) 把結果寫進 `wikiDir` 底下的 `dashboard/skills.md`，每個 skill group 一節。
+- check-skill 的 [update_dashboard.py](../skill-groups/common/skills/check-skill/scripts/update_dashboard.py) 把結果寫進 `wikiDir` 底下的 `dashboard/skills.md`，每個 skill group 一節。
   現在那份在 InvestForge 的 `wikiDir`（InvLlmWiki）裡，表上只有 common 的 asd-ste 一列。
 - memory 的 repo-skills-run-by-hand 寫著：這裡的根目錄沒有 config.yaml，`{skillGroups.common}` 就取 `.github/common`。
 
@@ -79,6 +79,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-20
 

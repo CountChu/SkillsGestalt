@@ -6,22 +6,22 @@
 
 ## 1. 背景
 
-[README-tmp.md](../.github/common/templates/README-tmp.md) 是每個 skill 的 `README.md` 的範本；它的 `## Dataflow` 一節有說明文字、一張 mermaid 範例圖與圖例，gen-skill 照它寫出每個新 skill 的 Dataflow。
-範本的 Dataflow 若和 [DFD.md](../.github/common/references/DFD.md) 的記法不一致，照它寫成的每一份 README 都會帶著同樣的落差。
+[README-tmp.md](../skill-groups/common/templates/README-tmp.md) 是每個 skill 的 `README.md` 的範本；它的 `## Dataflow` 一節有說明文字、一張 mermaid 範例圖與圖例，gen-skill 照它寫出每個新 skill 的 Dataflow。
+範本的 Dataflow 若和 [DFD.md](../skill-groups/common/references/DFD.md) 的記法不一致，照它寫成的每一份 README 都會帶著同樣的落差。
 [[Task 32.10]] 正在把 README-tmp 改寫成 STE；使用者決定等它取代原檔之後再查，免得取代後文字與行號都變了，查過的要重做。
 
 ## 2. 現況
 
 ### 已決定（2026-10-18）
 
-- 範圍：README-tmp 的 `## Dataflow` 一節，也就是說明文字、mermaid 範例圖與圖例，以及 [README-tmp-tw.md](../.github/common/templates/README-tmp-tw.md) 對應的一節；照範本寫成的各 skill README 不在範圍內。
+- 範圍：README-tmp 的 `## Dataflow` 一節，也就是說明文字、mermaid 範例圖與圖例，以及 [README-tmp-tw.md](../skill-groups/common/templates/README-tmp-tw.md) 對應的一節；照範本寫成的各 skill README 不在範圍內。
 - 依據：DFD.md 的記法，也就是三種資料、五種形狀、線的種類與兩種顏色、圖例，以及它列的缺陷。
 - 時機：等 [[Task 32.10]] 取代原檔之後，對 STE 版查。
 - 產出：列出每個發現，寫明行號、依據與建議，由使用者逐項決定；決定要改的，在本 task 改原文、中文版與受影響的檔。
 
 ### 順帶發現（不在本 task 的範圍）
 
-- check-skill 的 [checking-criteria.md](../.github/common/skills/check-skill/references/checking-criteria.md) 判準 6.2 說每個節點的形狀照 DFD.md，卻列了 DFD.md 沒有的雙邊框，也就是跑 RSDC 系統程式的 step（`[["…"]]`）；這個畫法出自 [gen-rsdc-skill 的 SKILL.md](../.github/common/skills/gen-rsdc-skill/SKILL.md)。
+- check-skill 的 [checking-criteria.md](../skill-groups/common/skills/check-skill/references/checking-criteria.md) 判準 6.2 說每個節點的形狀照 DFD.md，卻列了 DFD.md 沒有的雙邊框，也就是跑 RSDC 系統程式的 step（`[["…"]]`）；這個畫法出自 [gen-rsdc-skill 的 SKILL.md](../skill-groups/common/skills/gen-rsdc-skill/SKILL.md)。
   README-tmp 的圖例也沒有它；只有 gen-rsdc-skill 寫的 skill 用得到，查的時候一併判斷要不要另外處理。
 
 ## 3. 要做的
@@ -51,6 +51,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

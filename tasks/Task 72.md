@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-本 task 是圍繞 skill compiler、但它的 design document——[SkillCompiler-RSDC.md](../.github/common/skills/compile-skill/references/SkillCompiler-RSDC.md)——沒有涵蓋的待辦工作。
+本 task 是圍繞 skill compiler、但它的 design document——[SkillCompiler-RSDC.md](../skill-groups/common/skills/compile-skill/references/SkillCompiler-RSDC.md)——沒有涵蓋的待辦工作。
 本 task 依賴那份文件；那份文件從不依賴本 task。
 design document 不點名 Agentic Panel：對它來說，panel 只是又一個 caller（§2.1 *Terminology*）——一個依 Compiled Script 的 introspection 建立互動流程的使用者介面（§2.7 *CLI*）。
 它自己的設計已從那份文件移出，因為沒有任何 compiler 會產出它，而 design document 也不點名使用它所規定之內容的應用程式。
@@ -24,7 +24,7 @@ design document 不點名 Agentic Panel：對它來說，panel 只是又一個 c
 
 ### What it must keep
 
-以下是 design document（[SkillCompiler-RSDC.md](../.github/common/skills/compile-skill/references/SkillCompiler-RSDC.md)）的規則，只引用、不重述，使 Agentic Panel 在規則改變時跟著遵守：
+以下是 design document（[SkillCompiler-RSDC.md](../skill-groups/common/skills/compile-skill/references/SkillCompiler-RSDC.md)）的規則，只引用、不重述，使 Agentic Panel 在規則改變時跟著遵守：
 
 - 它只透過 Compiled Script 的 introspection 與執行來使用 script（§2.7 *CLI*）。
 - 它以 exit status 分辨成功、refusal、stale script 的 refusal 與 handoff，絕不把 refusal 或 handoff 當成成功（§2.2 *Artifact Types* 中的 outcome 定義；§2.7 *CLI* 中的 exit status）。
@@ -70,6 +70,10 @@ system/
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-20
 

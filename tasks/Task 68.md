@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-- [task-rules.md](../.github/common/rules/task-rules.md) 要求 task 檔像 TW twin 一樣，把 [tw-keep-english.md](../.github/common/references/tw-keep-english.md) 列出的每個 term 留英文；這條規則是 2026-10-18 由 [[Task 62.1]] 寫進去的。
+- [task-rules.md](../skill-groups/common/rules/task-rules.md) 要求 task 檔像 TW twin 一樣，把 [tw-keep-english.md](../skill-groups/common/references/tw-keep-english.md) 列出的每個 term 留英文；這條規則是 2026-10-18 由 [[Task 62.1]] 寫進去的。
 - 清單上 pairing line 那一列的 Replaces 與 Flagged 都是「配對行」，理由是它沒有標準的中文譯法。
 - Task 8、10、11、13、19、33 已經寫 pairing line；寫「配對行」的是 Task 9、31、32.11、67 與摘要表。
 - `check_tasks.py` 不查 keep-English 的 term，chinese skill 的 `check_parity.py --keep` 與 [[keep-english]] 的稽核也不看 task 檔。
@@ -58,6 +58,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-30
 

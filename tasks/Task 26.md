@@ -10,7 +10,7 @@
 PDF 在 [external/ASD-STE100_ISSUE9.pdf](../external/ASD-STE100_ISSUE9.pdf)，由其他 session 的 `39ed8db` commit 進 repo（2026-10-11）。
 規格的版權頁寫明，未經 ASD 書面授權不得複製全部或部分內容，未經 STEMG 許可也不得散布。
 建立 asd-ste 的 session 因此建議 PDF 不進 git，並建議把 `external/` 加進 `.gitignore`；當時使用者選擇不加。
-從 PDF 抽出的字典 [ste-dictionary.json](../.github/common/skills/asd-ste/references/ste-dictionary.json) 也屬於規格的部分內容，當時由使用者決定 commit。
+從 PDF 抽出的字典 [ste-dictionary.json](../skill-groups/common/skills/asd-ste/references/ste-dictionary.json) 也屬於規格的部分內容，當時由使用者決定 commit。
 
 ## 2. 現況
 
@@ -51,7 +51,7 @@ PDF 在 [external/ASD-STE100_ISSUE9.pdf](../external/ASD-STE100_ISSUE9.pdf)，�
 **牽涉的檔案**
 
 - [external/ASD-STE100_ISSUE9.pdf](../external/ASD-STE100_ISSUE9.pdf)
-- [ste-dictionary.json](../.github/common/skills/asd-ste/references/ste-dictionary.json)
+- [ste-dictionary.json](../skill-groups/common/skills/asd-ste/references/ste-dictionary.json)
 - [.gitignore](../.gitignore)
 
 ## 4. 驗證
@@ -72,6 +72,10 @@ PDF 在 [external/ASD-STE100_ISSUE9.pdf](../external/ASD-STE100_ISSUE9.pdf)，�
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-31
 

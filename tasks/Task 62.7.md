@@ -7,7 +7,7 @@
 ## 1. 背景
 
 - asd-ste 的 Step 7 找依賴方時，要問使用者還有哪些 workspace 用這個 skill group，把它們的資料夾加成 `--root`。
-  2026-10-18 時在 [SKILL.md](../.github/common/skills/asd-ste/SKILL.md) 的第 512–513 行。
+  2026-10-18 時在 [SKILL.md](../skill-groups/common/skills/asd-ste/SKILL.md) 的第 512–513 行。
 - 所以這裡以 STE 版取代一份共用檔時，會直接去 InvestForge 重記指紋，commit 用這裡的編號；例如 [[Task 32.1]]、[[Task 32.2]] 與 [[Task 32.8]]。
 - [[rerecord-ste-custom]] 的第 1 步也一樣：其他用這個 skill group、而且有 STE 檔的 workspace，各加一個 `--root`。
 - [[Task 32]] 的「要做的」也寫著，重記時要找其他 workspace（例如 InvestForge）裡的文件。
@@ -20,7 +20,7 @@
 ## 3. 要做的
 
 1. 確認 InvestForge 的依賴巡檢 chore 已建好，而且至少跑過一次；Task 11 @ InvestForge 建它。
-2. 先讀 asd-ste 的 [README.md](../.github/common/skills/asd-ste/README.md) 的 When the Skill Is Changed，照它改。
+2. 先讀 asd-ste 的 [README.md](../skill-groups/common/skills/asd-ste/README.md) 的 When the Skill Is Changed，照它改。
 3. Step 7 只以本 workspace 的資料夾與它的 `skillGroups` 根目錄為 `--root`，不再問其他 workspace；SKILL.md、README.md 與兩份中文版一起改，跑 README 列出的檢查。
 4. [[rerecord-ste-custom]] 的第 1 步只留 `--root .`；改 chore 這件事記在本 task。
 5. [[Task 32]] 的「要做的」那一條改成只找本 workspace。
@@ -48,6 +48,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-30
 

@@ -1,6 +1,6 @@
 # Task 81 - 術語表：Agency、Gestalt 與 Forge
 
-**Status**：完成——2026-10-30 寫好 [glossary.md](../.github/common/references/glossary.md) 與中文版；workspace 保留，定義成 agency 的 repository 根目錄；README 與中文版加上一節；agency、Forge、Gestalt 加進 keep-English list。
+**Status**：完成——2026-10-30 寫好 [glossary.md](../skill-groups/common/references/glossary.md) 與中文版；workspace 保留，定義成 agency 的 repository 根目錄；README 與中文版加上一節；agency、Forge、Gestalt 加進 keep-English list。
 **Raised**：2026-10-30，使用者討論 SkillsGestalt 與 InvestForge 的架構，定下名稱之後，要寫進術語表，先建立本 task。
 **Depends on**：—
 
@@ -19,9 +19,9 @@ InvestForge 透過 `config.yaml` 的 `skillGroups.common` 使用 SkillsGestalt �
   - **Forge**：主題是一個領域的 agency，使用 `common`，加上自己的 `dedi`；InvestForge 是它，之後的領域也叫 XxxForge。
   - repo 名稱就是「主題 + 角色」：Skills + Gestalt、Invest + Forge。
 - 名稱的由來：討論過 workspace、studio、crew、guild、聖堂（Sanctum）；Gestalt（完形）指整體大於部分之和，也指一個東西的完整形態，比只保存規則的聖堂貼切，也直接用了已有的 repo 名稱。
-- 術語表是 [glossary.md](../.github/common/references/glossary.md) 與 [glossary-tw.md](../.github/common/references/glossary-tw.md)，分兩節：Agencies（agency、Gestalt、Forge）與 Parts of an Agency（workspace、wiki、knowledge-base root、skill group、agent、task、chore）。
+- 術語表是 [glossary.md](../skill-groups/common/references/glossary.md) 與 [glossary-tw.md](../skill-groups/common/references/glossary-tw.md)，分兩節：Agencies（agency、Gestalt、Forge）與 Parts of an Agency（workspace、wiki、knowledge-base root、skill group、agent、task、chore）。
 - [README.md](../README.md) 與中文版在 What Is Here 前加上 Gestalt and Forge 一節，連到術語表。
-- [tw-keep-english.md](../.github/common/references/tw-keep-english.md) 與中文版加上 agency、Forge、Gestalt，版本從 261018 換成 261030。
+- [tw-keep-english.md](../skill-groups/common/references/tw-keep-english.md) 與中文版加上 agency、Forge、Gestalt，版本從 261018 換成 261030。
 
 ## 3. 要做的
 
@@ -67,6 +67,10 @@ InvestForge 透過 `config.yaml` 的 `skillGroups.common` 使用 SkillsGestalt �
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-30
 

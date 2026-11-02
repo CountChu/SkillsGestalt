@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-背景：[[Task 20]] 把 asd-ste 的 SKILL.md 中執行時用不到的內容移到 [README.md](../.github/common/skills/asd-ste/README.md)，寫 skill 的共用規則則移到 [skill-writing.md](../.github/common/rules/skill-writing.md)。
+背景：[[Task 20]] 把 asd-ste 的 SKILL.md 中執行時用不到的內容移到 [README.md](../skill-groups/common/skills/asd-ste/README.md)，寫 skill 的共用規則則移到 [skill-writing.md](../skill-groups/common/rules/skill-writing.md)。
 產生與檢查 skill 的工具，原本仍以為這些內容在 SKILL.md 裡：check-skill 的 `scan_skill.py` 回報 asd-ste 缺少 Dataflow 與 Steps at a Glance，gen-skill 也不寫 README.md。
 
 ## 2. 現況
@@ -36,11 +36,11 @@
 
 **做了什麼**
 
-- 範本：新增 [README-tmp.md](../.github/common/templates/README-tmp.md) 與 [README-tmp-tw.md](../.github/common/templates/README-tmp-tw.md)，章節照 asd-ste 的 README.md，並以 placeholder 代入 skill 名稱、路徑、header quote 與各節內容。
-  [SKILL-tmp.md](../.github/common/templates/SKILL-tmp.md) 與 twin 拿掉 Dataflow、Steps at a Glance、Workflow 開頭兩段、Purpose 行，以及已移到 skill-writing.md 的規則。
-- [skill-writing.md](../.github/common/rules/skill-writing.md) 與 twin：新增「每個 skill 都有一份 README.md」，並把 Purpose 與「哪些 step 執行腳本」的回答都指向 README.md。
-- [gen-skill](../.github/common/skills/gen-skill/SKILL.md)：Step 1 一併詢問 twin，Step 3 依 skill-writing.md 寫且不放 Dataflow 與 Purpose，新增 Step 5 - Build README.md（含 `depends_on.py record`），Step 6 為 SKILL.md 與 README.md 各寫一份 twin；新增 [README.md](../.github/common/skills/gen-skill/README.md) 與 README-tw.md。
-- [check-skill](../.github/common/skills/check-skill/SKILL.md)：`scan_skill.py` 新增 `--readme-template` 與 `--depends-on`，記錄 `readme_shape` 事實，Dataflow 改從 README.md 讀；[checking-criteria.md](../.github/common/skills/check-skill/references/checking-criteria.md) 改寫判準 1.2、1.4、1.8、1.10，新增 1.11 到 1.14，check 6 改讀 README.md；7 行 Purpose 移到新增的 [README.md](../.github/common/skills/check-skill/README.md) 與 README-tw.md。
+- 範本：新增 [README-tmp.md](../skill-groups/common/templates/README-tmp.md) 與 [README-tmp-tw.md](../skill-groups/common/templates/README-tmp-tw.md)，章節照 asd-ste 的 README.md，並以 placeholder 代入 skill 名稱、路徑、header quote 與各節內容。
+  [SKILL-tmp.md](../skill-groups/common/templates/SKILL-tmp.md) 與 twin 拿掉 Dataflow、Steps at a Glance、Workflow 開頭兩段、Purpose 行，以及已移到 skill-writing.md 的規則。
+- [skill-writing.md](../skill-groups/common/rules/skill-writing.md) 與 twin：新增「每個 skill 都有一份 README.md」，並把 Purpose 與「哪些 step 執行腳本」的回答都指向 README.md。
+- [gen-skill](../skill-groups/common/skills/gen-skill/SKILL.md)：Step 1 一併詢問 twin，Step 3 依 skill-writing.md 寫且不放 Dataflow 與 Purpose，新增 Step 5 - Build README.md（含 `depends_on.py record`），Step 6 為 SKILL.md 與 README.md 各寫一份 twin；新增 [README.md](../skill-groups/common/skills/gen-skill/README.md) 與 README-tw.md。
+- [check-skill](../skill-groups/common/skills/check-skill/SKILL.md)：`scan_skill.py` 新增 `--readme-template` 與 `--depends-on`，記錄 `readme_shape` 事實，Dataflow 改從 README.md 讀；[checking-criteria.md](../skill-groups/common/skills/check-skill/references/checking-criteria.md) 改寫判準 1.2、1.4、1.8、1.10，新增 1.11 到 1.14，check 6 改讀 README.md；7 行 Purpose 移到新增的 [README.md](../skill-groups/common/skills/check-skill/README.md) 與 README-tw.md。
 - gen-rsdc-skill：Step 0 的檢查清單與 Step 8 改讀 README template 的 `## Dataflow`，它的 Dataflow 節點與圖例跟著改。
 - asd-ste 的 README.md：header quote 加上 `README-tmp.md`，「修改時」樹中的工具一節改寫，回歸檢查加上 `/check-skill asd-ste`；重新記錄 `SKILL-tmp.md` 與 `skill-writing.md` 的指紋。
 
@@ -71,6 +71,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

@@ -6,9 +6,9 @@
 
 ## 1. 背景
 
-背景：使用者先請 Claude 依 ASD-STE100 Simplified Technical English（STE）Issue 9，把 [RSDC-Standard.md](../.github/common/references/RSDC-Standard.md) 改寫成 STE 版，再用 gen-skill 把這個做法建成 skill。
+背景：使用者先請 Claude 依 ASD-STE100 Simplified Technical English（STE）Issue 9，把 [RSDC-Standard.md](../skill-groups/common/references/RSDC-Standard.md) 改寫成 STE 版，再用 gen-skill 把這個做法建成 skill。
 `/asd-ste` 接受路徑、檔名或不含 `.md` 的名稱，在原檔旁寫出 `<name>-ste.md`。
-那個 session 在 Claude Code 中進行，無法直接呼叫 gen-skill，所以照 [gen-skill 的 SKILL.md](../.github/common/skills/gen-skill/SKILL.md) 手動執行，並依使用者的要求，在建立過程中問了 12 個問題。
+那個 session 在 Claude Code 中進行，無法直接呼叫 gen-skill，所以照 [gen-skill 的 SKILL.md](../skill-groups/common/skills/gen-skill/SKILL.md) 手動執行，並依使用者的要求，在建立過程中問了 12 個問題。
 
 ## 2. 現況
 
@@ -38,9 +38,9 @@
 
 **做了什麼**
 
-- `3245c36`：[depends_on.py](../.github/common/scripts/depends_on.py) 支援 PDF。
+- `3245c36`：[depends_on.py](../skill-groups/common/scripts/depends_on.py) 支援 PDF。
   `[[名稱.副檔名]]` 找不到 `名稱.md` 時，直接找同名的檔案；不是 UTF-8 文字的檔案，以整個檔案位元組的 SHA-256 取 fingerprint；`.md` 的算法不變。
-- `9d5558f`：建立 [asd-ste](../.github/common/skills/asd-ste/SKILL.md)，含 SKILL-tw.md、[check_ste.py](../.github/common/skills/asd-ste/scripts/check_ste.py)、字典 JSON 與 [ste-rules.md](../.github/common/skills/asd-ste/references/ste-rules.md)。
+- `9d5558f`：建立 [asd-ste](../skill-groups/common/skills/asd-ste/SKILL.md)，含 SKILL-tw.md、[check_ste.py](../skill-groups/common/skills/asd-ste/scripts/check_ste.py)、字典 JSON 與 [ste-rules.md](../skill-groups/common/skills/asd-ste/references/ste-rules.md)。
   `check_ste.py` 盤點原文，並檢查 STE file：kept span、句長（指示句 20 字、描述句 25 字）、每段 6 句、每行一句、分號、縮約形，以及逐詞比對字典。
   `ste-rules.md` 是以自己的話寫的規則摘要，加上 House Rules。
 - STE 版文件：
@@ -54,9 +54,9 @@
   - 使用者之後決定刪除這兩份 MD，並移除查詢功能（`4c2ed8b`）。
     `convert_spec.py` 改為只產生字典 JSON，而且與先前的 JSON 逐位元組相同。
 - `910f3d8`：每個 step 把輸出存進 YAML checkpoint，決定見「已決定」的最後一項。
-  新增 [save_step.py](../.github/common/skills/asd-ste/scripts/save_step.py)，把一個 step 的 group 合併進 `process.yaml`，並從系統時鐘取結束時間、算出耗時；`check_ste.py` 新增 `--report` 與 `--findings`，把完整輸出與 findings JSON 存在 checkpoint 旁。
+  新增 [save_step.py](../skill-groups/common/skills/asd-ste/scripts/save_step.py)，把一個 step 的 group 合併進 `process.yaml`，並從系統時鐘取結束時間、算出耗時；`check_ste.py` 新增 `--report` 與 `--findings`，把完整輸出與 findings JSON 存在 checkpoint 旁。
   在 DFD 上逐一實跑 `run step 0`、`1`、`3`、`4`，後面的 step 都從 checkpoint 讀到前面的輸出，Step 3 的結果是 PASS。
-- `2190697`：讓修改 skill 的 agent 先讀 README.md，加了三個指引：asd-ste 的 README.md 開頭一句、[skill-writing.md](../.github/common/rules/skill-writing.md) 的第一條規則，以及新的 [CLAUDE.md](../.github/common/skills/CLAUDE.md)，各項決定記在 [[Task 20]]。
+- `2190697`：讓修改 skill 的 agent 先讀 README.md，加了三個指引：asd-ste 的 README.md 開頭一句、[skill-writing.md](../skill-groups/common/rules/skill-writing.md) 的第一條規則，以及新的 `CLAUDE.md`，各項決定記在 [[Task 20]]。
 - 2026-10-12，完成原本的待辦 1、2：
   - `684260d`：以 `/asd-ste RSDC-Standard` 重跑 `RSDC-Standard-ste.md`，以舊版為底稿，逐段對照原文。
     依 House Rules 補上 header quote 與 header note，把 twin、版本與檔名都說成 RSDC-Standard.md 的，並改正原本沒過的 5 項檢查。
@@ -89,7 +89,7 @@
 **牽涉的檔案**
 
 - `.github/common/skills/asd-ste/`：SKILL.md、SKILL-tw.md、README.md、README-tw.md、`scripts/`、`references/`。
-- [depends_on.py](../.github/common/scripts/depends_on.py)
+- [depends_on.py](../skill-groups/common/scripts/depends_on.py)
 - `.github/common/references/` 中的 RSDC-Standard-ste.md、DFD-ste.md，以及兩者的 twin。
 - [external/ASD-STE100_ISSUE9.pdf](../external/ASD-STE100_ISSUE9.pdf)
 - `checkpoints/asd-ste/`：YAML checkpoint，不進 git。
@@ -111,6 +111,11 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連到的 `skills/CLAUDE.md` 已刪除，內容搬進 `AGENTS-tmp.md` 的 Skills 一節；連結改成 inline code，字句沒有改（[[Task 97.2]]）。
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

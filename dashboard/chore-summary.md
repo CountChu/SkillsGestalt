@@ -3,7 +3,7 @@
 會重複做的例行工作。
 每個 chore 是 `chores/<name>.md` 一個檔案，用名稱命名，例如 `keep-english.md`。
 本檔只放下面的摘要表：先讀這張表，看哪一項該做了，再只開需要的那個 chore。
-chore 檔的格式與摘要表的維護方式，見 [chore-rules.md](../.github/common/rules/chore-rules.md)；檢查指令見根目錄的 [CLAUDE.md](../CLAUDE.md)。
+chore 檔的格式與摘要表的維護方式，見 [chore-rules.md](../skill-groups/common/rules/chore-rules.md)；檢查指令見根目錄的 [AGENTS.md](../AGENTS.md)。
 
 | Chore | Started | Title | 何時要做 | 上次執行 | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -25,13 +25,17 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 
 - 第一次，在 [[Task 89]] 照手動步驟做：GitHub 的 `main` 有另一台電腦從 `countdell` 發佈的 `4765af0`，作者與 committer 是工作的身分。
   經使用者同意，在本機做出同樣檔案、訊息與時間、作者改成 CountChu 的 `4d2c5db`，以 `--force-with-lease` 換掉 GitHub 上的 `4765af0`。
-- 本機 `main` 從 `93b4e1e` 移到 `4d2c5db`；舊的 `m1`（`e0365fc`）存成 tag `archive/m1-261031-pull`；`m1` 的 3 個 commit rebase 到 `4d2c5db` 上，沒有衝突；`external/` 與 `.github/external/` 仍在。
+- 本機 `main` 從 `93b4e1e` 移到 `4d2c5db`；舊的 `m1`（`e0365fc`）存成 tag `archive/m1-261031-pull`；`m1` 的 3 個 commit rebase 到 `4d2c5db` 上，沒有衝突；`external/` 與 `skill-groups/external/` 仍在。
 - 新快照把 task 改成七章：只在 `m1` 上的 [[Task 89]] 插入 `6. 知識`；CLAUDE.md 重新產生。
 
 ### publish-gestalt
 
 #### 2026-10-31
 
+- 第二次發佈：以 `m1` 的 `3933273` 做出快照 `65c25e5`，接在 `4d2c5db` 之後，推到 `main`；變動 18 個檔，新增 4、改名 1、修改 13，來自 [[Task 89]]、[[Task 90]]、[[Task 91]]，以及早上那次發佈的執行紀錄。
+  先做 [[pull-gestalt]]：`incoming` 印出 `nothing to pull`；`check` 與 `publish` 的掃描都是 `nothing found`，快照的作者與 committer 是 `publish_snapshot.py` 的 `IDENTITY`。
+  發佈之前，經使用者同意，把早上的歷史另存成 tag `archive/m1-261031-1`（指向 `b2e967f`）：`archive/m1-261031` 一改指，就有 34 個 commit 沒有任何 ref，其中 14 個 hash 被文件引用，11 個在 CHANGES.md；以後的做法由 [[Task 92]] 決定。
+  `m1` 跟著從 `65c25e5` 重新開始（`e1db93c`），`archive/m1-261031` 改指 `3933273`；GitHub 上確認：`main` 有 6 個 commit，最新的是 `65c25e5`，tree 和本機做出的 `450e498` 相同，293 個檔裡沒有排除的路徑。
 - 以 `m1` 的 `b2e967f` 做出快照 `93b4e1e`，接在 `258940e` 之後，推到 `main`；變動 63 個檔，新增 23、改名 3、刪除 1、修改 36，來自 [[Task 26]]、[[Task 79]] 到 [[Task 88]]，以及 keep-english 與上次 publish-github 的執行紀錄。
   `check` 與 `publish` 的掃描都是 `nothing found`。
   `m1` 跟著從 `93b4e1e` 重新開始（`b9933dd`），舊的在 tag `archive/m1-261031`；GitHub 上確認：`main` 有 4 個 commit，最新的是 `93b4e1e`，tree 和本機做出的 `e5c202f` 相同，289 個檔裡沒有排除的路徑。

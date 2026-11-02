@@ -8,7 +8,7 @@
 
 phrase 不在 STE Issue 9 的字典裡。
 tw-keep-english 的草稿與 RSDC-Standard.md 把它列在 `Technical words:`，各在正文用了一次；但 tw-keep-english 草稿對 term 的定義卻避開它，寫成 a group of words。
-phrase 是一般語言裡的詞，不是某個主題的技術名詞（STE 規則 1.5），和 [[Task 44]] 的 rule 一樣，比較適合當專案核准詞：[ste-custom.md](../.github/common/skills/asd-ste/references/ste-custom.md) 核准的字不列為技術用字（House Rule 11）。
+phrase 是一般語言裡的詞，不是某個主題的技術名詞（STE 規則 1.5），和 [[Task 44]] 的 rule 一樣，比較適合當專案核准詞：[ste-custom.md](../skill-groups/common/skills/asd-ste/references/ste-custom.md) 核准的字不列為技術用字（House Rule 11）。
 
 ## 2. 現況
 
@@ -54,6 +54,10 @@ phrase 是一般語言裡的詞，不是某個主題的技術名詞（STE 規則
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-16
 

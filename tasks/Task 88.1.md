@@ -1,6 +1,6 @@
 # Task 88.1 - Forge 用的 config.yaml 範本
 
-**Status**：完成——2026-10-31 寫好 [config-forge-tmp.yaml](../.github/common/templates/config-forge-tmp.yaml)：五個鍵加上 `wikiRootDir`，說明寫在註解，要填的值用 `{GESTALT_ROOT}`、`{WIKI_DIR}`、`{WIKI_ROOT_DIR}`。
+**Status**：完成——2026-10-31 寫好 [config-forge-tmp.yaml](../skill-groups/common/templates/config-forge-tmp.yaml)：五個鍵加上 `wikiRootDir`，說明寫在註解，要填的值用 `{GESTALT_ROOT}`、`{WIKI_DIR}`、`{WIKI_ROOT_DIR}`。
 **Raised**：2026-10-31，[[Task 88]] 拆出的第 1 步：Forge 要設哪些鍵，現在沒有一個地方寫出來。
 **Depends on**：—
 
@@ -12,7 +12,7 @@
 
 ## 2. 現況
 
-- [config-forge-tmp.yaml](../.github/common/templates/config-forge-tmp.yaml)：開頭的註解說明它給誰用、怎麼用（複製成根目錄的 `config.yaml`、換掉每個佔位符）、相對路徑與 `~`、以 `{` 開頭的值要保留引號，以及術語在 glossary.md。
+- [config-forge-tmp.yaml](../skill-groups/common/templates/config-forge-tmp.yaml)：開頭的註解說明它給誰用、怎麼用（複製成根目錄的 `config.yaml`、換掉每個佔位符）、相對路徑與 `~`、以 `{` 開頭的值要保留引號，以及術語在 glossary.md。
 - 鍵：`wikiDir`、`wikiRootDir`、`skillGroups`（`common` 是 `{GESTALT_ROOT}/.github/common`、`dedi` 預設 `.claude`、`external` 空著）、`agencies.SkillsGestalt` 是 `{GESTALT_ROOT}`、`keepEnglishChore` 預設 `keep-english`；每個鍵的說明寫在行尾的英文註解。
 
 ## 3. 要做的
@@ -51,6 +51,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-31
 

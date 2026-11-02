@@ -6,8 +6,8 @@
 
 ## 1. 背景
 
-兩份範本是 [RSDC-App-tmp.md](../.github/common/skills/gen-rsdc-app/assets/RSDC-App-tmp.md)（335 行，imp-app 用）與 [RSDC-Skill-System-tmp.md](../.github/common/skills/gen-rsdc-skill/assets/RSDC-Skill-System-tmp.md)（365 行，gen-rsdc-skill 用）。
-兩者都依 [RSDC 標準](../.github/common/references/RSDC-Standard.md)（261010）寫，章節的大架構相同；差異分三類。
+兩份範本是 [RSDC-App-tmp.md](../skill-groups/common/skills/gen-rsdc-app/assets/RSDC-App-tmp.md)（335 行，imp-app 用）與 [RSDC-Skill-System-tmp.md](../skill-groups/common/skills/gen-rsdc-skill/assets/RSDC-Skill-System-tmp.md)（365 行，gen-rsdc-skill 用）。
+兩者都依 [RSDC 標準](../skill-groups/common/references/RSDC-Standard.md)（261010）寫，章節的大架構相同；差異分三類。
 
 **丙、為什麼值得對齊：app 的 RSDC 目前沒有任何機械檢查**
 
@@ -138,6 +138,10 @@ HTTP API 與 Mountable Handler（對 CLI 與 Rule Constants）；Directory Struc
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

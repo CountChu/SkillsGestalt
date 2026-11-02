@@ -8,7 +8,7 @@
 
 提議：把 imp-app `reverse` 裡「從程式碼寫出 RSDC」的部分抽成一個新的 skill `gen-rsdc-code`；imp-app 的 `reverse` 改成呼叫它，自己只留 app 生命週期的部分。
 
-**reverse 現在做什麼**（[imp-app 的 SKILL.md](../.github/common/skills/imp-app/SKILL.md)，2026-10-10 讀取）：
+**reverse 現在做什麼**（[imp-app 的 SKILL.md](../skill-groups/common/skills/imp-app/SKILL.md)，2026-10-10 讀取）：
 
 - **Step 0（只有 reverse）**：用 dependency checker 確認 `RSDC-App-tmp.md` 跟上 RSDC standard（版本與指紋），不符就停。
 - **Step 2「Reverse-engineer the Documents」**（沒有腳本，全是判斷）：
@@ -20,7 +20,7 @@
   6. 在 lifecycle record 追加 `reverse`（第一次 reverse 關閉 vibe）。
   7. YAML checkpoint `step_2`；MD report 的 Documents 一節（components 表、findings 表）。
 
-**還有第二份 reverse**：[gen-imp-app](../.github/common/skills/gen-imp-app/SKILL.md) 的 Step 3「Reverse-engineer the app into imp-{app}」做的是同一件事——讀整份原始碼、劃 components、寫 design pair 與 wireframe pair，只是寫進 owner skill 的 `references\`。
+**還有第二份 reverse**：[gen-imp-app](../skill-groups/common/skills/gen-imp-app/SKILL.md) 的 Step 3「Reverse-engineer the app into imp-{app}」做的是同一件事——讀整份原始碼、劃 components、寫 design pair 與 wireframe pair，只是寫進 owner skill 的 `references\`。
 兩份已經分岔：gen-imp-app 不用 `RSDC-App-tmp.md`，四章的內容寫在 step 裡；掃描到的缺陷寫進 Specification，而 imp-app 與標準都放在第 4 章的 Defects。
 抽成一個 skill，兩邊都可以呼叫它，分岔就不會再擴大。
 
@@ -57,7 +57,7 @@
 
 **第 1 期做了什麼**（2026-10-10，名稱用 `gen-rsdc-app`）：
 
-- **新 skill** [gen-rsdc-app](../.github/common/skills/gen-rsdc-app/SKILL.md)（與 tw），照 SKILL template 的節：
+- **新 skill** [gen-rsdc-app](../skill-groups/common/skills/gen-rsdc-app/SKILL.md)（與 tw），照 SKILL template 的節：
   - Step 0 - Warmup：依位置解析 prompt 的四行——app dir、app name、output dir、requirements record（或 `none`）；檢查 design template 跟上 RSDC standard（版本號與 `depends_on.py check`，原本 imp-app Step 0 那一段）。
   - Step 1 - Derive the Design Pair from the Source：imp-app Step 2 裡 design pair 的部分原樣搬過來——讀整份原始碼、劃 components、以程式碼為準、寫 design pair 的七條規則；最後交回 Components 表、Findings 表與缺陷，欄位就是 imp-app MD report 用的那幾欄。
   - 介面照 `chinese` 的模式：不寫 MD report、不寫 YAML checkpoint；沒有 `run step N`；不提呼叫它的 skill。
@@ -159,7 +159,7 @@ InvCov 已經 `update` 過，所以不經 imp-app，直接照 gen-rsdc-app 的 S
 - **新 skill**：`.github/common/skills/gen-rsdc-code/`——`SKILL.md` 與 tw（用 gen-skill 建立、check-skill 檢查），可能還有 `assets\` 與 `scripts\`。
 - **imp-app**：`SKILL.md` 與 tw 的字彙表（reverse、app documents、design pair、document templates、dependency checker）、CONFIGURATION、MUST FOLLOW 中關於 reverse 與文件的規則、Step 0 的範本檢查、Step 2 整段、Prompt Examples；`assets\` 的範本可能移走。
 - **gen-imp-app**：`SKILL.md` 的 Step 3（若也改呼叫 gen-rsdc-code）。
-- **引用範本路徑的地方**：`chinese` skill 的 `SKILL.md` 與 tw（以 `RSDC-App-tmp.md` 為例）、[check-md-deps](../.github/common/skills/check-md-deps/SKILL.md) 的 Prompt Examples（用 `.github/common/skills/imp-app/assets/RSDC-App-tmp.md`）、這份 tasks.md 的 Task 12。
+- **引用範本路徑的地方**：`chinese` skill 的 `SKILL.md` 與 tw（以 `RSDC-App-tmp.md` 為例）、[check-md-deps](../skill-groups/common/skills/check-md-deps/SKILL.md) 的 Prompt Examples（用 `.github/common/skills/imp-app/assets/RSDC-App-tmp.md`）、這份 tasks.md 的 Task 12。
 - **已寫好的 app 文件**：格式不變，不必改；之後的 reverse 改由新 skill 寫。
 
 **暫時的傾向**（尚未決定，2026-10-10 依評估修正）：先只抽 design pair，app 專用，第 1 期只有 imp-app 改呼叫它；gen-imp-app 等第 3 期，先決定現有 owner skill 的 design pair 怎麼處理；wireframe 留在呼叫者；範本與它對標準的檢查跟著新 skill 走。
@@ -212,6 +212,10 @@ scratch 裡的檔案是暫存，要保留得先複製出來。
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

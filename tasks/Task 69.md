@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-- [task-rules.md](../.github/common/rules/task-rules.md) 要求 task 檔像 TW twin 一樣，把 [tw-keep-english.md](../.github/common/references/tw-keep-english.md) 列出的每個 term 留英文。
+- [task-rules.md](../skill-groups/common/rules/task-rules.md) 要求 task 檔像 TW twin 一樣，把 [tw-keep-english.md](../skill-groups/common/references/tw-keep-english.md) 列出的每個 term 留英文。
   這條規則是 2026-10-18 由 [[Task 62.1]] 寫進去的，大部分 task 檔寫在它之前。
 - 中文版有兩個工具檢查：chinese skill 的 `check_parity.py --keep`，以及 [[keep-english]] 跑的 `audit_keep_english.py`。
   `audit_keep_english.py` 只看旁邊有 `-tw.md` 的檔，task 檔沒有 TW twin，不在它的範圍；`check_tasks.py` 也不查。
@@ -48,6 +48,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-30
 

@@ -1,6 +1,6 @@
 # Task 79 - 本機分支改名：master 改為 m1，public 改為 main
 
-**Status**：完成——2026-10-30 改好分支名稱，`m1` 從 `main` 重新開始，舊的歷史在 tag `archive/master`；之後每次發佈，[publish_snapshot.py](../.github/common/scripts/publish_snapshot.py) 都讓 `m1` 從新的快照重新開始。
+**Status**：完成——2026-10-30 改好分支名稱，`m1` 從 `main` 重新開始，舊的歷史在 tag `archive/master`；之後每次發佈，[publish_snapshot.py](../skill-groups/common/scripts/publish_snapshot.py) 都讓 `m1` 從新的快照重新開始。
 **Raised**：2026-10-30，第二次發佈之後，使用者要把本機的 `public` 改名為 `main`、`master` 改名為 `m1`。
 **Depends on**：—
 
@@ -26,7 +26,7 @@
 - 改名記在本 task；[[Task 78]] 保持完成。
 - [[publish-gestalt]] 說明現況的地方改成新名稱，並寫明兩個分支的用途與舊名稱；日誌與執行紀錄是當時的事，照舊。
 - 快照 commit 的內文改成 `From m1 <sha>.`。
-- [publish_snapshot.py](../.github/common/scripts/publish_snapshot.py) 的 `check` 預設以 `m1` 為來源，快照放在本機的 `main`。
+- [publish_snapshot.py](../skill-groups/common/scripts/publish_snapshot.py) 的 `check` 預設以 `m1` 為來源，快照放在本機的 `main`。
 - 不用 rebase：527 個 commit 的內容 `main` 都已經有了，一個一個疊上去只會是衝突與空的 commit。
 - 舊的歷史存成 tag `archive/master`，不是分支，免得被 checkout 之後又有人 commit。
 - 新的 `m1` 有兩個 commit：先放回不公開的路徑，再放還沒發佈的變動。
@@ -51,6 +51,10 @@
 
 ## 7. 日誌
 
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
+
 ### 2026-10-31
 
 - [[Task 91]] 把 chore `publish-github` 改名為 `publish-gestalt`：本檔的連結跟著改，意思不變。
@@ -58,7 +62,7 @@
 ### 2026-10-30
 
 - 建立 task：`master` 改名為 `m1`，`public` 改名為 `main`，`m1` 設 `pushRemote no_push`。
-- 改 [publish_snapshot.py](../.github/common/scripts/publish_snapshot.py)、[[publish-gestalt]]，在 [[Task 78]] 加上關係與日誌；本 task 完成。
+- 改 [publish_snapshot.py](../skill-groups/common/scripts/publish_snapshot.py)、[[publish-gestalt]]，在 [[Task 78]] 加上關係與日誌；本 task 完成。
 - 使用者覺得 `m1` 與 `main` 離太遠，要 `m1` 只留短短的新歷史：舊的歷史存成 tag `archive/master`，`m1` 從 `cba1032` 重新開始；`publish` 加上每次發佈之後重做 `m1`。
 - 使用者要 tag 以發佈當天命名：`archive/m1-258940e` 改名為 `archive/m1-261030`，`publish` 之後建 `archive/m1-<yymmdd>`，同一天再發佈就蓋掉那天的 tag；`archive/master` 照舊。
 - [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。

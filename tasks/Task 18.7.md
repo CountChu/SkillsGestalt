@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-讓 imp-home 的 seed document [Home-RSDC.md](../.github/common/skills/imp-home/references/Home-RSDC.md) 跟上 App 範本。
+讓 imp-home 的 seed document [Home-RSDC.md](../skill-groups/common/skills/imp-home/references/Home-RSDC.md) 跟上 App 範本。
 共用的規則與決定，見 [[Task 18]]。
 
 ## 2. 現況
@@ -46,7 +46,7 @@
 ### 順帶發現
 
 - 4.6 記下 3 個缺陷，都是讀 `server.js` 時發現的，還沒在執行中看到：缺少的欄位被補上預設值；不是 JSON 的 `app.config.json` 被當成空的；`app.config.json` 只在啟動時讀一次，所以對連結的修改要重新啟動才會反映到頁面，而 2.7 說下一個 request 就會反映。
-  程式另外改，還沒開 task。
+  程式另外改，由 [[Task 98]] 修正。
 - `--skill` 檢查的 WARN：imp-home 的 SKILL.md 沒有「# Dataflow」一節，HEAD 就有，屬於 [[Task 24]] 要改的 skill 格式。
 - 中文版的 5 則用詞 WARN 都在必須照抄的行上：範本共用句裡的「識別碼」與「讀者」，以及 change set 以外逐字保留的「被掛載的 app」「使用者」與「請求」。
 
@@ -68,12 +68,18 @@
 - Task 18.6：InvestForge 的那一份，各自對齊。
 - [[Task 58]]：寫新的內容時照它的規則，不寫文件自己的來歷。
 - [[Task 24]]：imp-home 的 SKILL.md 沒有 Dataflow 一節，屬於它要改的 skill 格式。
+- [[Task 98]]：修正 4.6 記下的三個缺陷。
 
 ## 6. 知識
 
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
+- 4.6 記下的三個缺陷由 [[Task 98]] 修正；Home-RSDC 的 4.6 改成沒有已知缺陷。
 
 ### 2026-10-18
 

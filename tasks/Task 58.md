@@ -9,7 +9,7 @@
 scratch-rules.md 原文第 21 行有「since that is the habit this replaces」，STE 草稿把它拆成獨立的一句「Before these rules, runs usually put their scratch files there.」，讀起來像在交代過去。
 照規則做事的 agent 用不到這一句：前面已經說不要直接放在根目錄，後面幾行也把原因說完了。
 事情怎麼演變到現在，git 歷史與 task 的日誌都記著。
-使用者決定把「文件不寫自己的來歷」訂成規則，放在 [md-style.md](../.github/common/rules/md-style.md) 的 Rules checked elsewhere 一節。
+使用者決定把「文件不寫自己的來歷」訂成規則，放在 [md-style.md](../skill-groups/common/rules/md-style.md) 的 Rules checked elsewhere 一節。
 
 ## 2. 現況
 
@@ -49,7 +49,7 @@ scratch-rules.md 原文第 21 行有「since that is the habit this replaces」�
 
 ### 順帶發現
 
-- app 不在 [tw-keep-english.md](../.github/common/references/tw-keep-english.md) 的清單上，但大多數 twin 都保留英文；只有 imp-home 的三份中文版有 37 處寫成「應用」。
+- app 不在 [tw-keep-english.md](../skill-groups/common/references/tw-keep-english.md) 的清單上，但大多數 twin 都保留英文；只有 imp-home 的三份中文版有 37 處寫成「應用」。
   chinese skill 規定，清單沒有的詞若保留英文，要在同一個 step 加進清單；這次沒有改清單，由 [[Task 59]] 加進清單，並改掉這 37 處。
   compile-skill 的 Tasks-tw.md 有 2 處「應用程式」，翻的是英文的 application，不是 app 的譯法。
 
@@ -76,6 +76,10 @@ scratch-rules.md 原文第 21 行有「since that is the habit this replaces」�
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

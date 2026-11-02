@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-審核 [[Task 31]] 為 [README-tmp.md](../.github/common/templates/README-tmp.md) 產生的 STE 草稿與草稿中文版；通過就由 asd-ste 的 Step 7 取代原檔與它的中文版。
+審核 [[Task 31]] 為 [README-tmp.md](../skill-groups/common/templates/README-tmp.md) 產生的 STE 草稿與草稿中文版；通過就由 asd-ste 的 Step 7 取代原檔與它的中文版。
 分工、取代的方式與「每取代一份要一併做的」，見 [[Task 32]]。
 
 ## 2. 現況
@@ -93,6 +93,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-30
 

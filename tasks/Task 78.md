@@ -28,11 +28,11 @@
   report-my-chats 的 `SKILL.md` 有公司內部的 IP、內部共享資料夾的路徑與工作 workspace 的名稱；write-note-chat 讀的就是 report-my-chats 產生的報告，沒有它就沒有輸入，所以一起刪。
   工作環境若還要用這兩個 skill，和 mail-inline 一樣由使用者另外處理。
 - 2026-10-30 換成範例值，不刪檔：
-  - [gen-skill/SKILL.md](../.github/common/skills/gen-skill/SKILL.md) 與中文版 Prompt 2 的兩個 build 連結，換成虛構組織 contoso 的 Azure DevOps 網址。
-  - [write-note/SKILL.md](../.github/common/skills/write-note/SKILL.md) 的 Git 連結（專案、repo 與分支名稱）、pipeline 名稱與產品代號，換成 contoso 的網址與虛構的名稱。
-  - [imp-app/assets/config.yaml](../.github/common/skills/imp-app/assets/config.yaml) 註解裡公司內部 IP 的共享路徑，換成 `\\fileserver\apps\InvCov`。
-  - [ask-note/SKILL.md](../.github/common/skills/ask-note/SKILL.md) 的產品代號，換成虛構的 `X750`（縮寫 `X75`）。
-  - 工作 vault 的名稱：ask-note、check-skill 與中文版、gen-imp-app、imp-home 與中文版，以及 [SKILL-tmp.md](../.github/common/templates/SKILL-tmp.md) 與中文版，說明 `vaultName` 時用的例子換成 `MyVault`。
+  - [gen-skill/SKILL.md](../skill-groups/common/skills/gen-skill/SKILL.md) 與中文版 Prompt 2 的兩個 build 連結，換成虛構組織 contoso 的 Azure DevOps 網址。
+  - [write-note/SKILL.md](../skill-groups/common/skills/write-note/SKILL.md) 的 Git 連結（專案、repo 與分支名稱）、pipeline 名稱與產品代號，換成 contoso 的網址與虛構的名稱。
+  - [imp-app/assets/config.yaml](../skill-groups/common/skills/imp-app/assets/config.yaml) 註解裡公司內部 IP 的共享路徑，換成 `\\fileserver\apps\InvCov`。
+  - [ask-note/SKILL.md](../skill-groups/common/skills/ask-note/SKILL.md) 的產品代號，換成虛構的 `X750`（縮寫 `X75`）。
+  - 工作 vault 的名稱：ask-note、check-skill 與中文版、gen-imp-app、imp-home 與中文版，以及 [SKILL-tmp.md](../skill-groups/common/templates/SKILL-tmp.md) 與中文版，說明 `vaultName` 時用的例子換成 `MyVault`。
     範本換了一個字，記錄它指紋的 8 份 README（asd-ste、check-skill、compile-skill、gen-skill，各含中文版）讀過改動仍然成立，重記之後 `depends_on.py check` 都是 UNCHANGED；範本的 `check_ste.py --ste` PASS，三組中文版與四組 README 的 `check_parity.py` 都是 0 failure。
   - gen-skill 照它 README 的「When the Skill Is Changed」跑了檢查：中英對照 `check_parity.py` 0 failure，`depends_on.py check` 都是 UNCHANGED，check-skill 的掃描正常；只改了範例的網址，所以略過「用 gen-skill 產生一個暫用的 skill」那一項。
 
@@ -49,7 +49,7 @@
 ### 不必改的
 
 - 產品名稱（Outlook、Teams 的開發商名稱），出現在 check-wiki-doc 的一份 HTML，屬於公開的產品資訊。
-- [checking-criteria.md](../.github/common/skills/check-skill/references/checking-criteria.md) 與中文版裡的 Azure DevOps 網域，是 VS Code 官方文件的公開網址；`C:\Users\...` 是通用的範例路徑。
+- [checking-criteria.md](../skill-groups/common/skills/check-skill/references/checking-criteria.md) 與中文版裡的 Azure DevOps 網域，是 VS Code 官方文件的公開網址；`C:\Users\...` 是通用的範例路徑。
 
 ### 歷史裡的問題
 
@@ -81,7 +81,7 @@
 
 ### 之後的發佈
 
-- 「之後怎麼防止公司資訊再寫進 repo」由 [[publish-gestalt]] 處理：每次發佈前，[publish_snapshot.py](../.github/common/scripts/publish_snapshot.py) 掃描要公開的 tree，使用者看過變動、同意之後才推。
+- 「之後怎麼防止公司資訊再寫進 repo」由 [[publish-gestalt]] 處理：每次發佈前，[publish_snapshot.py](../skill-groups/common/scripts/publish_snapshot.py) 掃描要公開的 tree，使用者看過變動、同意之後才推。
 - 原本記在這裡的發佈步驟搬到 [[publish-gestalt]]，改由程式做。
 - 掃描用的工作代號放在不進 git 的 `publish-keywords.local.txt`，因為這些名稱本身就不能公開。
 
@@ -110,6 +110,10 @@
 
 ## 7. 日誌
 
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
+
 ### 2026-10-31
 
 - [[Task 91]] 把 chore `publish-github` 改名為 `publish-gestalt`：本檔的連結跟著改，意思不變。
@@ -123,7 +127,7 @@
 - 工作 vault 的名稱換成 `MyVault`，8 份 README 重記範本的指紋；「要判斷是否算內部資訊的」一節處理完，拿掉。
 - 決定只推 `public` 分支上的快照，以及作者、本機專用的檔案、README 與 LICENSE、要排除的路徑；`config.yaml` 與預覽檔不再進 git，加上 README、LICENSE 與 `config.example.yaml`。
 - 第一次發佈：以 master 的 `9629f0a` 做出快照 `b2c697a`，建立公開的 repo，推到 `main`；GitHub 上確認只有 1 個 commit，也沒有排除的路徑。
-- 建立 [[publish-gestalt]] 與 [publish_snapshot.py](../.github/common/scripts/publish_snapshot.py)，發佈的步驟搬過去；本 task 完成。
+- 建立 [[publish-gestalt]] 與 [publish_snapshot.py](../skill-groups/common/scripts/publish_snapshot.py)，發佈的步驟搬過去；本 task 完成。
 - [[Task 79]] 把本機分支改名：`master` 改為 `m1`，`public` 改為 `main`；本檔的紀錄照當時的名稱，只在「與其他 task 的關係」加上它。
 - [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
 - [[Task 87]] 把 `publish_snapshot.py` 搬進 `.github/common/scripts/`：本檔連到它的連結改成新的路徑。

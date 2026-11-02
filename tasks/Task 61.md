@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-- 同一條規則寫在兩個地方，改了一處、忘了另一處，兩份就會說不一樣的話；[skill-writing.md](../.github/common/rules/skill-writing.md) 說 glossary 的定義只寫一次，也是這個道理。
+- 同一條規則寫在兩個地方，改了一處、忘了另一處，兩份就會說不一樣的話；[skill-writing.md](../skill-groups/common/rules/skill-writing.md) 說 glossary 的定義只寫一次，也是這個道理。
 - header quote 的指紋只在重述的檔記錄了來源時才會提醒；沒有記錄來源的重述，來源改了不會有人發現。
 - [[Task 32.8]] 在 skill-writing 找到三處原文本來就有的重複，使用者決定刪掉其中兩處（`f087677`）；「README 說明哪些檔案要一起改」是第一條要先讀 README 的理由，保留。
 
@@ -15,11 +15,11 @@
 ### 已決定（2026-10-18）
 
 - 範圍：`.github/common` 裡定規則的 18 份英文檔，中文版跟著它的英文檔改，不另外檢查。
-  - rules 的 6 份：[md-style.md](../.github/common/rules/md-style.md)、[report-md-rules.md](../.github/common/rules/report-md-rules.md)、[report-yaml-rules.md](../.github/common/rules/report-yaml-rules.md)、[scratch-rules.md](../.github/common/rules/scratch-rules.md)、[skill-writing.md](../.github/common/rules/skill-writing.md)、[tools.md](../.github/common/rules/tools.md)。
-  - references 的 3 份：[DFD.md](../.github/common/references/DFD.md)、[RSDC-Standard.md](../.github/common/references/RSDC-Standard.md)、[tw-keep-english.md](../.github/common/references/tw-keep-english.md)。
-  - skill 裡的 3 份：asd-ste 的 [ste-rules.md](../.github/common/skills/asd-ste/references/ste-rules.md) 與 [ste-custom.md](../.github/common/skills/asd-ste/references/ste-custom.md)，check-skill 的 [checking-criteria.md](../.github/common/skills/check-skill/references/checking-criteria.md)。
-  - 範本 2 份：[SKILL-tmp.md](../.github/common/templates/SKILL-tmp.md)、[README-tmp.md](../.github/common/templates/README-tmp.md)。
-  - CLAUDE.md 4 份：根目錄的 [CLAUDE.md](../CLAUDE.md)、`tasks/CLAUDE.md`、`chores/CLAUDE.md`、[skills/CLAUDE.md](../.github/common/skills/CLAUDE.md)。
+  - rules 的 6 份：[md-style.md](../skill-groups/common/rules/md-style.md)、[report-md-rules.md](../skill-groups/common/rules/report-md-rules.md)、[report-yaml-rules.md](../skill-groups/common/rules/report-yaml-rules.md)、[scratch-rules.md](../skill-groups/common/rules/scratch-rules.md)、[skill-writing.md](../skill-groups/common/rules/skill-writing.md)、[tools.md](../skill-groups/common/rules/tools.md)。
+  - references 的 3 份：[DFD.md](../skill-groups/common/references/DFD.md)、[RSDC-Standard.md](../skill-groups/common/references/RSDC-Standard.md)、[tw-keep-english.md](../skill-groups/common/references/tw-keep-english.md)。
+  - skill 裡的 3 份：asd-ste 的 [ste-rules.md](../skill-groups/common/skills/asd-ste/references/ste-rules.md) 與 [ste-custom.md](../skill-groups/common/skills/asd-ste/references/ste-custom.md)，check-skill 的 [checking-criteria.md](../skill-groups/common/skills/check-skill/references/checking-criteria.md)。
+  - 範本 2 份：[SKILL-tmp.md](../skill-groups/common/templates/SKILL-tmp.md)、[README-tmp.md](../skill-groups/common/templates/README-tmp.md)。
+  - CLAUDE.md 4 份：根目錄的 [CLAUDE.md](../CLAUDE.md)、`tasks/CLAUDE.md`、`chores/CLAUDE.md`、`skills/CLAUDE.md`。
 - 處理原則：一條規則只留在擁有它的那份檔，其他檔改寫成「照 X」並連過去；刻意保留的重述，在它的 header quote 記錄來源，讓來源改動時指紋提醒。
   每組歸哪一份、刪哪一句，逐組由使用者決定。
 - 時機：skill-writing、tools、README-tmp、SKILL-tmp 的 STE 草稿還在 [[Task 32]] 審，這 4 份等取代原檔之後再改，免得已通過的審核項目變回待審；其他檔可以先做，所以不寫成依賴。
@@ -43,7 +43,7 @@
 
 ### 重新掃描（2026-10-30）
 
-- 範圍裡的 `tasks/CLAUDE.md` 與 `chores/CLAUDE.md` 已由 [task-rules.md](../.github/common/rules/task-rules.md) 與 [chore-rules.md](../.github/common/rules/chore-rules.md) 取代，所以 18 份是 rules 的 8 份、references 的 3 份、asd-ste 與 check-skill 的 3 份、範本 2 份、根目錄的 CLAUDE.md 與 skills/CLAUDE.md。
+- 範圍裡的 `tasks/CLAUDE.md` 與 `chores/CLAUDE.md` 已由 [task-rules.md](../skill-groups/common/rules/task-rules.md) 與 [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 取代，所以 18 份是 rules 的 8 份、references 的 3 份、asd-ste 與 check-skill 的 3 份、範本 2 份、根目錄的 CLAUDE.md 與 skills/CLAUDE.md。
 - skill-writing、tools、README-tmp、SKILL-tmp 已由 [[Task 32]] 取代原檔，可以改了。
 - 照下面的掃描方法重跑：比對 1,516 行，候選 154 組，跨檔 87 組。
 - 跨檔的 87 組裡，61 組在 task-rules 與 chore-rules 之間，是 [[Task 62.1]] 決定兩份各自寫完整的結果。
@@ -55,12 +55,12 @@
   Update 一節改成「Read them from the system clock at that time, as for `{DATETIME}` above.」，中文版跟著改；report-yaml-rules 的格式有秒，不算同一條規則，照舊。
 - **第 2 組，版本規則**：照舊，不算重複。
   RSDC-Standard 的 Versioning 與 tw-keep-english 的版本段各管自己這份檔，tw-keep-english 還多了「或清單」，是同一個寫法，不是同一條規則。
-- **第 3 組，清單項目一句一行**：刪掉 [ste-rules.md](../.github/common/skills/asd-ste/references/ste-rules.md) House Rule 3 的第二行，上一行已經連到 md-style.md。
+- **第 3 組，清單項目一句一行**：刪掉 [ste-rules.md](../skill-groups/common/skills/asd-ste/references/ste-rules.md) House Rule 3 的第二行，上一行已經連到 md-style.md。
 - **第 4 組與其他三處，檢查標準與範本的重述**：保留，在檔頭記錄來源。
-  [checking-criteria.md](../.github/common/skills/check-skill/references/checking-criteria.md) 與中文版的檔頭記錄 `[[README-tmp]]` 與 `[[skill-writing]]`。
+  [checking-criteria.md](../skill-groups/common/skills/check-skill/references/checking-criteria.md) 與中文版的檔頭記錄 `[[README-tmp]]` 與 `[[skill-writing]]`。
   README-tmp 不記錄：它檔頭的路徑連結是給新 README 複製用的，`{COMMON_PATH}` 記錄不了；加 wikilink 紀錄的話，gen-skill 會把它們複製進每份新 README。
   照範本寫出的每份 README 本來就宣告並記錄 DFD.md 與 skill-writing.md，兩者一改，check-skill 就會報 CHANGED。
-- **ste-rules 與 ste-custom**：House Rule 11 只留 ste-rules 自己的規則（核准詞不是技術用字、每份 STE 檔都宣告 ste-custom.md），兩張表放什麼、怎麼檢查、新的詞或規則怎麼加進去，改成照 [ste-custom.md](../.github/common/skills/asd-ste/references/ste-custom.md)。
+- **ste-rules 與 ste-custom**：House Rule 11 只留 ste-rules 自己的規則（核准詞不是技術用字、每份 STE 檔都宣告 ste-custom.md），兩張表放什麼、怎麼檢查、新的詞或規則怎麼加進去，改成照 [ste-custom.md](../skill-groups/common/skills/asd-ste/references/ste-custom.md)。
 - **skills/CLAUDE.md**：不在檔頭記錄 skill-writing.md；那一行本來就連過去，加上紀錄，每個 session 都要多讀，skill-writing 每改一次也要重記。
 - **task-rules 與 chore-rules**：維持 [[Task 62.1]] 的決定。
 - 檢查：report-md-rules 的 `check_ste.py --ste` PASS；兩對中英對照的 `check_parity.py` 0 failure，checking-criteria 的兩則警告在 HEAD 時就有；改過的 5 份重跑 `reformat_md.py` 都沒有變；asd-ste 的 SKILL.md 與中文版讀過 ste-rules 的改動之後重記，`depends_on.py check` 都是 UNCHANGED；check-skill 的 `scan_skill.py` 對 check-skill、asd-ste、gen-skill 都沒有缺少的標題。
@@ -138,6 +138,11 @@
 
 ## 7. 日誌
 
+### 2026-11-02
+
+- 連到的 `skills/CLAUDE.md` 已刪除，內容搬進 `AGENTS-tmp.md` 的 Skills 一節；連結改成 inline code，字句沒有改（[[Task 97.2]]）。
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
+
 ### 2026-10-30
 
 - 重新掃描：跨檔 87 組，其中 61 組是 task-rules 與 chore-rules 刻意的重述。
@@ -151,5 +156,5 @@
 ### 2026-10-18
 
 - 建立：記下範圍、處理原則與時機，以及快速掃描的結果與方法。
-- `tasks/CLAUDE.md` 與 `chores/CLAUDE.md` 已刪除：它們的規則改寫成 [task-rules.md](../.github/common/rules/task-rules.md) 與 [chore-rules.md](../.github/common/rules/chore-rules.md)，兩份各自寫完整，共用的約 10 條規則兩份都寫（[[Task 62.1]]）；範圍裡指向它們的連結改成 inline code。
+- `tasks/CLAUDE.md` 與 `chores/CLAUDE.md` 已刪除：它們的規則改寫成 [task-rules.md](../skill-groups/common/rules/task-rules.md) 與 [chore-rules.md](../skill-groups/common/rules/chore-rules.md)，兩份各自寫完整，共用的約 10 條規則兩份都寫（[[Task 62.1]]）；範圍裡指向它們的連結改成 inline code。
 - [[Task 32.10]] 交來要做的第 5 項：skill-writing 那條規則的標題帶上「scripted-versus-not」這個名稱。

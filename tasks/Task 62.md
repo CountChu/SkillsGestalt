@@ -30,7 +30,7 @@
   SkillsGestalt 是上游，提供 common 的 skill、規則、範本與腳本；InvestForge 是下游，以 `skillGroups.common` 用它們。
 - 每個 workspace 有自己的 `tasks/`、`chores/`、`dashboard/task-summary.md` 與 `dashboard/chore-summary.md`，編號各自從 1 起。
   InvestForge 的兩張摘要表也放在 `dashboard/`；它的 `config.yaml` 另有一個 `dashboardDir`，指向 repo 外產生的頁面，和 repo 裡的 `dashboard/` 不衝突。
-- 規則放在 common：[task-rules.md](../.github/common/rules/task-rules.md) 與 [chore-rules.md](../.github/common/rules/chore-rules.md)，英文加中文版；每個 workspace 的根目錄 CLAUDE.md 直接指向它們，並寫出自己的檢查指令，`tasks/`、`chores/` 裡不放 CLAUDE.md（[[Task 62.1]]）。
+- 規則放在 common：[task-rules.md](../skill-groups/common/rules/task-rules.md) 與 [chore-rules.md](../skill-groups/common/rules/chore-rules.md)，英文加中文版；每個 workspace 的根目錄 CLAUDE.md 直接指向它們，並寫出自己的檢查指令，`tasks/`、`chores/` 裡不放 CLAUDE.md（[[Task 62.1]]）。
   不建 skill：Claude Code 看不到 repo 裡的 skill，它會自動載入的是 CLAUDE.md。
 - 主題是 InvestForge 的 9 個 task 全搬，包括已完成的 3 個；InvestForge 的歷史留在 InvestForge（[[Task 62.4]]）。
 - 號碼用過不再用：搬走的 task 在這裡留下空號，留下的 task 不重新編號，免得 commit 前綴指到別的 task（[[Task 62.2]]）。
@@ -80,6 +80,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-30
 

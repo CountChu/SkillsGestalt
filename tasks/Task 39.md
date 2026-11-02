@@ -23,7 +23,7 @@
   上方是註記，行號可點，mermaid 區塊可展開，有亮暗兩種配色，介面用繁體中文。
 - **缺中文版時**：草稿沒有中文版就停下，說明要先跑 Step 5。
   原檔沒有中文版時同樣停下，說明由 chinese skill 寫；使用者只決定了草稿那一邊，原檔這一邊比照辦理。
-- **原型**：直接放進 `asd-ste/scripts/`，照 asd-ste 的 [README.md](../.github/common/skills/asd-ste/README.md) 的 When the Skill Is Changed 走完。
+- **原型**：直接放進 `asd-ste/scripts/`，照 asd-ste 的 [README.md](../skill-groups/common/skills/asd-ste/README.md) 的 When the Skill Is Changed 走完。
 - **依賴**：[[Task 32]] 依賴本 task：本 task 完成之前，Task 32 不審核其餘 10 份草稿；已經送審的 DFD 用手做的對照頁照常審完。
 - **commit**：兩個，前綴都是 `task 39`：先提交本 task 的建立，包括 task 檔、摘要表與 Task 32 的依賴；再提交 asd-ste 的修改。
 
@@ -99,6 +99,10 @@ README 的檢查與 check-skill 都重跑過，結果與上一段相同。
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

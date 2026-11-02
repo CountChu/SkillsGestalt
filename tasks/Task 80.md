@@ -7,7 +7,7 @@
 ## 1. 背景
 
 [CLAUDE.md](../CLAUDE.md) 的開頭與規則連結是英文，但 Branches、Tasks、Chores 三節是中文。
-InvestForge 的 CLAUDE.md 全部是英文；[task-rules.md](../.github/common/rules/task-rules.md) 這些共用規則也是英文。
+InvestForge 的 CLAUDE.md 全部是英文；[task-rules.md](../skill-groups/common/rules/task-rules.md) 這些共用規則也是英文。
 
 ## 2. 現況
 
@@ -38,6 +38,10 @@ InvestForge 的 CLAUDE.md 全部是英文；[task-rules.md](../.github/common/ru
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-31
 

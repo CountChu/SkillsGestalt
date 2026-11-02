@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-chinese skill 規定，清單沒有的詞若在 twin 裡保留英文，要在同一個 step 加進 [tw-keep-english.md](../.github/common/references/tw-keep-english.md)。
+chinese skill 規定，清單沒有的詞若在 twin 裡保留英文，要在同一個 step 加進 [tw-keep-english.md](../skill-groups/common/references/tw-keep-english.md)。
 app 在大多數 twin 裡都保留英文，卻不在清單上。
 imp-home 的三份中文版把 app 寫成「應用」，所以 twin 已用了兩種譯法。
 compile-skill 的 Tasks-tw.md 有 2 處「應用程式」，翻的是英文的 application，不算 app 的譯法。
@@ -65,6 +65,10 @@ compile-skill 的 Tasks-tw.md 有 2 處「應用程式」，翻的是英文的 a
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

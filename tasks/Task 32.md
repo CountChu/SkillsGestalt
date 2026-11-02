@@ -123,7 +123,7 @@
 
 **改 asd-ste 時**
 
-先讀 asd-ste 的 [README.md](../.github/common/skills/asd-ste/README.md) 的 When the Skill Is Changed，照它改 SKILL.md、README.md 與兩者的中文版、`check_ste.py`、`save_step.py`，並跑它列出的檢查。
+先讀 asd-ste 的 [README.md](../skill-groups/common/skills/asd-ste/README.md) 的 When the Skill Is Changed，照它改 SKILL.md、README.md 與兩者的中文版、`check_ste.py`、`save_step.py`，並跑它列出的檢查。
 
 ## 4. 驗證
 
@@ -148,6 +148,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-19
 

@@ -1,6 +1,6 @@
 # Task 40 - 更新 asd-ste 的對照頁
 
-**Status**：進行中——2026-10-13 建立為容器 task；第 1 項（English 與中文的兩欄各自捲動）、第 2 項（行號標出所在的欄）、第 3 項（每一項的審核狀態，由審核伺服器儲存）、第 4 項（行號改用 ◄ ►）、第 5 項（同一項點過的反白都保留）、第 6 項（審核狀態加上 [?] 待解釋）、第 7 項（各欄顯示目前所在的 chapter）、第 8 項（審核狀態改成 [ ] → [v] → [?] → [x] 的順序）與第 9 項（同意建議要改，請標 [x]）已完成，之後的修改要求繼續記在這裡。
+**Status**：完成——第 1 至第 9 項都已完成；2026-11-01 對照頁有了 RSDC（[[Task 94]]），之後的修改直接改 RSDC，不再記在本 task。
 **Raised**：2026-10-13，使用者要求另開一個 task 來更新 asd-ste 的對照頁；[[Task 39]] 已完成，之後對對照頁的修改記在本 task。
 **Depends on**：—
 
@@ -10,6 +10,12 @@
 [[Task 39]] 建立了它，同一天又加上上下兩區各自捲動，以及保留前一個連結的反白。
 
 ## 2. 現況
+
+### 2026-11-01 結束
+
+- [[Task 94]] 寫好對照頁的 RSDC：[ReviewPage-RSDC.md](../skill-groups/common/skills/asd-ste/references/ReviewPage-RSDC.md) 與它的中文版。
+  第 1 至第 9 項的結果都寫進了 RSDC；被後來的項目取代的，只寫最後的結果。
+- 之後對對照頁的修改，照 asd-ste README 的 When the Skill Is Changed，連同 RSDC 一起改，不再記成本 task 的新項目。
 
 ### 已決定
 
@@ -160,7 +166,7 @@
 
 **改 asd-ste 時**
 
-先讀 asd-ste 的 [README.md](../.github/common/skills/asd-ste/README.md) 的 When the Skill Is Changed，照它改，並跑它列出的檢查。
+先讀 asd-ste 的 [README.md](../skill-groups/common/skills/asd-ste/README.md) 的 When the Skill Is Changed，照它改，並跑它列出的檢查。
 
 ## 4. 驗證
 
@@ -231,12 +237,24 @@ skill-writing 的對照頁同樣重建，21 項都還是待審。
 
 - [[Task 39]]：建立對照頁的 task，已完成；本 task 接著它。
 - [[Task 32]]：審核草稿時使用對照頁，但不依賴本 task。
+- [[Task 93]]：第 1、3、9 項驗證時 check-skill 找到的 description 問題（1.1 太長、3.3 沒寫審核伺服器），移到那裡處理。
+- [[Task 94]]：為對照頁寫 RSDC；它完成時一併結束本 task，之後對照頁的修改直接改 RSDC。
 
 ## 6. 知識
 
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
+
+### 2026-11-01
+
+- [[Task 94]] 完成，本 task 一併結束，Status 改為完成。
+- 決定在 [[Task 94]] 為對照頁寫 RSDC，它完成時一併結束本 task。
+- description 的兩個問題移到 [[Task 93]]。
 
 ### 2026-10-18
 

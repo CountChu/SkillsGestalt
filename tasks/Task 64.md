@@ -7,7 +7,7 @@
 ## 1. 背景
 
 STE 檔的檔頭有兩部分：引用區宣告 `[[ASD-STE100_ISSUE9.pdf]]` 與 `[[ste-custom]]`，header note 是「This file is in ASD-STE100 Simplified Technical English (STE), Issue 9.」與「Technical words: …」兩行。
-[gen-skill](../.github/common/skills/gen-skill/SKILL.md) 的 Step 2 把 SKILL 範本抄成新 skill 的 `SKILL.md`，Step 5 把 README 範本抄成 `README.md` 再填寫。
+[gen-skill](../skill-groups/common/skills/gen-skill/SKILL.md) 的 Step 2 把 SKILL 範本抄成新 skill 的 `SKILL.md`，Step 5 把 README 範本抄成 `README.md` 再填寫。
 Step 5 只留引用區裡適用的依賴行，所以 PDF 與 ste-custom 那兩行會被拿掉；header note 卻沒有規則處理，會留在新的檔案裡。
 新 skill 的 `SKILL.md` 與 `README.md` 不是 STE 檔：gen-skill 填進去的內容沒有經過 STE 檢查，標成 STE 檔就說錯了。
 
@@ -40,7 +40,7 @@ Step 5 只留引用區裡適用的依賴行，所以 PDF 與 ste-custom 那兩�
 ## 3. 要做的
 
 1. ✅ gen-skill 抄範本時，拿掉範本的 STE 檔頭：引用區的 `[[ASD-STE100_ISSUE9.pdf]]` 與 `[[ste-custom]]` 兩行，以及 header note 的兩行；SKILL 範本與 README 範本都適用。
-2. ✅ 先讀 gen-skill 的 [README.md](../.github/common/skills/gen-skill/README.md) 的 When the Skill Is Changed 與 [skill-writing.md](../.github/common/rules/skill-writing.md)，照它改，並跑它列出的檢查；中文版照 chinese skill 跟著改。
+2. ✅ 先讀 gen-skill 的 [README.md](../skill-groups/common/skills/gen-skill/README.md) 的 When the Skill Is Changed 與 [skill-writing.md](../skill-groups/common/rules/skill-writing.md)，照它改，並跑它列出的檢查；中文版照 chinese skill 跟著改。
 3. ✅ 在 [[Task 32.10]] 與 [[Task 32.11]] 以 Step 7 取代範本之前做完。
 4. ✅ README-tmp 取代原檔之後，用 gen-skill 寫一個拋棄式 skill，確認新的 `README.md` 沒有 STE 檔頭，再跑 check-skill；跑完刪掉。
 
@@ -58,6 +58,10 @@ Step 5 只留引用區裡適用的依賴行，所以 PDF 與 ste-custom 那兩�
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-19
 

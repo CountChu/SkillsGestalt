@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-這個 workspace 的 task 從 [[Task 62]]（2026-10-18）起都照 [task-rules.md](../.github/common/rules/task-rules.md) 寫在根目錄的 `tasks/`，一個 task 一個檔，摘要表在 `dashboard/task-summary.md`。
+這個 workspace 的 task 從 [[Task 62]]（2026-10-18）起都照 [task-rules.md](../skill-groups/common/rules/task-rules.md) 寫在根目錄的 `tasks/`，一個 task 一個檔，摘要表在 `dashboard/task-summary.md`。
 compile-skill 的 `Tasks.md` 是 2026-10-04 寫的，比這個 workspace 的第一份 task 清單（2026-10-09）還早，用自己的格式記 skill compiler 的待辦。
 摘要表看不到它，`check_tasks.py` 也不檢查它。
 本 task 把它的待辦移進 `tasks/`，之後 skill 的目錄下不再有 Tasks.md。
@@ -17,9 +17,9 @@ compile-skill 的 `Tasks.md` 是 2026-10-04 寫的，比這個 workspace 的第�
 
 - **只有一份**：整個 workspace 只有 compile-skill 的 `references/` 有 Tasks.md 與 `Tasks-tw.md`，各 45 行；`.github/external` 與 InvestForge 都沒有。
 - **只有一項**：「1. Build the Agentic Panel」，Status 是 not started。
-  它是從 [SkillCompiler-RSDC.md](../.github/common/skills/compile-skill/references/SkillCompiler-RSDC.md) 移出來的 Agentic Panel 設計，分成 What it must keep、Component、Location 與 Implementation choices 四節。
+  它是從 [SkillCompiler-RSDC.md](../skill-groups/common/skills/compile-skill/references/SkillCompiler-RSDC.md) 移出來的 Agentic Panel 設計，分成 What it must keep、Component、Location 與 Implementation choices 四節。
   What it must keep 引用 SkillCompiler-RSDC 的 §2.1 *Artifact Types and Flow*、§2.1 *Active Prompt Rule for Cognitive Steps*、§2.3 *Dataflow* 與 §2.4 *CLI*。
-- **連到它的檔案**：只有 compile-skill 的 [SKILL.md](../.github/common/skills/compile-skill/SKILL.md) 第 53 行與 [SKILL-tw.md](../.github/common/skills/compile-skill/SKILL-tw.md) 第 46 行，在 Agentic Panel 的定義裡寫「building it is an open task in Tasks.md」。
+- **連到它的檔案**：只有 compile-skill 的 [SKILL.md](../skill-groups/common/skills/compile-skill/SKILL.md) 第 53 行與 [SKILL-tw.md](../skill-groups/common/skills/compile-skill/SKILL-tw.md) 第 46 行，在 Agentic Panel 的定義裡寫「building it is an open task in Tasks.md」。
   task 檔裡只有 [[Task 9]] 第 27 行是連到 Tasks-tw.md 的 Markdown link；其他提到它的地方都是純文字或 inline code。
 - **中文版的 keep-English**：`check_parity.py --keep` 0 failure、1 個 warning：第 18、19、26 行的「腳本」，keep-English 清單把 script 留英文。
 - **提到它的 task**：[[Task 9]]、[[Task 10]]、[[Task 13]]、[[Task 18.2]]、[[Task 33]]、[[Task 58]]、[[Task 59]]。
@@ -71,8 +71,8 @@ compile-skill 的 `Tasks.md` 是 2026-10-04 寫的，比這個 workspace 的第�
    What it must keep、Component、Location 與 Implementation choices 寫進「要做的」，各成一個 `###` 小節。
    Raised 寫 2026-10-04，它第一次寫進 Tasks.md 的日子，日誌也從那一天起；Status 是尚未開始。
 2. **改 compile-skill 的 SKILL.md 與 SKILL-tw.md**：照「已決定」拿掉後半句。
-   改之前照 [skills/CLAUDE.md](../.github/common/skills/CLAUDE.md) 讀 [skill-writing.md](../.github/common/rules/skill-writing.md)；compile-skill 沒有 README.md。
-   中文版照 [chinese](../.github/common/skills/chinese/SKILL.md) skill 更新。
+   改之前照 `skills/CLAUDE.md` 讀 [skill-writing.md](../skill-groups/common/rules/skill-writing.md)；compile-skill 沒有 README.md。
+   中文版照 [chinese](../skill-groups/common/skills/chinese/SKILL.md) skill 更新。
 3. **刪除 Tasks.md 與 Tasks-tw.md**。
 4. **改 task 檔裡會斷的連結**：[[Task 9]] 第 27 行連到 Tasks-tw.md 的 Markdown link 改成 inline code，字句不改，並在它的日誌加一行，連到本 task。
 5. **[[Task 18.2]] 還沒完成時**：它列的引用處裡，把 Tasks.md 與中文版換成新的 task，並在它的日誌加一行，連到本 task。
@@ -101,6 +101,11 @@ compile-skill 的 `Tasks.md` 是 2026-10-04 寫的，比這個 workspace 的第�
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連到的 `skills/CLAUDE.md` 已刪除，內容搬進 `AGENTS-tmp.md` 的 Skills 一節；連結改成 inline code，字句沒有改（[[Task 97.2]]）。
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-20
 

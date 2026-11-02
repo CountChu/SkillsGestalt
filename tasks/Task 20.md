@@ -15,11 +15,11 @@
   這部分原本是 [[Task 21]]，2026-10-11 併入本 task，分析見下方「併入的 Task 21」一節。
 
 SKILL.md 不引用 README.md，所以執行時不會載入它。
-asd-ste 的 [README.md](../.github/common/skills/asd-ste/README.md) 是第一份成品，格式以它為準。
+asd-ste 的 [README.md](../skill-groups/common/skills/asd-ste/README.md) 是第一份成品，格式以它為準。
 
 **併入的 Task 21：SKILL.md 中執行時用不到的內容**
 
-以 asd-ste 的 [SKILL.md](../.github/common/skills/asd-ste/SKILL.md) 為例，行號與大小以 commit 60e9538 為準。
+以 asd-ste 的 [SKILL.md](../skill-groups/common/skills/asd-ste/SKILL.md) 為例，行號與大小以 commit 60e9538 為準。
 全檔 28 KB，下面第 1–6 項合計約 6.6 KB，是 23%。
 
 1. `# Dataflow`（L128–206，3.5 KB，12.3%）：Workflow 的每個 step 都已寫明自己讀寫什麼，沒有任何 step 引用 Dataflow。
@@ -63,22 +63,22 @@ README.md 的讀者也包括修改 skill 的 agent，為了讓 agent 真的會�
 
 - **README.md 的開頭**：加一句，說明修改 skill 之前先讀這份，做完 When the Skill Is Changed 列出的修改，再跑那裡列出的檢查。
 - **skill-writing.md**：新增第一條規則，修改有 README.md 的 skill 之前先讀它；skill-writing-tw.md 同步。
-- **自動載入**：在 `.github/common/skills/` 放一份 [CLAUDE.md](../.github/common/skills/CLAUDE.md)，英文、不要 twin，只指向 README.md 與 skill-writing.md。
+- **自動載入**：在 `.github/common/skills/` 放一份 `CLAUDE.md`，英文、不要 twin，只指向 README.md 與 skill-writing.md。
   Claude Code 讀到這個目錄底下的檔案時會載入它；SKILL.md 不連到 README.md，這份檔案就是 agent 找到 README.md 的方式。
   VS Code Copilot 的 `.instructions.md` 這次不做。
 
 **後來決定的（2026-10-11，在 Task 22 中）**
 
 - 推廣到其他 skill：check-skill 一律要求新格式，每個 skill 都要有 README.md；其餘 skill 由 [[Task 24]] 逐一拆分。
-- gen-skill 怎麼產生 README.md：新增 Step 5 - Build README.md，從 [README-tmp.md](../.github/common/templates/README-tmp.md) 寫出；「修改 skill 時」那一節由 gen-skill 依各 step 判斷寫成。
+- gen-skill 怎麼產生 README.md：新增 Step 5 - Build README.md，從 [README-tmp.md](../skill-groups/common/templates/README-tmp.md) 寫出；「修改 skill 時」那一節由 gen-skill 依各 step 判斷寫成。
 - README.md 的 header quote 宣告哪些檔案：依 skill 的內容而定，規則寫在 gen-skill 的 Step 5；asd-ste 的 README.md 另外加上 `README-tmp.md`。
 
 **目前狀態**
 
 - asd-ste 試點已完成（2026-10-11），起點是 commit ea20160 的 asd-ste。
-  - 新檔 [README.md](../.github/common/skills/asd-ste/README.md) 與 [README-tw.md](../.github/common/skills/asd-ste/README-tw.md)，依時期分章，收錄 Dataflow、列舉各 step Purpose 的 Step Purposes、兩張文字樹，以及 header quote 宣告的依賴。
+  - 新檔 [README.md](../skill-groups/common/skills/asd-ste/README.md) 與 [README-tw.md](../skill-groups/common/skills/asd-ste/README-tw.md)，依時期分章，收錄 Dataflow、列舉各 step Purpose 的 Step Purposes、兩張文字樹，以及 header quote 宣告的依賴。
   - SKILL.md 從 28.6 KB 減為 22.0 KB，少了 23%：移出 Dataflow、Steps at a Glance、Workflow 開頭兩段與 6 行 Purpose，刪除第 6 項，並在 frontmatter 底下以 header quote 宣告 `ste-rules.md`；SKILL-tw.md 同步。
-  - 新的共用規則檔 [skill-writing.md](../.github/common/rules/skill-writing.md) 與 [skill-writing-tw.md](../.github/common/rules/skill-writing-tw.md)，收錄第 4、5 項。
+  - 新的共用規則檔 [skill-writing.md](../skill-groups/common/rules/skill-writing.md) 與 [skill-writing-tw.md](../skill-groups/common/rules/skill-writing-tw.md)，收錄第 4、5 項。
   - 刪除過時、未追蹤的 `SKILL-tw.mermaid.html`。
 
 - check-skill 的 `scan_skill.py` 原本回報 asd-ste 缺少 Dataflow 與 Steps at a Glance 標題，6 個 step 也沒有 Purpose；Task 22 讓它改到 README.md 找之後，asd-ste 通過這些檢查（2026-10-11）。
@@ -86,7 +86,7 @@ README.md 的讀者也包括修改 skill 的 agent，為了讓 agent 真的會�
 
 **範例**
 
-先前在這裡的 asd-ste 依賴圖草稿，已寫成 [README.md](../.github/common/skills/asd-ste/README.md) 的 When the Skill Runs、When the Skill Is Changed 與 Tracked Dependencies 三章。
+先前在這裡的 asd-ste 依賴圖草稿，已寫成 [README.md](../skill-groups/common/skills/asd-ste/README.md) 的 When the Skill Runs、When the Skill Is Changed 與 Tracked Dependencies 三章。
 以 README.md 為準，這裡不再保留副本，免得兩份各自走樣。
 
 ## 3. 要做的
@@ -119,9 +119,9 @@ README.md 的讀者也包括修改 skill 的 agent，為了讓 agent 真的會�
 
 需要一起改的地方：
 
-- 範本：[SKILL-tmp.md](../.github/common/templates/SKILL-tmp.md) 與 [SKILL-tmp-tw.md](../.github/common/templates/SKILL-tmp-tw.md) 要拆出一份 README 範本。
-- [gen-skill](../.github/common/skills/gen-skill/SKILL.md)：Step 3 要同時產生 README.md；Step 5 產生 twin 時，README.md 也要有 twin。
-- [check-skill](../.github/common/skills/check-skill/SKILL.md)：[checking-criteria.md](../.github/common/skills/check-skill/references/checking-criteria.md) 的必要標題、MUST FOLLOW 契約、Step Purpose 與 Dataflow 各項，以及 `scan_skill.py`，都要改成到 README.md 找 Dataflow 與 Purpose。
+- 範本：[SKILL-tmp.md](../skill-groups/common/templates/SKILL-tmp.md) 與 [SKILL-tmp-tw.md](../skill-groups/common/templates/SKILL-tmp-tw.md) 要拆出一份 README 範本。
+- [gen-skill](../skill-groups/common/skills/gen-skill/SKILL.md)：Step 3 要同時產生 README.md；Step 5 產生 twin 時，README.md 也要有 twin。
+- [check-skill](../skill-groups/common/skills/check-skill/SKILL.md)：[checking-criteria.md](../skill-groups/common/skills/check-skill/references/checking-criteria.md) 的必要標題、MUST FOLLOW 契約、Step Purpose 與 Dataflow 各項，以及 `scan_skill.py`，都要改成到 README.md 找 Dataflow 與 Purpose。
 - 現有的 skill：30 個 skill 中，有 Dataflow 與 Steps at a Glance 的有 5 個，有 Purpose 行的有 12 個，有 SKILL-tw.md 的有 10 個（2026-10-11 計）。
 
 風險：
@@ -133,8 +133,8 @@ README.md 的讀者也包括修改 skill 的 agent，為了讓 agent 真的會�
 
 **牽涉的檔案**
 
-- 試點寫出或修改的：[asd-ste/SKILL.md](../.github/common/skills/asd-ste/SKILL.md)、[SKILL-tw.md](../.github/common/skills/asd-ste/SKILL-tw.md)、[README.md](../.github/common/skills/asd-ste/README.md)、[README-tw.md](../.github/common/skills/asd-ste/README-tw.md)，以及 [skill-writing.md](../.github/common/rules/skill-writing.md)、[skill-writing-tw.md](../.github/common/rules/skill-writing-tw.md) 與 [CLAUDE.md](../.github/common/skills/CLAUDE.md)。
-- 由 Task 22 處理的：範本 [SKILL-tmp.md](../.github/common/templates/SKILL-tmp.md)、[SKILL-tmp-tw.md](../.github/common/templates/SKILL-tmp-tw.md)，以及 [gen-skill/SKILL.md](../.github/common/skills/gen-skill/SKILL.md)、[check-skill/SKILL.md](../.github/common/skills/check-skill/SKILL.md)。
+- 試點寫出或修改的：[asd-ste/SKILL.md](../skill-groups/common/skills/asd-ste/SKILL.md)、[SKILL-tw.md](../skill-groups/common/skills/asd-ste/SKILL-tw.md)、[README.md](../skill-groups/common/skills/asd-ste/README.md)、[README-tw.md](../skill-groups/common/skills/asd-ste/README-tw.md)，以及 [skill-writing.md](../skill-groups/common/rules/skill-writing.md)、[skill-writing-tw.md](../skill-groups/common/rules/skill-writing-tw.md) 與 `CLAUDE.md`。
+- 由 Task 22 處理的：範本 [SKILL-tmp.md](../skill-groups/common/templates/SKILL-tmp.md)、[SKILL-tmp-tw.md](../skill-groups/common/templates/SKILL-tmp-tw.md)，以及 [gen-skill/SKILL.md](../skill-groups/common/skills/gen-skill/SKILL.md)、[check-skill/SKILL.md](../skill-groups/common/skills/check-skill/SKILL.md)。
 - 推廣到其他 skill 時：每個 skill 目錄的 `README.md` 與 `README-tw.md`。
 
 ## 4. 驗證
@@ -155,6 +155,11 @@ README.md 的讀者也包括修改 skill 的 agent，為了讓 agent 真的會�
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連到的 `skills/CLAUDE.md` 已刪除，內容搬進 `AGENTS-tmp.md` 的 Skills 一節；連結改成 inline code，字句沒有改（[[Task 97.2]]）。
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

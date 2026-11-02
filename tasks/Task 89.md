@@ -30,7 +30,7 @@
   舊的 `4765af0` 不在 `main` 上了，但 GitHub 可能還保留一段時間，知道 hash 的人仍查得到。
 - 本機：`main` 從 `93b4e1e` 移到 `4d2c5db`；舊的 `m1`（`e0365fc`）存成 tag `archive/m1-261031-pull`；`m1` 的 3 個 commit rebase 上去，沒有衝突；`external/` 與 `.github/external/` 仍在。
   新快照把 task 改成七章，本 task 插入 `6. 知識`；`CLAUDE-local.md` 改了，CLAUDE.md 重新產生。
-- [publish_snapshot.py](../.github/common/scripts/publish_snapshot.py)：
+- [publish_snapshot.py](../skill-groups/common/scripts/publish_snapshot.py)：
   - `check` 與 `publish` 也用關鍵字檔掃描 git 會寫的作者與 committer（`git var GIT_AUTHOR_IDENT`、`GIT_COMMITTER_IDENT`），抓到就不發佈；`[FIND]` 只寫出是哪一欄，不印出值。
   - 新的子指令 `incoming`：在 `git fetch` 之後，列出 `origin/main` 有、本機 `main` 沒有的快照與改了哪些檔，掃描新快照的檔案與每個新 commit 的作者與 committer；`main` 與 `origin/main` 分岔時說明 GitHub 的歷史被改寫過；它不寫入任何東西。
 - [[pull-gestalt]]：private chore，步驟是 `git fetch`、`incoming`、有 `[FIND]` 就停、給使用者看、記下原本的 `main`、存 tag `archive/<work>-<yymmdd>-pull`、`git branch -f main origin/main`、`git rebase --onto main <原本的 main> <work>`、確認不公開的路徑、重新產生 CLAUDE.md 並跑檢查、記執行紀錄；步驟用 `<work>`，不寫死 `m1`，另一台的 `countdell` 也照它做，包括 `main` 分岔的情況。
@@ -93,6 +93,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-31
 

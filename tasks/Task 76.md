@@ -10,7 +10,7 @@
 
 - Skill-System template 的固定句（1.4 的 No tokens、2.10 的 No LLM, anywhere，以及第 3 章「不寫 agent 或 LLM 的 step」）是 template，不是 rule。
 - gen-rsdc-skill 把 system 定義成 deterministic、不用 LLM 的 Python script，但只約束它處理的 skill。
-- [skill-writing.md](../.github/common/rules/skill-writing.md) 第 38 行規定程式能確定地做的 step 交給 script，要讀文字、做判斷、寫摘要的 step 交給 agent，但沒有說 script 不呼叫 LLM。
+- [skill-writing.md](../skill-groups/common/rules/skill-writing.md) 第 38 行規定程式能確定地做的 step 交給 script，要讀文字、做判斷、寫摘要的 step 交給 agent，但沒有說 script 不呼叫 LLM。
 
 ## 2. 現況
 
@@ -24,7 +24,7 @@
 ### SkillCompiler-RSDC 3.1 的兩句（2026-10-21）
 
 [[Task 77]] 把 compile-skill 的編譯做法寫成 compile SOP（SKILL-Compile.md）：SOP 只寫 agent 的判斷，不執行、也不提任何程式；Source Scanner、Contract Checker 與 Compiled Script 都由 SKILL.md 執行，再把結果交給 SOP 的 step。
-[SkillCompiler-RSDC.md](../.github/common/skills/compile-skill/references/SkillCompiler-RSDC.md) 沒有跟著改，其中兩句仍寫成 Compiler 執行程式：
+[SkillCompiler-RSDC.md](../skill-groups/common/skills/compile-skill/references/SkillCompiler-RSDC.md) 沒有跟著改，其中兩句仍寫成 Compiler 執行程式：
 
 - 第 593 行，3.1 的 How they interact：Compiler 從命令列執行 Source Scanner 與 Contract Checker、讀它們印出的內容，並以 caller 的方式執行 Compiled Script。
 - 第 604 行，3.2 Compiler 的開頭：Compiler 先做 Compile，再做 Verify。
@@ -36,7 +36,7 @@
 ## 3. 要做的
 
 1. 以 STE 寫這條規則，放在 skill-writing.md 第 38 行那條之後；`check_ste.py --ste` PASS。
-2. skill-writing-tw.md 照 [chinese](../.github/common/skills/chinese/SKILL.md) skill 更新。
+2. skill-writing-tw.md 照 [chinese](../skill-groups/common/skills/chinese/SKILL.md) skill 更新。
 3. 記錄 skill-writing.md 的檔案，以 `depends_on.py check` 找出來，讀過之後重記。
 4. 決定 check-skill 要不要加一項檢查，例如找 script 裡的 LLM client。
 5. 決定 SkillCompiler-RSDC 3.1 第 593 行與 3.2 第 604 行要不要改成由 skill 執行程式、再把結果交給 Compiler，見「現況」；要改的話，中文版照 chinese skill 一起改。
@@ -59,6 +59,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-21
 

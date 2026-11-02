@@ -7,7 +7,7 @@
 ## 1. 背景
 
 - check 1 要求 task 從 1 連續編到 N，每個 task 的 sub task 從 1 連續編到 M。
-  2026-10-18 時在 [check_tasks.py](../.github/common/scripts/check_tasks.py) 的第 196 與 201 行；[check_chores.py](../.github/common/scripts/check_chores.py) 的第 182 行對 chore 也一樣。
+  2026-10-18 時在 [check_tasks.py](../skill-groups/common/scripts/check_tasks.py) 的第 196 與 201 行；[check_chores.py](../skill-groups/common/scripts/check_chores.py) 的第 182 行對 chore 也一樣。
 - [[Task 62.4]] 搬走 9 個之後，這裡會少 18.1、18.3–18.6、28、29、30 與 37，check 1 就會失敗。
 - check 10 為了確認 wikilink 的目標存在，對整個 vault 做 `rglob`（check_tasks.py 第 272 行，check_chores.py 第 201 行）。
   2026-10-18 在 InvestForge 實測：53.8 萬個檔，19.9 秒，其中 InvDatabase 占 35.8 萬；git 追蹤的只有 810 個。
@@ -32,7 +32,7 @@
 
 ### 結果（2026-10-18）
 
-- [check_tasks.py](../.github/common/scripts/check_tasks.py) 與 [check_chores.py](../.github/common/scripts/check_chores.py)：
+- [check_tasks.py](../skill-groups/common/scripts/check_tasks.py) 與 [check_chores.py](../skill-groups/common/scripts/check_chores.py)：
   - 新的 `read_gaps` 讀空號那一行，check 1 照上面的規則檢查；兩支的 check 1 都不再放過 CLAUDE.md。
   - 新的 `known_names` 以 `git ls-files --cached --others --exclude-standard` 列出檔案，再去掉已刪掉的；不在 git repo 或沒有 git 時改用 `rglob`。
   - docstring 寫明空號那一行、check 1 的新規則，以及 check 10 在 git repo 裡看哪些檔。
@@ -81,6 +81,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-30
 

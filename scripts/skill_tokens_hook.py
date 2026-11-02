@@ -3,6 +3,7 @@
 
 由 ~/.claude/settings.json 的 hook 呼叫，stdin 是 hook 的 JSON（含 transcript_path）。
 只讀這一個 session 的紀錄檔，不產生每日快照和 dashboard。
+桌面版刪除 session 時也會觸發 SessionEnd（reason 是 other），那時紀錄檔還在（Task 27）。
 不屬於 WORKSPACES 的 session 直接略過。無論成功失敗都不輸出、一律 exit 0，
 所以不會進入對話、不花 token；錯誤寫到 ~/.claude/logs/skill-tokens-hook.log。
 """

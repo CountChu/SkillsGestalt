@@ -30,7 +30,7 @@ task-summary.md 的導言與圖例已經照這個寫法改了（2026-10-11）。
 - 它一次只處理一個檔，輸出成另一份 `#v1` 副本。
   本 task 要的是 EN 與 tw 用同一個規則一起轉，轉完立刻跑 parity 檢查。
 - 它可以是做法的一部分。
-  它的規則檔已移到 [md-style.md](../.github/common/rules/md-style.md)，正好可以當共用的 md 寫作規則；`reformat_md.py` 也可以加一個拆句的轉換。
+  它的規則檔已移到 [md-style.md](../skill-groups/common/rules/md-style.md)，正好可以當共用的 md 寫作規則；`reformat_md.py` 也可以加一個拆句的轉換。
   前提是：先做完本 task 的決定；把只適合聊天匯出的轉換（尤其第 9 個）改成選用；並支援 EN 與 tw 成對處理。
 - 規則與轉換要一起加。
   reformat-md 的 Step 0 要求 md-style.md 的每一條規則都有對應的轉換，腳本也不能執行規則以外的轉換，否則就停下。
@@ -76,7 +76,7 @@ task-summary.md 的導言與圖例已經照這個寫法改了（2026-10-11）。
 
 **讓 Claude 在 skill 之外也照 md-style.md 寫（2026-10-12）**
 
-- 問題：只有 reformat-md 與 asd-ste 的流程會讀 [md-style.md](../.github/common/rules/md-style.md)。
+- 問題：只有 reformat-md 與 asd-ste 的流程會讀 [md-style.md](../skill-groups/common/rules/md-style.md)。
   Claude 不透過 skill 寫 md 時，自動載入的 CLAUDE.md 與 memory 都沒提到它。
 - 做法：在根目錄 [CLAUDE.md](../CLAUDE.md) 加一條，只放連結，接在 twin 那條之後。
 - 措辭：原句「Write every Markdown file of the repo to md-style.md.」可能被讀成「寫進 md-style.md」，也沒說修改時要照做。
@@ -163,7 +163,7 @@ task-summary.md 的導言與圖例已經照這個寫法改了（2026-10-11）。
 **牽涉的檔案（若要做）**
 
 - 規則的寫法：放在哪裡？
-  可能是 chinese skill（twin 的版面）、RSDC 標準（文件的寫法），或一份共用的 md 寫作規則，例如 [md-style.md](../.github/common/rules/md-style.md)。
+  可能是 chinese skill（twin 的版面）、RSDC 標準（文件的寫法），或一份共用的 md 寫作規則，例如 [md-style.md](../skill-groups/common/rules/md-style.md)。
 - 檢查：`.github/common/skills/chinese/scripts/check_parity.py` 與 `.github/common/skills/gen-rsdc-skill/scripts/check_rsdc.py` 的 pair 檢查逐行比較行的種類，句子拆開後仍然適用，但兩邊的句子數不同時會報失敗。
   `.github/common/scripts/check_tasks.py` 的圖例檢查只看圖例第一行，不受影響。
 - 轉換：一支腳本，依上面的句子定義拆行，並能在 EN 與 tw 兩邊用同一個規則，轉換後立刻跑 parity 檢查。
@@ -171,13 +171,13 @@ task-summary.md 的導言與圖例已經照這個寫法改了（2026-10-11）。
 
 **做法（2026-10-11 決定：(a)）**
 
-- 規則寫進 [md-style.md](../.github/common/rules/md-style.md)，`reformat_md.py` 完全依照它，新增第 10 個轉換「每個句子一行」。
+- 規則寫進 [md-style.md](../skill-groups/common/rules/md-style.md)，`reformat_md.py` 完全依照它，新增第 10 個轉換「每個句子一行」。
   句子的定義、哪些地方不拆，以及「twin 與英文檔的句子一對一」都寫在那條規則裡。
   規則寫進去就生效，之後新寫或修改的 md 都照它寫。
 - 第 8、9 個轉換（加 inline code、刪引用編號）改成只在 raw 模式執行，第 9 個也不再動 inline code 與表格列。
   repo 裡的檔案一律用 `--mode clean`，因為一個 `*` 條列就會被當成貼上的檔案，raw 模式會把每個標題降一級。
 - reformat-md 成對處理中英兩份：由英文檔決定模式，兩份一起轉。
-- 新增 [check_reformat.py](../.github/common/skills/reformat-md/scripts/check_reformat.py)，作為 reformat-md 的最後一步。
+- 新增 [check_reformat.py](../skill-groups/common/skills/reformat-md/scripts/check_reformat.py)，作為 reformat-md 的最後一步。
   它逐字比對原檔與結果，列出每一段少掉或多出的文字，並逐段比對中英兩份的句子行數。
 
 ## 4. 驗證
@@ -197,6 +197,10 @@ task-summary.md 的導言與圖例已經照這個寫法改了（2026-10-11）。
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

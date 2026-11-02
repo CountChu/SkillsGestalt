@@ -6,11 +6,11 @@
 
 ## 1. 背景
 
-背景：STE 規則 1.14 要用美式拼法，[ste-rules.md](../.github/common/skills/asd-ste/references/ste-rules.md) 舉的例子是 *Color*、*behavior*、*catalog*；這個 repo 卻沒有拼法的規則，英文檔多半寫成英式。
+背景：STE 規則 1.14 要用美式拼法，[ste-rules.md](../skill-groups/common/skills/asd-ste/references/ste-rules.md) 舉的例子是 *Color*、*behavior*、*catalog*；這個 repo 卻沒有拼法的規則，英文檔多半寫成英式。
 DFD.md 的範例圖把一份資料叫做 `Catalogue`，asd-ste 寫的草稿沒有改掉它，也沒有報出來：
 
 - 圖在 fenced block 裡，是照抄原文的 kept span，草稿不能改。
-- [check_ste.py](../.github/common/skills/asd-ste/scripts/check_ste.py) 略過句中以大寫開頭的字，當它們是名稱或寫成名稱的技術名詞（第 424 行）。
+- [check_ste.py](../skill-groups/common/skills/asd-ste/scripts/check_ste.py) 略過句中以大寫開頭的字，當它們是名稱或寫成名稱的技術名詞（第 424 行）。
 
 Task 32 已把 DFD 的四份都改成 `Catalog`（SkillsGestalt `4f57e68`）。
 
@@ -126,7 +126,7 @@ Task 32 已把 DFD 的四份都改成 `Catalog`（SkillsGestalt `4f57e68`）。
 
 - **範圍**：
   1. `check_ste.py` 加上規則 1.14 的拼法檢查，句中以大寫開頭的字與 kept span 都要查；kept span 裡的，報成「先改原文」。
-  2. [md-style.md](../.github/common/rules/md-style.md) 加上「English uses American spelling」一條，它的 STE 草稿 md-style-ste.md 也加；兩者的中文版照 chinese skill 跟著改。
+  2. [md-style.md](../skill-groups/common/rules/md-style.md) 加上「English uses American spelling」一條，它的 STE 草稿 md-style-ste.md 也加；兩者的中文版照 chinese skill 跟著改。
   3. 解決這條規則與 reformat-md 的衝突，見「動手前決定的」。
 - **既有檔案**：先不轉換，只把既有的英式拼法列在下方的清單，之後再決定。
 - **依賴**：[[Task 32]] 依賴本 task：本 task 完成之前，Task 32 不審核其餘 10 份草稿；已經送審的 DFD 照常審完。
@@ -157,8 +157,8 @@ Task 32 已把 DFD 的四份都改成 `Catalog`（SkillsGestalt `4f57e68`）。
 
 **改 asd-ste 時**
 
-先讀 asd-ste 的 [README.md](../.github/common/skills/asd-ste/README.md) 的 When the Skill Is Changed，照它改 SKILL.md、README.md 與兩者的中文版、`check_ste.py`，並跑它列出的檢查。
-reformat-md 沒有 README.md，改它時照 [skill-writing.md](../.github/common/rules/skill-writing.md)。
+先讀 asd-ste 的 [README.md](../skill-groups/common/skills/asd-ste/README.md) 的 When the Skill Is Changed，照它改 SKILL.md、README.md 與兩者的中文版、`check_ste.py`，並跑它列出的檢查。
+reformat-md 沒有 README.md，改它時照 [skill-writing.md](../skill-groups/common/rules/skill-writing.md)。
 
 ## 4. 驗證
 
@@ -181,6 +181,10 @@ reformat-md 沒有 README.md，改它時照 [skill-writing.md](../.github/common
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-19
 

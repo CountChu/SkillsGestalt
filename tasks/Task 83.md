@@ -1,6 +1,6 @@
 # Task 83 - CLAUDE.md 裡 common 的路徑要和 config.yaml 一致
 
-**Status**：完成——2026-10-30 先寫了 `check_claude_md.py`，後來被 [[Task 84]] 取代；重新打開之後，[gen_claude_md.py](../.github/common/scripts/gen_claude_md.py) 加上開頭的插入點，連到 common 的連結改成相對路徑。
+**Status**：完成——2026-10-30 先寫了 `check_claude_md.py`，後來被 [[Task 84]] 取代；重新打開之後，[gen_claude_md.py](../skill-groups/common/scripts/gen_agents_md.py) 加上開頭的插入點，連到 common 的連結改成相對路徑。
 **Raised**：2026-10-30，使用者指出 CLAUDE.md 寫死了 `.github/common/rules/agency-rules.md`，而路徑應該由 `config.yaml` 決定。
 **Depends on**：[[Task 82]]
 
@@ -27,8 +27,8 @@
 ### 2026-10-30 重新打開之後
 
 - 評估 InvestForge 接上 [[Task 84]] 的機制時發現兩點：模板只有最後一個插入點，InvestForge 的設定說明會排在共用規則後面；`skillGroups.common` 是 `~/…` 時，Markdown 連結裡的 `~` 點不開。
-- [CLAUDE-tmp.md](../.github/common/templates/CLAUDE-tmp.md) 在引言與 `gen_claude_md.py` 指令之後、`## Markdown` 之前加一行 `{CLAUDE-local-top}`。
-- [gen_claude_md.py](../.github/common/scripts/gen_claude_md.py)：
+- [CLAUDE-tmp.md](../skill-groups/common/templates/AGENTS-tmp.md) 在引言與 `gen_claude_md.py` 指令之後、`## Markdown` 之前加一行 `{CLAUDE-local-top}`。
+- [gen_claude_md.py](../skill-groups/common/scripts/gen_agents_md.py)：
   - `CLAUDE-local.md` 裡獨佔一行的 `{CLAUDE-local}` 把它分成兩段：以上放進 `{CLAUDE-local-top}`，以下放進 `{CLAUDE-local}`；沒有這一行就全部放在結尾，開頭的插入點連同它的空行拿掉。
   - 連結目標以 `{skillGroups.X}` 開頭、而那個值是絕對路徑或 `~` 開頭時，改寫成從根目錄起算的相對路徑；算不出相對路徑（例如 Windows 上不同磁碟）就照 `config.yaml` 寫的值。
     指令與 inline code 照舊用 `config.yaml` 寫的值。
@@ -100,6 +100,11 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標從 `CLAUDE-local.md`、`CLAUDE-tmp.md`、`gen_claude_md.py` 改成改名後的 `AGENTS-local.md`、`AGENTS-tmp.md`、`gen_agents_md.py`，字句沒有改（[[Task 97.2]]）。
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-30
 

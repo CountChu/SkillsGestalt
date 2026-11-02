@@ -6,9 +6,9 @@
 
 ## 1. 背景
 
-[SkillCompiler-RSDC.md](../.github/common/skills/compile-skill/references/SkillCompiler-RSDC.md) 的 4.5 Defects 列出程式做了第 2 章說不該做的事的地方。
+[SkillCompiler-RSDC.md](../skill-groups/common/skills/compile-skill/references/SkillCompiler-RSDC.md) 的 4.5 Defects 列出程式做了第 2 章說不該做的事的地方。
 這三處都是讀程式碼時看到的，還沒在執行中觀察到。
-本 task 改 [scan_source.py](../.github/common/skills/compile-skill/scripts/scan_source.py) 與 [check_compiled.py](../.github/common/skills/compile-skill/scripts/check_compiled.py)，改好之後把缺陷從 4.5 拿掉。
+本 task 改 [scan_source.py](../skill-groups/common/skills/compile-skill/scripts/scan_source.py) 與 [check_compiled.py](../skill-groups/common/skills/compile-skill/scripts/check_compiled.py)，改好之後把缺陷從 4.5 拿掉。
 
 ## 2. 現況
 
@@ -23,9 +23,9 @@
 
 ## 3. 要做的
 
-1. 照 [skills/CLAUDE.md](../.github/common/skills/CLAUDE.md) 先讀 [skill-writing.md](../.github/common/rules/skill-writing.md)；compile-skill 沒有 README.md。
+1. 照 `skills/CLAUDE.md` 先讀 [skill-writing.md](../skill-groups/common/rules/skill-writing.md)；compile-skill 沒有 README.md。
 2. 每個缺陷先做出能重現它的執行，再改程式。
-3. 改好一個，就把它從 4.5 Defects 拿掉；4.4 那一列的 Proven by 跟著改，中文版照 [chinese](../.github/common/skills/chinese/SKILL.md) skill 更新。
+3. 改好一個，就把它從 4.5 Defects 拿掉；4.4 那一列的 Proven by 跟著改，中文版照 [chinese](../skill-groups/common/skills/chinese/SKILL.md) skill 更新。
 
 ## 4. 驗證
 
@@ -42,6 +42,11 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連到的 `skills/CLAUDE.md` 已刪除，內容搬進 `AGENTS-tmp.md` 的 Skills 一節；連結改成 inline code，字句沒有改（[[Task 97.2]]）。
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-20
 

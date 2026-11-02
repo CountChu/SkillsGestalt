@@ -7,8 +7,8 @@
 ## 1. 背景
 
 背景：[[Task 22]] 讓範本、gen-skill 與 check-skill 跟上 README.md 的拆分。
-check-skill 現在要求每個 skill 都有一份以 [README-tmp.md](../.github/common/templates/README-tmp.md) 寫成的 README.md（判準 1.2），而 SKILL.md 裡留著 Dataflow、Steps at a Glance 或 Purpose 的，也是 issue（判準 1.11）。
-規則見 [skill-writing.md](../.github/common/rules/skill-writing.md)；拆分的範例是 asd-ste、gen-skill 與 check-skill 的 README.md。
+check-skill 現在要求每個 skill 都有一份以 [README-tmp.md](../skill-groups/common/templates/README-tmp.md) 寫成的 README.md（判準 1.2），而 SKILL.md 裡留著 Dataflow、Steps at a Glance 或 Purpose 的，也是 issue（判準 1.11）。
+規則見 [skill-writing.md](../skill-groups/common/rules/skill-writing.md)；拆分的範例是 asd-ste、gen-skill 與 check-skill 的 README.md。
 
 ## 2. 現況
 
@@ -51,6 +51,11 @@ check-skill 現在要求每個 skill 都有一份以 [README-tmp.md](../.github/
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
+- [[Task 93]] 跑 check-skill 時，imp-home、gen-imp-app 與 chinese 的 check 1 都報出沒有 README.md；imp-home 與 chinese 的 Purpose 還在 SKILL.md，chinese 還有 `# Dataflow` 與 `# Steps at a Glance`。
 
 ### 2026-10-30
 

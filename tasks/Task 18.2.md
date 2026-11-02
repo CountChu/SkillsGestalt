@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-讓 compile-skill 的 [SkillCompiler-RSDC.md](../.github/common/skills/compile-skill/references/SkillCompiler-RSDC.md) 跟上 Skill-System 範本。
+讓 compile-skill 的 [SkillCompiler-RSDC.md](../skill-groups/common/skills/compile-skill/references/SkillCompiler-RSDC.md) 跟上 Skill-System 範本。
 共用的規則與決定，見 [[Task 18]]。
 
 ## 2. 現況
@@ -90,6 +90,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-20
 

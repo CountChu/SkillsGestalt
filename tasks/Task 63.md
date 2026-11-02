@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-- chinese skill 的規則：中文版留英文的 term，要在同一次加進 [tw-keep-english.md](../.github/common/references/tw-keep-english.md)。
+- chinese skill 的規則：中文版留英文的 term，要在同一次加進 [tw-keep-english.md](../skill-groups/common/references/tw-keep-english.md)。
 - [[Task 62.1]] 的 `task-rules-tw.md` 與 `chore-rules-tw.md` 留英文的新詞：task、sub task、chore、wikilink、vault、session，以及 git 的 stage、index、blob、HEAD。
 - 清單已有 stage 一列，但它說的是 RSDC 的 Dataflow 裡的 stage，不是 git 的 stage。
 - 已有先例：13 份中文版把 vault 留英文、5 份把 session 留英文，清單都沒有它們的列。
@@ -43,6 +43,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-30
 

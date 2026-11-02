@@ -8,7 +8,7 @@
 
 rule 不在 STE Issue 9 的字典裡。
 到 2026-10-16 為止，11 份 STE 檔與草稿中有 10 份把它列在 `Technical words:`，只有 report-yaml-rules 的草稿沒有列：它只在標題用到 rule，而 `check_ste.py` 只在內文找技術用字（見 [[Task 41]]）。
-rule 是本專案每份文件都用的一般用語，不是某個主題的技術名詞（STE 規則 1.5），比較適合當專案核准詞：[ste-custom.md](../.github/common/skills/asd-ste/references/ste-custom.md) 核准的字是核准詞，不列為技術用字（House Rule 11）。
+rule 是本專案每份文件都用的一般用語，不是某個主題的技術名詞（STE 規則 1.5），比較適合當專案核准詞：[ste-custom.md](../skill-groups/common/skills/asd-ste/references/ste-custom.md) 核准的字是核准詞，不列為技術用字（House Rule 11）。
 
 ## 2. 現況
 
@@ -60,6 +60,10 @@ rule 是本專案每份文件都用的一般用語，不是某個主題的技術
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-16
 

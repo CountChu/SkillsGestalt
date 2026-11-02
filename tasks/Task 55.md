@@ -8,7 +8,7 @@
 
 - 文件在 header quote 記下它依賴的每份檔案的日期與指紋（[[Task 8]]）；被依賴的檔一改，`depends_on.py check` 就報 CHANGED，要有人讀過改動、確認依賴方仍然成立，再重記。
 - 目前只有兩處會主動這樣做：asd-ste 的 Step 7 取代原檔時找出依賴方並重記，[[rerecord-ste-custom]] 重記 ste-custom.md；其他的修改之後，依賴方沒有人檢查。
-- check-md-deps 的 [scan_md_deps.py](../.github/common/skills/check-md-deps/scripts/scan_md_deps.py) 可以一次掃一整個資料夾：每份文件 header quote 的每一筆紀錄，以及中文版是否跟上英文。
+- check-md-deps 的 [scan_md_deps.py](../skill-groups/common/skills/check-md-deps/scripts/scan_md_deps.py) 可以一次掃一整個資料夾：每份文件 header quote 的每一筆紀錄，以及中文版是否跟上英文。
 - 2026-10-18 試掃 SkillsGestalt 的 `.github` 與 `mods`：102 份文件中 45 份有依賴，紀錄 109 筆 UNCHANGED、2 筆 CHANGED、36 筆 UNRESOLVED，中文版 38 份都跟上了。
   - CHANGED 的兩筆：check-md-deps 的 SKILL.md 與 SKILL-tw.md 記的 check-wiki-doc 的 SKILL.md，一直沒有人發現。
   - UNRESOLVED 的 36 筆是 README-tmp 草稿檔頭的 `{COMMON_PATH}` 連結，範本本來就解析不了。
@@ -32,7 +32,7 @@
 
 ## 3. 要做的
 
-1. 決定「要決定的」五項，照 [chore-rules.md](../.github/common/rules/chore-rules.md) 建立 chore 與摘要表的一列。
+1. 決定「要決定的」五項，照 [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 建立 chore 與摘要表的一列。
 2. 需要的話，寫包裝腳本。
 3. 跑第一次：處理試掃找到的兩筆。
 
@@ -54,6 +54,10 @@
 
 ## 7. 日誌
 
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
+
 ### 2026-10-30
 
 - [[Task 86]] 把 chore 改用名稱：本檔的 `[[Chore N]]` 連結改成新名稱。
@@ -65,5 +69,5 @@
 ### 2026-10-18
 
 - 建立：記下試掃的結果與兩筆過期的紀錄。
-- 第 3 章連到的 `chores/CLAUDE.md` 已刪除，改連 [chore-rules.md](../.github/common/rules/chore-rules.md)（[[Task 62.1]]）。
+- 第 3 章連到的 `chores/CLAUDE.md` 已刪除，改連 [chore-rules.md](../skill-groups/common/rules/chore-rules.md)（[[Task 62.1]]）。
 - 指向 Task 30 的 wikilink 改成純文字：它已移出本 workspace（[[Task 62.4]]）。

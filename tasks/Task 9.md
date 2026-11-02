@@ -23,9 +23,9 @@ Home-RSDC-tw：四個章標題改回英文檔的字樣，「過期」換成 stal
 
 | Twin | 失敗的檢查 | 差在哪裡 |
 |---|---|---|
-| [SkillCompiler-RSDC-tw.md](../.github/common/skills/compile-skill/references/SkillCompiler-RSDC-tw.md) | fenced blocks copied byte for byte | block 6（L367–408，JSON 範例）的 `name`、`description` 值譯成中文；block 7（L440–445，目錄樹）的樹狀符號改成 `├──`／`└──`，括號裡的說明譯成中文 |
+| [SkillCompiler-RSDC-tw.md](../skill-groups/common/skills/compile-skill/references/SkillCompiler-RSDC-tw.md) | fenced blocks copied byte for byte | block 6（L367–408，JSON 範例）的 `name`、`description` 值譯成中文；block 7（L440–445，目錄樹）的樹狀符號改成 `├──`／`└──`，括號裡的說明譯成中文 |
 | `.github/common/skills/compile-skill/references/Tasks-tw.md` | fenced blocks、link targets、line for line（行數 39 vs 41，19 行類型不同） | 舊格式：第 3 行另加一行 pairing line，之後整份錯開兩行；內文連到 `SkillCompiler-RSDC-tw.md`，英文檔連的是 `SkillCompiler-RSDC.md`；block 1（英文 L26–29、twin L28–31）的目錄樹與上一列的 block 7 同樣被改 |
-| [Home-RSDC-tw.md](../.github/common/skills/imp-home/references/Home-RSDC-tw.md) | headings identical and in order | 四個章標題的問句譯成中文，例如英文的 `## 1 Requirements — "What problem does it solve?"` 寫成 `## 1 Requirements — 「它解決什麼問題？」`（L15、45、157、210） |
+| [Home-RSDC-tw.md](../skill-groups/common/skills/imp-home/references/Home-RSDC-tw.md) | headings identical and in order | 四個章標題的問句譯成中文，例如英文的 `## 1 Requirements — "What problem does it solve?"` 寫成 `## 1 Requirements — 「它解決什麼問題？」`（L15、45、157、210） |
 
 **不在這一項**：同一次檢查中，gen-rsdc-skill 的 `SKILL-tw.md` 也不通過，原因是另一個 session 正在改它的 `SKILL.md`（加了 Step 12 - Write the MD Report），twin 尚未同步；舊版 `check_parity.py` 一樣不通過，與本項無關。
 
@@ -70,6 +70,10 @@ Home-RSDC-tw：四個章標題改回英文檔的字樣，「過期」換成 stal
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-20
 

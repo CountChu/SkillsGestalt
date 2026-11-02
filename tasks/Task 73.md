@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-- [tw-keep-english.md](../.github/common/references/tw-keep-english.md) 列出中文版要留英文的 term，它的 Flagged 欄是不該出現的譯法。
+- [tw-keep-english.md](../skill-groups/common/references/tw-keep-english.md) 列出中文版要留英文的 term，它的 Flagged 欄是不該出現的譯法。
 - chinese skill 只在中文版被改到時才檢查它，所以清單後來加的詞，不會回頭套用到沒改到的中文版。
 - 稽核只列出，不判斷：同一個詞用在別的意思時是對的，所以每一行都要有人讀過再決定。
 
@@ -27,7 +27,7 @@
 ## 3. 要做的
 
 1. 逐份讀報告列出的警告：指那個 term 的譯法改成英文，同一個詞用在別的意思的保留。
-2. 照 [chinese](../.github/common/skills/chinese/SKILL.md) skill 改：中文版只改那幾行，再跑 `check_parity.py --keep`。
+2. 照 [chinese](../skill-groups/common/skills/chinese/SKILL.md) skill 改：中文版只改那幾行，再跑 `check_parity.py --keep`。
 3. 改完一份就在日誌記一行；全部改完之後，再跑一次稽核的指令，和這份報告比。
 
 ## 4. 驗證
@@ -45,6 +45,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-30
 

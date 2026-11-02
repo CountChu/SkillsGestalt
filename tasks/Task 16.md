@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-依賴格式見 Task 13：文件開頭的檔頭引用區一行一個連結，後面是確認的日期與指紋，由共用的 [depends_on.py](../.github/common/scripts/depends_on.py) 讀寫。
+依賴格式見 Task 13：文件開頭的檔頭引用區一行一個連結，後面是確認的日期與指紋，由共用的 [depends_on.py](../skill-groups/common/scripts/depends_on.py) 讀寫。
 
 **觸發條件**：某個已編譯的 skill（有 `skill.py` 的）在 `SKILL.md` 宣告依賴，例如 gen-rsdc-skill 的 Step 8 為它加上 `> [[<system name>-RSDC]]`。
 到那時 compile-skill 若還沒改，那個 skill 每次 `record`，它的 `skill.py` 都會被判為過期。
@@ -53,6 +53,10 @@ gen-skill 那一列已由 Task 22 完成（2026-10-11）。
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-18
 

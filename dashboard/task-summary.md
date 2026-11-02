@@ -3,10 +3,25 @@
 跨 session 的待辦工作。
 每個 task 是 `tasks/Task N.md` 一個檔案。
 本檔只放下面的摘要表：先讀這張表，再只開需要的那個 task。
-task 檔的格式與摘要表的維護方式，見 [task-rules.md](../.github/common/rules/task-rules.md)；檢查指令見根目錄的 [CLAUDE.md](../CLAUDE.md)。
+task 檔的格式與摘要表的維護方式，見 [task-rules.md](../skill-groups/common/rules/task-rules.md)；檢查指令見根目錄的 [AGENTS.md](../AGENTS.md)。
 
 | Task | Raised | Title | Status | Depends on |
 | --- | --- | --- | --- | --- |
+| [[Task 99]] | 2026-11-02 | 評估 Claude Code 直接讀 AGENTS.md 之後是否還需要 CLAUDE.md | ✅ | — |
+| [[Task 98]] | 2026-11-02 | 修正 imp-home seed 的三個缺陷 | ✅ | — |
+| [[Task 97]] | 2026-11-02 | 讓 SkillsGestalt 同時適用於 VS Code Copilot 與 Claude Code | ✅ | — |
+| ├─ [[Task 97.1]] | 2026-11-02 | 實測 agent 照 AGENTS.md 找到 skill-groups 的 skill | ✅ | [[Task 97.2]] ✅、[[Task 97.7]] ✅ |
+| ├─ [[Task 97.2]] | 2026-11-02 | 規則改寫在 AGENTS.md，CLAUDE.md 只引用它 | ✅ | — |
+| ├─ [[Task 97.3]] | 2026-11-02 | skill 只寫動作，不寫某個 agent 才有的工具名稱 | ✅ | — |
+| ├─ [[Task 97.4]] | 2026-11-02 | 建 plugin marketplace：gestalt 與 gestalt-ext 兩個 plugin | ⊘ | [[Task 97.1]] ✅ |
+| ├─ [[Task 97.5]] | 2026-11-02 | 三個 chore 的步驟改成 gestalt 的 skill，並以 hook 提醒 | ⊘ | [[Task 97.4]] ⊘ |
+| ├─ [[Task 97.6]] | 2026-11-02 | mermaid-view 的 mod 搬進 repo，成為 marketplace 的 plugin | ⊘ | [[Task 97.4]] ⊘ |
+| └─ [[Task 97.7]] | 2026-11-02 | 把 .github 改名為 skill-groups | ✅ | — |
+| [[Task 96]] | 2026-11-02 | Forge 必須有 .venv，skill 以 .venv 的 Python 執行 script | ✅ | — |
+| [[Task 95]] | 2026-11-02 | SkillsGestalt 的 .venv，以及修正 check-skill 對 asd-ste 報的 5.1 與 6.1 | ✅ | — |
+| [[Task 94]] | 2026-11-01 | 為 asd-ste 的對照頁寫 RSDC | ✅ | — |
+| [[Task 93]] | 2026-11-01 | 縮短超過 1024 字元的 skill description，並寫出 asd-ste 的 Step 6 會啟動審核伺服器 | ✅ | — |
+| [[Task 92]] | 2026-10-31 | 同一天再發佈時，保留較早的歷史 | ⬜ | — |
 | [[Task 91]] | 2026-10-31 | chore publish-github 改名為 publish-gestalt | ✅ | — |
 | [[Task 90]] | 2026-10-31 | 快照的作者與 committer 由 publish_snapshot.py 指定 | ✅ | [[Task 89]] ✅ |
 | [[Task 89]] | 2026-10-31 | 設計 chore pull-gestalt：把 GitHub 上的新快照拿進 m1 | ✅ | — |
@@ -67,8 +82,9 @@ task 檔的格式與摘要表的維護方式，見 [task-rules.md](../.github/co
 | [[Task 44]] | 2026-10-16 | 把 rule 收進專案核准詞，STE 檔不再把它列為技術用字 | ✅ | — |
 | [[Task 43]] | 2026-10-14 | 把 technical term 改稱 term（術語），STE customization 改稱 project-approved word（專案核准詞） | ✅ | — |
 | [[Task 42]] | 2026-10-14 | 讓 reformat_md.py 斷句時不把 inline code 誤當成數學式 | ✅ | — |
-| [[Task 41]] | 2026-10-14 | 讓 check_ste.py 提醒字典不核准的技術用字 | ⬜ | — |
-| [[Task 40]] | 2026-10-13 | 更新 asd-ste 的對照頁 | 🔄 | — |
+| [[Task 41]] | 2026-10-14 | 讓 check_ste.py 提醒字典不核准的技術用字 | ✅ | — |
+| └─ [[Task 41.1]] | 2026-11-01 | 處理現有 STE 檔裡字典不核准的技術用字與標題字 | ✅ | — |
+| [[Task 40]] | 2026-10-13 | 更新 asd-ste 的對照頁 | ✅ | — |
 | [[Task 39]] | 2026-10-13 | 讓 asd-ste 產生 STE 草稿的對照頁 | ✅ | — |
 | [[Task 38]] | 2026-10-13 | 為英文文件訂下美式拼法的規則與檢查 | ✅ | — |
 | [[Task 36]] | 2026-10-13 | 讓 reformat_md.py 在直引號內不斷句，並認得以 ⌘ 或小寫名稱開頭的句子 | ✅ | — |
@@ -88,7 +104,7 @@ task 檔的格式與摘要表的維護方式，見 [task-rules.md](../.github/co
 | ├─ [[Task 32.10]] | 2026-10-12 | README-tmp | ✅ | [[Task 64]] ✅ |
 | └─ [[Task 32.11]] | 2026-10-12 | SKILL-tmp | ✅ | [[Task 64]] ✅、[[Task 67]] ✅ |
 | [[Task 31]] | 2026-10-12 | 交給 asd-ste 為 .github/common 的 references、rules、templates 產生 STE 草稿 | ✅ | [[Task 33]] ✅、[[Task 34]] ✅、[[Task 35]] ✅ |
-| [[Task 27]] | 2026-10-12 | 確認在桌面版刪除 session 時是否會觸發 SessionEnd hook | ⬜ | — |
+| [[Task 27]] | 2026-10-12 | 確認在桌面版刪除 session 時是否會觸發 SessionEnd hook | ✅ | — |
 | [[Task 26]] | 2026-10-12 | 決定 ASD-STE100 規格的 PDF 是否留在 git 中 | ✅ | — |
 | [[Task 25]] | 2026-10-12 | 舊檔中的 `___PLACEHOLDER___` 一律視為錯誤 | ✅ | [[Task 15]] ✅ |
 | [[Task 24]] | 2026-10-11 | 把其餘 skill 改成 SKILL.md 與 README.md 的新格式 | ⬜ | [[Task 22]] ✅、[[Task 32]] ✅ |
@@ -97,10 +113,10 @@ task 檔的格式與摘要表的維護方式，見 [task-rules.md](../.github/co
 | [[Task 21]] | 2026-10-11 | 把 SKILL.md 中執行時用不到的內容移到 README.md | ✅ | — |
 | [[Task 20]] | 2026-10-11 | 為 skill 建立 README.md：Dependency，以及 SKILL.md 執行時用不到的內容 | ✅ | — |
 | [[Task 19]] | 2026-10-11 | 決定 md 檔是否採用每個句子一行的寫法 | ✅ | — |
-| [[Task 18]] | 2026-10-10 | 讓已寫好的 RSDC 跟上對齊後的範本 | 🔄 | [[Task 12]] ✅、[[Task 10]] ✅、[[Task 33]] ✅ |
+| [[Task 18]] | 2026-10-10 | 讓已寫好的 RSDC 跟上對齊後的範本 | ✅ | [[Task 12]] ✅、[[Task 10]] ✅、[[Task 33]] ✅ |
 | ├─ [[Task 18.2]] | 2026-10-10 | SkillCompiler-RSDC | ✅ | — |
 | ├─ [[Task 18.7]] | 2026-10-10 | Home-RSDC（imp-home 的 seed） | ✅ | — |
-| └─ [[Task 18.8]] | 2026-10-10 | MermaidView-RSDC | ⬜ | — |
+| └─ [[Task 18.8]] | 2026-10-10 | MermaidView-RSDC | ✅ | — |
 | [[Task 17]] | 2026-10-10 | 讓 gen-rsdc-app 與 imp-app 跟上對齊後的 App 範本 | ✅ | [[Task 12]] ✅ |
 | [[Task 16]] | 2026-10-10 | 讓 compile-skill 與 gen-skill 處理檔頭引用區的依賴格式 | ✅ | [[Task 13]] ✅ |
 | [[Task 15]] | 2026-10-10 | 把其餘範本與 skill 的佔位符改成大括號寫法 | ✅ | — |

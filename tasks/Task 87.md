@@ -20,20 +20,20 @@
 | [[keep-english]] | `{skillGroups.common}/scripts/audit_keep_english.py` | 是 |
 | [[publish-gestalt]] | `scripts/publish_snapshot.py` | 否，在本 repo 根目錄 |
 
-- [chore-rules.md](../.github/common/rules/chore-rules.md) 沒有規定 chore 能呼叫哪裡的程式。
+- [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 沒有規定 chore 能呼叫哪裡的程式。
 - `check_chores.py` 的 files 檢查已經只接受 `chores/<name>.md`，`chores/` 裡放程式或子目錄會 FAIL；規則沒有寫出原因。
 
 ### 2026-10-30 做完之後
 
-- [chore-rules.md](../.github/common/rules/chore-rules.md) 與中文版：
+- [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 與中文版：
   - Files：`chores/` 裡不放程式或目錄，因為 chore 沒有自己的程式。
   - A Chore of a Different Agency：不做別的 agency 的 private chore。
   - The Chore File：格式多一行選用的 `**Private**`；新增「chore 沒有自己的程式」：step 使用 skill 或 skill group 裡的程式，路徑寫 `{skillGroups.X}`，並說明 skill 與 chore 的分工；新增 private chore：只有擁有它的 agency 做，程式可以寫那個 agency 的值，但仍放在 skill group。
-- [check_chores.py](../.github/common/scripts/check_chores.py) 加上兩項檢查（共 18 項）：
+- [check_chores.py](../skill-groups/common/scripts/check_chores.py) 加上兩項檢查（共 18 項）：
   - programs：本 workspace 的 chore 檔裡，每個 inline code 與 fenced block 中執行檔案的指令（`python`、`node`、`bash`、`sh` 等加上 `.py`、`.js`、`.sh` 之類的路徑，或直接執行 `./…`、`{skillGroups.X}/…`），路徑要寫成 `{skillGroups.X}/…`，X 是 `config.yaml` 有的 skill group；寫實際路徑（例如 `.github/common/…`）也 FAIL；沒有路徑的指令（`git`、`gh`）不看。
   - private：摘要表裡文字的一列，不能是別的 agency 的 private chore。
   - `config.yaml` 的 `skillGroups` 與 `agencies` 都由同一個小函式讀，仍只用標準函式庫。
-- `publish_snapshot.py` 用 `git mv` 搬到 [.github/common/scripts/](../.github/common/scripts/publish_snapshot.py)，開頭註明它只服務 SkillsGestalt 的 private chore [[publish-gestalt]]，值照舊寫死；`.gitignore` 的註解、[[Task 78]] 與 [[Task 79]] 的連結跟著改，兩個 task 各加一行日誌。
+- `publish_snapshot.py` 用 `git mv` 搬到 [.github/common/scripts/](../skill-groups/common/scripts/publish_snapshot.py)，開頭註明它只服務 SkillsGestalt 的 private chore [[publish-gestalt]]，值照舊寫死；`.gitignore` 的註解、[[Task 78]] 與 [[Task 79]] 的連結跟著改，兩個 task 各加一行日誌。
 - [[publish-gestalt]] 加上 `**Private**` 行，三條指令改寫 `{skillGroups.common}/scripts/publish_snapshot.py`；[[rerecord-ste-custom]] 的兩條指令改寫 `{skillGroups.common}/skills/asd-ste/scripts/draft.py`。
 
 ## 3. 要做的
@@ -57,7 +57,7 @@
 
 ### 步驟
 
-1. [chore-rules.md](../.github/common/rules/chore-rules.md) 與中文版：加上 chore 不放自己的程式、只呼叫 skill group 裡的程式，以及 `chores/` 只放 `<name>.md` 的原因。
+1. [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 與中文版：加上 chore 不放自己的程式、只呼叫 skill group 裡的程式，以及 `chores/` 只放 `<name>.md` 的原因。
 2. `check_chores.py`：加上 `3. 怎麼做` 的指令檢查。
 3. `publish_snapshot.py` 搬進 `{skillGroups.common}/scripts/`，[[publish-gestalt]] 與 `.gitignore` 等提到它的地方跟著改。
 4. [[rerecord-ste-custom]] 的路徑改成 `{skillGroups.common}`。
@@ -87,6 +87,10 @@
 —
 
 ## 7. 日誌
+
+### 2026-11-02
+
+- 連結的目標路徑從 `../.github/` 改成 `../skill-groups/`，字句沒有改（[[Task 97.7]]）。
 
 ### 2026-10-31
 
