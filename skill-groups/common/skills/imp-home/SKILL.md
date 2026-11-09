@@ -11,7 +11,7 @@ description: >-
   `gen` and `update` never serve what they wrote, and `test` and `run` change nothing. The first
   `update` closes `setup` and `gen` for that target for good. An entry may be MOUNTED: the hub
   serves that app itself under a path of its own, named by a registry entry. Each run writes an MD
-  report and a YAML checkpoint.
+  report, its step files and a run record.
 ---
 
 # TERMINOLOGY
@@ -19,12 +19,18 @@ description: >-
 Terms that mean the same thing in every skill.
 
 - **`run step N`** — a trailing prompt selector naming one step.
-  It runs **only** that step, reading every earlier step's output back from the YAML checkpoint.
-- **Checkpoint Dir** — the per-run directory holding a skill's YAML checkpoint.
-  Every skill has its own; this skill's is given under **CONFIGURATION**.
-- **YAML checkpoint** — the `process.yaml` inside the Checkpoint Dir.
-  Every step writes its outputs there under a `step_{N}` group, so a later step reads them back instead of recomputing them.
-- **MD report** — the Markdown report this skill writes into the wiki vault, in a folder named after the skill, carrying the standard header (Skill, Checkpoint, Created, Updated, Prompt) above its result sections.
+  It runs **only** that step, reading every earlier step's output back from its step file.
+- **Run Number** — the number of one run, `{yymmdd}.{N}`.
+  `{N}` is the sequence number of the run of this skill on that date, and it starts at 1.
+- **Working Dir** — the directory for one run, which holds all the working data of the run: its step files, its data files and its temporary files.
+  For this skill it is the Checkpoint Dir, and **CONFIGURATION** gives it.
+  The skill does not remove it.
+- **Checkpoint Dir** — a Working Dir in `checkpoints\` at the root of the workspace.
+- **Step file** — the `step_{N}.yaml` in the Working Dir.
+  Each step writes its outputs there, so a later step reads them back instead of recomputing them.
+- **Run record** — the file that records the time and the model of each step of one run.
+  The analysis of the efficiency of a skill uses it.
+- **MD report** — the Markdown report this skill writes into the wiki vault, in a folder named after the skill, carrying the standard header (Skill, Run record, Created, Updated, Prompt) above its result sections.
 - **no forward-reference** — the rule that a step must never depend on a step that comes after it.
   Naming a later step to route control flow does not break it; borrowing that step's output does.
 
@@ -40,7 +46,7 @@ The glossary owns each definition — a step uses the term rather than restating
 - **lifecycle** — the one-way order `setup` → `gen` → `update`, with **test** and **run** available at any point after there is code.
   **update** is the door that only opens one way: once it has run, **setup** and **gen** are closed for that target forever.
 - **lifecycle record** — `{target}\.imp-home.json`, carrying the **phase** and a `history` of every **command** run against this **target** with its timestamp.
-  It lives in the **target** rather than in a checkpoint because the **lifecycle** spans sessions and a per-run file would forget it.
+  It lives in the **target** rather than in a step file because the **lifecycle** spans sessions and a per-run file would forget it.
   The app never reads it.
 - **phase** — the last state-changing **command** the **lifecycle record** carries: `setup`, `gen` or `update`.
   **run** changes nothing and so never changes it.
@@ -106,19 +112,31 @@ The glossary owns each definition — a step uses the term rather than restating
 Concrete values this skill runs with.
 Every path below is a constant of the skill; everything about the hub being worked on is read from the **target** the prompt names.
 
-- **Checkpoint Dir** — `checkpoints\imp-home\{hub}-{command}-{yymmdd-hhmm}\`.
-- **YAML checkpoint** — `process.yaml` inside the Checkpoint Dir.
-- **MD report** — `{wikiDir}\imp-home\imp-home-{hub}-{command}-{yymmdd-hhmm}.md`, carrying the same `{hub}`, `{command}` and stamp as the Checkpoint Dir, where `wikiDir` comes from the workspace [config.yaml](config.yaml) (resolved in Step 0) — never hardcode the wiki root.
+The inputs and tools, which the run reads or runs:
+
+- **Workspace configuration** — the [config.yaml](config.yaml) at the root of the workspace.
 - **seed** — `{skillGroups.common}\skills\imp-home\server\` and `{skillGroups.common}\skills\imp-home\references\`.
 - **seed documents** — [Home-RSDC.md](skill-groups/common/skills/imp-home/references/Home-RSDC.md), `Home-RSDC-tw.md`, [Wireframe.md](skill-groups/common/skills/imp-home/references/Wireframe.md) and `Wireframe-tw.md`.
 - **setup tool** — `{skillGroups.common}\skills\imp-home\setup_target.py`.
 - **skill config** — `{skillGroups.common}\skills\imp-home\config.yaml`.
+- **RSDC standard** — `{skillGroups.common}\references\RSDC-Standard.md`, with its diagram notation in `{skillGroups.common}\references\DFD.md`.
+- **run-data rules** — `{skillGroups.common}\rules\run-data-rules.md`.
+- **configs of other skills** — the config of each skill under the roots of `skillGroups`, which **setup** searches for a claim on the **target**.
+- **Node** — `node`, on `PATH`, which starts the hub.
+- **server origin** — `http://127.0.0.1:{port}`, where the port is the **app config**'s `port`.
+
+The working data of a run, which no person and no skill reads after the run:
+
+- **Working Dir** — the Checkpoint Dir, `checkpoints\imp-home\{yymmdd}.{N}\`: the step files, the probes, Step 3's throwaway copy of the **target** at `target-copy\` in it, and the hub copy of `test_hub.js` at `test-hub\` in it.
+
+The last outputs, which a person, a different skill or a subsequent analysis reads:
+
+- **Run record** — `database\skill-runs\imp-home\{yymmdd}.{N}.yaml`.
+- **MD report** — `{wikiDir}\imp-home\imp-home-{hub}-{command}-{yymmdd}.{N}.md`, carrying the **hub name**, the **command** and the Run Number, where `wikiDir` comes from the workspace [config.yaml](config.yaml) (resolved in Step 0) — never hardcode the wiki root.
 - **target** — from the prompt's second line, relative to the workspace root.
   It sits outside the wiki vault.
 - **lifecycle record** — `{target}\.imp-home.json`.
 - **target documents** — `{target}\docs\`.
-- **RSDC standard** — `{skillGroups.common}\references\RSDC-Standard.md`, with its diagram notation in `{skillGroups.common}\references\DFD.md`.
-- **server origin** — `http://127.0.0.1:{port}`, where the port is the **app config**'s `port`.
 
 # MUST FOLLOW
 
@@ -202,11 +220,11 @@ Every path below is a constant of the skill; everything about the hub being work
 - **Honour a `run step N` selector**: run Step N, then stop; never a later step.
   It is distinct from the **run** command — `run` alone on the third line is the command, while `run step` followed by a number is the selector, and a prompt may carry both.
 - Follow [report-md-rules.md](skill-groups/common/rules/report-md-rules.md) for the MD report's header and shape.
-- Follow [report-yaml-rules.md](skill-groups/common/rules/report-yaml-rules.md) for the YAML checkpoint's shape and required fields.
-- Follow [scratch-rules.md](skill-groups/common/rules/scratch-rules.md) for where a run's throwaway files go and how they are cleaned up — the escaping and mounting probes are exactly that.
-- **Before the skill ends, display the server origin, target, MD report and YAML checkpoint** — show only those four, and render each as a clickable Markdown link.
+- Obey [run-data-rules.md](skill-groups/common/rules/run-data-rules.md) for the Run Number, the step files, the run record and the Working Dir of a run — the escaping and mounting probes, and Step 3's throwaway copy of the **target**, go into the Working Dir.
+  A run that stops before its last step writes `result: stopped` and `stopped_at` in the run record, as it tells; a refusal by the gate stops at `step_0`.
+- **Before the skill ends, display the server origin, target, MD report and run record** — show only those four, and render each as a clickable Markdown link.
   The **server origin** is an `http://` URL and links as itself, and is shown only by **test** and **run**, the two **commands** that start a server; **setup**, **gen** and **update** omit it, having left nothing running.
-  The MD report lives in the vault, outside this workspace, so link it with an `obsidian://open?vault={vaultName}&file=<vault-relative-path>` URI (e.g. `[imp-home-{hub}-{command}-{yymmdd-hhmm}.md](obsidian://open?vault={vaultName}&file=imp-home/imp-home-{hub}-{command}-{yymmdd-hhmm}.md)`); the **target** and the YAML checkpoint keep a workspace-relative, forward-slash target (e.g. `[process.yaml](checkpoints/imp-home/{hub}-{command}-{yymmdd-hhmm}/process.yaml)`).
+  The MD report lives in the vault, outside this workspace, so link it with an `obsidian://open?vault={vaultName}&file=<vault-relative-path>` URI (e.g. `[imp-home-{hub}-{command}-{yymmdd}.{N}.md](obsidian://open?vault={vaultName}&file=imp-home/imp-home-{hub}-{command}-{yymmdd}.{N}.md)`); the **target** and the run record keep a workspace-relative, forward-slash target (e.g. `[{yymmdd}.{N}.yaml](database/skill-runs/imp-home/{yymmdd}.{N}.yaml)`).
   - Do this for every run, including a partial one such as `run step 0`.
 
 # Prompt Examples
@@ -300,6 +318,9 @@ Step 4 carries both halves because they are two questions about one running page
   - Substitute the resolved values wherever `{wikiDir}`, `{vaultName}` or `{skillGroups.common}` appears in the steps below, including in commands.
   - If `config.yaml` is missing or a needed key is absent, stop and ask the user.
 
+- Get the Run Number, as run-data-rules.md tells, and write the run record of the run.
+  It comes before the gate below, so a run the gate refuses still leaves its run record.
+
 - This skill calls no API and needs no credential of any kind.
 
 - The prompt takes one of the forms shown in **Prompt Examples** above.
@@ -352,9 +373,10 @@ Step 4 carries both halves because they are two questions about one running page
 - Check whether the port is already taken.
   A live answer usually means an earlier run's server is still up, which is fine — say so, and either reuse it or stop it rather than starting a second one that cannot bind.
 
-- Read the clock **once** and derive the run's `{yymmdd-hhmm}` stamp, and with the **hub name** and **command** the two output paths.
+- Derive the path of the MD report from the **hub name**, the **command** and the Run Number.
 
-- Save YAML checkpoint `step_0` with the resolved `wikiDir`, the **target**, the **hub name** and where it came from, the **command**, the **phase** and `history` read from the **lifecycle record**, the gate verdict, the port and whether it was in use, the **link list** and its count, every **mount source** and what it resolved to, which mounts carry an `app.js`, any **change requests**, the Node version, the stamp, the output paths, the step selector, and timing.
+- Save `step_0.yaml`, with: the resolved `wikiDir`, the **target**, the **hub name** and where it came from, the **command**, the **phase** and `history` read from the **lifecycle record**, the gate verdict, the port and whether it was in use, the **link list** and its count, every **mount source** and what it resolved to, which mounts carry an `app.js`, any **change requests**, the Node version, the Run Number, the output paths, and the step selector.
+  Add this step to the run record.
 
 - Display the **target**, the **command**, the **phase** and what the gate decided.
   Creating the MD report file is optional in this step.
@@ -366,7 +388,7 @@ Step 4 carries both halves because they are two questions about one running page
 - **Runs for the `setup` command only.**
   For any other **command**, skip to the step that command routes to.
 
-- Read the **target**, the **hub name**, the **seed entry** and the resolved **link list** back from the `step_0` group of the YAML checkpoint.
+- Read the **target**, the **hub name**, the **seed entry** and the resolved **link list** back from `step_0.yaml`.
 
 - **Run the setup tool** to write the **target frame**:
   - Example: `python {skillGroups.common}\skills\imp-home\setup_target.py --hub {hub name} --target {target}`
@@ -380,7 +402,8 @@ Step 4 carries both halves because they are two questions about one running page
 - **Say what comes next**: the **target** now has a frame and nothing to run.
   The next **command** is **gen**.
 
-- Save YAML checkpoint `step_1` with the files written and their sizes, the **link list** carried across, each **mount**'s readiness, the **lifecycle record** written, and timing.
+- Save `step_1.yaml`, with: the files written and their sizes, the **link list** carried across, each **mount**'s readiness, and the **lifecycle record** written.
+  Add this step to the run record, and write `result: completed`, because it is the last step of a **setup**.
 
 - Save MD report file.
   Append and display a **Setup** section: the frame written with sizes, the buttons carried across, any mount reported as not yet ready, and the **phase** now recorded.
@@ -392,7 +415,7 @@ Step 4 carries both halves because they are two questions about one running page
 - **Runs for the `gen` command only.**
   For any other **command**, skip to the step that command routes to.
 
-- Read the **target**, the **change requests** and the **link list** back from the `step_0` group of the YAML checkpoint.
+- Read the **target**, the **change requests** and the **link list** back from `step_0.yaml`.
 
 - **No script for this step.**
   Generating an implementation from a written design is judgement; a program asked to do it would only be asserting it had.
@@ -418,7 +441,8 @@ Step 4 carries both halves because they are two questions about one running page
   This **command** wrote a `server.js` and did not start it, so nothing here has been observed running.
   The next **command** is **test**, or **run** to simply bring it up.
 
-- Save YAML checkpoint `step_2` with each **change request**, the seed document sections generated against, the code files written, the documents copied, every departure recorded, the **lifecycle record** appended, and timing.
+- Save `step_2.yaml`, with: each **change request**, the seed document sections generated against, the code files written, the documents copied, every departure recorded, and the **lifecycle record** appended.
+  Add this step to the run record, and write `result: completed`, because it is the last step of a **gen**.
 
 - Save MD report file.
   Append and display a **Gen** section:
@@ -435,7 +459,7 @@ Step 4 carries both halves because they are two questions about one running page
 - **Runs for the `update` command only.**
   For any other **command**, skip to the step that command routes to.
 
-- Read the **target**, the **change requests** and the **link list** back from the `step_0` group of the YAML checkpoint.
+- Read the **target**, the **change requests** and the **link list** back from `step_0.yaml`.
 
 - **No script for this step.**
   Deciding what a change request means, where in the design it belongs, and what code it implies is judgement.
@@ -462,9 +486,11 @@ Step 4 carries both halves because they are two questions about one running page
   - A `mounts:` change request is applied to the **app config**'s `links`, resolved through the **app registry**, each resolved `appDir` written as an absolute path and the entry's **owner skill** written beside it — the hub shows that owner on the page a failed mount serves, and without it a mount that cannot be prepared cannot say who to run.
 
 - **Re-prove what the change could have broken**, on a spare port against a throwaway copy of the **target** — never the real port and never the **target** itself.
+  Put the copy at `target-copy\` in the Working Dir; it stays there when the probes end.
   The **target documents**' Verification Obligations list the obligations; re-run the ones this change could have touched:
   - Escaping, if anything touched how a label, href or note reaches the markup.
   - Mounting, if anything touched routing — including a **nested** path, a bare prefix, a throw, a rejection, a **floating** async failure, and a mount with no `app.js`.
+  - An obligation that names `test_hub.js` is re-run as `node {skillGroups.common}\skills\imp-home\scripts\test_hub.js --run {yymmdd}.{N} {Working Dir}\target-copy`, with the Run Number of this run; it puts its hub copy at `test-hub\` in the Working Dir.
 
 - **Append to the lifecycle record**: an `update` entry with its timestamp, and **phase** `update`.
   If this is the first one, say plainly that **setup** and **gen** are now closed for this **target**.
@@ -473,7 +499,8 @@ Step 4 carries both halves because they are two questions about one running page
   They ran against a throwaway copy, so they prove the change did not break what they cover — not that the **target** serves.
   The next **command** is **test**, or **run** to simply bring it up.
 
-- Save YAML checkpoint `step_3` with each **change request**, the document sections it changed, the code files it changed, the probes re-run and their results, the **lifecycle record** appended, and timing.
+- Save `step_3.yaml`, with: each **change request**, the document sections it changed, the code files it changed, the probes re-run and their results, and the **lifecycle record** appended.
+  Add this step to the run record, and write `result: completed`, because it is the last step of an **update**.
 
 - Save MD report file.
   Append and display an **Update** section:
@@ -501,7 +528,7 @@ Step 4 carries both halves because they are two questions about one running page
   **The checked half passing is not this step passing** — every check in it passes on a page nobody would want to use, which is the whole reason the judged half exists.
   A **test** that reports the first half and stops has not finished this step.
 
-- Read the **target** and the port back from the `step_0` group of the YAML checkpoint.
+- Read the **target** and the port back from `step_0.yaml`.
 
 ### The checked half
 
@@ -553,9 +580,10 @@ Step 4 carries both halves because they are two questions about one running page
 
 - Do not repair a target, restart another server, or edit another skill's output.
 
-- Save YAML checkpoint `step_4`.
-  **A `test` records** the **server origin**, the port and host bound, the process id, the Node version, the `/healthz` response, the anchor comparison, each **mount**'s state, the buttons reviewed, the **dead link** count, what was looked at and what it showed, the wireframe reconciliation, the overall state, the recommended next **command**, and timing.
-  **A `run` records only the first six of those** — origin, port and host, process id, Node version, `/healthz`, timing — because it saw nothing else.
+- Save `step_4.yaml`.
+  **A `test` records** the **server origin**, the port and host bound, the process id, the Node version, the `/healthz` response, the anchor comparison, each **mount**'s state, the buttons reviewed, the **dead link** count, what was looked at and what it showed, the wireframe reconciliation, the overall state, and the recommended next **command**.
+  **A `run` records only the first five of those** — origin, port and host, process id, Node version, `/healthz` — because it saw nothing else.
+  Add this step to the run record, and write `result: completed`, because it is the last step of a **test** or a **run**.
 
 - Save MD report file.
   Append and display a **Serve and Review** section for a **test**, or a **Serve** section for a **run**.

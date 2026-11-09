@@ -4,8 +4,8 @@
 The page sets the source file and the STE file side by side, each whole in a column that scrolls on
 its own, with a switch that makes either column follow the other section by section; the two TW twins
 the same way; and the STE file with its TW twin line by line. Each column's caption names the chapter,
-and the section under it, of the topmost line it shows. Above them it lists what the YAML
-checkpoint and the STE file say about the rewrite - the STE check's verdict and the warnings left,
+and the section under it, of the topmost line it shows. Above them it lists what the step
+files of the run and the STE file say about the rewrite - the STE check's verdict and the warnings left,
 the technical words, the statements kept in source wording - and then the review notes Step 6 wrote.
 On a window wider than 900 pixels the page is two regions that scroll apart - the lists and the notes
 above, the files below - with a divider to drag between them, so a link in the notes leaves the notes
@@ -27,18 +27,26 @@ by clicking it, in this order: [ ] pending, [v] approved, [?] to be explained - 
 not follow how the item is handled, and the agent explains it in the conversation - and [x]
 rejected. An item is known by a key made of its own text, the heading above it and its parent's key,
 so a page built again keeps the status of every item that did not change, and an item that changed
-is pending again. The page starts with the statuses of --status, step_6-status.json, as they were
-when it was built; served by the review server, review_server.js, it reads the latest ones and saves
-each click, and opened as a file it says that a click is not saved.
+is pending again. The page starts with the statuses of --status, a step_6-status.json - this run's,
+or, before this run has one, that of an earlier run of the same source file - as they were when it
+was built; served by the review server, review_server.js, it reads the latest ones of its own run, keeps
+the ones it was built with while its run has none, and saves each click into its own run; opened as a
+file it says that a click is not saved.
 
 Usage:
   python make_review.py --src <name>.md --ste <name>-ste.md --src-tw <name>-tw.md
-                        --ste-tw <name>-ste-tw.md --checkpoint <process.yaml>
+                        --ste-tw <name>-ste-tw.md --checkpoint <Checkpoint Dir>
                         --notes <step_6-notes.html> --out <step_6-review.html>
-                        [--status <step_6-status.json>] [--title "<title>"]
+                        [--status <step_6-status.json>] [--title "<title>"] [--workspace <root>]
 
-Needs PyYAML. Exit status: 0 the page written; 1 a line reference names no line, and no page is
-written; 2 a bad argument, or a file that cannot be read or parsed.
+--checkpoint is the Checkpoint Dir of the run: the page reads step_3.yaml there, and step_2.yaml when
+it is there. A relative path is read from the workspace root, never from the current directory: the
+root of the workspace the skill runs in, which save_step.py's workspace_root finds - the directory
+--workspace names, or else the nearest directory, from the current directory up, whose config.yaml has
+skillGroups. A build run from a directory below the root thus reads and writes the files that the
+same paths name from the root. Needs PyYAML. Exit status: 0 the page written; 1 a line reference names
+no line, and no page is written; 2 a bad argument, a file that cannot be read or parsed, or a relative
+path with no workspace root.
 """
 from __future__ import annotations
 
@@ -71,6 +79,21 @@ INLINE = [
 def fail(message: str) -> None:
     print(f'error: {message}', file=sys.stderr)
     sys.exit(2)
+
+
+def workspace_root(explicit: str | None) -> Path:
+    """The root of the workspace the skill runs in, as save_step.py's workspace_root finds it: --workspace,
+    or else the nearest directory, from the current directory up, whose config.yaml has skillGroups -
+    never found from this file. Looked up only when a path is relative."""
+    try:
+        import save_step
+    except ImportError as e:
+        fail(f'a relative path is read from the workspace root, and finding it needs PyYAML ({e}): '
+             'run the workspace .venv first')
+    try:
+        return save_step.workspace_root(explicit)
+    except save_step.SaveError as e:
+        fail(f'a relative path is read from the workspace root: {e}')
 
 
 def read_lines(path: Path) -> list[str]:
@@ -285,7 +308,7 @@ def technical_words(ste: list[str]) -> list[str] | None:
 
 
 def facts(step2: dict | None, step3: dict, ste: list[str]) -> str:
-    """What the YAML checkpoint and the STE file say about the rewrite, as the review page lists it."""
+    """What the step files and the STE file say about the rewrite, as the review page lists it."""
     items = []
     runs = step3.get('check_runs')
     left = step3.get('warnings_left') or []
@@ -301,7 +324,7 @@ def facts(step2: dict | None, step3: dict, ste: list[str]) -> str:
     else:
         items.append(f'<li><b>Technical words</b>（{len(words)} 個）：' + '、'.join(html.escape(w) for w in words) + '</li>')
     if step2 is None:
-        items.append('<li><b>保留原文措辭的陳述</b>：YAML checkpoint 沒有 <code>step_2</code> 群組，'
+        items.append('<li><b>保留原文措辭的陳述</b>：Checkpoint Dir 沒有 <code>step_2.yaml</code>，'
                      '這次執行沒有跑 Step 2，所以沒有列出</li>')
     else:
         kept = step2.get('kept_wording') or []
@@ -630,8 +653,8 @@ mark();
  async function load(){
   if(!/^https?:$/.test(location.protocol)) throw new Error('file');
   const r=await fetch('status',{cache:'no-store'}); if(!r.ok) throw new Error('status');
-  const j=await r.json(); state={};
-  Object.entries(j.items||{}).forEach(([k,v])=>{ if(v&&(v.s==='v'||v.s==='x'||v.s==='?')) state[k]=v.s; });
+  const j=await r.json();
+  if(j.updated){ state={}; Object.entries(j.items||{}).forEach(([k,v])=>{ if(v&&(v.s==='v'||v.s==='x'||v.s==='?')) state[k]=v.s; }); }
   served=true; paint();
   const h=await fetch('/healthz',{cache:'no-store'}).then(x=>x.json()).catch(()=>null);
   note.textContent='點方框切換：[ ] 待審 → [v] 審核通過 → [?] 待解釋 → [x] 不通過，每一次都會存進這份草稿 Checkpoint Dir 的 step_6-status.json；標 [?] 的項目，請在對話裡要我解釋；同意某一項的建議、要照它改，請標 [x]；[v] 表示草稿這一處照現狀通過。'
@@ -649,12 +672,21 @@ def main() -> int:
     ap.add_argument('--ste', type=Path, required=True, help='the STE file')
     ap.add_argument('--src-tw', type=Path, required=True, help="the source file's TW twin")
     ap.add_argument('--ste-tw', type=Path, required=True, help="the STE file's TW twin")
-    ap.add_argument('--checkpoint', type=Path, required=True, help='the YAML checkpoint, process.yaml')
+    ap.add_argument('--checkpoint', type=Path, required=True, help='the Checkpoint Dir of the run, with step_3.yaml')
     ap.add_argument('--notes', type=Path, required=True, help='the review notes, step_6-notes.html')
     ap.add_argument('--out', type=Path, required=True, help='the review page to write, step_6-review.html')
     ap.add_argument('--status', type=Path, help='the review statuses, step_6-status.json: the page starts with them')
     ap.add_argument('--title', help='the page title (default: the source file name without .md, then 審核)')
+    ap.add_argument('--workspace', help='the root of the workspace the skill runs in, which a relative path is read '
+                                        'from (default: the nearest directory, from the current directory up, '
+                                        'whose config.yaml has skillGroups)')
     a = ap.parse_args()
+    given = ('src', 'ste', 'src_tw', 'ste_tw', 'checkpoint', 'notes', 'out', 'status')
+    if any(getattr(a, n) is not None and not getattr(a, n).is_absolute() for n in given):
+        root = workspace_root(a.workspace)
+        for n in given:
+            if getattr(a, n) is not None and not getattr(a, n).is_absolute():
+                setattr(a, n, root / getattr(a, n))
 
     paths = {'en-o': a.src, 'en-d': a.ste, 'tw-o': a.src_tw, 'tw-d': a.ste_tw}
     for key, path in paths.items():
@@ -667,13 +699,20 @@ def main() -> int:
         import yaml
     except ImportError:
         fail('needs PyYAML: run the workspace .venv first')
-    try:
-        checkpoint = yaml.safe_load(a.checkpoint.read_text(encoding='utf-8')) or {}
-    except (OSError, UnicodeDecodeError, yaml.YAMLError) as e:
-        fail(f'{a.checkpoint}: {e}')
-    if not isinstance(checkpoint, dict) or not isinstance(checkpoint.get('step_3'), dict):
-        fail(f'{a.checkpoint} has no step_3 group: run step 3 first')
-    step2 = checkpoint.get('step_2') if isinstance(checkpoint.get('step_2'), dict) else None
+    def step_file(n: int) -> dict | None:
+        path = a.checkpoint / f'step_{n}.yaml'
+        if not path.is_file():
+            return None
+        try:
+            data = yaml.safe_load(path.read_text(encoding='utf-8')) or {}
+        except (OSError, UnicodeDecodeError, yaml.YAMLError) as e:
+            fail(f'{path}: {e}')
+        return data if isinstance(data, dict) else None
+
+    step3 = step_file(3)
+    if step3 is None:
+        fail(f'{a.checkpoint} has no step_3.yaml: run step 3 first')
+    step2 = step_file(2)
     try:
         notes = a.notes.read_text(encoding='utf-8').lstrip('\ufeff')
     except (OSError, UnicodeDecodeError) as e:
@@ -684,7 +723,7 @@ def main() -> int:
     en = pane(lines['en-o'], lines['en-d'], 'en', (f'原文 · {names["en-o"]}', f'STE 草稿 · {names["en-d"]}'), found)
     tw = pane(lines['tw-o'], lines['tw-d'], 'tw', (f'原文中文版 · {names["tw-o"]}', f'STE 草稿中文版 · {names["tw-d"]}'), found)
     lp = line_pane(lines['en-d'], lines['tw-d'], (names['en-d'], names['tw-d']))
-    listed = facts(step2, checkpoint['step_3'], lines['en-d'])
+    listed = facts(step2, step3, lines['en-d'])
 
     problems = check_refs(listed + notes, found, counts)
     refs = len(REF_RE.findall(notes))

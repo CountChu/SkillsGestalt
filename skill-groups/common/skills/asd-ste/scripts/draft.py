@@ -4,9 +4,15 @@ file by its approved draft, the documents that record the source file, and the c
 every STE file that records ste-custom.md.
 
   paths SOURCE
-      Print, as JSON, the paths a run uses for SOURCE - its TW twin, its draft, the draft's TW twin and
-      the Checkpoint Dir - whether each file exists, whether SOURCE is a TW twin, and whether it is
-      already in STE: its header quote declares [[ASD-STE100_ISSUE9.pdf]].
+      Print, as JSON, the paths a run uses for SOURCE - its TW twin, its draft and the draft's TW twin -
+      whether each file exists, whether SOURCE is a TW twin, and whether it is already in STE: its
+      header quote declares [[ASD-STE100_ISSUE9.pdf]].
+  runs SOURCE [--workspace DIR]
+      Print, as JSON, the runs of SOURCE, newest first: each Checkpoint Dir under checkpoints/asd-ste/
+      whose step_0.yaml names SOURCE as its source_file, with its Run Number, its source file and its
+      review statuses, step_6-status.json, when it has them. A SOURCE that is not a file is a name: a
+      file name, or a name without .md, which every source file of that name matches. --workspace
+      names the workspace root, when the current directory is not in that workspace.
   replace SOURCE
       Write the draft over SOURCE, and the draft's TW twin over SOURCE's TW twin, then delete the draft
       and its TW twin. The header note keeps two of its three lines: the line that names STE, without
@@ -23,19 +29,31 @@ every STE file that records ste-custom.md.
       other than its current one, and record ste-custom.md again in each one that passes: a draft by
       the check of Step 3 against its source file, its report and findings file written into its
       Checkpoint Dir and its step_3 group saved; a file that a draft replaced by check_ste.py --ste; and
-      a TW twin with the file it is the twin of. A file that fails keeps its old record, and is listed
-      with its [FAIL] lines; a warning that the last check of a draft did not give is listed, and the
-      draft is recorded all the same. --dry-run lists the files and the check each one would get, and
-      changes nothing. ste-custom.md says when to run it: once, after its last change of the day.
+      a TW twin with the file it is the twin of. The run of a draft that it checks again is the newest
+      run of its source file: its report and its findings file replace Step 3's, step_3-check.txt and
+      step_3-findings.json, in the Checkpoint Dir of that run, its step_3.yaml is saved again, and the
+      step is added to the run record of that run. A file that fails keeps its old record, and is
+      listed with its [FAIL] lines; a warning that the last check of a draft did not give is listed, and
+      the draft is recorded all the same. The check of a draft writes its two files first in the
+      recheck/ of the Checkpoint Dir of that run, checkpoints/asd-ste/{yymmdd}.{N}/recheck/ under the
+      root of its workspace, and then moves them up into that Checkpoint Dir; recheck does not remove
+      recheck/. With no run, it writes no file. --dry-run lists the files and the check each one
+      would get, and changes nothing. ste-custom.md says when to run it: once, after its last change of the day.
 
 The draft of DFD.md is DFD-ste.md beside it, and the draft's TW twin DFD-ste-tw.md: this script is the
-one part of the skill that knows the names. The Checkpoint Dir is checkpoints/asd-ste/{parent}-{name}
-under the workspace root, the directory the script runs in.
+one part of the skill that knows the names. The Checkpoint Dir of a run is checkpoints/asd-ste/{yymmdd}.{N}
+under the workspace root, or, for a draft in another workspace, under the root of that workspace: the
+nearest directory above the draft with a .git. The workspace root is the root of the workspace the
+skill runs in, which save_step.py's workspace_root finds: the directory --workspace names, or else the
+nearest directory, from the current directory up, whose config.yaml has skillGroups. It is never
+found from this file, which can be in a different workspace: a workspace can read a skill group in
+place from another one.
 
 Exit status: 0 done; 1 replace refused - a draft or a TW twin that is missing, a header note not in the
 form House Rule 5 gives, or a TW twin under a frontmatter with no pairing line to the draft - and
-nothing written, or a file that recheck found failing; 2 a file missing or unreadable.
-Standard library only, but recheck needs PyYAML to read a YAML checkpoint, as save_step.py does.
+nothing written, or a file that recheck found failing; 2 a file missing or unreadable, or no
+workspace root where one is needed.
+Standard library only, but runs and recheck need PyYAML to read a step file, as save_step.py does.
 """
 from __future__ import annotations
 
@@ -47,7 +65,6 @@ import re
 import shutil
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -59,7 +76,7 @@ DICTIONARY = HERE.parent / 'references' / 'ste-dictionary.json'
 SPELLING = HERE.parents[2] / 'references' / 'us-spelling.json'
 DEPENDS_ON = HERE.parents[2] / 'scripts' / 'depends_on.py'
 CHECK_STE = HERE / 'check_ste.py'
-SAVE_STEP = HERE / 'save_step.py'
+RECHECK_MODEL = 'none: draft.py recheck, a script'
 CUSTOM_LINK = 'ste-custom'
 SPEC = 'ASD-STE100_ISSUE9.pdf'
 SKIP_DIRS = {'.git', 'node_modules', '.venv', 'venv', '__pycache__'}
@@ -73,6 +90,10 @@ TW_CORRECT = re.compile(r'^> 兩份檔案不一致時，以 \[[^\]]+\]\([^)]+\) 
 PAIR_LINK = re.compile(r'\[([^\]]*)\]\(([^)]+)\)')
 
 
+WORKSPACE_HELP = ('the root of the workspace the skill runs in (default: the nearest directory, '
+                  'from the current directory up, whose config.yaml has skillGroups)')
+
+
 class Refused(Exception):
     """A replacement that cannot be made: exit status 1, and nothing written."""
 
@@ -83,7 +104,6 @@ def names(source: Path) -> dict:
         'source_twin': source.with_name(f'{stem}-tw.md'),
         'draft': source.with_name(f'{stem}-ste.md'),
         'draft_twin': source.with_name(f'{stem}-ste-tw.md'),
-        'checkpoint_dir': Path('checkpoints') / 'asd-ste' / f'{source.resolve().parent.name}-{stem}',
     }
 
 
@@ -108,8 +128,59 @@ def paths(source: Path) -> dict:
         'source_twin': str(n['source_twin']), 'source_twin_exists': n['source_twin'].is_file(),
         'draft': str(n['draft']), 'draft_exists': n['draft'].is_file(),
         'draft_twin': str(n['draft_twin']), 'draft_twin_exists': n['draft_twin'].is_file(),
-        'checkpoint_dir': n['checkpoint_dir'].as_posix(),
     }
+
+
+def run_key(name: str) -> tuple[int, int]:
+    """A Run Number, {yymmdd}.{N}, as a key that sorts the runs by their age."""
+    day, _, n = name.partition('.')
+    return (int(day), int(n)) if day.isdigit() and n.isdigit() else (-1, -1)
+
+
+def workspace_root(explicit: str | None = None) -> Path:
+    """The root of the workspace the skill runs in, as the step saver finds it: --workspace, or else the
+    nearest directory, from the current directory up, whose config.yaml has skillGroups - never found
+    from this file. Read only when a command needs it, as the step saver needs PyYAML."""
+    import save_step
+    try:
+        return save_step.workspace_root(explicit)
+    except save_step.SaveError as e:
+        raise Fault(str(e))
+
+
+def runs(source: Path, root: Path | None = None) -> list[dict]:
+    """The runs whose step_0.yaml names source as source_file, newest first, in the Checkpoint Dirs under
+    root, the workspace root unless it is given. A source that is not a file is a name, which every
+    source file of that name matches, with .md or without it."""
+    import yaml
+    root = root or workspace_root()
+    if source.is_file():
+        wanted = source.resolve()
+        hit = lambda p: p.resolve() == wanted   # noqa: E731
+    else:
+        name = source.name if source.name.endswith('.md') else f'{source.name}.md'
+        hit = lambda p: p.name == name   # noqa: E731
+    found = []
+    folder = root / 'checkpoints' / 'asd-ste'
+    for step0 in folder.glob('*/step_0.yaml'):
+        if run_key(step0.parent.name) < (0, 0):
+            continue
+        try:
+            data = yaml.safe_load(step0.read_text(encoding='utf-8')) or {}
+        except (OSError, yaml.YAMLError):
+            continue
+        given = data.get('source_file') if isinstance(data, dict) else None
+        if not given:
+            continue
+        path = Path(given)
+        if not path.is_absolute():
+            path = root / path
+        if hit(path):
+            status = step0.parent / 'step_6-status.json'
+            found.append({'run': step0.parent.name, 'source_file': given,
+                          'checkpoint_dir': step0.parent.relative_to(root).as_posix(),
+                          'status_file': status.relative_to(root).as_posix() if status.is_file() else None})
+    return sorted(found, key=lambda r: run_key(r['run']), reverse=True)
 
 
 def file_name(target: str) -> str:
@@ -236,11 +307,12 @@ def record_of(path: Path, name: str) -> tuple[str, str] | None:
 
 
 def workspace(path: Path) -> Path:
-    """The workspace that holds path: the nearest directory above it with a .git."""
+    """The workspace that holds path: the nearest directory above it with a .git, or else the workspace
+    the skill runs in."""
     for folder in path.resolve().parents:
         if (folder / '.git').exists():
             return folder
-    return Path.cwd()
+    return workspace_root()
 
 
 def run(cmd: list[str], cwd: Path | None = None) -> tuple[int, list[str]]:
@@ -297,45 +369,56 @@ def kind_of(path: Path) -> tuple[str, Path | None]:
 
 
 def recheck_draft(draft: Path, source: Path, current: str, today: str) -> tuple[bool, list[str]]:
-    """Check a draft again as Step 3 does, and on a pass record ste-custom.md and save its step_3 group."""
-    folder = workspace(draft) / names(source)['checkpoint_dir']
-    report = folder / 'step_3-check.txt'
-    before = warnings_in(report.read_text(encoding='utf-8').splitlines()) if report.is_file() else []
-    begin = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    with tempfile.TemporaryDirectory() as tmp:
-        new_report, new_findings = Path(tmp) / 'step_3-check.txt', Path(tmp) / 'step_3-findings.json'
-        code, out = check_ste(draft, source, new_report, new_findings)
-        if code != 0:
-            return False, [line for line in out if line.startswith('[FAIL]')] or out[-3:]
-        recorded, said = record_custom(draft)
-        if not recorded:
-            return False, [said]
-        notes = []
-        now = warnings_in(out)
-        new = [w for w in now if bare(w) not in {bare(b) for b in before}]
-        notes += [f'[NEW WARN] {w}' for w in new]
-        if not (folder / 'process.yaml').is_file():
-            return True, notes + ['no YAML checkpoint: the step_3 group is not saved']
-        shutil.move(str(new_report), report)
-        shutil.move(str(new_findings), folder / 'step_3-findings.json')
+    """Check a draft again as Step 3 does, and on a pass record ste-custom.md and save Step 3 again in the
+    newest run of its source file: its two files, its step_3.yaml and an item in its run record."""
     import yaml
-    group = (yaml.safe_load((folder / 'process.yaml').read_text(encoding='utf-8')) or {}).get('step_3') or {}
+    import save_step
+    root = workspace(draft)
+    newest = runs(source, root)
+    folder = root / newest[0]['checkpoint_dir'] if newest else None
+    report = folder / 'step_3-check.txt' if folder else None
+    before = warnings_in(report.read_text(encoding='utf-8').splitlines()) if report and report.is_file() else []
+    begin = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    # The recheck/ in the Checkpoint Dir of the run that the check is saved in; recheck does not remove it.
+    recheck_dir = folder / 'recheck' if folder else None
+    new_report = recheck_dir / 'step_3-check.txt' if recheck_dir else None
+    new_findings = recheck_dir / 'step_3-findings.json' if recheck_dir else None
+    code, out = check_ste(draft, source, new_report, new_findings)
+    if code != 0:
+        return False, [line for line in out if line.startswith('[FAIL]')] or out[-3:]
+    recorded, said = record_custom(draft)
+    if not recorded:
+        return False, [said]
+    notes = []
+    now = warnings_in(out)
+    new = [w for w in now if bare(w) not in {bare(b) for b in before}]
+    notes += [f'[NEW WARN] {w}' for w in new]
+    if folder is None:
+        return True, notes + [f'no run of {source.name} under {root}: no step_3 is saved']
+    if not save_step.run_record(root, folder.name).is_file():
+        return True, notes + [f'no run record of run {folder.name}: no step_3 is saved']
+    shutil.move(str(new_report), report)
+    shutil.move(str(new_findings), folder / 'step_3-findings.json')
+    step3 = folder / 'step_3.yaml'
+    group = (yaml.safe_load(step3.read_text(encoding='utf-8')) or {}) if step3.is_file() else {}
     why = {bare(w.get('warning', '')): w.get('why', '') for w in group.get('warnings_left') or []}
     left = [{'warning': w, 'why': why.get(bare(w)) or
              (f'new at draft.py recheck on {today}: not read yet' if w in new else
               'given by the check before as well, with no reason saved')} for w in now]
     spec = record_of(draft, SPEC)
-    cmd = [str(SAVE_STEP), '--checkpoint', str(folder / 'process.yaml'), '--step', '3', '--title', 'STE Check',
-           '--begin', begin, '--data', str(folder / 'step_3-findings.json'),
-           '--set', 'report_file=step_3-check.txt', '--set', 'findings_file=step_3-findings.json',
-           '--json', 'check_runs=1', '--json', 'warnings_left=' + json.dumps(left, ensure_ascii=False),
-           '--json', 'custom_fingerprint=' + json.dumps({'date': today, 'fingerprint': current})]
-    if spec and spec[1]:
-        cmd += ['--json', 'fingerprint=' + json.dumps({'date': spec[0], 'fingerprint': spec[1]})]
-    else:
-        cmd += ['--set', 'fingerprint_not_recorded=the header quote holds no record of the STE specification']
-    code, out = run(cmd)
-    return True, notes + ([] if code == 0 else [f'step_3 not saved: {" ".join(out)}'])
+    try:
+        outputs = save_step.summary_of(folder / 'step_3-findings.json', folder, root)
+        outputs.update({'report_file': 'step_3-check.txt', 'check_runs': 1, 'warnings_left': left,
+                        'custom_fingerprint': {'date': today, 'fingerprint': current}})
+        if spec and spec[1]:
+            outputs['fingerprint'] = {'date': spec[0], 'fingerprint': spec[1]}
+        else:
+            outputs['fingerprint_not_recorded'] = 'the header quote holds no record of the STE specification'
+        outputs['rechecked_by'] = f'draft.py recheck on {today}'
+        save_step.save(root, folder.name, 3, 'STE Check', RECHECK_MODEL, begin, outputs)
+    except save_step.SaveError as e:
+        return True, notes + [f'step_3 not saved: {e}']
+    return True, notes + [f'step_3 saved again in run {folder.name}']
 
 
 def recheck(roots: list[Path], dry_run: bool) -> tuple[list[str], bool]:
@@ -395,6 +478,9 @@ def main() -> None:
     ap = argparse.ArgumentParser(description='The draft tool of the asd-ste skill.')
     sub = ap.add_subparsers(dest='command', required=True)
     sub.add_parser('paths', help='the paths a run uses for a source file').add_argument('source', type=Path)
+    rns = sub.add_parser('runs', help='the runs of a source file, newest first')
+    rns.add_argument('source', type=Path)
+    rns.add_argument('--workspace', help=WORKSPACE_HELP)
     sub.add_parser('replace', help='replace a source file by its draft').add_argument('source', type=Path)
     dep = sub.add_parser('dependents', help='the Markdown files whose header quote records a source file')
     dep.add_argument('source', type=Path)
@@ -407,6 +493,8 @@ def main() -> None:
     try:
         if a.command == 'paths':
             print(json.dumps(paths(a.source), ensure_ascii=False, indent=1))
+        elif a.command == 'runs':
+            print(json.dumps(runs(a.source, workspace_root(a.workspace)), ensure_ascii=False, indent=1))
         elif a.command == 'replace':
             for line in replace(a.source):
                 print(line)

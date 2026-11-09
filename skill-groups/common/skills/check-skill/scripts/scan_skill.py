@@ -10,6 +10,13 @@ script breaks exactly as one baked into SKILL.md does.
 Facts only - no verdicts. Every fact carries its line number, the region or file it was
 found in, whether it sits inside an inline-code span, and the whole line it came from, so
 the agent can judge and quote it without reopening the file.
+
+The workspace config.yaml is the one that --config names, or else the one at the root of the
+workspace the skill runs in: the nearest directory, from the current directory up, whose
+config.yaml has skillGroups. It is never found from this file. A workspace can read a skill group
+in place from a different workspace, and then the config.yaml above this file is that other
+workspace's: its skillGroups, its templates and its temp/ would stand in for the ones of the
+workspace being checked. The Dashboard Updater finds the root with workspace_root from here.
 """
 
 import argparse
@@ -38,11 +45,17 @@ PLACEHOLDER = re.compile(r"\{(?!PLACEHOLDER\})[A-Z][A-Z0-9_]+\}")
 # A placeholder in the retired form ___UPPER_SNAKE___, which Markdown shows in bold italics instead of as
 # written: always a fact, shown or not, since common/scripts/placeholders.py converts it to {UPPER_SNAKE}.
 OLD_PLACEHOLDER = re.compile(r"___[A-Z0-9_]+___")
+# The Run Number of a run, {yymmdd}.{N}: it names the Working Dir, a Temp Dir, that holds the facts file.
+RUN_NUMBER = re.compile(r"\d{6}\.[1-9]\d*")
 MD_LINK = re.compile(r"\]\(((?:\.github|skill-groups)[^)]+)\)")
 NAMED_SCRIPT = re.compile(r"([\w-]+\.py)")
 ANY_HEAD = re.compile(r"^#{1,2}\s+(.+)$")
 TERM_DEF = re.compile(r"^- \*\*(.+?)\*\*\s+[-\u2014]")
 BACKTICKED = re.compile(r"`([^`]+)`")
+# The two kinds of Working Dir (run-data-rules.md), and the names a skill gives them.
+WORKING_DIR_TERMS = ("Working Dir", "Temp Dir", "Checkpoint Dir")
+WORKING_DIR_NAME = re.compile(r"\b(?:Temp|Checkpoint) Dir\b")
+WORKING_DIR_PATH = re.compile(r"(?<![\w.-])(temp|checkpoints)[\\/]")
 FILE_LITERAL = re.compile(r"^[\w.-]+\.\w+$")
 COMMENT_LEAD = re.compile(r"^\s*(#|//|/\*|\*|<!--|REM\b|::)")
 NAME_CHARSET = re.compile(r"[a-z0-9-]+")
@@ -100,27 +113,57 @@ MAX_SCAN_BYTES = 512 * 1024
 DIR_KINDS = {"scripts": "script", "references": "reference", "templates": "template"}
 
 
+def workspace_config(d: Path):
+    """The workspace configuration in d: its config.yaml when that has a skillGroups mapping, else None."""
+    cfg = d / "config.yaml"
+    if not cfg.is_file():
+        return None
+    try:
+        doc = yaml.safe_load(cfg.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, yaml.YAMLError):
+        return None
+    return doc if isinstance(doc, dict) and isinstance(doc.get("skillGroups"), dict) else None
+
+
+def workspace_root(explicit=None, option="--workspace") -> Path:
+    """The root of the workspace the skill runs in: the directory `option` names, or else the nearest
+    directory, from the current directory up, whose config.yaml has skillGroups - never found from this
+    file, which can be in a different workspace."""
+    if explicit:
+        root = Path(explicit).expanduser().resolve()
+        if workspace_config(root) is None:
+            raise SystemExit(f"{option} {explicit}: {root} holds no config.yaml with skillGroups - "
+                             "name the root of the workspace the skill runs in")
+        return root
+    here = Path.cwd().resolve()
+    for d in [here, *here.parents]:
+        if workspace_config(d) is not None:
+            return d
+    raise SystemExit(f"no config.yaml with skillGroups in {here} or in a directory above it - "
+                     f"run from the workspace the skill runs in, or pass {option}")
+
+
 def find_config(explicit=None) -> Path:
-    """The config.yaml this run reads: --config if given, else the nearest one above this script or above the cwd."""
+    """The config.yaml this run reads: --config if given, else the one at the workspace root."""
     if explicit:
         path = Path(explicit).resolve()
         path = path / "config.yaml" if path.is_dir() else path
         if not path.is_file():
             raise SystemExit(f"--config does not name a config.yaml: {path}")
         return path
+    return workspace_root(option="--config <path to config.yaml>") / "config.yaml"
 
-    # The script and the workspace root can sit in different roots of a multi-root workspace.
-    starts = [Path(__file__).resolve().parent, Path.cwd().resolve()]
-    for start in starts:
-        for parent in [start, *start.parents]:
-            candidate = parent / "config.yaml"
-            if candidate.is_file():
-                return candidate
-    raise SystemExit(
-        "config.yaml was found neither above "
-        + " nor above ".join(str(s) for s in starts)
-        + " - pass --config <path to config.yaml>"
-    )
+
+def workspace_path(value: str, root: Path) -> Path:
+    """A path argument as the workspace sees it: either separator, and a relative path under the root.
+
+    A step can write `skill-groups\\common\\templates\\SKILL-tmp.md` with Windows separators; on macOS and Linux a
+    backslash is an ordinary character, so every backslash becomes a forward slash, which Windows
+    reads as a separator too. A relative path is taken from the workspace root that config.yaml
+    gives, never from the current directory.
+    """
+    path = Path(value.replace("\\", "/")).expanduser()
+    return path if path.is_absolute() else root / path
 
 
 def load_config(config: Path) -> dict:
@@ -251,6 +294,51 @@ def terminology(lines, secs):
         "terms": terms,
         "unused_terms": [t["term"] for t in terms if not t["used"] and not t["variants"]],
         "terms_defined_in_configuration": in_config,
+    }
+
+
+def working_dir(lines, secs, region, in_fence):
+    """The Working Dir lines of CONFIGURATION, and each Temp Dir or Checkpoint Dir that the body names after it."""
+    in_config = ["CONFIGURATION" in s.upper() and "TERMINOLOGY" not in s.upper() for s in secs]
+    starts = [i for i, c in enumerate(in_config) if c]
+    config_lines = []
+    for i in starts:
+        m = TERM_DEF.match(lines[i])
+        if not m or m.group(1).replace("`", "") not in WORKING_DIR_TERMS:
+            continue
+        kinds = {k.lower() for k in WORKING_DIR_PATH.findall(lines[i])}
+        config_lines.append({
+            "line": i + 1,
+            "term": m.group(1).replace("`", ""),
+            # The path on the line tells the kind: temp for the Temp Dir, checkpoints for the Checkpoint Dir.
+            "kind": kinds.pop() if len(kinds) == 1 else "unknown",
+            "line_text": lines[i].strip(),
+        })
+
+    names, paths = [], []
+    if starts:
+        end = max(starts)
+        for i in range(end + 1, len(lines)):
+            if in_config[i] or region[i] != "body":
+                continue
+            ln = lines[i]
+            spans = [(c.start(), c.end()) for c in CODE_SPAN.finditer(ln)]
+            for rx, out, key in ((WORKING_DIR_NAME, names, "text"), (WORKING_DIR_PATH, paths, "kind")):
+                for m in rx.finditer(ln):
+                    out.append({
+                        "line": i + 1,
+                        key: m.group(1).lower() if key == "kind" else m.group(0),
+                        "backticked": any(s <= m.start() and m.end() <= e for s, e in spans),
+                        "fenced": in_fence[i],
+                        "line_text": ln.strip(),
+                    })
+
+    return {
+        "has_configuration": bool(starts),
+        "configuration_lines": config_lines,
+        "kinds": sorted({c["kind"] for c in config_lines}),
+        "names_after_configuration": names,
+        "paths_after_configuration": paths,
     }
 
 
@@ -822,6 +910,7 @@ def scan(path: Path, group: str, name: str, required: list, readme_required: lis
             "step_numbers_contiguous_from_0": numbers == list(range(len(numbers))),
             "step_0_is_warmup": bool(steps) and steps[0]["number"] == 0 and "Warmup" in steps[0]["title"],
             "forward_references": forward_refs,
+            "working_dir": working_dir(lines, secs, region, in_fence),
         },
         "config_shape": {
             "reads_config_yaml": [i for i, ln in enumerate(lines, 1) if "config.yaml" in ln],
@@ -864,6 +953,8 @@ def summarize(doc: dict) -> dict:
         "missing_headings": shape["missing_headings"],
         "heading_order_ok": shape["heading_order_ok"],
         "forward_references": len(shape["forward_references"]),
+        "working_dir_lines": len(shape["working_dir"]["configuration_lines"]),
+        "dir_names_after_configuration": len(shape["working_dir"]["names_after_configuration"]),
         "config_facts": sum(len(v) for v in doc["config_shape"].values() if isinstance(v, list)),
         "dir_files": len(doc["dir_config_shape"]["files_scanned"]),
         "dir_hardcoded_paths": len(doc["dir_config_shape"]["hardcoded_paths"]),
@@ -884,14 +975,19 @@ def summarize(doc: dict) -> dict:
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--skill", action="append", required=True, help="skill name; repeat per skill")
-    ap.add_argument("--out", required=True, help="the facts file to write - a scratch file under the workspace temp folder")
-    ap.add_argument("--template", required=True, help="path to SKILL-tmp.md; its headings are the reference")
+    ap.add_argument("--run-number", required=True,
+                    help="the Run Number of the run, {yymmdd}.{N}; the facts file is facts.yaml in the Working Dir of the run, "
+                         "the Temp Dir temp/check-skill/{yymmdd}.{N}/ under the workspace root")
+    ap.add_argument("--template", required=True, help="path to SKILL-tmp.md; its headings are the reference (relative: from the workspace root)")
     ap.add_argument("--readme-template", required=True,
                     help="path to README-tmp.md; its # and ## headings are the reference for README.md")
     ap.add_argument("--depends-on", required=True,
                     help="path to the shared depends_on.py, which reads README.md's header quote")
-    ap.add_argument("--config", help="path to the workspace config.yaml; defaults to the nearest one above this script or the cwd")
+    ap.add_argument("--config", help="path to the workspace config.yaml, or its directory; default: the config.yaml of the "
+                                     "nearest directory, from the current directory up, whose config.yaml has skillGroups")
     args = ap.parse_args()
+    if not RUN_NUMBER.fullmatch(args.run_number):
+        raise SystemExit(f"--run-number is not a Run Number {{yymmdd}}.{{N}}: {args.run_number}")
 
     config = find_config(args.config)
     root = config.parent
@@ -899,21 +995,21 @@ def main():
     if not groups:
         raise SystemExit(f"{config} has no skillGroups")
 
-    template = Path(args.template)
+    template = workspace_path(args.template, root)
     if not template.is_file():
         raise SystemExit(f"SKILL template was not found: {template}")
     required = required_headings(template)
     if not required:
         raise SystemExit(f"SKILL template defines no top-level heading: {template}")
 
-    readme_template = Path(args.readme_template)
+    readme_template = workspace_path(args.readme_template, root)
     if not readme_template.is_file():
         raise SystemExit(f"README template was not found: {readme_template}")
     readme_required = readme_required_headings(readme_template)
     if not readme_required:
         raise SystemExit(f"README template defines no heading but its title: {readme_template}")
 
-    depends_on = Path(args.depends_on)
+    depends_on = workspace_path(args.depends_on, root)
     if not depends_on.is_file():
         raise SystemExit(f"depends_on.py was not found: {depends_on}")
     dep = load_depends_on(depends_on)
@@ -932,7 +1028,8 @@ def main():
     if not docs:
         return 1
 
-    facts_path = Path(args.out)
+    # The Working Dir of the run, a Temp Dir; the skill does not remove it.
+    facts_path = root / "temp" / "check-skill" / args.run_number / "facts.yaml"
     facts_path.parent.mkdir(parents=True, exist_ok=True)
     facts_path.write_text(
         yaml.safe_dump_all(docs, sort_keys=False, allow_unicode=True, width=4096),

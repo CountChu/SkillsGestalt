@@ -2,25 +2,34 @@
 /**
  * Serve the review pages of the asd-ste skill, and keep each page's review statuses.
  *
- * Step 6 builds a review page, step_6-review.html, in a Checkpoint Dir under checkpoints/asd-ste/.
- * This server serves every one of them - /<dir>/ is the page of <root>/<dir>/ - with an index at /
- * that lists each page and how far its review is. A reviewer marks each item of the review notes
+ * Step 6 builds a review page, step_6-review.html, in the Checkpoint Dir of its run,
+ * checkpoints/asd-ste/{yymmdd}.{N}/. This server serves every one of them - /<dir>/ is the page of
+ * <root>/<dir>/ - with an index at / that lists each page, the source file that its step_0.yaml
+ * names, and how far its review is. A reviewer marks each item of the review notes
  * [ ] pending, [v] approved, [?] to be explained or [x] rejected; a page served from here sends the marks with
  * PUT /<dir>/status, and this server writes them to step_6-status.json in that Checkpoint Dir, the
  * one writer of that file. A key the page does not hold is refused, so a page built again after
  * an item changed cannot bring back the old item's mark. A page opened as a file cannot save, and
  * says so.
  *
+ * The review root is checkpoints/asd-ste under the workspace root, and a relative --root is read from
+ * the workspace root as well. The workspace root is the root of the workspace the server runs in:
+ * the directory --workspace names, or else the nearest directory, from the current directory up,
+ * whose config.yaml has skillGroups. It is never found from this file: a workspace can read this
+ * skill group in place from a different workspace, and the config.yaml above this file is then that
+ * other workspace's, whose runs the server would serve.
+ *
  * Loopback only (127.0.0.1), port 8790 unless --port says otherwise. Node stdlib only - no npm
  * install, no CDN, works offline. It runs until it is stopped: kill <pid> on macOS and Linux,
  * Stop-Process -Id <pid> in PowerShell; /healthz gives the pid.
  *
  * Usage:
- *   node review_server.js [--root checkpoints/asd-ste] [--port 8790] [--host 127.0.0.1]
+ *   node review_server.js [--workspace DIR] [--root checkpoints/asd-ste] [--port 8790] [--host 127.0.0.1]
  *   node review_server.js --probe [--port 8790] [--host 127.0.0.1]
  *
  * --probe asks whether a review server answers at host:port, and exits 0 when one does, 1 when
- * nothing answers there, and 2 when something else does. Serving exits 1 when the port is taken.
+ * nothing answers there, and 2 when something else does; it prints the review root of a review server
+ * that answers. Serving exits 1 when the port is taken, and 2 when it finds no workspace root.
  */
 
 'use strict';
@@ -38,19 +47,56 @@ const STATES = new Set(['v', 'x', '?']);
 const KEY_IN_PAGE = /class="st" data-key="([0-9a-f]{12})"/g;
 const MAX_BODY = 1024 * 1024;
 
+// The workspace configuration: a config.yaml with a top-level skillGroups mapping, which names the
+// skill groups the workspace reads. Node has no YAML parser, so the one key is read as text: a line
+// `skillGroups:` with nothing after it but a comment, and then an indented key; or a flow mapping on
+// the line itself. A config.yaml without the key, such as one of an app dir, is passed over.
+function isWorkspaceConfig(dir) {
+  let lines;
+  try { lines = fs.readFileSync(path.join(dir, 'config.yaml'), 'utf8').split(/\r?\n/); } catch (e) { return false; }
+  for (let i = 0; i < lines.length; i++) {
+    const m = /^skillGroups:(.*)$/.exec(lines[i]);
+    if (!m) continue;
+    const rest = m[1].replace(/(^|\s)#.*$/, '').trim();
+    if (rest) return rest.startsWith('{');
+    for (let j = i + 1; j < lines.length; j++) {
+      if (/^\s*(#.*)?$/.test(lines[j])) continue;
+      return /^\s+[^\s#-][^:]*:(\s|$)/.test(lines[j]);
+    }
+    return false;
+  }
+  return false;
+}
+
+// The root of the workspace the server runs in: --workspace, or else the nearest directory, from the
+// current directory up, whose config.yaml has skillGroups - never found from this file.
+function workspaceRoot(explicit) {
+  if (explicit) {
+    let root;
+    try { root = fs.realpathSync(path.resolve(explicit)); } catch (e) { throw new Error(`--workspace ${explicit}: no such directory`); }
+    if (!isWorkspaceConfig(root)) throw new Error(`--workspace ${explicit}: ${root} holds no config.yaml with skillGroups - name the root of the workspace the skill runs in`);
+    return root;
+  }
+  const here = fs.realpathSync(process.cwd());
+  for (let dir = here; ; dir = path.dirname(dir)) {
+    if (isWorkspaceConfig(dir)) return dir;
+    if (path.dirname(dir) === dir) throw new Error(`no config.yaml with skillGroups in ${here} or in a directory above it - run from the workspace the skill runs in, or pass --workspace`);
+  }
+}
+
 function parseArgs(argv) {
-  const opt = { root: 'checkpoints/asd-ste', port: 8790, host: '127.0.0.1', probe: false };
+  const opt = { workspace: null, root: 'checkpoints/asd-ste', port: 8790, host: '127.0.0.1', probe: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--probe') opt.probe = true;
-    else if (a === '--root' || a === '--port' || a === '--host') {
+    else if (a === '--workspace' || a === '--root' || a === '--port' || a === '--host') {
       const v = argv[++i];
       if (v === undefined) throw new Error(`${a} needs a value`);
       opt[a.slice(2)] = a === '--port' ? Number(v) : v;
     } else throw new Error(`unknown argument: ${a}`);
   }
   if (!Number.isInteger(opt.port) || opt.port < 0 || opt.port > 65535) throw new Error(`not a port: ${opt.port}`);
-  opt.root = path.resolve(opt.root);
+  if (!opt.probe) opt.root = path.resolve(workspaceRoot(opt.workspace), opt.root);
   return opt;
 }
 
@@ -74,6 +120,13 @@ function readStatus(dir) {
     if (j && typeof j.items === 'object' && j.items) return j;
   } catch (e) { /* no status yet, or one that cannot be read: the page starts from pending */ }
   return { items: {} };
+}
+
+function sourceOf(dir) {
+  try {
+    const m = fs.readFileSync(path.join(dir, 'step_0.yaml'), 'utf8').match(/^source_file:\s*(.+?)\s*$/m);
+    return m ? m[1].replace(/^(['"])(.*)\1$/, '$2') : '';
+  } catch (e) { return ''; }
 }
 
 function counts(keys, items) {
@@ -110,7 +163,7 @@ function indexPage(opt) {
       c = counts(pageKeys(dir), st.items);
       updated = st.updated || '';
     } catch (e) { /* a page that cannot be read shows no counts */ }
-    const link = `<td><a href="/${encodeURIComponent(name)}/">${escape(name)}</a></td>`;
+    const link = `<td><a href="/${encodeURIComponent(name)}/">${escape(name)}</a></td><td><code>${escape(sourceOf(dir))}</code></td>`;
     if (!c.total) return `<tr>${link}<td colspan="6" class="mut">沒有審核狀態：頁面是加上狀態之前建的，以 run step 6 重建</td></tr>`;
     return `<tr>${link}<td>${c.total}</td>`
       + `<td class="ok">${c.v}</td><td class="q">${c.q}</td><td class="no">${c.x}</td><td>${c.open}</td><td class="mut">${escape(updated)}</td></tr>`;
@@ -119,7 +172,7 @@ function indexPage(opt) {
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>asd-ste 審核</title><style>${STYLE}</style></head><body>
 <h1>asd-ste 審核</h1><div class="mut">審核伺服器服務 <code>${escape(opt.root)}</code> 底下每一份對照頁；審核狀態存在各自 Checkpoint Dir 的 <code>${STATUS}</code>。
 PID ${process.pid}：要關掉它，macOS／Linux 執行 <code>kill ${process.pid}</code>，PowerShell 執行 <code>Stop-Process -Id ${process.pid}</code>。</div>
-<table><tr><th>草稿</th><th>項目</th><th>通過</th><th>待解釋</th><th>不通過</th><th>待審</th><th>最後更新</th></tr>${rows.join('') || '<tr><td colspan="7" class="mut">還沒有任何對照頁</td></tr>'}</table>
+<table><tr><th>執行</th><th>原文</th><th>項目</th><th>通過</th><th>待解釋</th><th>不通過</th><th>待審</th><th>最後更新</th></tr>${rows.join('') || '<tr><td colspan="8" class="mut">還沒有任何對照頁</td></tr>'}</table>
 </body></html>\n`;
 }
 

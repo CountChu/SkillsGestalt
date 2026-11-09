@@ -10,6 +10,14 @@ rewriting the frame would discard what the target has become.
 
 It is the only program that reads the skill config. The hub it seeds reads only its own
 app.config.json, which is what lets the folder be moved as a whole.
+
+A relative target, and a relative mount appDir of the seed, resolve against the workspace root: the
+root of the workspace the skill runs in, which is the directory --root names, or else the nearest
+directory, from the current directory up, whose config.yaml has skillGroups. It is never found from
+this file. A workspace can read a skill group in place from a different workspace, and then the
+config.yaml above this skill is that other workspace's, so the frame would land there. The
+skillGroups key passes over the skill config, which is also named config.yaml but names no skill
+groups. The skill config itself is found beside this file, because it belongs to the skill.
 """
 
 from __future__ import annotations
@@ -22,6 +30,45 @@ import time
 
 SKILL_DIR = os.path.dirname(os.path.abspath(__file__))
 SKILL_CONFIG = os.path.join(SKILL_DIR, "config.yaml")
+
+
+def workspace_config(d: str) -> dict | None:
+    """The workspace configuration in d: its config.yaml when that has a skillGroups mapping, else None."""
+    cfg = os.path.join(d, "config.yaml")
+    if not os.path.isfile(cfg):
+        return None
+    import yaml  # load_skill_config has made sure that PyYAML is there
+    try:
+        with open(cfg, "r", encoding="utf-8") as fh:
+            doc = yaml.safe_load(fh)
+    except (OSError, UnicodeDecodeError, yaml.YAMLError):
+        return None
+    return doc if isinstance(doc, dict) and isinstance(doc.get("skillGroups"), dict) else None
+
+
+def workspace_root(explicit: str | None = None) -> str:
+    """The root of the workspace the skill runs in: --root, or else the nearest directory, from the
+    current directory up, whose config.yaml has skillGroups - never found from this file.
+
+    The skill's own directory holds the skill config, also named config.yaml; it has no
+    skillGroups, so a walk that starts there passes over it.
+    """
+    if explicit:
+        root = os.path.realpath(os.path.expanduser(explicit))
+        if workspace_config(root) is None:
+            sys.exit(f"--root {explicit}: {root} holds no config.yaml with skillGroups - "
+                     "name the root of the workspace the skill runs in")
+        return root
+    here = os.path.realpath(os.getcwd())
+    d = here
+    while True:
+        if workspace_config(d) is not None:
+            return d
+        parent = os.path.dirname(d)
+        if parent == d:
+            sys.exit(f"no --root given, and no config.yaml with skillGroups in {here} or in a directory "
+                     "above it - run from the workspace the skill runs in, or pass --root with its root")
+        d = parent
 
 # The whole of app.config.json, and the app has nothing else to fall back on.
 CONFIG_KEYS = ("title", "port", "links", "assembledAt")
@@ -102,8 +149,10 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Create one hub's target frame.")
     ap.add_argument("--hub", help="which homes entry to seed from")
     ap.add_argument("--target", help="the directory to frame, relative to --root")
-    ap.add_argument("--root", default=os.getcwd(),
-                    help="workspace root a relative target resolves against (default: cwd)")
+    ap.add_argument("--root",
+                    help="the root of the workspace the skill runs in, which a relative target resolves against "
+                         "(default: the nearest directory, from the current directory up, whose config.yaml "
+                         "has skillGroups)")
     ap.add_argument("--port", type=int, help="override the seed entry's port")
     ap.add_argument("--title", help="override the seed entry's title")
     args = ap.parse_args()
@@ -119,7 +168,7 @@ def main() -> int:
         sys.exit("no --target given. The target directory is named on the prompt, not guessed here.")
 
     entry = homes[args.hub] or {}
-    root = os.path.abspath(args.root)
+    root = workspace_root(args.root)
     port = args.port if args.port is not None else entry.get("port")
     title = args.title or entry.get("title") or args.hub
 

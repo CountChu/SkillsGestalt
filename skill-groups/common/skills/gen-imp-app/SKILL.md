@@ -10,8 +10,8 @@ description: >-
   `build_app.py` that assembles the app dir, and a `config.yaml` holding every value the app reads
   - then inverts ownership, so the source lives in the skill and the app dir becomes a build
   product. After Step 3, every change to the app goes through `imp-{app}`, never another round of
-  vibe coding. It builds one app per session and writes an MD report and a YAML checkpoint that a
-  later step reopens.
+  vibe coding. It builds one app per run, and writes an MD report, a run record, and a step
+  file for each step that a later step reopens.
 ---
 
 # TERMINOLOGY
@@ -19,13 +19,20 @@ description: >-
 Terms that mean the same thing in every skill.
 
 - **`run step N`** — a trailing prompt selector naming one step.
-  It runs **only** that step, reading every earlier step's output back from the YAML checkpoint.
+  It runs **only** that step, reading every earlier step's output back from its step file.
   This skill also accepts the bare form `step N`.
-- **Checkpoint Dir** — the per-run directory holding a skill's YAML checkpoint.
-  Every skill has its own; this skill's is given under **CONFIGURATION**.
-- **YAML checkpoint** — the `process.yaml` inside the Checkpoint Dir.
-  Every step writes its outputs there under a `step_{N}` group, so a later step reads them back instead of recomputing them.
-- **MD report** — the Markdown report a skill writes into the wiki vault, in a folder named after that skill, carrying the standard header (Skill, Checkpoint, Created, Updated, Prompt) above its result sections.
+- **Run Number** — the number of one run, `{yymmdd}.{N}`.
+  `{N}` is the sequence number of the run of this skill on that date, and it starts at 1.
+- **Working Dir** — the directory for one run, which holds all the working data of the run: its step files, its data files and its temporary files.
+  It is the Checkpoint Dir, and **CONFIGURATION** gives it.
+  The skill does not remove it.
+- **Checkpoint Dir** — a Working Dir in `checkpoints\` at the root of the workspace.
+- **Step file** — the `step_{N}.yaml` in the Working Dir.
+  Each step writes its outputs there, so a later step reads them back instead of recomputing them.
+- **Run record** — the file that records the time and the model of each step of one run.
+  The analysis of the efficiency of a skill uses it.
+- **Handoff file** — the Markdown file a run writes for a different skill to read, in `handoff\{skill}\`, named by the **Run Number**.
+- **MD report** — the Markdown report a skill writes into the wiki vault, in a folder named after that skill, carrying the standard header (Skill, Run record, Created, Updated, Prompt) above its result sections.
 - **no forward-reference** — the rule that a step must never depend on a step that comes after it.
   Naming a later step to route control flow does not break it; borrowing that step's output does.
 
@@ -51,8 +58,8 @@ The glossary owns each definition — a step uses the term rather than restating
 - **app config** — the `app.config.json` beside the app dir's `server.js`, and the **only** file the app reads.
   Every value the server or the Python would otherwise ask a skill or a **skill config** for is carried here, which is what lets the folder be zipped and run somewhere else unchanged.
 - **prompt log** — the ordered record of every **vibe coding** prompt, what it changed and how that change was proved.
-  It accumulates across Steps 1 and 2 in the YAML checkpoint.
-  Step 3 writes it out as `prompt-log.md` in the Checkpoint Dir, the record **gen-rsdc-app** compares the source against, and renders it into the **owner skill**'s `README.md` under a `# Prompts` heading — the history of *why* the app is shaped as it is, which the code cannot show.
+  It accumulates across Steps 1 and 2 in `step_1.yaml` and `step_2.yaml`.
+  Step 3 writes it out as the **handoff file** `handoff\gen-imp-app\{yymmdd}.{N}.md`, the record **gen-rsdc-app** compares the source against, and renders it into the **owner skill**'s `README.md` under a `# Prompts` heading — the history of *why* the app is shaped as it is, which the code cannot show.
 - **owner skill** — `imp-{app}`, the skill Step 3 writes.
   It owns the app from the **handoff** onward: it holds the source, it holds the **design pair**, and it is the only way the app changes.
 - **design pair** — `references\{App}-RSDC.md` and its 繁體中文 twin `references\{App}-RSDC-tw.md`, inside the **owner skill**.
@@ -62,7 +69,7 @@ The glossary owns each definition — a step uses the term rather than restating
   A disagreement about where something belongs in a **design pair** is settled against it.
 - **gen-rsdc-app** — the skill Step 3 runs to write the **design pair**.
   It reads the app's source, draws the **components**, derives the design from the source rather than from the **prompt log**, writes the English half to its design template after checking that template against the **RSDC standard**, and has the `chinese` skill write the twin.
-  It changes no code, and hands back the components, findings, defects and **verification obligations** it wrote.
+  It changes no code, and hands back the components, findings, defects and **verification obligations** it wrote in its own **handoff file**, `handoff\gen-rsdc-app\{yymmdd}.{N}.md`.
 - **skill pair** — the **owner skill**'s `SKILL.md` and its 繁體中文 twin `SKILL-tw.md`, both at the **owner skill root**.
   Unlike the **design pair** and the **wireframe pair**, its two halves are not equals: `SKILL.md` is the only one that runs, and `SKILL-tw.md` exists so a reader can review the procedure in their own language.
   That is what it is for — a procedure nobody can read is a procedure nobody audits.
@@ -97,20 +104,35 @@ The glossary owns each definition — a step uses the term rather than restating
 
 Concrete values this skill runs with.
 
-- **Checkpoint Dir** — `checkpoints\gen-imp-app\{app}-{yymmdd-hhmm}\`, where `{app}` is the **app name** and `{yymmdd-hhmm}` is stamped when Step 1 runs.
-  Steps 2 and 3 **reopen the newest existing directory** for that app rather than stamping a new one — the SOP is one session spread over several invocations.
-- **YAML checkpoint** — `process.yaml` inside the Checkpoint Dir.
-- **MD report** — `{wikiDir}\gen-imp-app\gen-imp-app-{app}-{yymmdd-hhmm}.md`, carrying the same stamp as the Checkpoint Dir, where `wikiDir` comes from the workspace [config.yaml](config.yaml) (resolved in Step 0) — never hardcode the wiki root.
-- **the artifacts root** — `artifacts\`, relative to the workspace root.
+The inputs and tools, which the run reads or runs:
+
+- **Workspace configuration** — the [config.yaml](config.yaml) at the root of the workspace.
 - **SKILL template** — `{skillGroups.common}\templates\SKILL-tmp.md`, the file Step 3 writes the **owner skill** from.
-- **owner skill root** — `{skillGroups.<group>}\skills\imp-{app}\`, where `<group>` is the `skillGroups` key chosen in Step 3.
-  It defaults to `dedi-apps`, the group that owns the apps this SOP builds.
-- **skill config** — `{owner skill root}\config.yaml`, written by Step 3.
 - **session resolver** — `{skillGroups.common}\skills\gen-imp-app\scripts\resolve_session.py`.
 - **owner-skill checker** — `{skillGroups.common}\skills\gen-imp-app\scripts\check_owner_skill.py`.
 - **RSDC standard** — `{skillGroups.common}\references\RSDC-Standard.md`, with its diagram notation in `{skillGroups.common}\references\DFD.md`.
 - **gen-rsdc-app** — `{skillGroups.common}\skills\gen-rsdc-app\SKILL.md`.
-- **prompt log** — `step_1` and `step_2` of the YAML checkpoint, written out by Step 3 as `prompt-log.md` in the Checkpoint Dir.
+- **run-data rules** — `{skillGroups.common}\rules\run-data-rules.md`.
+- **referenced notes** — the wiki notes that a brief names, under `{wikiDir}\write-note\`.
+- **gen-rsdc-app handoff file** — `handoff\gen-rsdc-app\{yymmdd}.{N}.md`, which Step 3 reads back.
+- **Node** — `node`, on `PATH`, which starts **the app**.
+
+The working data of a run, which no person and no skill reads after the run:
+
+- **Working Dir** — the Checkpoint Dir, `checkpoints\gen-imp-app\{yymmdd}.{N}\`, which also holds the probes that prove each change in Steps 1 and 2.
+  Step 1 gets a new **Run Number**; Steps 2 and 3 **reopen the run the user names, or else the newest run of that app**, rather than getting a new one — the SOP is one run spread over several invocations.
+  A run belongs to the app that its `step_0.yaml` records as `app`.
+
+The last outputs, which a person, a different skill or a subsequent analysis reads:
+
+- **Run record** — `database\skill-runs\gen-imp-app\{yymmdd}.{N}.yaml`.
+- **Handoff file** — `handoff\gen-imp-app\{yymmdd}.{N}.md`, the **prompt log** that Step 3 writes for **gen-rsdc-app**.
+- **MD report** — `{wikiDir}\gen-imp-app\gen-imp-app-{app}-{yymmdd}.{N}.md`, carrying the **app name** and the same **Run Number** as the Working Dir, where `wikiDir` comes from the workspace [config.yaml](config.yaml) (resolved in Step 0) — never hardcode the wiki root.
+- **the artifacts root** — `artifacts\`, relative to the workspace root.
+- **owner skill root** — `{skillGroups.<group>}\skills\imp-{app}\`, where `<group>` is the `skillGroups` key chosen in Step 3.
+  It defaults to `dedi-apps`, the group that owns the apps this SOP builds.
+- **skill config** — `{owner skill root}\config.yaml`, written by Step 3.
+- **prompt log** — `step_1.yaml` and `step_2.yaml`, written out by Step 3 as the **handoff file** `handoff\gen-imp-app\{yymmdd}.{N}.md`.
 
 # MUST FOLLOW
 
@@ -174,15 +196,21 @@ Concrete values this skill runs with.
     What it must **not** refuse is an absent artifact the app is designed to answer without — a design that serves an empty view and says so is not a design that fails to start.
   - What a **hub** requires of something it mounts, and which half of it a hub can verify, is that hub's own business and belongs in its design.
     This rule is about what every app publishes, not about who consumes it.
-- **Every output carries the one `{yymmdd-hhmm}` stamp** — one MD report and one Checkpoint Dir per SOP session, appended to by each step.
-  The **app dir** is **unstamped**: it is meant to be replaced, and stamping it would leave a trail of stale copies where a reader expects one current folder.
+- **Every output carries the one Run Number** — one MD report, one Working Dir and one run record per SOP run, appended to by each step.
+  The **app dir** is **unnumbered**: it is meant to be replaced, and numbering it would leave a trail of stale copies where a reader expects one current folder.
 - Follow [report-md-rules.md](skill-groups/common/rules/report-md-rules.md) for the MD report's header and shape.
-- Follow [report-yaml-rules.md](skill-groups/common/rules/report-yaml-rules.md) for the YAML checkpoint's shape and required fields.
-- Follow [scratch-rules.md](skill-groups/common/rules/scratch-rules.md) for where a run's throwaway files go and how they are cleaned up.
-  This SOP writes more of them than most — every proof in Steps 1 and 2 is a probe — and a probe left in the workspace root is indistinguishable from the app it was testing.
-- **Before the skill ends, display the MD report and YAML checkpoint paths** — show only the two paths, never their contents, and render both as clickable Markdown links, never as inline code or plain text.
-  - Link the **MD report** with an `obsidian://open?vault={vaultName}&file=<vault-relative-path>` URI — the vault lives outside this workspace, so a workspace-relative target cannot resolve to it (e.g. `[gen-imp-app-redfish-test-260829-1530.md](obsidian://open?vault={vaultName}&file=gen-imp-app/gen-imp-app-redfish-test-260829-1530.md)`).
-  - Link the **YAML checkpoint** with a workspace-relative, forward-slash target (e.g. `[process.yaml](checkpoints/gen-imp-app/redfish-test-260829-1530/process.yaml)`).
+- Follow [run-data-rules.md](skill-groups/common/rules/run-data-rules.md) for the Run Number, the step files, the run record, the handoff file and the Working Dir of a run.
+  This SOP writes more temporary files than most — every proof in Steps 1 and 2 is a probe, and it goes into the Working Dir — and a probe left in the workspace root is indistinguishable from the app it was testing.
+  - The one data file of a run is `owner-skill-check.json` in the Working Dir, which the **owner-skill checker** writes in Step 3.
+  - The **handoff file** of a run is `handoff\gen-imp-app\{yymmdd}.{N}.md`, which Step 3 writes for **gen-rsdc-app**.
+- **The SOP is one run spread over several invocations.**
+  Each invocation runs Step 0 and then one of Steps 1, 2 and 3, and adds both to the `steps` of the run record.
+  Steps 1 and 2 end the invocation with `result: stopped` and `stopped_at` the next step that has not run — `step_2` after Step 1, `step_3` after a round of Step 2; Step 3 writes `result: completed` and removes `stopped_at`.
+- **Each file in the Working Dir has one writer step only.**
+  `step_2.yaml` is written whole by each round of Step 2, which reads the rounds before it and adds its own.
+- **Before the skill ends, display the MD report and run record paths** — show only the two paths, never their contents, and render both as clickable Markdown links, never as inline code or plain text.
+  - Link the **MD report** with an `obsidian://open?vault={vaultName}&file=<vault-relative-path>` URI — the vault lives outside this workspace, so a workspace-relative target cannot resolve to it (e.g. `[gen-imp-app-redfish-test-260829.1.md](obsidian://open?vault={vaultName}&file=gen-imp-app/gen-imp-app-redfish-test-260829.1.md)`).
+  - Link the **run record** with a workspace-relative, forward-slash target (e.g. `[{yymmdd}.{N}.yaml](database/skill-runs/gen-imp-app/{yymmdd}.{N}.yaml)`).
   - Do this for every run, including a partial one such as `run step 0`.
 
 # Prompt Examples
@@ -241,14 +269,16 @@ step 3
   - **Line 2 — the app dir name**, e.g. `redfish-test-app`.
     It names the directory under **the artifacts root** directly; the **app name** is that name with a trailing `-app` stripped, so `redfish-test-app` yields `redfish-test`, an **app dir** of `artifacts\redfish-test-app` and an **owner skill** named `imp-redfish-test`.
     Display the derived name and the paths it implies before using it, and let the user override it.
-    On Steps 2 and 3 it also selects which session to reopen: check it against the `app` recorded in the YAML checkpoint and stop on a mismatch, rather than opening a second session for the same app.
+    On Steps 2 and 3 it also selects which run to reopen: check it against the `app` recorded in `step_0.yaml` of that run and stop on a mismatch, rather than opening a second run for the same app.
   - **Line 3 — the step selector**, `step N` or `run step N`.
     It selects which of Steps 1, 2 and 3 runs.
     If the prompt names no step, do not guess: say which steps exist, say which one the app's current state suggests, and ask.
   - **The brief** — every line after the step selector, verbatim.
-    **It may be empty**, as Prompt 3 shows: Step 3 needs no brief, because everything it works from is the app's own source and the YAML checkpoint.
+    **It may be empty**, as Prompt 3 shows: Step 3 needs no brief, because everything it works from is the app's own source and the step files of the run.
     For Step 1 the brief describes the app to build; for Step 2 it describes one change; for Step 3, when present, it names the group or a preference for the **owner skill**.
     Keep it in the user's own words — it becomes a **prompt log** entry, and a paraphrase loses the request.
+  - **Run Number** — on Steps 2 and 3, the user may name the run to reopen, `{yymmdd}.{N}`.
+    Without one, the newest run of the app is reopened.
   - **Referenced notes** — a brief may name a wiki note (e.g. `note-260824-Mo`).
     Resolve it under `{wikiDir}\write-note\` and read it before doing anything else; it usually carries the requirements the brief only gestures at.
   - A prompt written as free-form prose carries none of these positional arguments.
@@ -256,16 +286,24 @@ step 3
 
 - If a required input is missing, ask the user for it.
 
-- Resolve the SOP session by running the **session resolver**, which owns this deterministically so two invocations of the same session cannot land in different directories.
-  - Example: `python {skillGroups.common}\skills\gen-imp-app\scripts\resolve_session.py --app redfish-test --step 1`
-  - On `--step 1` it stamps and creates a new Checkpoint Dir.
-    On `--step 2` or `--step 3` it reopens the **newest existing** `{app}-*` directory, and exits non-zero naming the sessions it can see if there is none — a Step 2 with no Step 1 behind it is a mistake, not a fresh start.
-  - It prints one JSON object carrying `app`, `stamp`, `checkpointDir`, `processYaml`, `mdReport` and `sessions`.
-    Use those paths verbatim for the rest of the run.
-
 - Save the canonical skill invocation for reference in later steps.
 
-- Save YAML checkpoint `step_0` with: `step`, `app`, `stamp`, `checkpointDir`, `mdReport`, `brief`, `referencedNotes`.
+- Get the Run Number, as run-data-rules.md tells, and write the run record of the run.
+  The **session resolver** does this deterministically, so two invocations of the same run cannot land in different directories.
+  - Example: `python {skillGroups.common}\skills\gen-imp-app\scripts\resolve_session.py --app redfish-test --step 1`
+  - On `--step 1` it finds the largest `{N}` of today in `database\skill-runs\gen-imp-app\`, adds 1, creates the Working Dir, and writes the run record at once with `skill`, `run` and an empty `steps`.
+    Add the canonical skill invocation to it as `prompt`.
+  - On `--step 2` or `--step 3` it reopens the run that `--run {yymmdd}.{N}` names, or else the **newest** run whose `step_0.yaml` records the app.
+    It exits non-zero if there is none, or if the named run belongs to a different app — a Step 2 with no Step 1 behind it is a mistake, not a fresh start.
+  - It finds the root of the workspace this run is in: the directory `--workspace` names, or else the nearest directory, from the current directory up, whose `config.yaml` has `skillGroups`.
+    It never finds the root from the location of its own file, because a workspace can read this skill in place from a different workspace.
+  - It prints one JSON object carrying `workspace`, `app`, `run`, `checkpointDir`, `runRecord`, `handoffFile`, `mdReport`, `created` and `runs`.
+    If `workspace` is not the workspace root whose `config.yaml` was read above, stop and say which root it found.
+    Use those paths verbatim for the rest of the run.
+
+- Save `step_0.yaml`, with: `app`, `run`, `appDir`, `brief`, `referencedNotes`.
+  On Steps 2 and 3, write it whole again with the same `app` and the brief of this invocation.
+  Add this step to the run record.
   Creating the MD report file is optional in this step since there may not be meaningful results yet.
 
 
@@ -299,7 +337,8 @@ step 3
 
 - Open the **prompt log** with this round: the brief verbatim, the files written, what was proved and what is still missing.
 
-- Save YAML checkpoint under `step_1` with: `app`, `appDir`, `entry`, `serverPort`, `pythonScripts`, `pageFiles`, `appConfigKeys`, `promptLog`, `proof`, `openIssues`.
+- Save `step_1.yaml`, with: `appDir`, `entry`, `serverPort`, `pythonScripts`, `pageFiles`, `appConfigKeys`, `promptLog`, `proof`, `openIssues`.
+  Add this step to the run record, and write `result: stopped` and `stopped_at: step_2`.
 
 - Save MD report file.
   Append and display a **First Cut** section:
@@ -319,7 +358,7 @@ step 3
 
 - This step **repeats**.
   Each invocation carries one change brief, and there are as many invocations as the app needs.
-  Read `step_1` and any existing `step_2` from the YAML checkpoint first, so this round starts from what the app already is.
+  Read `step_1.yaml` and any existing `step_2.yaml` first, so this round starts from what the app already is.
 
 - Rules that apply to every round:
   - **Change the source, then re-run, then read the result.**
@@ -344,13 +383,14 @@ step 3
      Append one **prompt log** entry: the brief verbatim, the files touched, the proof, and anything the change revealed that was not asked about.
 
 - **Append to the round list; never overwrite it.**
-  `step_2` in the YAML checkpoint holds a `rounds` list that grows by one entry per invocation.
+  `step_2.yaml` holds a `rounds` list that grows by one entry per invocation.
   Read it, append, write it back — a round that replaces the list erases the history Step 3 renders into the **owner skill**'s README, and nothing else holds a copy.
 
 - Stop when the user says the app is right.
   That is the only stop condition; a round that reveals more work is not the end of Step 2.
 
-- Save YAML checkpoint under `step_2` with: `rounds` (append one entry carrying `n`, `brief`, `filesTouched`, `proof`, `notes`), `roundCount`, `appConfigKeys`, `openIssues`.
+- Save `step_2.yaml`, with: `rounds` (append one entry carrying `n`, `brief`, `filesTouched`, `proof`, `notes`), `roundCount`, `appConfigKeys`, `openIssues`.
+  Add this step to the run record, and write `result: stopped` and `stopped_at: step_3`.
 
 - Save MD report file.
   Append to (or create) an **Iterations** section:
@@ -367,7 +407,7 @@ step 3
 - **No script for this step's reading and writing** — deriving a design from source code, drawing **component** boundaries and writing a skill are judgement: **gen-rsdc-app** derives the design, and the rest is done by following the instructions below yourself.
   Only the final conformance check is scripted.
 
-- Read `step_1` and `step_2` from the YAML checkpoint for the **app name**, the **app dir** and the **prompt log**.
+- Read `step_0.yaml`, `step_1.yaml` and `step_2.yaml` for the **app name**, the **app dir** and the **prompt log**.
   Then **read the app's whole source**, top down: `server.js`, `public\`, `scripts\`, the **app config**.
   **gen-rsdc-app** derives the design from it, and the owner skill, the wireframe scan and the builder are written from it here.
 
@@ -376,17 +416,17 @@ step 3
 
 - For each of the following, in order:
   1. **Write the prompt log out.**
-     Render every **prompt log** entry of `step_1` and `step_2`, in order — the brief verbatim, the files touched, the proof and the notes — into `prompt-log.md` in the Checkpoint Dir.
+     Render every **prompt log** entry of `step_1.yaml` and `step_2.yaml`, in order — the brief verbatim, the files touched, the proof and the notes — into the **handoff file** `handoff\gen-imp-app\{yymmdd}.{N}.md`, with the Run Number of this run.
      It is the record of what was asked that **gen-rsdc-app** compares the source against; without it, a rule that was asked for and never landed goes unnoticed.
   2. **Write the design pair with gen-rsdc-app.**
-     Run it on the **app dir**, naming `{App}` as the app name, the **owner skill root**'s `references\` as where the pair goes, and the prompt log written out above:
+     Run it on the **app dir**, naming `{App}` as the app name, the **owner skill root**'s `references\` as where the pair goes, and the **handoff file** written out above as its requirements record:
 
      ```
      /gen-rsdc-app
      artifacts\{app}-app
      {App}
      {skillGroups.<group>}\skills\imp-{app}\references
-     checkpoints\gen-imp-app\{app}-{yymmdd-hhmm}\prompt-log.md
+     handoff\gen-imp-app\{yymmdd}.{N}.md
      ```
 
      - It checks its design template against the **RSDC standard** first, and stops before writing anything if the template has fallen behind.
@@ -395,7 +435,8 @@ step 3
        Its documents name no skill and no tool, so they keep the one-way rule of **MUST FOLLOW**.
      - Each **component** it hands back becomes one step of the **owner skill**: the smallest set of pieces that each have one job and one owner, so a piece too large to build in one step is still two components.
      - It has the `chinese` skill write the twin, which asks whether to commit the **design pair**; pass the question to the user.
-     - Read back what it hands back — the **components**, the findings, the defects, the **verification obligations**, its check of the English half and what the `chinese` skill reported of the twin — for the checkpoint and the report below.
+     - Read the handoff file of gen-rsdc-app, as [run-data-rules.md](skill-groups/common/rules/run-data-rules.md) tells: the file `handoff\gen-rsdc-app\{yymmdd}.{N}.md` that the user names, or else the one with the largest number, and say which file you read.
+       It carries the **components**, the findings, the defects, the **verification obligations**, its check of the English half and what the `chinese` skill reported of the twin — for `step_3.yaml` and the report below.
   3. **Scan the running UI into the wireframe pair.**
      Start the app, open its page in a browser, and read the **live DOM** — not the markup file — into `references\Wireframe.md` and `references\Wireframe-tw.md` under the **owner skill root**, both in the same run:
      - Walk the page top to bottom, one bullet per element, each tagged with its kind — `[Panel]`, `[Button]`, `[Select]`, `[Input]`, `[Text]` and so on — and carrying the label a user actually sees, not the element's id.
@@ -423,7 +464,7 @@ step 3
      - **Then write the 繁體中文 half of the skill pair**, `SKILL-tw.md`, beside it in the same run — every section, every rule, every step, in the same order and with nothing dropped.
        It is what lets the procedure be reviewed by hand rather than taken on trust, so a summary is not one; a step missing from it is a step nobody reviews.
      - **Keep every heading in English** — the six section headings and each `## Step N - ` title, character for character as `SKILL.md` has them — so the two can be read side by side and a reviewer can see at a glance that nothing is missing.
-       Keep file names, paths, config keys, checkpoint field names and glossary terms in their original form for the same reason; translate the prose around them.
+       Keep file names, paths, config keys, step file field names and glossary terms in their original form for the same reason; translate the prose around them.
      - **Say at the top of `SKILL-tw.md` that it does not run**: it is a translation for reading, `SKILL.md` is the one that executes, and a change is made there first.
   5. **Invert ownership.**
      Move the source out of the **app dir** and under the **owner skill root** — the server, the **mountable handler** and the page under `server\`, the Python under `scripts\` — so exactly one editable copy of each file exists.
@@ -442,7 +483,7 @@ step 3
      Write `README.md` under the **owner skill root** with a `# Prompts` section carrying every **prompt log** brief in order, followed by whatever a reader needs to run the app's pieces by hand.
 
 - Run the **owner-skill checker** to verify what was written, rather than trusting that it was.
-  - Example: `python {skillGroups.common}\skills\gen-imp-app\scripts\check_owner_skill.py --skill-dir "{skillGroups.<group>}\skills\imp-{app}" --app-dir "artifacts\{app}-app" --out "checkpoints\gen-imp-app\{app}-{yymmdd-hhmm}"`
+  - Example: `python {skillGroups.common}\skills\gen-imp-app\scripts\check_owner_skill.py --skill-dir "{skillGroups.<group>}\skills\imp-{app}" --app-dir "artifacts\{app}-app" --out "checkpoints\gen-imp-app\{yymmdd}.{N}"`
   - The script:
     1. Parses the SKILL.md frontmatter, and checks `name` equals the parent directory name, that a description is present, and that no placeholder token from the template survives.
     2. Checks the top-level sections appear in the canonical order and that the `## Step N` headings run contiguously from 0.
@@ -451,7 +492,9 @@ step 3
     5. Checks the **wireframe pair**: both files present, the two carrying the same shape — heading, bullet and table-row counts — and the SKILL.md naming `Wireframe.md`.
        A skill that lists its own panels instead of pointing at the wireframe is the drift this pair exists to prevent.
     6. Checks the **app dir** is self-contained — no `node_modules`, no non-builtin `require`, no external `script`, `link` or CDN reference in the page.
-    7. Saves the results as `owner-skill-check.json` in the output directory, and exits non-zero if any check failed.
+    7. Saves the results as `owner-skill-check.json` in the Working Dir, and exits non-zero if any check failed.
+       A relative `--out` is relative to the workspace root, not the current directory.
+       It finds that root as the **session resolver** does, and takes the same `--workspace`.
 
 - **The checker does not read `SKILL-tw.md`, so verify the skill pair by hand before the handoff**: list the headings of both files and confirm they match one for one, and that every `## Step N - ` title is present in both under the same number.
   A heading only the English half has is a section the reviewer will never see.
@@ -459,7 +502,8 @@ step 3
 - Do not report the **handoff** until every check passes.
   A failing check is a defect in what was just written, not a note for later.
 
-- Save YAML checkpoint under `step_3` with: `ownerSkill`, `group`, `ownerSkillDir`, `promptLogFile`, `components`, `findings`, `skillPair`, `designPair`, `wireframePair`, `wireframeScan`, `builder`, `skillConfig`, `readme`, `checks`, `handoff`.
+- Save `step_3.yaml`, with: `ownerSkill`, `group`, `ownerSkillDir`, `promptLogFile` (the path of the **handoff file** of this run), `rsdcHandoffFile` (the handoff file of gen-rsdc-app that was read), `components`, `findings`, `skillPair`, `designPair`, `wireframePair`, `wireframeScan`, `builder`, `skillConfig`, `readme`, `checks`, `handoff`.
+  Add this step to the run record, and write `result: completed`, because it is the last step.
 
 - Save MD report file.
   Append and display a **Handoff** section:

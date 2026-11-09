@@ -55,10 +55,13 @@ them leaves them apart. What a program can compare, this script compares:
   7. dates       each row's Raised is its file's
   8. icons       each row's icon is its Status line's word: 尚未開始 ⬜, 進行中 🔄, 完成 ✅, 取消 ⊘
   9. legend      the legend of the icons follows the table
-  10. references each wikilink and relative Markdown link in a task file lands on a file that exists - a
+  10. references each wikilink, relative Markdown link and obsidian://open link in a task file lands on a file that exists - a
                  wikilink by file name anywhere in the vault (--vault, else the folder with .obsidian, else the folder holding both the summary and the tasks);
                  in a git repository, among the vault's files that git tracks or does not ignore, so a scan skips what
-                 .gitignore keeps out (a virtual environment, a data cache), and a link into an ignored folder does not count
+                 .gitignore keeps out (a virtual environment, a data cache), and a link into an ignored folder does not count;
+                 an obsidian://open?vault=<vault>&file=<path> link - how a task links a topic in another vault - by its path
+                 in the vault that Obsidian's vault list knows as <vault> (--obsidian-config, else the obsidian.json in
+                 Obsidian's settings folder), and with each space written as %20
   11. depends     each file has a Depends on line of links to tasks, or —, and nothing else
   12. columns     each row's Depends on cell lists the tasks its file lists, in the same order
   13. targets     each task depended on exists, none depends on itself, and no chain of dependencies loops back
@@ -79,6 +82,7 @@ or the summary holds no task table.
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import subprocess
@@ -101,6 +105,7 @@ WIKI_RE = re.compile(r'!?\[\[([^\]|#]+)(?:#[^\]|]*)?(?:\|[^\]]*)?\]\]')
 DAY_RE = re.compile(r'^### (\d{4}-\d{2}-\d{2})\s*$')
 NONE = '—'
 MD_LINK_RE = re.compile(r'\]\(([^)\s]+)\)')
+OBSIDIAN_RE = re.compile(r'\]\((obsidian://(?:[^()\n]|\([^()\n]*\))*)\)')
 ICONS = {'尚未開始': '⬜', '進行中': '🔄', '完成': '✅', '取消': '⊘'}
 LEGEND = 'Status：⬜ 尚未開始'
 GAP_PREFIX = '空號：'
@@ -182,9 +187,10 @@ def known_names(root: Path) -> set[str]:
     return {Path(p).name for p in out.decode('utf-8', 'replace').split('\0') if p and (root / p).is_file()}
 
 
-def links_outside_code(lines: list[str]) -> tuple[list[str], list[str]]:
-    """The Markdown link targets and the wikilink names of a file, leaving out fenced blocks and inline code."""
-    found, wikis, fenced = [], [], False
+def links_outside_code(lines: list[str]) -> tuple[list[str], list[str], list[str]]:
+    """The Markdown link targets, the wikilink names and the obsidian:// link targets of a file, leaving out fenced
+    blocks and inline code. An obsidian:// target is taken whole, a space in it too, so that the space can be reported."""
+    found, wikis, uris, fenced = [], [], [], False
     for l in lines:
         if l.lstrip().startswith(('```', '~~~')):
             fenced = not fenced
@@ -194,7 +200,57 @@ def links_outside_code(lines: list[str]) -> tuple[list[str], list[str]]:
         for part in re.split(r'(`[^`]*`)', l)[::2]:
             found += MD_LINK_RE.findall(part)
             wikis += [w.strip() for w in WIKI_RE.findall(part)]
-    return found, wikis
+            uris += OBSIDIAN_RE.findall(part)
+    return found, wikis, uris
+
+
+def obsidian_config() -> Path:
+    """Obsidian's vault list on this system: the obsidian.json in Obsidian's settings folder."""
+    if sys.platform == 'darwin':
+        return Path.home() / 'Library' / 'Application Support' / 'obsidian' / 'obsidian.json'
+    if os.name == 'nt':
+        return Path(os.environ.get('APPDATA') or Path.home() / 'AppData' / 'Roaming') / 'obsidian' / 'obsidian.json'
+    return Path(os.environ.get('XDG_CONFIG_HOME') or Path.home() / '.config') / 'obsidian' / 'obsidian.json'
+
+
+def obsidian_vaults(config: Path) -> dict[str, list[Path]] | str:
+    """The folders of the vaults Obsidian knows, under each vault's name (its folder's name) and its id, as an
+    obsidian://open link may give either; or why the vault list cannot be read."""
+    try:
+        vaults: dict[str, list[Path]] = {}
+        for vid, v in json.loads(config.read_text(encoding='utf-8'))['vaults'].items():
+            folder = Path(v['path'])
+            for key in {vid, folder.name}:
+                vaults.setdefault(key, []).append(folder)
+        return vaults
+    except OSError as e:
+        return f"Obsidian's vault list cannot be read: {config} - {e.strerror or e}"
+    except (ValueError, KeyError, TypeError, AttributeError) as e:
+        return f"Obsidian's vault list cannot be read: {config} - {type(e).__name__} {e}"
+
+
+def obsidian_problem(target: str, vaults) -> str | None:
+    """What keeps an obsidian://open link from opening the file it names, or None when nothing does. vaults is a
+    callable that gives obsidian_vaults()'s result, read once for all the links. A value keeps a + as it is, as
+    Obsidian does: only %XX is decoded. A link of another action, such as obsidian://search, is not checked."""
+    if re.search(r'\s', target):
+        return 'a space in the link, where %20 belongs'
+    action, _, query = target[len('obsidian://'):].partition('?')
+    params = dict(p.partition('=')[::2] for p in query.split('#')[0].split('&') if p)
+    if action.strip('/') != 'open' or 'vault' not in params:
+        return None
+    known = vaults()
+    if isinstance(known, str):
+        return known
+    name = unquote(params['vault'])
+    if name not in known:
+        return f'no vault "{name}" in Obsidian\'s vault list'
+    if 'file' not in params:
+        return None
+    path = unquote(params['file'])
+    if any((d / path).is_file() or (d / f'{path}.md').is_file() for d in known[name]):
+        return None
+    return f'no file "{path}" in the vault "{name}"'
 
 
 def vault_root(summary: Path, folder: Path, given: Path | None) -> Path:
@@ -211,6 +267,8 @@ def main() -> None:
     ap.add_argument('--summary', required=True, type=Path, help='the task-summary.md to check')
     ap.add_argument('--tasks-dir', type=Path, help='the folder of the Task N.md files (default: the summary own folder)')
     ap.add_argument('--vault', type=Path, help='the folder wikilinks resolve in (default: nearest ancestor with .obsidian)')
+    ap.add_argument('--obsidian-config', type=Path,
+                    help="Obsidian's vault list, which obsidian://open links resolve in (default: the obsidian.json in Obsidian's settings folder)")
     a = ap.parse_args()
     folder = a.tasks_dir or a.summary.parent
     try:
@@ -319,8 +377,15 @@ def main() -> None:
     broken = []
     root = vault_root(a.summary, folder, a.vault)
     known = known_names(root)
+    vault_list: list = []
+
+    def vaults():
+        if not vault_list:
+            vault_list.append(obsidian_vaults(a.obsidian_config or obsidian_config()))
+        return vault_list[0]
+
     for n in order:
-        md_links, wikis = links_outside_code(files[n])
+        md_links, wikis, uris = links_outside_code(files[n])
         for w in wikis:
             if w.split('/')[-1] not in known and w.split('/')[-1] + '.md' not in known:
                 broken.append(f'Task {n}: [[{w[:70]}]]')
@@ -329,7 +394,10 @@ def main() -> None:
                 continue
             if not (folder / unquote(tg.split('#')[0])).exists():
                 broken.append(f'Task {n}: {tg[:70]}')
-    rep.check(not broken, 'each wikilink and relative link in a task file lands on a file that exists', broken)
+        for u in uris:
+            if problem := obsidian_problem(u, vaults):
+                broken.append(f'Task {n}: {u[:70]} - {problem}')
+    rep.check(not broken, 'each wikilink, relative link and obsidian://open link in a task file lands on a file that exists', broken)
 
     # 11-14. dependencies: what the files say, what the rows repeat, where they point, how current the icons are
     in_file: dict[str, list[str] | None] = {}

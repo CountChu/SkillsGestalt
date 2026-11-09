@@ -7,6 +7,19 @@ task 檔的格式與摘要表的維護方式，見 [task-rules.md](../skill-grou
 
 | Task | Raised | Title | Status | Depends on |
 | --- | --- | --- | --- | --- |
+| [[Task 100]] | 2026-11-05 | 決定 skill 執行中的資料該寫進 checkpoints 還是 temp | ✅ | — |
+| ├─ [[Task 100.1]] | 2026-11-06 | 把很少用的 skill 搬到 skill-groups/archived | ✅ | — |
+| ├─ [[Task 100.2]] | 2026-11-06 | 寫 run-data-rules.md，取代 scratch-rules 與 report-yaml-rules | ✅ | — |
+| ├─ [[Task 100.3]] | 2026-11-06 | 範本與 gen-skill、check-skill 照 run-data-rules 改 | ✅ | [[Task 100.2]] ✅ |
+| ├─ [[Task 100.4]] | 2026-11-06 | 各個 skill 照 run-data-rules 改 | ✅ | [[Task 100.2]] ✅、[[Task 100.3]] ✅ |
+| ├─ [[Task 100.5]] | 2026-11-06 | 檢查 Task 100 是否完成 | ✅ | [[Task 100.2]] ✅、[[Task 100.3]] ✅、[[Task 100.4]] ✅、[[Task 100.6]] ✅ |
+| ├─ [[Task 100.6]] | 2026-11-06 | 其餘 9 個 skill 補上 process record | ✅ | [[Task 100.4]] ✅ |
+| ├─ [[Task 100.7]] | 2026-11-06 | 各 skill 的 CONFIGURATION 分成兩類，MD report 的 Checkpoint 欄改名為 Run record | ✅ | — |
+| ├─ [[Task 100.8]] | 2026-11-06 | CONFIGURATION 的輸入與工具要不要有自己的一組 | ✅ | — |
+| ├─ [[Task 100.9]] | 2026-11-06 | write-note 系列不寫暫存檔，MUST FOLLOW 卻提到 scratch files | ✅ | — |
+| ├─ [[Task 100.10]] | 2026-11-06 | set-tag-status 與 check-wiki-doc 在 CONFIGURATION 多列的輸出 | ✅ | — |
+| ├─ [[Task 100.11]] | 2026-11-06 | Scratch files 改成 Temp Dir，working data 在中文版保留英文 | ✅ | — |
+| └─ [[Task 100.12]] | 2026-11-06 | Temp Dir 與 Checkpoint Dir 合稱 Working Dir，一個 skill 選一個 | ✅ | [[Task 100.11]] ✅ |
 | [[Task 99]] | 2026-11-02 | 評估 Claude Code 直接讀 AGENTS.md 之後是否還需要 CLAUDE.md | ✅ | — |
 | [[Task 98]] | 2026-11-02 | 修正 imp-home seed 的三個缺陷 | ✅ | — |
 | [[Task 97]] | 2026-11-02 | 讓 SkillsGestalt 同時適用於 VS Code Copilot 與 Claude Code | ✅ | — |

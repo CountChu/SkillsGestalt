@@ -4,11 +4,11 @@
 > [us-spelling.json](../../references/us-spelling.json)  `2026-10-13`  `8871984ff0d8`
 > [md-style.md](../../rules/md-style.md)  `2026-11-02`  `639a95083dd2`
 > [skill-writing.md](../../rules/skill-writing.md)  `2026-11-02`  `4884a31a0b2c`
-> [report-yaml-rules.md](../../rules/report-yaml-rules.md)  `2026-11-02`  `4fd98f4d5d9b`
-> [SKILL-tmp.md](../../templates/SKILL-tmp.md)  `2026-11-02`  `4c84755e0122`
-> [README-tmp.md](../../templates/README-tmp.md)  `2026-10-19`  `43ace64a88a6`
+> [run-data-rules.md](../../rules/run-data-rules.md)  `2026-11-09`  `cb4e585a6fbc`
+> [SKILL-tmp.md](../../templates/SKILL-tmp.md)  `2026-11-06`  `0a1b73b86b05`
+> [README-tmp.md](../../templates/README-tmp.md)  `2026-11-06`  `549f2d3ba535`
 > [depends_on.py](../../scripts/depends_on.py)  `2026-10-16`  `53b1d3e60eca`
-> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-02`  `f4a7161de90a`
+> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-06`  `96933f295048`
 
 asd-ste skill 由哪些部分組成，以及它的 [SKILL.md](SKILL.md) 依賴哪些檔案。
 skill 每次執行都會載入整份 SKILL.md，所以執行時用不到的部分放在這裡：SKILL.md 不連到本檔，也沒有任何一次執行會載入它。
@@ -17,7 +17,8 @@ skill 的各個 step 怎麼寫，見 [skill-writing.md](../../rules/skill-writin
 
 圖中的路徑都用簡寫：`asd-ste/` 指 `skill-groups/common/skills/asd-ste/`，`common/` 指 `skill-groups/common/`，`external/` 位於 workspace 根目錄。
 `<name>.md` 是一次執行所改寫的檔案，draft 是它的改寫，位於 draft tool 在它旁邊給出的路徑。
-`checkpoints/asd-ste/{parent}-{name}/` 同樣位於 workspace 根目錄，是 Checkpoint Dir：裡面有 YAML checkpoint `process.yaml`，以及 Step 1、Step 3 與 Step 6 寫出的檔案。
+`checkpoints/asd-ste/{yymmdd}.{N}/` 同樣位於 workspace 根目錄，是一次執行的 Working Dir，也就是它的 Checkpoint Dir，以它的 Run Number 命名：裡面有 step file `step_0.yaml` 到 `step_7.yaml`、Step 1、Step 3 與 Step 6 寫出的檔案，以及 draft tool 的 `recheck/`。
+這次執行的 run record `database/skill-runs/asd-ste/{yymmdd}.{N}.yaml` 不畫進圖裡：每個 step 都把自己的標題、model 與時間加進它。
 
 # When the Skill Runs
 
@@ -45,14 +46,14 @@ flowchart TB
     RESULT>"Check result"]
     RES7>"Replacement result"]
     RSTAT>"Review statuses"]
-    CK0[("YAML checkpoint: step_0")]
-    CK1[("YAML checkpoint: step_1")]
-    CK2[("YAML checkpoint: step_2")]
-    CK3[("YAML checkpoint: step_3")]
-    CK4[("YAML checkpoint: step_4")]
-    CK5[("YAML checkpoint: step_5")]
-    CK6[("YAML checkpoint: step_6")]
-    CK7[("YAML checkpoint: step_7")]
+    CK0[("Step file: step_0.yaml")]
+    CK1[("Step file: step_1.yaml")]
+    CK2[("Step file: step_2.yaml")]
+    CK3[("Step file: step_3.yaml")]
+    CK4[("Step file: step_4.yaml")]
+    CK5[("Step file: step_5.yaml")]
+    CK6[("Step file: step_6.yaml")]
+    CK7[("Step file: step_7.yaml")]
     INVT[("step_1-inventory.txt")]
     F1[("step_1-findings.json")]
     CHKT[("step_3-check.txt")]
@@ -156,26 +157,28 @@ flowchart TB
 
 - 平行四邊形是 external input：`config.yaml`、STE rules digest、STE dictionary、project-approved words 與 project rules、US spelling list、keep-English list 與 STE specification——沒有任何 step 會寫入它們。
   旗形是 one-run data：prompt 與 Answers、Step 3 印出的檢查結果、使用者在 review page 上設定的 review status，以及 Step 7 印出的取代結果。
-  圓柱是 record：source file 與它的 TW twin，只有 Step 7 會寫入；draft 與它的 TW twin；YAML checkpoint 中每個 step 的群組；Step 1、Step 3 與 Step 6 寫在 Checkpoint Dir 的七個檔案；git history；以及 dependent 的 header quote。
+  圓柱是 record：source file 與它的 TW twin，只有 Step 7 會寫入；draft 與它的 TW twin；每個 step 的 step file；Step 1、Step 3 與 Step 6 寫在 Working Dir 的七個檔案；git history；以及 dependent 的 header quote。
   圓角方框是 step。
 - 六角形是 skill 之外的 role：使用者，提供 prompt、Answers 與 review status，並閱讀檢查結果、draft、review page 與取代結果。
 - 實線箭頭沿著資料移動的方向搬移資料；雙頭箭頭表示某個 step 對同一份資料既讀又寫。
 - 藍色箭頭承載的資料，本身會被寫進某個 record，或被轉成某個 record 的內容；其餘箭頭一律是黑色。
-  prompt 與 Answers 會寫進 YAML checkpoint，findings file 列出的 source file 骨架、字典的替換詞、檔案用到的 project-approved word，以及每一個英式拼法的美式拼法也是，所以它們的箭頭是藍色。
+  prompt 寫進 run record，Answers 寫進 step file；source file 的骨架、字典的替換詞、檔案用到的 project-approved word，以及每一個英式拼法的美式拼法寫進 findings file；所以它們的箭頭是藍色。
   source file 經由 Step 2 進入 draft，Step 2 用 STE 把它重新說一遍；STE specification 經由 Step 3 進入 draft，Step 3 把它的指紋記錄在 header quote 中——Step 3 也同樣記錄 ste-custom.md 的指紋。
-  Step 6 以 source file、draft、兩者的 TW twin、`step_2` 中保留原文措辭的陳述、`step_3` 中留下的警告，以及它自己寫的 review notes 產生 review page，所以這些箭頭都是藍色。
+  Step 6 以 source file、draft、兩者的 TW twin、`step_2.yaml` 中保留原文措辭的陳述、`step_3.yaml` 中留下的警告，以及它自己寫的 review notes 產生 review page，所以這些箭頭都是藍色。
   review status 經由 Step 6 啟動的 review server 寫進 `step_6-status.json`，review builder 下一次建頁時再把它們放上頁面，所以它們的箭頭也是藍色。
-  Step 7 把 draft 與它的 TW twin 放到 source file 與它的 TW twin 的位置，在 dependent 的 header quote 中重新記錄 source file，並把使用者的回答存進 `step_7`，所以這些箭頭也是藍色。
-  只決定某個 step 怎麼做的資料，例如 `config.yaml`、`step_0` 裡的路徑、`step_1` 裡的清冊、`step_3` 裡的 verdict、`step_6` 指名的 review page、Step 7 從 git history 讀取的修改、STE rules digest，或 Step 3 只拿來比對的 source file，即使那個 step 會寫 record，也維持黑色。
-- YAML checkpoint 是一個檔案，但每個 step 擁有自己的群組，所以圖中每個群組各畫成一個 record，各自只有一個寫入者。
-  Step 0 會重新開始這個檔案，所以一次執行的群組絕不會和先前執行的混在一起。
-  在 `run step N` 底下，Step N 從 YAML checkpoint 讀取 `step_0` 與它之前各 step 的群組：也就是從 checkpoint 指向 Step 1 到 Step 7 的箭頭。
+  Step 7 把 draft 與它的 TW twin 放到 source file 與它的 TW twin 的位置，在 dependent 的 header quote 中重新記錄 source file，並把使用者的回答存進 `step_7.yaml`，所以這些箭頭也是藍色。
+  只決定某個 step 怎麼做的資料，例如 `config.yaml`、`step_0.yaml` 裡的路徑、清冊、`step_3.yaml` 裡的 verdict、`step_6.yaml` 指名的 review page、Step 7 從 git history 讀取的修改、STE rules digest，或 Step 3 只拿來比對的 source file，即使那個 step 會寫 record，也維持黑色。
+- 每個 step 寫自己的 step file，所以圖中每一份各畫成一個 record，各自只有一個寫入者。
+  每一次執行都有自己的 Working Dir，所以一次執行的 step file 絕不會和先前執行的混在一起。
+  在 `run step N` 底下，Step N 從 source file 最新的那一次執行——由 draft tool 的 `runs` 找到——讀取 `step_0.yaml` 與它之前各 step 的 step file：也就是從 step file 指向 Step 1 到 Step 7 的箭頭。
 - 有些 record 是輪流編輯的。
   Step 2 整份寫出 draft，Step 3 修正它，並讀取它所修正的內容；重跑 Step 2 會覆寫 Step 3 的修正，所以 Step 2 在覆寫已存在的檔案之前會先詢問。
-  Step 1 與 Step 3 各自透過 `check_ste.py` 寫出一個 findings file，再把它讀回來存進自己的群組。
+  Step 1 與 Step 3 各自透過 `check_ste.py` 寫出一個 findings file，再把它讀回來，把它的檔名與 verdict 存進自己的 step file。
   Step 4 與 Step 5 各自在先前的執行與使用者留下的 git history 上加一個 commit。
   Step 6 寫出 review notes，它的 review builder 再把它們讀回來，產生 review page。
   Step 6 啟動的 review server 在使用者設定每一個 review status 時寫入 `step_6-status.json`，那時執行已經結束；Step 6 再次執行時，review builder 會把它讀回來。
+  還沒有自己的 `step_6-status.json` 的執行，從同一份 source file 較早的最新一次執行的那一份開始，讀自那次執行的 Working Dir：圖中把這兩份畫成同一個 record。
+  在任何一次執行之外，`draft.py recheck` 像 Step 3 一樣，在 draft 的 source file 最新的那一次執行中再寫一次 Step 3 的檔案與 `step_3.yaml`。
   Step 7 讀取 Step 2、Step 3 與 Step 5 留下的 draft 與它的 TW twin，把它們寫到 source file 與它的 TW twin 的位置，然後刪除它們。
 - source file 與它的 TW twin 在這次執行之前就已存在：Step 7 之前的每一個 step，讀到的都是它們原本的樣子；Step 7 是它們唯一的寫入者，它讀取自己寫入的內容來檢查。
   Step 7 在 dependent 的 header quote 中重新記錄 source file 之前，也會先讀取這次執行找到的那份 header quote。
@@ -208,7 +211,8 @@ skill-writing.md 中「哪些 step 執行腳本」那條規則，本 skill 的�
 **Step 1、Step 3、Step 6 與 Step 7 以腳本完成自己的工作，Step 0 以腳本取得它的路徑，Step 2、Step 4 與 Step 5 不用**，因為清冊與檢查都是精確的比對，程式做得更快，也不會漏掉任何一處，review page 每次都以同樣的方式排出四份檔案、為每一個 line reference 加上連結，取代也每次都以同樣的方式刪減 header note、把 TW twin 的 pairing line 改為連回 source file、找出 dependent；而 Step 0 必須判斷使用者指的是哪個檔案，Step 2 是改寫本身——一種關於意義、沒有任何程式做得到的判斷——Step 4 與 Step 5 則取決於使用者的回答。
 Step 6 自己寫 review notes，因為審核者該對照什麼，是對改寫的一種解讀；版面與每一個 line reference 的檢查，則交給它的腳本。
 Step 7 自己閱讀每一個 dependent，因為修改之後它是否仍然成立，是一種閱讀判斷；取代與搜尋則交給 draft tool。
-每個 step 也都執行 step saver `save_step.py`，把自己的群組存進 YAML checkpoint：把一長串清單抄進 YAML，是程式做起來不會漏掉任何一筆的工作。
+每個 step 也都執行 step saver `save_step.py`，寫出自己的 step file，並把自己加進 run record：把一長串清單抄進 YAML，是程式做起來不會漏掉任何一筆的工作。
+在 `run step N` 底下，draft tool 的 `runs` 讀取每一次執行的 `step_0.yaml`，以找到 source file 最新的那一次執行。
 
 ```
 Step 0 - Warmup
@@ -227,12 +231,16 @@ Step 0 - Warmup
           common/scripts/depends_on.py
   runs    draft.py paths
           ├─ reads the header quote of <name>.md
-          └─ prints the paths of <name>-tw.md, the draft, the draft's TW twin and the Checkpoint Dir
-  runs    save_step.py --new
-          └─ writes the YAML checkpoint afresh: step_0
+          └─ prints the paths of <name>-tw.md, the draft and the draft's TW twin
+  runs    save_step.py --new-run
+          ├─ reads database/skill-runs/asd-ste/: the largest Run Number of today
+          ├─ writes the run record
+          └─ makes the Working Dir
+  runs    save_step.py
+          └─ writes the step file: step_0.yaml
 
 Step 1 - Inventory the Source
-  reads   the YAML checkpoint: step_0 (under run step 1)
+  reads   the step file: step_0.yaml (under run step 1)
   runs    check_ste.py
           ├─ reads ste-dictionary.json
           ├─ reads ste-custom.md
@@ -241,19 +249,19 @@ Step 1 - Inventory the Source
           ├─ writes step_1-inventory.txt
           └─ writes step_1-findings.json
   runs    save_step.py
-          ├─ reads step_1-findings.json
-          └─ writes the YAML checkpoint: step_1
+          ├─ reads step_1-findings.json: its verdict
+          └─ writes the step file: step_1.yaml
 
 Step 2 - Rewrite in STE
-  reads   the YAML checkpoint: step_0, and step_1 with step_1-inventory.txt (under run step 2)
+  reads   the step files: step_0.yaml, and step_1.yaml with step_1-inventory.txt (under run step 2)
   reads   ste-rules.md (whole)
   reads   <name>.md
   writes  the draft
   runs    save_step.py
-          └─ writes the YAML checkpoint: step_2
+          └─ writes the step file: step_2.yaml
 
 Step 3 - STE Check
-  reads   the YAML checkpoint: step_0 (under run step 3)
+  reads   the step file: step_0.yaml (under run step 3)
   runs    check_ste.py
           ├─ reads ste-dictionary.json, ste-custom.md, us-spelling.json, <name>.md, the draft
           ├─ writes step_3-check.txt
@@ -264,42 +272,44 @@ Step 3 - STE Check
           ├─ reads ste-custom.md (its bytes)
           └─ writes the header quote of the draft
   runs    save_step.py
-          ├─ reads step_3-findings.json
-          └─ writes the YAML checkpoint: step_3
+          ├─ reads step_3-findings.json: its verdict
+          └─ writes the step file: step_3.yaml
 
 Step 4 - Offer to Commit
-  reads   the YAML checkpoint: step_0 and step_3 (under run step 4)
+  reads   the step files: step_0.yaml and step_3.yaml (under run step 4)
   writes  git (on the user's yes)
   runs    save_step.py
-          └─ writes the YAML checkpoint: step_4
+          └─ writes the step file: step_4.yaml
 
 Step 5 - Offer the TW Twin
-  reads   the YAML checkpoint: step_0 and step_3 (under run step 5)
+  reads   the step files: step_0.yaml and step_3.yaml (under run step 5)
   runs    the chinese skill (on the user's yes)
           ├─ reads common/references/tw-keep-english.md
           ├─ runs scan_md.py, diff_md.py, check_parity.py
           └─ writes the draft's TW twin, and offers its own commit
   runs    save_step.py
-          └─ writes the YAML checkpoint: step_5
+          └─ writes the step file: step_5.yaml
 
 Step 6 - Build the Review Page
-  reads   the YAML checkpoint: step_0 (under run step 6), step_2 when it is there, and step_3
+  reads   the step files: step_0.yaml (under run step 6), step_2.yaml when it is there, and step_3.yaml
   reads   <name>.md, <name>-tw.md, the draft, the draft's TW twin
   writes  step_6-notes.html
+  runs    draft.py runs (when this run has no step_6-status.json)
+          └─ reads the step_0.yaml of each run: the newest earlier run of <name>.md with a step_6-status.json
   runs    make_review.py
           ├─ reads <name>.md, <name>-tw.md, the draft, the draft's TW twin
-          ├─ reads the YAML checkpoint: step_2 when it is there, and step_3
+          ├─ reads the step files: step_2.yaml when it is there, and step_3.yaml
           ├─ reads step_6-notes.html
-          ├─ reads step_6-status.json (when it is there)
+          ├─ reads step_6-status.json (this run's, or else the newest earlier run's, when there is one)
           └─ writes step_6-review.html
   runs    review_server.js --probe, and starts review_server.js in the background when none answers
-          ├─ serves every step_6-review.html under checkpoints/asd-ste/
+          ├─ serves every step_6-review.html under checkpoints/asd-ste/, with the source file of its step_0.yaml
           └─ writes step_6-status.json, at each review status the user sets
   runs    save_step.py
-          └─ writes the YAML checkpoint: step_6
+          └─ writes the step file: step_6.yaml
 
 Step 7 - Replace the Source
-  reads   the YAML checkpoint: step_0, step_3 and step_6 (under run step 7)
+  reads   the step files: step_0.yaml, step_3.yaml and step_6.yaml (under run step 7)
   reads   config.yaml (optional): the skillGroups roots
   runs    draft.py replace (on the user's approval)
           ├─ reads the draft and the draft's TW twin
@@ -317,8 +327,9 @@ Step 7 - Replace the Source
           └─ reads <name>.md, <name>-tw.md, common/references/tw-keep-english.md
   runs    depends_on.py check
           └─ reads each dependent recorded again, and <name>.md
-  runs    save_step.py
-          └─ writes the YAML checkpoint: step_7
+  runs    save_step.py --last
+          ├─ writes the step file: step_7.yaml
+          └─ writes result: completed in the run record
 ```
 
 沒有任何一次執行會讀 SKILL-tw.md、README.md、本檔、ste-custom-tw.md 或 `convert_spec.py`。
@@ -343,18 +354,22 @@ asd-ste/SKILL.md
  ├─⇄ asd-ste/scripts/draft.py
  │     what Steps 0 and 7 say the script takes, prints and exits with, and the keys its paths command prints;
  │     the script alone knows the name of a draft, and no document gives it;
- │     its recheck command, which ste-custom.md says to run once a day, saves step_3 as Step 3 does
+ │     its runs command, which reads source_file in the step_0.yaml of each run;
+ │     its recheck command, which ste-custom.md says to run once a day: it writes Step 3's files and step_3.yaml
+ │     in the newest run of a draft's source file, as Step 3 does, and adds the step to its run record
  │     └─▶ common/skills/chinese/scripts/check_parity.py: replace finds the TW twin's pairing line
  │           as the parity check does, and points it back at the source file
  ├─⇄ asd-ste/scripts/save_step.py
- │     its options, and the keys each step saves with it
+ │     its options, the keys each step saves with it, the Run Number and the fields of the run record
  ├─⇄ asd-ste/scripts/make_review.py
  │     what Step 6 says the script takes, prints and exits with, the line references of the review notes,
- │     and the keys of step_2 and step_3 it lists on the review page
+ │     and the keys of step_2.yaml and step_3.yaml it lists on the review page
  │     └─⇄ asd-ste/scripts/review_server.js: the status box of an item and its key, the status
- │           and healthz paths the page asks, and the shape of step_6-status.json
+ │           and healthz paths the page asks, the shape of step_6-status.json,
+ │           and the review statuses a page keeps while its run has none
  ├─⇄ asd-ste/scripts/review_server.js (Node.js)
- │     the port, the probe's exit codes and the start commands that Step 6 gives
+ │     the port, the probe's exit codes and the start commands that Step 6 gives;
+ │     the review root under the root of the workspace it is started in, and the source_file of step_0.yaml its index lists
  ├─⇄ asd-ste/references/ste-rules.md (declared in SKILL.md's header quote)
  │     Step 2 builds the draft by its House Rules
  ├─⇄ asd-ste/scripts/convert_spec.py
@@ -362,7 +377,7 @@ asd-ste/SKILL.md
  ├─▶ common/scripts/depends_on.py: the record commands of Steps 3 and 7, and the header quote format
  ├─▶ common/skills/chinese/scripts/check_parity.py: Step 7's parity check
  ├─▶ common/rules/skill-writing.md: how the steps are written
- ├─▶ common/rules/report-yaml-rules.md: the shape of the YAML checkpoint and the fields it requires
+ ├─▶ common/rules/run-data-rules.md: the Run Number, the step files, the run record and the Working Dir of a run
  └─▶ common/rules/md-style.md: one sentence on each line
        └─ checked by reformat_md.py and check_reformat.py (--twin: the twin's sentences one for one)
 
@@ -435,8 +450,11 @@ outputs already written (after a rule, the dictionary, or the project-approved w
  │    it shows, changed: build it again with run step 6
  ├─ checkpoints/asd-ste/*/step_6-status.json: an item whose text changes is pending again;
  │    a change to how make_review.py makes an item's key makes every item pending
- └─ checkpoints/asd-ste/*/process.yaml: a change to the keys a step saves leaves older checkpoints
-    in the old shape, until the next run of their source file starts them afresh
+ ├─ checkpoints/asd-ste/*/step_*.yaml: a change to the keys a step saves leaves the step files of older runs
+ │    in the old shape; a new run starts a new Working Dir, and run step N on an older run reads the old shape
+ ├─ database/skill-runs/asd-ste/*.yaml: the run records stay; a change to their fields leaves older ones as they are
+ └─ checkpoints/asd-ste/{parent}-{name}/: the Checkpoint Dirs from before run-data-rules.md, one for each source file;
+    no step reads them, and the user removes them when they want
 ```
 
 改動之後，執行涵蓋它的檢查：
@@ -446,13 +464,16 @@ outputs already written (after a rule, the dictionary, or the project-approved w
 - 對 Step 7 取代過的 `skill-groups/common/references/DFD.md` 執行 `check_ste.py --ste`：它要通過。
 - `draft.py`：對 `skill-groups/common/references/DFD.md` 執行 `paths`，`ste` 為 true；對 commit `1710643` 時的 DFD.md、DFD-tw.md 與它們的 draft 的副本執行 `replace`，它把每一份 draft 寫到它的副本上，header note 只剩兩行，並刪除 draft，再執行一次則以 `1` 結束；以本 workspace 與 InvestForge 為根目錄，對 `skill-groups/common/references/DFD.md` 執行 `dependents`，列出 header quote 記錄它的文件。
   對 commit `9722c0f` 時的 SKILL-tmp.md、SKILL-tmp-tw.md 與它們的 draft 的副本執行 `replace`，它把 TW twin 的 pairing line 改為連回 SKILL-tmp.md，對這兩份執行 `check_parity.py` 沒有失敗；把那一行從 draft 的 TW twin 拿掉，它則以 `1` 結束，什麼都不寫。
-- `draft.py recheck`：在 workspace 以外的目錄放一份 `.github` 與 `checkpoints/asd-ste` 的副本，給它自己的 `.git` 目錄，並在副本的 ste-custom.md 多加一列；`--dry-run` 列出每一份記錄 ste-custom.md 的檔案，以及各自會做的檢查；被加上分號的 draft 保留舊的紀錄，它的 TW twin 也一樣，`recheck` 以 `1` 結束；另一份 draft 加上字典沒有的詞，那則警告列為新的，而那份 draft 照樣重記；拿掉分號之後，`recheck` 以 `0` 結束，`--dry-run` 一份都不列。
+- `draft.py recheck`：在 workspace 以外的目錄放一份 `skill-groups`、`config.yaml`、`checkpoints/asd-ste` 與 `database/skill-runs/asd-ste` 的副本，給它自己的 `.git` 目錄，並在副本的 ste-custom.md 多加一列；`--dry-run` 列出每一份記錄 ste-custom.md 的檔案，以及各自會做的檢查；被加上分號的 draft 保留舊的紀錄，它的 TW twin 也一樣，`recheck` 以 `1` 結束；另一份 draft 加上字典沒有的詞，那則警告列為新的，而那份 draft 照樣重記，它的 source file 最新的那一次執行重新寫出 `step_3-check.txt`、`step_3-findings.json` 與 `step_3.yaml`，那次執行的 run record 也多一個 step；拿掉分號之後，`recheck` 以 `0` 結束，`--dry-run` 一份都不列；每份 draft 的檢查把它的兩份檔案寫在副本的 `checkpoints/asd-ste/{yymmdd}.{N}/recheck/`，位在它的 source file 最新的那一次執行的 Working Dir 中，再從那裡移進那個 Working Dir。
+- `save_step.py`：同一天執行兩次 `--new-run`，得到 `{yymmdd}.{N}` 與 `{yymmdd}.{N+1}`，各有自己的 run record 與 Working Dir；存 Step 0 與 Step 1（加上 `--summary`），寫出只有各自輸出的 `step_0.yaml` 與 `step_1.yaml`——findings file 的檔名與 verdict，不含它的發現——並在 run record 加上兩項，每一項都有 `title`、`model` 與 `time`；`--stopped` 寫入 `result: stopped` 與 `stopped_at`，`--last` 寫入 `result: completed`；存到沒有 run record 的 Run Number 時以 `2` 結束。
+  以完整名稱刪除這項檢查建立的每一個檔案與目錄。
+- `draft.py runs`，分別給路徑與單純的名稱：它由新到舊列出 `step_0.yaml` 指名這份 source file 的各次執行，以及各自的 `step_6-status.json`。
 - 對 SKILL.md 與 SKILL-tw.md、README.md 與 README-tw.md、ste-custom.md 與 ste-custom-tw.md 各執行一次 `check_parity.py`：都沒有失敗。
 - 對 SKILL.md 與本檔執行 `depends_on.py check`：每一個宣告的檔案都是 UNCHANGED，或已經讀過並重新記錄。
 - `/check-skill asd-ste`：每一項檢查都通過，或每一個 finding 都已處理。
-- 以 `git show` 把 commit `1710643` 時的 DFD.md 連同它的 TW twin 與兩份 draft，寫到 workspace 以外、名為 `test` 的目錄——workspace 底下多一份 DFD.md，`[[DFD]]` 就會指到兩份檔案，`depends_on.py` 拒絕記錄——再從 workspace 根目錄對它執行 Step 0、1、3、4 與 6：它的 YAML checkpoint `checkpoints/asd-ste/test-DFD/process.yaml` 有 `step_0`、`step_1`、`step_3`、`step_4` 與 `step_6`，每個都有 `title` 與 `time`，而且 `step_6-review.html` 打開時先是 review notes，每一個 line reference 都是連結。
+- 以 `git show` 把 commit `1710643` 時的 DFD.md 連同它的 TW twin 與兩份 draft，寫到 workspace 以外、名為 `test` 的目錄——workspace 底下多一份 DFD.md，`[[DFD]]` 就會指到兩份檔案，`depends_on.py` 拒絕記錄——再從 workspace 根目錄對它執行 Step 0、1、3、4 與 6：它的 Working Dir `checkpoints/asd-ste/{yymmdd}.{N}/` 有 `step_0.yaml`、`step_1.yaml`、`step_3.yaml`、`step_4.yaml` 與 `step_6.yaml`，它的 run record 有這五個 step，每個都有 `title`、`model` 與 `time`，而且 `step_6-review.html` 打開時先是 review notes，每一個 line reference 都是連結。
 - 以指到 draft 最後一行之後的 review notes 執行 `make_review.py`：它以 `1` 結束，不寫出頁面。
-- 在空著的 port 上以那次執行的頁面執行 `review_server.js`：`--probe` 在那裡以 `0` 結束，在沒有任何程式使用的 port 上以 `1` 結束；`/` 列出 `test-DFD`；以頁面上一個 key 送出的 `PUT /test-DFD/status` 會寫進 `step_6-status.json` 並能讀回，用頁面上沒有的 key 送出的則以 `400` 拒絕。
+- 在空著的 port 上，從 workspace 根目錄之下的目錄，以那次執行的頁面執行 `review_server.js`：`--probe` 在那裡以 `0` 結束，在沒有任何程式使用的 port 上以 `1` 結束；`/` 列出那次執行 `{yymmdd}.{N}` 與它的 source file；以頁面上一個 key 送出的 `PUT /{yymmdd}.{N}/status` 會寫進 `step_6-status.json` 並能讀回，用頁面上沒有的 key 送出的則以 `400` 拒絕；以較早一次執行的 `step_6-status.json` 建出的頁面，在它自己的執行還沒有這個檔案時提供，會保留那些 review status。
 - `check_rsdc.py --rsdc references/ReviewPage-RSDC.md --tw references/ReviewPage-RSDC-tw.md`：沒有 failure。
 
 # Tracked Dependencies
@@ -470,7 +491,7 @@ asd-ste/README.md (and README-tw.md, which copies its header quote)
   ─▶ common/references/us-spelling.json
   ─▶ common/rules/md-style.md
   ─▶ common/rules/skill-writing.md
-  ─▶ common/rules/report-yaml-rules.md
+  ─▶ common/rules/run-data-rules.md
   ─▶ common/templates/SKILL-tmp.md
   ─▶ common/templates/README-tmp.md
   ─▶ common/scripts/depends_on.py

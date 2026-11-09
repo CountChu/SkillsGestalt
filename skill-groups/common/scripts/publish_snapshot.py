@@ -71,11 +71,11 @@ import os
 import re
 import subprocess
 import sys
-import tempfile
+import shutil
 from pathlib import Path
 
-EXCLUDED = ['external', 'skill-groups/external']
-PRIVATE_PATH = re.compile(r'^(checkpoints/|external/|skill-groups/external/|config\.yaml$)|\.mermaid\.html$|\.pdf$', re.I)
+EXCLUDED = ['external', 'skill-groups/external', 'skill-groups/archived']
+PRIVATE_PATH = re.compile(r'^(checkpoints/|handoff/|external/|skill-groups/external/|skill-groups/archived/|config\.yaml$)|\.mermaid\.html$|\.pdf$', re.I)
 BRANCH = 'main'
 REMOTE, REMOTE_BRANCH = 'origin', 'main'
 KEYWORDS = 'publish-keywords.local.txt'
@@ -104,13 +104,30 @@ def git(*args: str, env: dict | None = None, data: bytes | None = None) -> str:
     return r.stdout.decode('utf-8', errors='replace')
 
 
+def workspace_root() -> Path:
+    """The directory above this script that holds config.yaml: the root of the workspace."""
+    for d in Path(__file__).resolve().parents:
+        if (d / CONFIG).is_file():
+            return d
+    print(f'no {CONFIG} above {Path(__file__).resolve()}', file=sys.stderr)
+    sys.exit(2)
+
+
 def build_tree(source: str) -> str:
-    """The tree of `source` without the EXCLUDED paths, written through an index of its own."""
-    with tempfile.TemporaryDirectory() as d:
-        env = {**os.environ, 'GIT_INDEX_FILE': str(Path(d) / 'index')}
+    """The tree of `source` without the EXCLUDED paths, written through an index of its own.
+
+    The index is a temporary file of a script that is not in a run of a skill, so it goes in
+    temp/publish-gestalt-index-{pid}/ at the root of the workspace (run-data-rules.md), and the
+    directory is removed when the tree is written, also after an error."""
+    d = workspace_root() / 'temp' / f'publish-gestalt-index-{os.getpid()}'
+    d.mkdir(parents=True, exist_ok=False)
+    try:
+        env = {**os.environ, 'GIT_INDEX_FILE': str(d / 'index')}
         git('read-tree', source, env=env)
         git('rm', '-r', '--cached', '--quiet', '--ignore-unmatch', '--', *EXCLUDED, env=env)
         return git('write-tree', env=env).strip()
+    finally:
+        shutil.rmtree(d, ignore_errors=True)
 
 
 def read_keywords(path: Path) -> list[str]:

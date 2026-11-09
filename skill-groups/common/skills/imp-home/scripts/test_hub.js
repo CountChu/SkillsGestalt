@@ -4,19 +4,29 @@
  * name, made on a running hub rather than read in its code.
  *
  * The hub is the seed's own server/ unless a hub directory is given. Only its server.js and its
- * public/ are copied, into a new directory under the system's temporary directory, beside the
- * small apps the checks mount; the configuration is the script's own, so the hub's real
- * app.config.json is never read or written. The directory is removed when the run ends, failed
- * or not.
+ * public/ are copied, into a work directory beside the small apps the checks mount; the
+ * configuration is the script's own, so the hub's real app.config.json is never read or written.
+ *
+ * With --run {yymmdd}.{N}, given by the step of an imp-home run, the work directory is test-hub/
+ * in the Working Dir of that run, the Checkpoint Dir checkpoints/imp-home/{yymmdd}.{N}/test-hub/
+ * at the workspace root. A test-hub/ that an earlier call of the same run left there is replaced;
+ * the script does not remove the Working Dir, and the work directory stays when the script ends.
+ * Without --run, as when it is run by hand after a change to the seed, the work directory is a new
+ * temp/test-hub-* at the workspace root, removed by its full name when the script ends, failed or
+ * not. The workspace root is the root of the workspace the skill runs in: the directory --workspace
+ * names, or else the nearest directory, from the current directory up, whose config.yaml has
+ * skillGroups. It is never found from this file: a workspace can read this skill group in place from
+ * a different workspace, and the config.yaml above this file is then that other workspace's.
  *
  * Run it after a change to the seed's server.js, or to a hub's:
  *
- *   node test_hub.js [hub directory]
+ *   node test_hub.js [--run {yymmdd}.{N}] [--workspace DIR] [hub directory]
  *
  * Every check prints one line, [PASS] or [FAIL], each failure followed by what was seen.
  * It needs Node 16 or later, and nothing installed.
  *
- * Exit status: 0 every check passed; 1 a check failed; 2 the hub directory has no server.js.
+ * Exit status: 0 every check passed; 1 a check failed; 2 the hub directory has no server.js, the
+ * arguments are wrong, or no workspace root is found.
  */
 
 'use strict';
@@ -25,11 +35,50 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 const http = require('http');
 const net = require('net');
-const os = require('os');
 const path = require('path');
 
 const SEED = path.join(__dirname, '..', 'server');
 const WAIT_MS = 3000;
+
+// The workspace configuration: a config.yaml with a top-level skillGroups mapping, which names the
+// skill groups the workspace reads. Node has no YAML parser, so the one key is read as text: a line
+// `skillGroups:` with nothing after it but a comment, and then an indented key; or a flow mapping on
+// the line itself. The skill config, also named config.yaml, has no such key, so it is passed over.
+function isWorkspaceConfig(dir) {
+  let lines;
+  try { lines = fs.readFileSync(path.join(dir, 'config.yaml'), 'utf8').split(/\r?\n/); } catch (e) { return false; }
+  for (let i = 0; i < lines.length; i++) {
+    const m = /^skillGroups:(.*)$/.exec(lines[i]);
+    if (!m) continue;
+    const rest = m[1].replace(/(^|\s)#.*$/, '').trim();
+    if (rest) return rest.startsWith('{');
+    for (let j = i + 1; j < lines.length; j++) {
+      if (/^\s*(#.*)?$/.test(lines[j])) continue;
+      return /^\s+[^\s#-][^:]*:(\s|$)/.test(lines[j]);
+    }
+    return false;
+  }
+  return false;
+}
+
+// The workspace root: --workspace, or else the nearest directory, from the current directory up,
+// whose config.yaml has skillGroups - never found from this file. The checks need no isolation from
+// the workspace (the hub copy reads only the configuration this script writes, and the mounted apps
+// require nothing), so the work directory goes into the Working Dir of the run, or outside a run into
+// temp/, as run-data-rules.md tells, not into the temporary directory of the system.
+function workspaceRoot(explicit) {
+  if (explicit) {
+    let root;
+    try { root = fs.realpathSync(path.resolve(explicit)); } catch (e) { throw new Error(`--workspace ${explicit}: no such directory`); }
+    if (!isWorkspaceConfig(root)) throw new Error(`--workspace ${explicit}: ${root} holds no config.yaml with skillGroups - name the root of the workspace the skill runs in`);
+    return root;
+  }
+  const here = fs.realpathSync(process.cwd());
+  for (let dir = here; ; dir = path.dirname(dir)) {
+    if (isWorkspaceConfig(dir)) return dir;
+    if (path.dirname(dir) === dir) throw new Error(`no config.yaml with skillGroups in ${here} or in a directory above it - run from the workspace the skill runs in, or pass --workspace`);
+  }
+}
 
 // The apps the checks mount: each answers, fails or is absent in one of the ways design 2.9 and
 // 2.10 name. They are written fresh for every run, so no app of the repository is loaded.
@@ -259,14 +308,66 @@ async function checks(hubDir, appsDir) {
   }
 }
 
+// The arguments: an optional --run {yymmdd}.{N}, an optional --workspace and an optional hub
+// directory, in any order.
+function parseArgs(argv) {
+  const args = { run: null, workspace: null, hub: null };
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === '--run') {
+      args.run = argv[++i];
+      if (!/^\d{6}\.\d+$/.test(args.run || '')) throw new Error(`--run needs a Run Number {yymmdd}.{N}, not ${args.run}`);
+    } else if (argv[i] === '--workspace') {
+      args.workspace = argv[++i];
+      if (!args.workspace) throw new Error('--workspace needs a directory');
+    } else if (argv[i].startsWith('--')) {
+      throw new Error(`unknown option ${argv[i]}`);
+    } else if (args.hub === null) {
+      args.hub = argv[i];
+    } else {
+      throw new Error(`one hub directory only, not also ${argv[i]}`);
+    }
+  }
+  return args;
+}
+
+// The work directory: test-hub/ in the Working Dir of the run, kept; or, outside a run, a new
+// temp/test-hub-* that main removes.
+function workDir(run, workspace) {
+  const root = workspaceRoot(workspace);
+  const tempDir = path.join(root, 'temp');
+  if (run) {
+    const work = path.join(root, 'checkpoints', 'imp-home', run, 'test-hub');
+    fs.rmSync(work, { recursive: true, force: true });
+    fs.mkdirSync(work, { recursive: true });
+    return work;
+  }
+  fs.mkdirSync(tempDir, { recursive: true });
+  return fs.mkdtempSync(path.join(tempDir, 'test-hub-'));
+}
+
 async function main() {
-  const source = path.resolve(process.argv[2] || SEED);
+  let args;
+  try {
+    args = parseArgs(process.argv.slice(2));
+  } catch (err) {
+    console.error(err.message);
+    process.exitCode = 2;
+    return;
+  }
+  const source = path.resolve(args.hub || SEED);
   if (!fs.existsSync(path.join(source, 'server.js'))) {
     console.error(`no server.js in ${source}`);
     process.exitCode = 2;
     return;
   }
-  const work = fs.mkdtempSync(path.join(os.tmpdir(), 'imp-home-test-hub-'));
+  let work;
+  try {
+    work = workDir(args.run, args.workspace);
+  } catch (err) {
+    console.error(err.message);
+    process.exitCode = 2;
+    return;
+  }
   try {
     const hubDir = path.join(work, 'hub');
     const appsDir = path.join(work, 'apps');
@@ -280,8 +381,9 @@ async function main() {
     console.log(`hub: ${source}`);
     await checks(hubDir, appsDir);
   } finally {
-    fs.rmSync(work, { recursive: true, force: true });
+    if (!args.run) fs.rmSync(work, { recursive: true, force: true });
   }
+  if (args.run) console.log(`work directory kept: ${work}`);
   const failed = results.filter((ok) => !ok).length;
   console.log(`\n${results.length - failed} passed, ${failed} failed`);
   process.exitCode = failed ? 1 : 0;

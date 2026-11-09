@@ -4,7 +4,7 @@
 > [[ste-custom]]  `2026-11-02`  `c612bdfa1ea7`
 
 > 本檔案以 ASD-STE100 Simplified Technical English（STE）第 9 版寫成。
-> 技術用字：argument、backtick、byte、cache、canonical skill invocation、checkpoint、clock、command、content、disk、double-quoted string、editor、escape character、escaping、fence、field、file、file-editing tool、filename、frontmatter、hard-code、header、here-string、interpolation、line、orchestration、parse、path、pipe、placeholder、root、section、shell、single-quoted here-string、skill、string、table、template、text、title、wiki、workflow、workspace、wrapper。
+> 技術用字：argument、backtick、byte、cache、canonical skill invocation、clock、command、content、disk、double-quoted string、editor、escape character、escaping、fence、field、file、file-editing tool、filename、frontmatter、hard-code、header、here-string、interpolation、line、orchestration、parse、path、pipe、placeholder、root、section、shell、single-quoted here-string、skill、string、table、template、text、title、wiki、workflow、workspace、wrapper。
 
 - 每個 skill 都在自己的 MUST FOLLOW 一節中寫出它的報告檔名（例如 `run-pr-{prId}-{yymmdd}`）。
 - 在 `{wikiDir}\{skill_name}\{REPORT_FILENAME}.md` 建立 MD report 檔案。
@@ -18,7 +18,7 @@
   # {REPORT_TITLE}
 
   - **Skill**: {SKILL_NAME}
-  - **Checkpoint**: `{CHECKPOINT_PATH}`
+  - **Run record**: `{RUN_RECORD_PATH}`
   - **Created**: {DATETIME}
   - **Updated**: {DATETIME}
   - **Prompt**:
@@ -30,7 +30,7 @@
   Placeholders：
   - `{REPORT_TITLE}` → 這次 skill 執行的報告標題。
   - `{SKILL_NAME}` → skill 的名稱，取自 YAML frontmatter。
-  - `{CHECKPOINT_PATH}` → 這次執行的 YAML checkpoint 的路徑，即 skill 的 MUST FOLLOW 一節所寫的路徑（例如 `checkpoints\report-pipeline\{reportName}\process.yaml` 或 `checkpoints\report-known-issues\{reportName}.yaml`）。
+  - `{RUN_RECORD_PATH}` → 這次執行的 run record 的路徑，即 [run-data-rules.md](run-data-rules.md) 所寫的路徑（例如 `database\skill-runs\report-pipeline\261106.1.yaml`）。
   - `{DATETIME}` → 目前的本地日期與時間（`YYYY-MM-DD HH:MM`）。
     在寫入時從系統時鐘讀取它。
     在 PowerShell 中，用 `Get-Date -Format "yyyy-MM-dd HH:mm"`。

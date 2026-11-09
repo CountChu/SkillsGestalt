@@ -1,7 +1,7 @@
 ---
 name: asd-ste
 description: >-
-  把一份英文 Markdown 檔改寫成 ASD-STE100 Simplified Technical English（STE，Issue 9）的 draft，寫在它旁邊，使用者核准之後再讓 draft 取代那個檔案。標題、fenced block、inline code、連結目標、placeholder 與來源檔自己的 header quote 都維持不變，每一項陳述也都保留；散文依 STE 寫作規則與字典改寫，每行一句。腳本檢查 kept span、句子的上限與每一個詞；執行時會提議 commit draft、請 chinese skill 寫出它的繁體中文 twin，並產生一份由本機 Node.js review server 提供的 HTML review page。使用者核准後，它取代 source file 與它的 twin，在每一份宣告 source file 的文件中重新記錄它，並檢查結果。YAML checkpoint 存下每個 step，供 run step N 讀回。它拒絕 -tw.md twin、STE file，以及不是英文的來源檔。觸發語："rewrite in STE"、"Simplified Technical English"、"ASD-STE100"。
+  把一份英文 Markdown 檔改寫成 ASD-STE100 Simplified Technical English（STE，Issue 9）的 draft，寫在它旁邊，使用者核准之後再讓 draft 取代那個檔案。標題、fenced block、inline code、連結目標、placeholder 與來源檔自己的 header quote 都維持不變，每一項陳述也都保留；散文依 STE 寫作規則與字典改寫，每行一句。腳本檢查 kept span、句子的上限與每一個詞；執行時會提議 commit draft、請 chinese skill 寫出它的繁體中文 twin，並產生一份由本機 Node.js review server 提供的 HTML review page。使用者核准後，它取代 source file 與它的 twin，在每一份宣告 source file 的文件中重新記錄它，並檢查結果。每個 step 把輸出存在這次執行的 step file，供 run step N 讀回，而 run record 記下每個 step 的 model 與時間。它拒絕 -tw.md twin、STE file，以及不是英文的來源檔。觸發語："rewrite in STE"、"Simplified Technical English"、"ASD-STE100"。
 ---
 
 本文件為 [SKILL.md](skill-groups/common/skills/asd-ste/SKILL.md) 的繁體中文版。
@@ -14,11 +14,17 @@ description: >-
 在每個 skill 中意義都相同的 term。
 
 - **`run step N`** — 放在 prompt 結尾、指名某一個 step 的選擇子。
-  它**只**執行那一個 step，並從 YAML checkpoint 把先前每一個 step 的輸出讀回來。
-- **Checkpoint Dir** — 存放某個 skill 的 YAML checkpoint，以及它的各個 step 所寫資料檔的目錄。
-  每個 skill 都有自己的；本 skill 的寫在 **CONFIGURATION** 底下。
-- **YAML checkpoint** — Checkpoint Dir 內的 `process.yaml`。
-  每個 step 都把輸出寫在其中的 `step_{N}` 群組下，讓後續 step 讀回而不必重算。
+  它**只**執行那一個 step，並從各 step 的 step file 把先前每一個 step 的輸出讀回來。
+- **Run Number** — 一次執行的編號，`{yymmdd}.{N}`。
+  `{N}` 是本 skill 在那一天的執行序號，從 1 開始。
+- **Working Dir** — 一次執行的目錄，存放這次執行所有的 working data：它的 step file、它的各個 step 所寫的資料檔，以及它的暫存檔。
+  它是 Checkpoint Dir，**CONFIGURATION** 列出它。
+  skill 不移除它。
+- **Checkpoint Dir** — 位於 workspace 根目錄 `checkpoints\` 的 Working Dir。
+- **Step file** — Working Dir 內的 `step_{N}.yaml`。
+  每個 step 都把輸出寫在那裡，而且只寫自己的，讓後續 step 讀回而不必重算。
+- **Run record** — 記錄一次執行每個 step 的 model 與時間，以及這次執行如何結束的檔案。
+  分析 skill 的效率時會用到它。
 
 # DEDICATED TERMINOLOGY
 
@@ -60,8 +66,9 @@ description: >-
   取代之後仍然成立的每一份，Step 7 都在其中重新記錄 source file。
 - **draft tool** — 本 skill 的 `draft.py`：它給出一次執行為某個 source file 所用的路徑，並說明 source file 是不是 TW twin 或 STE file；它把核准的 draft 與它的 TW twin 放到 source file 與它的 TW twin 的位置；它也列出 dependent。
 - **findings file** — `check_ste.py` 以 `--findings` 寫出的 JSON 檔：它回報的每一項發現，完整不截斷，即使印出的報告縮短了清單。
-  Step 1 寫出 `step_1-findings.json`，Step 3 寫出 `step_3-findings.json`，都在 Checkpoint Dir 中。
-- **step saver** — 本 skill 的 `save_step.py`：它把一個 step 的群組寫進 YAML checkpoint——標題、時間、step 給的值，以及整份 findings file——並讓其他每一個群組保持原樣。
+  Step 1 寫出 `step_1-findings.json`，Step 3 寫出 `step_3-findings.json`，都在 Working Dir 中。
+  該 step 的 step file 指名它並給出它的 verdict，但不複製它。
+- **step saver** — 本 skill 的 `save_step.py`：在 Step 0 取得 Run Number 並寫出 run record；每個 step 則由它寫出 step file——step 給的值，以及 findings file 的路徑與 verdict——並把這個 step 連同標題、model 與時間加進 run record。
 - **TW twin** — 一份檔案的繁體中文版，由 `chinese` skill 寫在它旁邊。
 - **pairing line** — TW twin 中位於第一個標題之上、連回它的英文檔的那一行；`chinese` skill 會在 frontmatter 底下加上一行。
 - **review page** — Step 6 為審核 draft 的使用者產生的 HTML 頁面：source file 與 draft 左右並排，各在一欄、各自捲動；兩份 **TW twin** 以同樣的方式並排；以及 draft 與它的 TW twin 逐行並排。
@@ -70,26 +77,24 @@ description: >-
 - **review notes** — review page 中由 Step 6 自己寫的部分：審核者應該對照的每一處，以及原因。
 - **line reference** — review notes 標示一行的方式：`{{en-o:N}}` 是 source file 的第 N 行，`{{en-d:N}}` 是 draft 的，`{{tw-o:N}}` 是 source file 的 TW twin 的，`{{tw-d:N}}` 是 draft 的 TW twin 的；`N-M` 是一段範圍，`N,M` 是一份清單。
   **review builder** 把每一個都變成連結，點了就打開它那一行。
-- **review builder** — 本 skill 的 `make_review.py`：它從四份檔案、YAML checkpoint 與 review notes 產生 review page；只要有 line reference 指不到任何一行，就不寫出頁面。
+- **review builder** — 本 skill 的 `make_review.py`：它從四份檔案、這次執行的 step file 與 review notes 產生 review page；只要有 line reference 指不到任何一行，就不寫出頁面。
 - **review status** — 審核者在 review notes 的一項上設定的標記：`[ ]` 待審、`[v]` 審核通過、`[?]` 待解釋或 `[x]` 不通過，每點一下就換到下一個。
   `[?]` 表示審核者看不懂這一項的處理方式：agent 在對話裡逐項解釋，review notes 維持原樣。
   `[v]` 表示 draft 的這一處照現狀通過，所以審核者同意某一項的建議時，標 `[x]`，不標 `[v]`。
   遇到 `[x]`，agent 照審核者的決定修改 draft，再重跑 Step 3 與 Step 6。
   一項以它自己的文字來辨認，所以在兩次產生 review page 之間改過的項目，會回到待審。
-- **review server** — 本 skill 的 `review_server.js`，以 Node.js 執行：它提供 `checkpoints\asd-ste\` 底下的每一份 review page，列出它們與各自的審核進度，並把它所提供的頁面送來的 review status 寫進那份頁面 Checkpoint Dir 中的 `step_6-status.json`。
+  同一份 source file 的新執行，從較早、且有 review status 的最新一次執行的 review status 開始。
+- **review server** — 本 skill 的 `review_server.js`，以 Node.js 執行：它提供它啟動時所在 workspace 的 `checkpoints\asd-ste\` 底下的每一份 review page，列出它們、每次執行的 source file 與各自的審核進度，並把它所提供的頁面送來的 review status 寫進那份頁面 Working Dir 中的 `step_6-status.json`。
   它一直執行，直到使用者把它關掉；以檔案直接開啟的 review page 會顯示建頁時的 review status，但一個也不儲存。
 
 # CONFIGURATION
 
 本 skill 執行時使用的具體值。
 
+執行時讀取或執行的輸入與工具：
+
+- **Workspace configuration** — workspace 根目錄的 [config.yaml](config.yaml)。
 - **source file** — prompt 給出的 `.md` 路徑，或在 Step 0 找到的、名稱與 prompt 所給相同的那一個檔案。
-- **draft** — draft tool 所給的路徑，位於 source file 自己的目錄。
-- **TW twin** — source file 的位於它旁邊，draft 的位於 draft 旁邊，路徑都由 draft tool 給出。
-- **Checkpoint Dir** — `checkpoints\asd-ste\{parent}-{name}\`，其中 `{parent}` 是 source file 所在目錄的名稱，`{name}` 是 source file 去掉 `.md` 的檔名：`skill-groups\common\references\DFD.md` 對應 `checkpoints\asd-ste\references-DFD\`。
-  draft tool 也會給出它。
-  每一份 source file 有一個，每一次執行都重用它。
-  裡面有 YAML checkpoint `process.yaml`，以及 Step 1、Step 3 與 Step 6 寫出的檔案：`step_1-inventory.txt`、`step_1-findings.json`、`step_3-check.txt`、`step_3-findings.json`、`step_6-notes.html`、`step_6-review.html` 與 `step_6-status.json`。
 - **STE rules digest** — `{skillGroups.common}\skills\asd-ste\references\ste-rules.md`。
 - **STE dictionary** — `{skillGroups.common}\skills\asd-ste\references\ste-dictionary.json`。
 - **project-approved words** — `{skillGroups.common}\skills\asd-ste\references\ste-custom.md` 的 Words 表。
@@ -101,29 +106,54 @@ description: >-
 - **draft tool** — `{skillGroups.common}\skills\asd-ste\scripts\draft.py`。
 - **step saver** — `{skillGroups.common}\skills\asd-ste\scripts\save_step.py`。
 - **review builder** — `{skillGroups.common}\skills\asd-ste\scripts\make_review.py`。
-- **review server** — `{skillGroups.common}\skills\asd-ste\scripts\review_server.js`，位於 `http://127.0.0.1:8790/`，Checkpoint Dir `{parent}-{name}` 的 review page 在 `http://127.0.0.1:8790/{parent}-{name}/`。
+- **review server** — `{skillGroups.common}\skills\asd-ste\scripts\review_server.js`，位於 `http://127.0.0.1:8790/`，執行 `{yymmdd}.{N}` 的 review page 在 `http://127.0.0.1:8790/{yymmdd}.{N}/`。
 - **parity check** — `chinese` skill 的 `{skillGroups.common}\skills\chinese\scripts\check_parity.py`，搭配 keep-English list `{skillGroups.common}\references\tw-keep-english.md`。
+- **STE checker** — `{skillGroups.common}\skills\asd-ste\scripts\check_ste.py`。
+- **run data rules** — `{skillGroups.common}\rules\run-data-rules.md`。
+- **Markdown style rules** — `{skillGroups.common}\rules\md-style.md`。
+- **chinese skill** — `{skillGroups.common}\skills\chinese\SKILL.md`。
+- **Node.js** — `node` 程式，用來執行 review server。
+- **ripgrep** — `rg` 程式，依名稱找出 source file；沒有它時，改用 agent 的檔案搜尋工具。
+
+一次執行的 working data，執行結束後沒有人、也沒有 skill 讀它：
+
+- **Working Dir** — Checkpoint Dir，`checkpoints\asd-ste\{yymmdd}.{N}\`，每一次執行一個，以它的 Run Number 命名。
+  其中的 `step_0.yaml` 指名這次執行的 source file，讓 `run step N` 與後來的執行找得到它：draft tool 的 `runs` 由新到舊列出一份 source file 的各次執行。
+  裡面有 step file `step_0.yaml` 到 `step_7.yaml`，以及 Step 1、Step 3 與 Step 6 寫出的檔案：`step_1-inventory.txt`、`step_1-findings.json`、`step_3-check.txt`、`step_3-findings.json`、`step_6-notes.html`、`step_6-review.html` 與 `step_6-status.json`。
+  它也有 `recheck\`，即 draft tool 的 `recheck` 再檢查一次 draft 的目錄，位在 draft 的 source file 最新的那一次執行的 Working Dir 中，之後它把這次檢查的兩份檔案從那裡移進那個 Working Dir。
+
+最後的輸出，人、另一個 skill 或之後的分析會讀它：
+
+- **Run record** — `database\skill-runs\asd-ste\{yymmdd}.{N}.yaml`。
+- **draft** — draft tool 所給的路徑，位於 source file 自己的目錄。
+- **TW twin** — source file 的位於它旁邊，draft 的位於 draft 旁邊，路徑都由 draft tool 給出。
+- **Dependents** — header quote 記錄了 source file 的每一份 Markdown 檔；Step 7 在其中重新記錄 source。
 
 # MUST FOLLOW
 
 - 必須逐步執行 workflow，並顯示每個 step 的編號。
 - **遵守 `run step N` 選擇子**：執行 Step N，然後停止；絕不執行較後的 step。
-  依 prompt 指名的 source file 找到 Checkpoint Dir：路徑可以直接得出 `{parent}-{name}`；只有名稱時，比對 `checkpoints\asd-ste\*-{name}\`，符合的不只一個就列給使用者選。
-  從 YAML checkpoint 讀取 Step 0 解析出的路徑，以及先前每一個 step 的輸出。
-  Step N 需要的群組不存在時，說明要先執行哪一個 step，然後停止。
-- **本 skill 不產出 MD report，但會寫 YAML checkpoint。**
-  draft 是它的輸出，Checkpoint Dir 則記錄每一次執行如何產出它，並存放 Step 6 為使用者產生的 review page。
+  Step N 在 prompt 指名的 source file 最新的那一次執行中執行，並把自己加進那次執行的 run record；`run step 0` 則開始一次新的執行。
+  以 draft tool 找到那次執行：`{python} {skillGroups.common}/skills/asd-ste/scripts/draft.py runs "<source file>"`，給它路徑、檔名或去掉 `.md` 的名稱，它就由新到舊列出 `step_0.yaml` 指名相符 source file 的各次執行；它們指名的 source file 不只一份時，列給使用者選。
+  從那次執行的 step file 讀取 Step 0 解析出的路徑，以及先前每一個 step 的輸出。
+  Step N 需要的 step file 不存在時，說明要先執行哪一個 step，然後停止。
+- **本 skill 不產出 MD report，但會寫 run record。**
+  draft 是它的輸出，Working Dir 則記錄每一次執行如何產出它，並存放 Step 6 為使用者產生的 review page。
   它其他的寫入，是 Step 4 所做的 commit，以及 Step 5 請 `chinese` skill 寫出的 TW twin，兩者都只在使用者答應時才做；還有 Step 7 所做的取代與記錄，只在使用者核准時才做。
-- YAML checkpoint 的形狀與必填欄位，遵循 [report-yaml-rules.md](skill-groups/common/rules/report-yaml-rules.md)。
-- **以 step saver 存每個 step 的群組，絕不手寫。**
-  每個 step 開始時，在 macOS/Linux 上以 `date '+%Y-%m-%d %H:%M:%S'`、在 PowerShell 中以 `Get-Date -Format "yyyy-MM-dd HH:mm:ss"` 從系統時鐘讀取開始時間，並在 step 結束時交給 step saver：step saver 會讀取結束時間並算出耗時，所以沒有任何時間是估計的。
+- 一次執行的 Run Number、step file、run record 與 Working Dir，遵循 [run-data-rules.md](skill-groups/common/rules/run-data-rules.md)。
+- **以 step saver 存每個 step 的 step file，並把這個 step 加進 run record，絕不手寫。**
+  每個 step 開始時，在 macOS/Linux 上以 `date '+%Y-%m-%d %H:%M:%S'`、在 PowerShell 中以 `Get-Date -Format "yyyy-MM-dd HH:mm:ss"` 從系統時鐘讀取開始時間，並在 step 結束時連同執行這個 step 的 model 交給 step saver：step saver 會讀取結束時間並算出耗時，所以沒有任何時間是估計的。
   手抄進 YAML 的清單，會在毫無提示的情況下漏掉項目。
-- **Checkpoint Dir 中的每一個資料檔，都只有一個寫入它的 step。**
-  Step 1 寫 `step_1-inventory.txt` 與 `step_1-findings.json`，Step 3 寫 `step_3-check.txt` 與 `step_3-findings.json`，Step 6 寫 `step_6-notes.html`，並透過 review builder 寫 `step_6-review.html`；Step 6 啟動的 review server 寫 `step_6-status.json`；其他 step 都不改動它們。
-  YAML checkpoint 是唯一的例外：每個 step 取代其中自己的群組，而 Step 0 會重新開始這個檔案，所以一次執行絕不會把自己的群組和先前執行的混在一起。
-  只有 YAML checkpoint 所指名的檔案屬於它那一次執行：先前執行留下的檔案，會在它的 step 再次執行時被取代。
-- **提早停止的執行，仍要存下它停在的那一個 step 的群組**，加上 `--stopped` 與原因：被拒絕的來源檔、`NOT-ENGLISH` 或 `SOURCE-FIRST` verdict、不同意覆寫、無法通過的檢查、缺少的 TW twin、draft tool 拒絕的取代。
-  這樣 YAML checkpoint 就說明了為什麼那次執行沒有留下 draft、沒有留下 review page，或讓 source file 保持原樣。
+  最後一個 step，Step 7，以 `--last` 存檔，它會在 run record 寫入 `result: completed`。
+- **Working Dir 中的每一個資料檔，都只有一個寫入它的 step。**
+  Step 1 寫 `step_1-inventory.txt` 與 `step_1-findings.json`，Step 3 寫 `step_3-check.txt` 與 `step_3-findings.json`，Step 6 寫 `step_6-notes.html`，並透過 review builder 寫 `step_6-review.html`；Step 6 啟動的 review server 寫 `step_6-status.json`；每個 step 寫自己的 step file；其他 step 都不改動它們。
+  唯一的例外是 ste-custom.md 說每天執行一次的 `draft.py recheck`：它像 Step 3 一樣再檢查一次 draft，並在 draft 的 source file 最新的那一次執行中寫出 Step 3 的檔案——`step_3-check.txt`、`step_3-findings.json` 與 `step_3.yaml`——就像在 `run step 3` 底下重跑 Step 3 一樣，再把這個 step 加進那次執行的 run record。
+  每一次執行都有自己的 Working Dir，所以一次執行絕不會把自己的檔案和先前執行的混在一起；本 skill 一個也不刪除。
+- **review status 會從同一份 source file 的一次執行延續到下一次。**
+  它們是使用者的審核，由 review server 在執行結束之後寫入；沒有別的 skill 讀它們，所以它們不是 handoff file。
+  一次執行還沒有自己的 `step_6-status.json` 時，Step 6 以同一份 source file 較早、且有這個檔案的最新一次執行的 Working Dir 中的那一份產生 review page，並說明是哪一次執行；審核者接著設定的第一個 review status，會把它們全部存進這次執行自己的 `step_6-status.json`。
+- **提早停止的執行，仍要存下它停在的那一個 step 的 step file**，加上 `--stopped` 與原因：被拒絕的來源檔、`NOT-ENGLISH` 或 `SOURCE-FIRST` verdict、不同意覆寫、無法通過的檢查、缺少的 TW twin、draft tool 拒絕的取代。
+  這樣 step file 就說明了為什麼那次執行沒有留下 draft、沒有留下 review page，或讓 source file 保持原樣，而 run record 會記下 `result: stopped` 與它停在的 step。
 - **使用者核准 draft 之前，source file 是唯讀的。**
   絕不編輯、重新排版或「修正」它——即使改寫暴露出它真正的缺陷也一樣。
   回報缺陷，留給使用者處理。
@@ -144,8 +174,8 @@ description: >-
 - **只在使用者答應時 commit，而且只 commit draft。**
   沒有詢問就做的 commit，會把使用者尚未完成的編輯放進歷史，而別人暫存的檔案也不屬於這個 commit。
   Step 7 什麼都不 commit：取代與記錄涉及的檔案，由使用者在各個 workspace 中 commit。
-- **skill 結束前，顯示 draft 的路徑、Step 6 產生 review page 之後它在 review server 上的連結——沒有 review server 執行時改為它的路徑——以及 YAML checkpoint 的路徑**——Step 7 之後改為顯示 source file 的路徑，取代 draft 的——只顯示路徑，絕不顯示內容，並呈現為可點擊的 Markdown 連結，絕不用 inline code 或純文字。
-  YAML checkpoint 以相對於 workspace、使用正斜線的目標連結，例如 `[process.yaml](checkpoints/asd-ste/references-DFD/process.yaml)`。
+- **skill 結束前，顯示 draft 的路徑、Step 6 產生 review page 之後它在 review server 上的連結——沒有 review server 執行時改為它的路徑——以及 run record 的路徑**——Step 7 之後改為顯示 source file 的路徑，取代 draft 的——只顯示路徑，絕不顯示內容，並呈現為可點擊的 Markdown 連結，絕不用 inline code 或純文字。
+  run record 以相對於 workspace、使用正斜線的目標連結，例如 `[{yymmdd}.{N}.yaml](database/skill-runs/asd-ste/{yymmdd}.{N}.yaml)`。
   每一次執行都要這樣做，包括 `run step 0` 這類只執行一部分的執行。
 
 # Prompt Examples
@@ -209,7 +239,7 @@ run step 7
 
 - 找出 `{python}`，也就是 workspace 根目錄的 `.venv` 裡的 Python：macOS 與 Linux 上是 `.venv/bin/python`，Windows 上是 `.venv\Scripts\python.exe`。
   後面 step 的每個 script 都以它執行：每個指令都在新的 shell 裡執行，新的 shell 不會沿用另一個指令啟動的 `.venv`。
-  Dependency Checker 與 step saver 會 import `PyYAML`，它列在 `{skillGroups.common}\requirements.txt`；`check_ste.py` 與 draft tool 只需要 Python 標準函式庫。
+  Dependency Checker 與 step saver 會 import `PyYAML`，它列在 `{skillGroups.common}\requirements.txt`；`check_ste.py` 與 draft tool 只需要 Python 標準函式庫，但 draft tool 的 `runs` 與 `recheck` 也以 `PyYAML` 讀取 step file。
   workspace 沒有 `.venv` 時，停下來，請使用者照 [forge-setup.md](skill-groups/common/references/forge-setup.md) 第 3 步建立它。
 
 - 讀取 workspace 根目錄的 workspace config [config.yaml](config.yaml)（如果有的話），並解析：
@@ -245,11 +275,14 @@ run step 7
     有好幾個時，列出它們並詢問是哪一個——絕不挑第一個。
 
 - 在 workspace 根目錄對 source file 執行 draft tool：`{python} {skillGroups.common}/skills/asd-ste/scripts/draft.py paths "<source file>"`。
-  它以 JSON 印出 source file 的 TW twin、它的 draft、draft 的 TW twin 與 Checkpoint Dir，每個檔案是否存在，以及 source file 是不是 TW twin（`twin`）或 STE file（`ste`）。
+  它以 JSON 印出 source file 的 TW twin、它的 draft 與 draft 的 TW twin，每個檔案是否存在，以及 source file 是不是 TW twin（`twin`）或 STE file（`ste`）。
   無法讀取 source file 時，它以 `2` 結束。
 
-- 從 draft tool 取得 Checkpoint Dir，不存在時就建立它。
-  找不到的 source file 無法命名 Checkpoint Dir，它那次執行也不會留下 YAML checkpoint。
+- 保存標準形式的 skill 呼叫，供後面的 step 參考。
+
+- 依 run-data-rules.md 所述取得 Run Number，並以 step saver 寫出這次執行的 run record：`{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --new-run --prompt "<canonical skill invocation>"`。
+  它以 JSON 印出 Run Number、它建立的 Working Dir 與 run record。
+  找不到的 source file 還沒有執行：使用者指名那份檔案之後，執行才開始。
 
 - 當 source file 有下列情形時，停止並說明哪一項檢查失敗，而不是改寫它：
   - 不是以 `.md` 結尾——本 skill 只改寫 Markdown；
@@ -257,16 +290,15 @@ run step 7
   - 是 STE file——`ste` 為 true：它是 draft，或已被 draft 取代的 source file；
   - 開頭的 frontmatter 無法解析——draft 的 frontmatter 將無法與它比對。
 
-  skill 停止之前，依本 step 最後一項所述存下 Step 0 的群組，加上 `--stopped` 與失敗的那一項檢查。
+  skill 停止之前，依本 step 最後一項所述存下 `step_0.yaml`，加上 `--stopped` 與失敗的那一項檢查。
 
 - 說明 draft 是否已經存在；要不要覆寫它，由 Step 2 詢問。
 
-- 保存標準形式的 skill 呼叫，供後面的 step 參考。
+- 顯示解析出的 source file 路徑、draft 路徑與 Run Number。
 
-- 顯示解析出的 source file 路徑與 draft 路徑。
-
-- 以 step saver 在 `step_0` 底下存 YAML checkpoint，並以 `--new` 讓它重新開始：`skill`、`model`、`prompt`（標準形式的 skill 呼叫）、`source_file`、`source_twin`、`draft`、`draft_exists`、`draft_twin` 與 `checkpoint_dir`，每一項都照 draft tool 印出的值。
-  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --checkpoint "checkpoints/asd-ste/references-DFD/process.yaml" --step 0 --title "Warmup" --begin "<begin>" --new --set skill=asd-ste --set model="<model>" --set prompt="<canonical invocation>" --set source_file="skill-groups/common/references/DFD.md" --set source_twin="skill-groups/common/references/DFD-tw.md" --set draft="<draft>" --json draft_exists=true --set draft_twin="<draft's TW twin>" --set checkpoint_dir="checkpoints/asd-ste/references-DFD"`
+- 以 step saver 存 `step_0.yaml`：`source_file`、`source_twin`、`draft`、`draft_exists` 與 `draft_twin`，每一項都照 draft tool 印出的值。
+  step saver 也會把這個 step 加進 run record。
+  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --run "{yymmdd}.{N}" --step 0 --title "Warmup" --model "<model>" --begin "<begin>" --set source_file="skill-groups/common/references/DFD.md" --set source_twin="skill-groups/common/references/DFD-tw.md" --set draft="<draft>" --json draft_exists=true --set draft_twin="<draft's TW twin>"`
 
 
 ## Step 1 - Inventory the Source
@@ -276,9 +308,9 @@ run step 7
   - `--dict`：**STE dictionary**。
   - `--custom`：**project-approved words**。
   - `--spelling`：**US spelling list**。
-  - `--report`：Checkpoint Dir 中的 `step_1-inventory.txt`。
-  - `--findings`：Checkpoint Dir 中的 `step_1-findings.json`，即本 step 的 **findings file**。
-  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/check_ste.py --src "skill-groups/common/references/DFD.md" --dict "{skillGroups.common}/skills/asd-ste/references/ste-dictionary.json" --custom "{skillGroups.common}/skills/asd-ste/references/ste-custom.md" --spelling "{skillGroups.common}/references/us-spelling.json" --report "checkpoints/asd-ste/references-DFD/step_1-inventory.txt" --findings "checkpoints/asd-ste/references-DFD/step_1-findings.json"`
+  - `--report`：Working Dir 中的 `step_1-inventory.txt`。
+  - `--findings`：Working Dir 中的 `step_1-findings.json`，即本 step 的 **findings file**。
+  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/check_ste.py --src "skill-groups/common/references/DFD.md" --dict "{skillGroups.common}/skills/asd-ste/references/ste-dictionary.json" --custom "{skillGroups.common}/skills/asd-ste/references/ste-custom.md" --spelling "{skillGroups.common}/references/us-spelling.json" --report "checkpoints/asd-ste/{yymmdd}.{N}/step_1-inventory.txt" --findings "checkpoints/asd-ste/{yymmdd}.{N}/step_1-findings.json"`
 
 - 腳本把清冊印到 **stdout**，同時也寫進這兩個檔案：
   1. frontmatter 的鍵，或說明沒有 frontmatter。
@@ -296,18 +328,19 @@ run step 7
 
 - **如果腳本以 `2` 結束、verdict 為 `NOT-ENGLISH`，就在這裡停止本 skill。**
   回報它印出的比例，說明 STE 是用英文寫的，並且不要寫出 draft。
-  先依本 step 最後一項所述存下 Step 1 的群組，加上 `--stopped` 與比例。
+  先依本 step 最後一項所述存下 `step_1.yaml`，加上 `--stopped` 與比例。
 
 - **如果腳本以 `3` 結束，verdict 為 `SOURCE-FIRST`，就在這裡停止本 skill。**
   draft 原樣照抄每一個 kept span，所以要先改 source file：回報 kept span 裡的每一個英式拼法，附上它的美式拼法與行號，並說明 source file 改好之後再重新執行。
-  先依本 step 最後一項所述存下 Step 1 的群組，加上 `--stopped` 與那些拼法。
+  先依本 step 最後一項所述存下 `step_1.yaml`，加上 `--stopped` 與那些拼法。
 
 - 以 `0` 結束代表 `rewritable`，執行繼續。
 
 - 顯示清冊的簡短摘要：標題、fence、連結與表格的數量，有多少句子超過上限，散文用了多少個非核准詞、字典外的詞與英式拼法，以及 kept span 裡的每一個英式拼法。
 
-- 以 step saver 在 `step_1` 底下存 YAML checkpoint：以 `--data` 放入整份 findings file；以及 `report_file` 與 `findings_file` 這兩個檔名。
-  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --checkpoint "checkpoints/asd-ste/references-DFD/process.yaml" --step 1 --title "Inventory the Source" --begin "<begin>" --data "checkpoints/asd-ste/references-DFD/step_1-findings.json" --set report_file=step_1-inventory.txt --set findings_file=step_1-findings.json`
+- 以 step saver 存 `step_1.yaml`：以 `--summary` 放入 findings file 的檔名與它的 verdict——不放它的發現，那些留在 findings file 裡；以及 `report_file`，清冊檔的檔名。
+  step saver 也會把這個 step 加進 run record。
+  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --run "{yymmdd}.{N}" --step 1 --title "Inventory the Source" --model "<model>" --begin "<begin>" --summary "checkpoints/asd-ste/{yymmdd}.{N}/step_1-findings.json" --set report_file=step_1-inventory.txt`
 
 
 ## Step 2 - Rewrite in STE
@@ -315,9 +348,9 @@ run step 7
 - **這個 step 沒有腳本**——用更少、更簡單的字把同一件事說出來而不遺漏任何一點，是沒有任何程式做得到的閱讀與寫作，所以請自己依照下面的指示進行。
 
 - 如果 draft 已經存在，說明這一點，並詢問使用者是否以完整的改寫覆寫它。
-  回答 no 時，本次執行結束，不寫出 draft，並依本 step 最後一項所述存下 Step 2 的群組，加上 `--stopped`。
+  回答 no 時，本次執行結束，不寫出 draft，並依本 step 最後一項所述存下 `step_2.yaml`，加上 `--stopped`。
 
-- 完整閱讀 **STE rules digest**、完整閱讀 source file，以及 Step 1 的清冊——在 `run step 2` 底下，就是 YAML checkpoint 的 `step_1` 群組，以及旁邊的 `step_1-inventory.txt`。
+- 完整閱讀 **STE rules digest**、完整閱讀 source file，以及 Step 1 的清冊——在 `run step 2` 底下，就是 `step_1.yaml`，以及旁邊的 `step_1-inventory.txt` 與 `step_1-findings.json`。
 
 - 適用於下方每一項指示的規則：
   - **逐位元組照抄每一個 kept span**，以清冊所列為準。
@@ -342,8 +375,9 @@ run step 7
 
 - 顯示 draft 的路徑、technical word 的數量，以及每一項保留來源措辭的陳述與原因。
 
-- 以 step saver 在 `step_2` 底下存 YAML checkpoint：`overwrite`，是否覆寫了已存在的 draft；`technical_words`，header note 列出的清單；以及 `kept_wording`，每一項保留來源措辭的陳述，附上它在 draft 中的行號、內容與原因——清單以 `--json` 傳入。
-  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --checkpoint "checkpoints/asd-ste/references-DFD/process.yaml" --step 2 --title "Rewrite in STE" --begin "<begin>" --json overwrite=true --json technical_words='["caller", "query"]' --json kept_wording='[]'`
+- 以 step saver 存 `step_2.yaml`：`overwrite`，是否覆寫了已存在的 draft；`technical_words`，header note 列出的清單；以及 `kept_wording`，每一項保留來源措辭的陳述，附上它在 draft 中的行號、內容與原因——清單以 `--json` 傳入。
+  step saver 也會把這個 step 加進 run record。
+  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --run "{yymmdd}.{N}" --step 2 --title "Rewrite in STE" --model "<model>" --begin "<begin>" --json overwrite=true --json technical_words='["caller", "query"]' --json kept_wording='[]'`
 
 
 ## Step 3 - STE Check
@@ -354,9 +388,9 @@ run step 7
   - `--dict`：**STE dictionary**。
   - `--custom`：**project-approved words**。
   - `--spelling`：**US spelling list**。
-  - `--report`：Checkpoint Dir 中的 `step_3-check.txt`。
-  - `--findings`：Checkpoint Dir 中的 `step_3-findings.json`，即本 step 的 **findings file**。
-  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/check_ste.py --src "skill-groups/common/references/DFD.md" --ste "<draft>" --dict "{skillGroups.common}/skills/asd-ste/references/ste-dictionary.json" --custom "{skillGroups.common}/skills/asd-ste/references/ste-custom.md" --spelling "{skillGroups.common}/references/us-spelling.json" --report "checkpoints/asd-ste/references-DFD/step_3-check.txt" --findings "checkpoints/asd-ste/references-DFD/step_3-findings.json"`
+  - `--report`：Working Dir 中的 `step_3-check.txt`。
+  - `--findings`：Working Dir 中的 `step_3-findings.json`，即本 step 的 **findings file**。
+  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/check_ste.py --src "skill-groups/common/references/DFD.md" --ste "<draft>" --dict "{skillGroups.common}/skills/asd-ste/references/ste-dictionary.json" --custom "{skillGroups.common}/skills/asd-ste/references/ste-custom.md" --spelling "{skillGroups.common}/references/us-spelling.json" --report "checkpoints/asd-ste/{yymmdd}.{N}/step_3-check.txt" --findings "checkpoints/asd-ste/{yymmdd}.{N}/step_3-findings.json"`
 
 - 腳本對每一項檢查在 **stdout** 印出一行，同時也寫進這兩個檔案，只要有任何一項失敗就以 `1` 結束：
   1. draft 是不含 BOM 的 UTF-8。
@@ -395,7 +429,7 @@ run step 7
   - 把被動句改成主動句，除非沒有人知道是誰或什麼做了這個動作。
 
 - 如果某個 `[FAIL]` 是 source file 本身的缺陷——一個沒有關閉的 fence、一列欄數錯誤的表格、一個已停用寫法的 placeholder、kept span 裡的英式拼法——就直接說明，不去動 source file，並回報為需要使用者修正的事項。
-  檢查無法通過，所以依本 step 最後一項所述存下 Step 3 的群組，加上 `--stopped` 與那個缺陷。
+  檢查無法通過，所以依本 step 最後一項所述存下 `step_3.yaml`，加上 `--stopped` 與那個缺陷。
 
 - 腳本以 `0` 結束後，在 header quote 中記錄 STE specification：
   - 執行 `{python} {skillGroups.common}/scripts/depends_on.py record "<draft>" --target "[[ASD-STE100_ISSUE9.pdf]]"`，並在 workspace 有這個設定檔時加上 `--config config.yaml`。
@@ -405,8 +439,10 @@ run step 7
 
 - 顯示檢查結果：每一項檢查的通過或失敗，以及每一個留下的警告與它留下的原因。
 
-- 以 step saver 在 `step_3` 底下存 YAML checkpoint：以 `--data` 放入最後一次檢查的整份 findings file；`report_file` 與 `findings_file` 這兩個檔名；`check_runs`，檢查執行的次數；`warnings_left`，每一個留下的警告與它留下的原因；以及 `fingerprint`，Dependency Checker 記錄的日期與指紋，或是 `fingerprint_not_recorded` 加上原因；還有 `custom_fingerprint`，同樣記下 ste-custom.md 的日期與指紋。
-  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --checkpoint "checkpoints/asd-ste/references-DFD/process.yaml" --step 3 --title "STE Check" --begin "<begin>" --data "checkpoints/asd-ste/references-DFD/step_3-findings.json" --set report_file=step_3-check.txt --set findings_file=step_3-findings.json --json check_runs=2 --json warnings_left='[]' --json fingerprint='{"date": "2026-10-11", "fingerprint": "d1f4ea9e7cd6"}' --json custom_fingerprint='{"date": "2026-10-11", "fingerprint": "<fingerprint>"}'`
+- 以 step saver 存 `step_3.yaml`：以 `--summary` 放入最後一次檢查的 findings file 的檔名與 verdict；`report_file`，檢查報告的檔名；`check_runs`，檢查執行的次數；`warnings_left`，每一個留下的警告與它留下的原因；以及 `fingerprint`，Dependency Checker 記錄的日期與指紋，或是 `fingerprint_not_recorded` 加上原因；還有 `custom_fingerprint`，同樣記下 ste-custom.md 的日期與指紋。
+  step saver 也會把這個 step 加進 run record。
+  `draft.py recheck` 以同樣的方式，在 draft 的 source file 最新的那一次執行中存這個 step。
+  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --run "{yymmdd}.{N}" --step 3 --title "STE Check" --model "<model>" --begin "<begin>" --summary "checkpoints/asd-ste/{yymmdd}.{N}/step_3-findings.json" --set report_file=step_3-check.txt --json check_runs=2 --json warnings_left='[]' --json fingerprint='{"date": "2026-10-11", "fingerprint": "d1f4ea9e7cd6"}' --json custom_fingerprint='{"date": "2026-10-11", "fingerprint": "<fingerprint>"}'`
 
 
 ## Step 4 - Offer to Commit
@@ -415,7 +451,7 @@ run step 7
   在下列情形略過本 step，並說明原因：
   - draft 不在 git repository 中；
   - git 顯示它沒有任何改動；
-  - 它沒有通過 STE check——看 YAML checkpoint 中 `step_3` 群組的 `verdict`。
+  - 它沒有通過 STE check——看 `step_3.yaml` 中的 `verdict`。
 
 - 詢問使用者是否要 commit draft，並顯示它的分支、commit 主旨，以及其他已經暫存、但這個 commit 不會包含的東西。
   - 主旨依循 repository 最近的主旨，以 `git log -5 --format=%s` 讀取：如果它們以被改動的文件命名，主旨就以 draft 的檔名命名。
@@ -429,13 +465,14 @@ run step 7
 
 - 顯示 commit 的 hash 與主旨，或說明沒有 commit 任何東西。
 
-- 以 step saver 在 `step_4` 底下存 YAML checkpoint：略過本 step 時，存 `skipped` 與原因；否則存 `answer`，yes 或 no，以及有 commit 時的 `commit`，即它的 hash 與主旨。
-  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --checkpoint "checkpoints/asd-ste/references-DFD/process.yaml" --step 4 --title "Offer to Commit" --begin "<begin>" --set answer=yes --json commit='{"hash": "5c98468", "subject": "<subject>"}'`
+- 以 step saver 存 `step_4.yaml`：略過本 step 時，存 `skipped` 與原因；否則存 `answer`，yes 或 no，以及有 commit 時的 `commit`，即它的 hash 與主旨。
+  step saver 也會把這個 step 加進 run record。
+  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --run "{yymmdd}.{N}" --step 4 --title "Offer to Commit" --model "<model>" --begin "<begin>" --set answer=yes --json commit='{"hash": "5c98468", "subject": "<subject>"}'`
 
 
 ## Step 5 - Offer the TW Twin
 
-- 當 draft 沒有通過 STE check 時，略過本 step 並說明原因——看 YAML checkpoint 中 `step_3` 群組的 `verdict`。
+- 當 draft 沒有通過 STE check 時，略過本 step 並說明原因——看 `step_3.yaml` 中的 `verdict`。
 
 - 詢問使用者是否要請 `chinese` skill 寫出 draft 的 TW twin，位於 Step 0 時 draft tool 給出的路徑。
 
@@ -445,25 +482,31 @@ run step 7
 
 - 回答 no 時，說明沒有寫出任何 twin。
 
-- 以 step saver 在 `step_5` 底下存 YAML checkpoint：略過本 step 時，存 `skipped` 與原因；否則存 `answer`，yes 或 no，以及寫出 TW twin 時的 `twin_file`，即它的路徑。
-  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --checkpoint "checkpoints/asd-ste/references-DFD/process.yaml" --step 5 --title "Offer the TW Twin" --begin "<begin>" --set answer=no`
+- 以 step saver 存 `step_5.yaml`：略過本 step 時，存 `skipped` 與原因；否則存 `answer`，yes 或 no，以及寫出 TW twin 時的 `twin_file`，即它的路徑。
+  step saver 也會把這個 step 加進 run record。
+  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --run "{yymmdd}.{N}" --step 5 --title "Offer the TW Twin" --model "<model>" --begin "<begin>" --set answer=no`
 
 
 ## Step 6 - Build the Review Page
 
-- 當 draft 沒有通過 STE check 時，略過本 step 並說明原因——看 YAML checkpoint 中 `step_3` 群組的 `verdict`。
+- 當 draft 沒有通過 STE check 時，略過本 step 並說明原因——看 `step_3.yaml` 中的 `verdict`。
 
-- 比對 `step_3` 群組的 `custom_fingerprint` 與 ste-custom.md 現在的指紋：`{python} {skillGroups.common}/scripts/depends_on.py hash "{skillGroups.common}/skills/asd-ste/references/ste-custom.md"`。
-  兩者不同、或群組中沒有它時，表示 **project-approved words** 或 **project rules** 在上次 STE check 之後改過：先重跑 Step 3，再繼續本 step。
+- 比對 `step_3.yaml` 中的 `custom_fingerprint` 與 ste-custom.md 現在的指紋：`{python} {skillGroups.common}/scripts/depends_on.py hash "{skillGroups.common}/skills/asd-ste/references/ste-custom.md"`。
+  兩者不同、或 `step_3.yaml` 中沒有它時，表示 **project-approved words** 或 **project rules** 在上次 STE check 之後改過：先重跑 Step 3，再繼續本 step。
 
 - 找出 CONFIGURATION 所指名的兩份 **TW twin**。
   缺少其中一份時就停止，並說明缺的是哪一份、由誰寫出：draft 的由 Step 5 寫出，在 `run step 5` 底下也一樣；source file 的由 `chinese` skill 寫出。
-  先依本 step 最後一項所述存下 Step 6 的群組，加上 `--stopped` 與缺少的那一份 TW twin。
+  先依本 step 最後一項所述存下 `step_6.yaml`，加上 `--stopped` 與缺少的那一份 TW twin。
 
-- 完整閱讀 source file、draft 與兩份 TW twin，以及 YAML checkpoint 的 `step_2` 與 `step_3` 群組。
-  上一次 Step 0 之後沒有執行 Step 2 時，`step_2` 就不存在；這時 review page 不列出保留原文措辭的陳述，並說明原因。
+- 完整閱讀 source file、draft 與兩份 TW twin，以及 `step_2.yaml` 與 `step_3.yaml`。
+  這次執行沒有執行 Step 2 時，`step_2.yaml` 就不存在；這時 review page 不列出保留原文措辭的陳述，並說明原因。
 
-- 以繁體中文，使用檔案建立工具，把 **review notes** 寫到 Checkpoint Dir 中的 `step_6-notes.html`：
+- 找出 review page 一開始顯示的 review status。
+  這次執行的 `step_6-status.json` 存在時，就是它。
+  否則，取較早、且有這個檔案的最新一次執行的 `status_file`，也就是 `{python} {skillGroups.common}/skills/asd-ste/scripts/draft.py runs "<source file>"` 列出的那一個，並說明它來自哪一次執行。
+  沒有任何一次執行有它時，給出這次執行的路徑：審核者設定第一個 review status 之前，它不存在。
+
+- 以繁體中文，使用檔案建立工具，把 **review notes** 寫到 Working Dir 中的 `step_6-notes.html`：
   - 一段 HTML 片段，分成兩部分，各是一個 `<h3>` 標題，後面接一份 `<ol>` 清單：先是 draft 要看的地方，再是它的 TW twin 要看的地方。
   - 每一項指出一處要對照的地方，以及審核者為什麼該看它。
     這樣的地方包括：主張可能在改寫中跑掉的句子，並與來源的句子並列；一件東西有兩個名稱，或兩件東西共用一個名稱；draft 的 TW twin 譯得和 source file 的 TW twin 不同的 term；形狀改變了的清單或段落；以及 header quote 與 header note。
@@ -473,36 +516,40 @@ run step 7
 - 以 `--src`、`--ste`、`--src-tw`、`--ste-tw`、`--checkpoint`、`--notes`、`--out` 與 `--status` 參數執行 review builder。
   - `--src` 與 `--ste`：source file 與 draft。
   - `--src-tw` 與 `--ste-tw`：它們的 TW twin。
-  - `--checkpoint`：YAML checkpoint。
-  - `--notes`：Checkpoint Dir 中的 `step_6-notes.html`，即 review notes。
-  - `--out`：Checkpoint Dir 中的 `step_6-review.html`，即 **review page**。
-  - `--status`：Checkpoint Dir 中的 `step_6-status.json`，review page 一開始顯示的 review status；審核者設定第一個之前，它不存在。
-  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/make_review.py --src "skill-groups/common/references/DFD.md" --ste "<draft>" --src-tw "skill-groups/common/references/DFD-tw.md" --ste-tw "<draft's TW twin>" --checkpoint "checkpoints/asd-ste/references-DFD/process.yaml" --notes "checkpoints/asd-ste/references-DFD/step_6-notes.html" --out "checkpoints/asd-ste/references-DFD/step_6-review.html" --status "checkpoints/asd-ste/references-DFD/step_6-status.json"`
+  - `--checkpoint`：這次執行的 Working Dir，review builder 讀取其中的 `step_2.yaml` 與 `step_3.yaml`。
+  - `--notes`：Working Dir 中的 `step_6-notes.html`，即 review notes。
+  - `--out`：Working Dir 中的 `step_6-review.html`，即 **review page**。
+  - `--status`：review page 一開始顯示的 review status，也就是上面找到的那一份。
+  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/make_review.py --src "skill-groups/common/references/DFD.md" --ste "<draft>" --src-tw "skill-groups/common/references/DFD-tw.md" --ste-tw "<draft's TW twin>" --checkpoint "checkpoints/asd-ste/{yymmdd}.{N}" --notes "checkpoints/asd-ste/{yymmdd}.{N}/step_6-notes.html" --out "checkpoints/asd-ste/{yymmdd}.{N}/step_6-review.html" --status "checkpoints/asd-ste/{yymmdd}.{N}/step_6-status.json"`
 
 - review builder 把 review page 的路徑、節數與行數、review notes 含有多少個 line reference，以及每一種 review status 各有幾項印到 **stdout**，寫出頁面後以 `0` 結束。
   當某個 line reference 指不到它那份檔案的任何一行時，它以 `1` 結束、不寫出頁面，並為每一個印出一行 `[FAIL]`：修正 review notes，絕不修正那四份檔案，然後再執行一次指令，直到它以 `0` 結束。
-  檔案無法讀取，或 YAML checkpoint 沒有 `step_3` 群組時，它以 `2` 結束。
+  檔案無法讀取，或 Working Dir 沒有 `step_3.yaml` 時，它以 `2` 結束。
 
-- 從 workspace 根目錄確認 **review server** 正在執行。
+- 確認 **review server** 正在執行。
+  它提供它啟動時所在 workspace 的根目錄下的 `checkpoints/asd-ste`：從目前的目錄往上，最近一個 `config.yaml` 含有 `skillGroups` 的目錄。
+  它絕不從自己的位置找根目錄，因為 workspace 可以從另一個 workspace 就地讀取本 skill。
+  一個 review server 只服務一個 workspace：另一個 workspace 啟動的 review server 可能占用 port 8790，而探測會印出它服務的 review root。
   它需要 Node.js：`node --version` 失敗時，說明這一點，並改為給出 review page 的路徑，而不是它的連結。
   - 詢問是否有一個在回應：`node {skillGroups.common}/skills/asd-ste/scripts/review_server.js --probe`。
   - 以 `0` 結束：有 review server 在回應，它已經在提供 review page。
   - 以 `1` 結束：沒有任何回應，所以在背景啟動一個，讓它在執行結束後繼續提供頁面，然後再詢問一次。
-    在 macOS 與 Linux 上執行 `nohup node {skillGroups.common}/skills/asd-ste/scripts/review_server.js --root checkpoints/asd-ste > /dev/null 2>&1 &`；在 PowerShell 中執行 `Start-Process node -ArgumentList '{skillGroups.common}/skills/asd-ste/scripts/review_server.js','--root','checkpoints/asd-ste' -WindowStyle Hidden`。
+    在 macOS 與 Linux 上執行 `nohup node {skillGroups.common}/skills/asd-ste/scripts/review_server.js > /dev/null 2>&1 &`；在 PowerShell 中執行 `Start-Process node -ArgumentList '{skillGroups.common}/skills/asd-ste/scripts/review_server.js' -WindowStyle Hidden`。
   - 以 `2` 結束：別的程式占用了 port 8790；說明這一點，並改為給出 review page 的路徑，而不是它的連結。
 
-- 以可點擊的 Markdown 連結顯示 review page 的連結 `http://127.0.0.1:8790/{parent}-{name}/`——沒有 review server 執行時改為它的路徑——以及 review notes 的項目數。
+- 以可點擊的 Markdown 連結顯示 review page 的連結 `http://127.0.0.1:8790/{yymmdd}.{N}/`——沒有 review server 執行時改為它的路徑——以及 review notes 的項目數。
   agent 有瀏覽器面板時，也在那裡打開這個連結。
 
-- 以 step saver 在 `step_6` 底下存 YAML checkpoint：`notes_file` 與 `review_file` 這兩個檔名；`notes`，review notes 的項目數；`line_references`，review builder 印出的數目；以及 `review_url`，review page 的連結，或是 `review_server` 加上沒有 review server 執行的原因。
-  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --checkpoint "checkpoints/asd-ste/references-DFD/process.yaml" --step 6 --title "Build the Review Page" --begin "<begin>" --set notes_file=step_6-notes.html --set review_file=step_6-review.html --json notes=12 --json line_references=42 --set review_url=http://127.0.0.1:8790/references-DFD/`
+- 以 step saver 存 `step_6.yaml`：`notes_file` 與 `review_file` 這兩個檔名；`notes`，review notes 的項目數；`line_references`，review builder 印出的數目；`status_from`，頁面一開始的 review status 來自另一次執行時，它的路徑；以及 `review_url`，review page 的連結，或是 `review_server` 加上沒有 review server 執行的原因。
+  step saver 也會把這個 step 加進 run record。
+  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --run "{yymmdd}.{N}" --step 6 --title "Build the Review Page" --model "<model>" --begin "<begin>" --set notes_file=step_6-notes.html --set review_file=step_6-review.html --json notes=12 --json line_references=42 --set review_url=http://127.0.0.1:8790/{yymmdd}.{N}/`
 
-- 最後以可點擊的 Markdown 連結列出 draft 的路徑、存在的 TW twin 路徑、本 step 產生 review page 時它的連結——或它的路徑——以及 YAML checkpoint 的路徑。
+- 最後以可點擊的 Markdown 連結列出 draft 的路徑、存在的 TW twin 路徑、本 step 產生 review page 時它的連結——或它的路徑——以及 run record 的路徑。
 
 
 ## Step 7 - Replace the Source
 
-- 當 draft 沒有通過 STE check 時——看 YAML checkpoint 中 `step_3` 群組的 `verdict`——或沒有產生 review page 時——`step_6` 群組中沒有 `review_file`——略過本 step 並說明原因。
+- 當 draft 沒有通過 STE check 時——看 `step_3.yaml` 中的 `verdict`——或沒有產生 review page 時——`step_6.yaml` 中沒有 `review_file`——略過本 step 並說明原因。
 
 - 照 Step 6 的方式比對兩個指紋：兩者不同時，先重跑 Step 3 與 Step 6，再詢問。
 
@@ -531,7 +578,8 @@ run step 7
 - 顯示已取代的 source file 與它的 TW twin、刪除的檔案、每一個 dependent 是否重新記錄或為什麼沒有，以及每一項檢查的結果。
   說明什麼都沒有 commit：由使用者在各個 workspace 中 commit 這些修改。
 
-- 以 step saver 在 `step_7` 底下存 YAML checkpoint：略過本 step 時，`skipped` 與原因；否則 `answer`，使用者的回答；取代之後再加上 `replaced`，draft tool 印出的那幾行；`dependents`，每一個 dependent 與它的連結、是否重新記錄；以及 `checks`，每一項檢查與它的結果。
-  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --checkpoint "checkpoints/asd-ste/references-DFD/process.yaml" --step 7 --title "Replace the Source" --begin "<begin>" --set answer=pass --json replaced='[]' --json dependents='[]' --json checks='[]'`
+- 以 step saver 存 `step_7.yaml`，並加上 `--last`，因為這是最後一個 step：略過本 step 時，`skipped` 與原因；否則 `answer`，使用者的回答；取代之後再加上 `replaced`，draft tool 印出的那幾行；`dependents`，每一個 dependent 與它的連結、是否重新記錄；以及 `checks`，每一項檢查與它的結果。
+  step saver 會把這個 step 加進 run record，並寫入 `result: completed`。
+  - 範例：`{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --run "{yymmdd}.{N}" --step 7 --title "Replace the Source" --model "<model>" --begin "<begin>" --last --set answer=pass --json replaced='[]' --json dependents='[]' --json checks='[]'`
 
-- 最後以可點擊的 Markdown 連結列出 source file 的路徑、它的 TW twin 的路徑，以及 YAML checkpoint 的路徑。
+- 最後以可點擊的 Markdown 連結列出 source file 的路徑、它的 TW twin 的路徑，以及 run record 的路徑。

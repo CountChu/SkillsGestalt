@@ -3,12 +3,42 @@ name: write-note-tags
 description: Adds one or more tags to a specific section of a daily note file in wiki/write-note/, and merges them into the file-level Tags header.
 ---
 
+# TERMINOLOGY
+
+Each skill uses these terms with the same definition.
+
+- **Run Number** — the number of one run, `{yymmdd}.{N}`.
+  `{N}` is the sequence number of the run of this skill on that date, and it starts at 1.
+- **Run record** — the file that records the time and the model of each step of one run.
+  The analysis of the efficiency of a skill uses it.
+
+# CONFIGURATION
+
+The values that this skill uses in a run.
+
+The inputs and tools, which the run reads or runs:
+
+- **Workspace configuration** — the [config.yaml](config.yaml) at the root of the workspace.
+- **Tag database** — `database\tags.yaml` at the root of the workspace, which gives the approved tags.
+
+The last outputs, which a person, a different skill or a subsequent analysis reads:
+
+- **Run record** — `database\skill-runs\write-note-tags\{yymmdd}.{N}.yaml`.
+- **Note file** — `{wikiDir}\write-note\note-{yyMMdd}-{day}.md`, that the prompt gives.
+  Steps 2 and 3 add the tags to one section and to the Tags field.
+
 # MUST FOLLOW
 
 - Must run workflow step by step, and display each step number.
 - This skill only edits the local note Markdown file.
   It must not call any ADO write API.
 - Tag values must be validated against `database/tags.yaml` before being written.
+- Obey [run-data-rules.md](skill-groups/common/rules/run-data-rules.md) for the Run Number and the run record of a run.
+- **Before the skill stops, show the paths of the note file and of the run record.**
+  Show the path of the note file only if the run wrote it.
+  Write the path of the run record as a Markdown link that starts at the workspace, with the forward slash as the separator: `[{yymmdd}.{N}.yaml](database/skill-runs/write-note-tags/{yymmdd}.{N}.yaml)`.
+  Do this for each run, also for a run that stops before Step 3.
+- A run that stops before Step 3 ends writes `result: stopped` and `stopped_at` in its run record.
 
 # Prompt Examples
 
@@ -61,6 +91,12 @@ Tag section 2 of note-260608-Mo with new-skill.
 
 - Save the parsed inputs (note path, section, tag list) for use in later steps.
 
+- Save the canonical skill invocation, thus the run record can store it as its prompt.
+
+- Get the Run Number, as run-data-rules.md tells, and write the run record of the run.
+
+- Add this step to the run record.
+
 
 ## Step 1 - Locate Section
 
@@ -72,6 +108,8 @@ Tag section 2 of note-260608-Mo with new-skill.
 - Capture the section title (without the `## N. ` prefix) and the line range from the heading to the next `## ` heading or EOF.
 
 - Display a short table: section number | section title | tags to add.
+
+- Add this step to the run record.
 
 
 ## Step 2 - Add Tags to Section
@@ -90,6 +128,8 @@ Tag section 2 of note-260608-Mo with new-skill.
 - Display:
   - The note file path.
   - A diff-style preview of the inserted/updated `>Tags:` line.
+
+- Add this step to the run record.
 
 
 ## Step 3 - Merge Tags into File Header
@@ -110,3 +150,5 @@ Tag section 2 of note-260608-Mo with new-skill.
 
 - Display:
   - The new value of the file-level `Tags` header.
+
+- Add this step to the run record, and write `result: completed`, because it is the last step.

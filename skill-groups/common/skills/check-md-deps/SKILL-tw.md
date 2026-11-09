@@ -7,7 +7,7 @@ description: >-
 本文件為 [SKILL.md](skill-groups/common/skills/check-md-deps/SKILL.md) 的繁體中文版。
 任一份改了某節，另一份必須在同一次執行中一起改。
 
-> [check-wiki-doc](../check-wiki-doc/SKILL.md)  `2026-10-10`  `12fef3478fea`
+> [check-wiki-doc](../check-wiki-doc/SKILL.md)  `2026-11-06`  `cb3534f8d3ad`
 
 # TERMINOLOGY
 
@@ -15,6 +15,10 @@ description: >-
 
 - **no forward-reference** — 一個 step 絕不可依賴排在它之後的 step 的規則。
   為了控制流程而指名後面的 step 並不違反它；借用那個 step 的輸出才違反。
+- **Run Number** — 一次執行的編號 `{yymmdd}.{N}`。
+  `{N}` 是這個 skill 在那一天的執行序號，從 1 開始。
+- **Run record** — 記下一次執行每個 step 的時間與模型的檔案。
+  分析一個 skill 的效率時使用它。
 
 # DEDICATED TERMINOLOGY
 
@@ -48,10 +52,21 @@ description: >-
 
 本 skill 執行時所使用的具體值。
 
+執行時讀取或執行的輸入與工具：
+
+- **Workspace configuration** — workspace 根目錄的 [config.yaml](config.yaml)。
 - **Dependency Checker** — `{skillGroups.common}/scripts/depends_on.py`。
 - **Dependency Scanner** — `{skillGroups.common}/skills/check-md-deps/scripts/scan_md_deps.py`。
 - **Twin Differ** — `{skillGroups.common}/skills/chinese/scripts/diff_md.py`。
 - **report format** — [check-wiki-doc](../check-wiki-doc/SKILL.md) 的「4. 回報」。
+- **documents depended on** — target file 的 header quote 中每一個 dependency 所指名的檔案。
+- **run data rules** — `{skillGroups.common}/rules/run-data-rules.md`。
+- **chinese skill** — `{skillGroups.common}/skills/chinese/SKILL.md`。
+
+最後的輸出，人、另一個 skill 或之後的分析會讀它：
+
+- **Run record** — `database\skill-runs\check-md-deps\{yymmdd}.{N}.yaml`。
+- **Target files** — target file 與它的 TW twin；Step 3 只依使用者指名的建議修改它們。
 
 # MUST FOLLOW
 
@@ -61,14 +76,16 @@ description: >-
 - 程式能以 deterministic 方式完成的 step 必須以腳本執行。
   需要閱讀、判斷或摘要的 step **不可**腳本化——請寫成自然語言指示，讓 agent 直接執行。
 - **本 skill 沒有 `run step N` 選擇子——每一次執行都是完整的執行。**
-  它不保留 YAML checkpoint 讓 step 讀回，而一次完整的執行只花一次掃描。
-- **本 skill 既不產出 MD report，也不產出 YAML checkpoint。**
-  它的產出是對話中的報告；它唯一會改動的檔案是 target file，而且只在 Step 3——TW twin 則只透過 `chinese` skill 改動，Step 3 在使用者指名 twin 的 suggestion 時執行它。
-- **在使用者指名要套用的 suggestion 之前，不改動任何檔案。**
+  它不保留 step 檔讓 step 讀回，而一次完整的執行只花一次掃描。
+- **本 skill 既不產出 MD report，也不產出 step 檔。**
+  它的產出是對話中的報告；除了它的 **run record**，它唯一會改動的檔案是 target file，而且只在 Step 3——TW twin 則只透過 `chinese` skill 改動，Step 3 在使用者指名 twin 的 suggestion 時執行它。
+- **在使用者指名要套用的 suggestion 之前，除了 run record，不改動任何檔案。**
   報告才是一次執行的目的；沒被要求就做的修正，會把它所修正的發現藏起來。
 - **絕不建議本次執行還沒資格提出的 record。**
   只有在讀過一個 dependency 的文件改動之處、並確認 target file 仍然成立之後，才建議對它 `record`；為了讓 verdict 安靜下來而做的 record，是在替一份沒人檢查過的檔案背書。
-- 依照 [scratch-rules.md](skill-groups/common/rules/scratch-rules.md) 決定一次執行的拋棄式檔案放在哪裡，以及如何清理。
+- 一次執行的 Run Number、run record 與 Working Dir，遵守 [run-data-rules.md](skill-groups/common/rules/run-data-rules.md)。
+- **在 skill 停止之前，顯示 run record 的路徑**——在 Step 2 結尾，以及 Step 3 有執行時，在它的結尾再顯示一次。
+  只顯示路徑，寫成連結目標從 workspace 起算、以正斜線分隔的 Markdown 連結——不寫成 inline code 或純文字：`[{yymmdd}.{N}.yaml](database/skill-runs/check-md-deps/{yymmdd}.{N}.yaml)`。
 
 # Prompt Examples
 
@@ -151,13 +168,14 @@ flowchart TB
   虛線箭頭不承載任何資料：它表示一個順序，或一次手動做出的變更。
 - 藍色箭頭承載的資料，本身會被寫進某個 record，或被轉成某個 record 的內容：套用的 suggestion、記進 target file 的所依賴文件的 fingerprint，以及譯進 TW twin 的 target file。
   其餘箭頭一律是黑色；使用者指名的 suggestion，只決定 Step 3 要套用其中哪些。
+- 每個 step 也會把它的時間與模型加進 run record，而這張圖不畫這份 record。
 
 # Steps at a Glance
 
 每個 step 的總覽，每個 step 一列，名稱與它的標題完全相同：它執行的 script（不執行時寫「—」）。
-本 skill 不寫 YAML checkpoint，所以 YAML 欄一律寫「—」。
+本 skill 不寫 step 檔，所以 Step file 欄一律寫「—」。
 
-| Step | Script | YAML |
+| Step | Script | Step file |
 |---|---|---|
 | Step 0 - Warmup | — | — |
 | Step 1 - Scan the Dependencies | `scan_md_deps.py`，它會執行 `diff_md.py` | — |
@@ -194,6 +212,9 @@ flowchart TB
 
 - 顯示 target file 的路徑。
 
+- 照 run-data-rules.md 取得 Run Number，並寫出這次執行的 run record，以 canonical skill invocation 作為它的 `prompt`。
+  把這個 step 加進 run record。
+
 
 ## Step 1 - Scan the Dependencies
 
@@ -216,6 +237,8 @@ flowchart TB
 
 - 為每一份 target file 顯示它的各個 dependency 及其 verdict、它的 format problem 數量，以及它有 TW twin 時的 twin verdict。
 
+- 把這個 step 加進 run record。
+
 
 ## Step 2 - Write the Suggestions
 
@@ -227,7 +250,7 @@ flowchart TB
 
 - 適用於下方每一條指示的規則：
   - 以 **report format**，用 prompt 的語言寫報告。
-    不做 check-wiki-doc 回寫架構文件的那一步：這個 step 不寫任何東西。
+    不做 check-wiki-doc 回寫架構文件的那一步：這個 step 除了 run record，不寫任何東西。
   - 每一項發現都以 JSON 與上面讀到的內容為依據——不捏造任何改動，也不捏造任何一行。
     無法從中判斷 target file 是否仍然成立時，就把它列為使用者的決定，並說明哪裡不明。
   - 每一行都完整引用，就像 check-wiki-doc 那樣，絕不截短。
@@ -240,6 +263,8 @@ flowchart TB
   4. **Twin**：對每一份 twin verdict 為 `INCREMENTAL` 的 TW twin，寫出它的 change set，接著是對 target file 執行 `chinese` skill 的 suggestion——它只翻譯 change set；對 `FULL`，寫出原因，接著是執行 `chinese` skill 的 suggestion——它翻譯整份檔案；或者，當 twin 自己有尚未 commit 的修改時，列為一項決定：先手動 commit 那些修改，讓 `chinese` skill 保留它們、只翻譯改過的部分，或讓它翻譯整份檔案、蓋過它們；對 `UNCHECKED`，寫出是什麼讓比對無法執行。
 
 - 報告結尾要說明還沒有改動任何檔案，並請使用者以編號指名要套用的 suggestion。
+
+- 把這個 step 加進 run record，並寫出 `result: completed`：報告才是一次執行的目的，而使用者沒有指名任何 suggestion 的執行，就在這裡結束。
 
 
 ## Step 3 - Apply the Named Suggestions
@@ -262,3 +287,5 @@ flowchart TB
   - 範例：`python {skillGroups.common}\skills\check-md-deps\scripts\scan_md_deps.py "skill-groups\common\skills\compile-skill\SKILL.md"`
 
 - 回報每一項被指名的 suggestion 已完成，附上掃描現在給出的 verdict，並說明哪些 suggestion 還沒套用。
+
+- 把這個 step 加進 run record，並再次寫出 `result: completed`，因為它是最後一個 step。

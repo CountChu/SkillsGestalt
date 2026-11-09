@@ -9,8 +9,9 @@ description: >-
   Specification and reaches the system through its CLI alone. Every document it writes is checked
   by a program - the RSDC alone, and the skill's citations against the RSDC. A 繁體中文 twin is the
   chinese skill's to write. A skill whose steps run no program has no system, and is refused with
-  no document written. Each step saves its outputs in a YAML file of its own, and the last step
-  writes an MD report of what every step found and decided.
+  no document written. Each step saves its outputs in a step file of its own and adds its time and
+  model to the run's run record, and the last step writes an MD report of what every step found
+  and decided.
   Triggers "write an RSDC for this skill", "build the design document of", "幫這個 skill 建 RSDC".
 ---
 
@@ -21,11 +22,18 @@ description: >-
 Terms that mean the same thing in every skill.
 
 - **`run step N`** — a trailing prompt selector naming one step.
-  It runs **only** that step, reading every earlier step's output back from the YAML checkpoint.
-- **Checkpoint Dir** — the per-run directory holding a skill's YAML checkpoint.
-  Every skill has its own; this skill's is given under **CONFIGURATION**.
-- **YAML checkpoint** — the step files inside the Checkpoint Dir: Step N writes its outputs to `step-{N}.yaml`, which no other step changes, so a later step reads them back instead of recomputing them.
-- **MD report** — the Markdown report a skill writes into the wiki vault, in a folder named after that skill, carrying the standard header (Skill, Checkpoint, Created, Updated, Prompt) above its result sections.
+  It runs **only** that step, reading every earlier step's output back from its step file.
+- **Run Number** — the number of one run, `{yymmdd}.{N}`.
+  `{N}` is the sequence number of the run of this skill on that date, and it starts at 1.
+- **Working Dir** — the directory for one run, which holds all the working data of the run: its step files, its data files and its temporary files.
+  In this skill, it is the Checkpoint Dir, and **CONFIGURATION** gives it.
+  The skill does not remove it.
+- **Checkpoint Dir** — a Working Dir in `checkpoints\` at the root of the workspace.
+- **Step file** — the `step_{N}.yaml` in the Working Dir.
+  Step N writes its outputs there, and no other step changes it, so a later step reads them back instead of recomputing them.
+- **Run record** — the file that records the time and the model of each step of one run.
+  The analysis of the efficiency of a skill uses it.
+- **MD report** — the Markdown report a skill writes into the wiki vault, in a folder named after that skill, carrying the standard header (Skill, Run record, Created, Updated, Prompt) above its result sections.
 - **no forward-reference** — the rule that a step must never depend on a step that comes after it.
   Naming a later step to route control flow does not break it; borrowing that step's output does.
 
@@ -42,7 +50,7 @@ The glossary owns each definition — a step uses the term rather than restating
 - **system name** — the PascalCase name Step 4 gives the system, such as `StopPriceChecker`.
   It names the RSDC pair.
 - **delimitation** — Step 4's decision, confirmed by the user: the system, its name, its stages, its components' role names, its data of each kind, and what stays in the target skill.
-  Step 4 keeps it in `step-4.yaml`, and Step 5 reads it back from there.
+  Step 4 keeps it in `step_4.yaml`, and Step 5 reads it back from there.
 - **Answers** — the user's replies to what the steps ask during a run: a choice, a confirmation or a correction.
   They are one-run data: the step that asked keeps what an answer decided in its own step file, never the answer itself, and a rerun of that step asks again.
   Only a correction to the delimitation becomes content of the RSDC; every other answer only steers the step that asked.
@@ -58,7 +66,7 @@ The glossary owns each definition — a step uses the term rather than restating
 - **stage** — an activity of a dataflow, in the RSDC standard's sense.
   The system's stages are named in the RSDC; the target skill's own Dataflow draws its steps instead (Step 8).
 - **step inventory** — the Source Scanner's list of the Skill Source's steps, each with the programs it runs.
-  Step 3 keeps it in `step-3.yaml`.
+  Step 3 keeps it in `step_3.yaml`.
 - **target scripts and data** — the target skill's scripts — every program of the step inventory, and every module they load from the workspace — and their data: the inputs the programs read, and the outputs of the target skill's most recent runs.
   The facts of the RSDC are read from them (Steps 4 and 5); this skill never writes them.
 - **Source Scanner** — compile-skill's `scan_source.py`, which validates a `SKILL.md` and prints its step inventory.
@@ -74,13 +82,26 @@ The glossary owns each definition — a step uses the term rather than restating
 
 Concrete values this skill runs with.
 
-- **Checkpoint Dir** — `checkpoints/gen-rsdc-skill/{target}-{yymmdd-hhmm}/`, holding one `step-{N}.yaml` per step, where `{target}` is the target skill's directory name and `{yymmdd-hhmm}` is stamped by Step 0 of a whole run; a `run step N` reuses the newest Checkpoint Dir of the same target skill.
-- **MD report** — `{wikiDir}/gen-rsdc-skill/gen-rsdc-skill-{target}-{yymmdd-hhmm}.md`, written by Step 10 alone and carrying the same `{target}` and stamp as the Checkpoint Dir, where `wikiDir` comes from the workspace [config.yaml](config.yaml) (resolved in Step 0) — never hardcode the wiki root.
+The inputs and tools, which the run reads or runs:
+
+- **Workspace configuration** — the [config.yaml](config.yaml) at the root of the workspace.
 - **RSDC standard** — `{skillGroups.common}/references/RSDC-Standard.md`, with its diagram notation in `{skillGroups.common}/references/DFD.md`.
 - **RSDC template** — [RSDC-Skill-System-tmp.md](assets/RSDC-Skill-System-tmp.md) and its twin [RSDC-Skill-System-tmp-tw.md](assets/RSDC-Skill-System-tmp-tw.md), in `{skillGroups.common}/skills/gen-rsdc-skill/assets/`.
 - **Source Scanner** — `{skillGroups.common}/skills/compile-skill/scripts/scan_source.py`.
 - **RSDC Checker** — `{skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py`.
 - **Dependency Checker** — `{skillGroups.common}/scripts/depends_on.py`.
+- **README template** — `{skillGroups.common}/templates/README-tmp.md`.
+- **shared report rules** — `{skillGroups.common}/rules/report-md-rules.md` and `{skillGroups.common}/rules/run-data-rules.md`.
+- **target scripts and data** — the scripts of the target skill and their data, which Step 4 reads whole.
+
+The working data of a run, which no person and no skill reads after the run:
+
+- **Working Dir** — the Checkpoint Dir, `checkpoints\gen-rsdc-skill\{yymmdd}.{N}\`, holding one step file per step; a `run step N` uses the Working Dir of the run Step 0 finds for it.
+
+The last outputs, which a person, a different skill or a subsequent analysis reads:
+
+- **Run record** — `database\skill-runs\gen-rsdc-skill\{yymmdd}.{N}.yaml`, with the same Run Number as the Working Dir.
+- **MD report** — `{wikiDir}/gen-rsdc-skill/gen-rsdc-skill-{target}-{yymmdd}.{N}.md`, written by Step 10 alone, where `{target}` is the target skill's directory name and `{yymmdd}.{N}` is the Run Number, and where `wikiDir` comes from the workspace [config.yaml](config.yaml) (resolved in Step 0) — never hardcode the wiki root.
 - **Skill Source** — `{skillGroups[<group>]}/skills/<skill-name>/SKILL.md`, resolved in Step 1.
 - **RSDC** — `<system name>-RSDC.md`, in the Skill Source's `references/`.
 
@@ -92,16 +113,15 @@ Concrete values this skill runs with.
 - A step that a program can do deterministically must be run as a script.
   A step that needs reading, judgement, or summarization **must not** be scripted — write it as natural-language instructions for the agent to perform directly.
 - **Honour a `run step N` selector**: run Step 0, Step 1 and Step 2 — every run needs the run Step 0 sets up, the files Step 1 locates and the check Step 2 makes — then Step N if it comes later, then Step 10, which writes the MD report, and stop; never another step.
-  Step N reads every earlier step's output back from that step's file in the newest Checkpoint Dir of the same target skill; each step the run passes through rewrites its own `step-{N}.yaml`, and every other step's file stays as it was.
-- **Besides its YAML checkpoint and MD report, this skill writes the RSDC and the Skill Source** — nothing else, and nothing in 繁體中文.
+  Step N reads every earlier step's output back from its step file in the Working Dir of the run Step 0 finds; each step the run passes through rewrites its own `step_{N}.yaml` and adds itself to that run's run record, every other step file stays as it was, and Step 10 updates only the sections of the steps that ran.
+- **Besides its step files, its run record and its MD report, this skill writes the RSDC and the Skill Source** — nothing else, and nothing in 繁體中文.
   The RSDC twin and the SKILL twin are the `chinese` skill's to write, never this skill's; a run that changes the RSDC or the Skill Source leaves the twin beside it stale, and the MD report says so.
 - Follow [report-md-rules.md](../../rules/report-md-rules.md) for the MD report's header and shape.
-- Follow [report-yaml-rules.md](../../rules/report-yaml-rules.md) for the fields every step file carries — `title` and `time`, and in `step-0.yaml` also `skill`, `model` and `prompt` — but not for its layout: this skill keeps one `step-{N}.yaml` per step, not `step_{N}` groups in one `process.yaml`.
-- **`step-{N}.yaml` has exactly one writer: Step N.**
+- Follow [run-data-rules.md](../../rules/run-data-rules.md) for the Run Number, the step files, the run record and the Working Dir of a run.
+- **`step_{N}.yaml` has exactly one writer: Step N.**
   No other step adds to, edits or deletes it, not even to supersede it; a later step that concludes something writes that into its own file.
   A file several steps write into is lost the moment its first step runs again: the rerun rewrites it whole, and every later step's result is gone without a word.
-- Follow [scratch-rules.md](../../rules/scratch-rules.md) for where a run's throwaway files go and how they are cleaned up.
-- **A step that stops the skill first saves its own `step-{N}.yaml`, with `stopped` saying why, and Step 10 still runs** — once Step 0 has resolved the Checkpoint Dir — so that the MD report says where and why the run stopped.
+- **A step that stops the skill first saves its own `step_{N}.yaml`, with `stopped` saying why, and Step 10 still runs** — once Step 0 has resolved the Working Dir — so that the MD report says where and why the run stopped.
   A run that stops without a word in its report reads as one that never ran.
 - **The RSDC standard and the RSDC template decide what an RSDC is; this file decides how one is written.**
   Read the standard and the template whole on every run that writes or reviews an RSDC, never from the memory of an earlier run.
@@ -112,7 +132,7 @@ Concrete values this skill runs with.
   This skill writes documents.
   A program that misbehaves, or a step of the Skill Source that contradicts a program, is reported to the user, who decides whether it is fixed — and a fix is a change of its own, not a side effect of a design.
 - **The dependency between the two documents runs one way.**
-  The Skill Source is the upper document: it cites the RSDC, and the RSDC never names the target skill — not its name, its steps, its `SKILL.md`, its directory, its MD report, its YAML checkpoint, its agent.
+  The Skill Source is the upper document: it cites the RSDC, and the RSDC never names the target skill — not its name, its steps, its `SKILL.md`, its directory, its MD report, its step files, its agent.
   An agent holding only the RSDC must still be able to run the system; a design that names its caller stops being enough on its own, and renaming one of the skill's steps silently falsifies it.
 - **The RSDC defines in chapter 2 every name the skill depends on**: the programs it runs and their arguments (CLI), the request it gives, the records it reads back, and the constants it keeps in step (Rule Constants).
   A name the skill needs and the RSDC does not define is one the skill invented, and nothing keeps the two spellings together.
@@ -125,10 +145,10 @@ Concrete values this skill runs with.
   An import ties the skill to the system's inside, which a refactor may rearrange without changing a single argument — breaking the skill without an error.
 - **Where the skill keeps the programs is the skill's to say**, under its CONFIGURATION and its Directory Structure — so the RSDC has no Directory Structure section, the one place this skill departs from the RSDC standard.
   An RSDC holding the tree would name the skill's directory, and go stale whenever the skill moved.
-- **Before the skill ends, display the paths of the MD report, the Checkpoint Dir, the RSDC and the Skill Source** — the paths only, never their contents, each rendered as a clickable Markdown link and never as inline code or plain text.
+- **Before the skill ends, display the paths of the MD report, the run record, the RSDC and the Skill Source** — the paths only, never their contents, each rendered as a clickable Markdown link and never as inline code or plain text.
   Do this for every run, including a partial one such as `run step 9`.
-  - Link the **MD report** with an `obsidian://open?vault={vaultName}&file=<vault-relative-path>` URI — the vault lives outside this workspace, so a workspace-relative target cannot resolve to it (e.g. `[gen-rsdc-skill-check-stop-price-261009-1530.md](obsidian://open?vault={vaultName}&file=gen-rsdc-skill/gen-rsdc-skill-check-stop-price-261009-1530.md)`).
-  - Link the **Checkpoint Dir** with a workspace-relative, forward-slash target (e.g. `[check-stop-price-261009-1530/](checkpoints/gen-rsdc-skill/check-stop-price-261009-1530/)`).
+  - Link the **MD report** with an `obsidian://open?vault={vaultName}&file=<vault-relative-path>` URI — the vault lives outside this workspace, so a workspace-relative target cannot resolve to it (e.g. `[gen-rsdc-skill-check-stop-price-261009.1.md](obsidian://open?vault={vaultName}&file=gen-rsdc-skill/gen-rsdc-skill-check-stop-price-261009.1.md)`).
+  - Link the **run record** with a workspace-relative, forward-slash target (e.g. `[261009.1.yaml](database/skill-runs/gen-rsdc-skill/261009.1.yaml)`).
 
 # Prompt Examples
 
@@ -175,17 +195,17 @@ flowchart TB
     CODE[/"target scripts and data"/]
     SRC[("Skill Source")]
     RSDC[("RSDC")]
-    CK0[("step-0.yaml")]
-    CK1[("step-1.yaml")]
-    CK2[("step-2.yaml")]
-    CK3[("step-3.yaml")]
-    CK4[("step-4.yaml")]
-    CK5[("step-5.yaml")]
-    CK6[("step-6.yaml")]
-    CK7[("step-7.yaml")]
-    CK8[("step-8.yaml")]
-    CK9[("step-9.yaml")]
-    CK10[("step-10.yaml")]
+    CK0[("Step file: step_0.yaml")]
+    CK1[("Step file: step_1.yaml")]
+    CK2[("Step file: step_2.yaml")]
+    CK3[("Step file: step_3.yaml")]
+    CK4[("Step file: step_4.yaml")]
+    CK5[("Step file: step_5.yaml")]
+    CK6[("Step file: step_6.yaml")]
+    CK7[("Step file: step_7.yaml")]
+    CK8[("Step file: step_8.yaml")]
+    CK9[("Step file: step_9.yaml")]
+    CK10[("Step file: step_10.yaml")]
     MD[("MD report")]
 
     USER --> PROMPT
@@ -193,7 +213,7 @@ flowchart TB
     PROMPT --> S0(["Step 0 - Warmup"])
     CONFIG --> S0
     ANS --> S0
-    S0 --> CK0
+    S0 <--> CK0
     CK0 --> S1(["Step 1 - Locate the Skill Source and Its RSDC"])
     SRC --> S1
     ANS --> S1
@@ -243,7 +263,7 @@ flowchart TB
     CK8 --> S10
     CK9 --> S10
     S10 --> CK10
-    S10 --> MD
+    S10 <--> MD
     MD --> USER
     RSDC --> USER
     SRC --> USER
@@ -256,7 +276,8 @@ How to read the diagram:
 
 - A parallelogram is an external input: `config.yaml`, the RSDC standard, the RSDC template, the README template, and the target scripts and data.
   A flag is one-run data: the prompt and the Answers.
-  A cylinder is a record: each step's own file in the Checkpoint Dir, the MD report, the Skill Source and the RSDC.
+  A cylinder is a record: each step file, the MD report, the Skill Source and the RSDC.
+  Each step also adds its time and model to the run record, and the diagram does not show this record.
   A rounded box is a step; a double-edged box is a step that runs a program of an RSDC system, drawn shut — Step 3 and Step 9 run the Source Scanner, whose work [SkillCompiler-RSDC](skill-groups/common/skills/compile-skill/references/SkillCompiler-RSDC.md) §2.3 *Dataflow* draws, and Step 9 runs the RSDC Checker besides.
 - A hexagon is a role outside the skill: the user, who supplies the prompt and the Answers, and reads the MD report, the RSDC and the Skill Source.
 - A solid arrow moves data, the way the data moves; a two-headed arrow is data one step both reads and writes.
@@ -266,20 +287,19 @@ How to read the diagram:
 
 # Steps at a Glance
 
-Each step at a glance: the script it runs, and what it saves in the Checkpoint Dir.
-Step N writes `step-{N}.yaml`, and no other step changes it.
+Each step at a glance: the script it runs, and what it saves in its step file.
+Step N writes `step_{N}.yaml`, and no other step changes it.
+The title, the time and the model of each step go into the run record, not into its step file.
 
-Common keys, the same in every step's file:
+A key that any step file can carry:
 
-- `title`: the step's title, as its heading names it — such as `Warmup`.
-- `time`: `begin`, `end` and `taken`, in the forms [report-yaml-rules.md](../../rules/report-yaml-rules.md) gives.
 - `stopped`: only when the step stopped the skill — why it stopped (MUST FOLLOW).
 
 Each step's script, where it runs one, and its own keys, which the step that saves them describes:
 
-| Step | Script | YAML |
+| Step | Script | Step file |
 |---|---|---|
-| Step 0 - Warmup | — | `skill`, `model`, `prompt`, `targetSkill`, `runStep`, `checkpointDir`, `mdReport` |
+| Step 0 - Warmup | — | `runNumber`, `targetSkill`, `runStep`, `checkpointDir`, `mdReport` |
 | Step 1 - Locate the Skill Source and Its RSDC | — | `skillSource`, `rsdc`, `skillTwin`, `rsdcTwin` |
 | Step 2 - Check the RSDC Template Against the Standard | `check_rsdc.py --standard` | `standardVersion`, `templateVersion`, `twinVersion`, `pins`, `exitStatus` |
 | Step 3 - Scan the Skill Source | `scan_source.py` | `exitStatus`, `stepInventory` |
@@ -300,7 +320,7 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 ## Step 0 - Warmup
 
-- **Purpose**: set the run up — its config, which skill it designs for, a whole run or one step, and the Checkpoint Dir every step saves into — so that no later step re-derives where its files go.
+- **Purpose**: set the run up — its config, which skill it designs for, a whole run or one step, and the run whose Working Dir every step saves into and whose run record every step adds itself to — so that no later step re-derives where its files go.
 
 - Run `.venv` first.
   The Source Scanner imports `PyYAML`: check it with `python -c "import yaml"`, and if it is missing, stop and name it.
@@ -332,23 +352,28 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - If the target skill is missing, ask the user to type its name or path, and wait for the answer.
 
-- Resolve the Checkpoint Dir:
-  - **A whole run** stamps `{yymmdd-hhmm}` from the system clock and creates the Checkpoint Dir.
-    The MD report's path carries the same stamp; Step 10 writes the file.
-  - **A `run step N`** takes the newest Checkpoint Dir of the same target skill under `checkpoints/gen-rsdc-skill/`.
-    If there is none, say so and stop: Step N reads back what an earlier run saved, and no run has.
+- Save the canonical skill invocation, so that the run record can carry it as its `prompt`.
 
-- Save the canonical skill invocation for reference in later steps.
+- Find the run, its Working Dir and its MD report:
+  - **A whole run** gets the Run Number, as run-data-rules.md tells, and writes the run record of the run.
+    Its Working Dir is `checkpoints\gen-rsdc-skill\{yymmdd}.{N}\`, and the path of its MD report carries the target skill and the same Run Number; Step 10 writes the file.
+  - **A `run step N`** gets no Run Number of its own: it takes the run with the largest Run Number in `checkpoints\gen-rsdc-skill\` whose `step_0.yaml` names the same target skill, and uses the Working Dir and the MD report of that run.
+    It adds the steps it runs to the run record of that run, as run-data-rules.md tells, and keeps the `prompt` of the record: the invocation that started the run.
+  - If a `run step N` finds no such run, say so and stop: Step N reads back what an earlier run saved, and no run has.
+    Before it stops, it gets a Run Number and writes the run record as a whole run does, so that Step 10 can say why the run stopped.
 
-- Save `step-0.yaml` with:
+- Save `step_0.yaml` with:
+  - `runNumber`
   - `targetSkill`
   - `runStep`: N, or `null` on a whole run.
   - `checkpointDir`
   - `mdReport`
 
-- `step-0.yaml` holds this invocation only, and the next run's Step 0 overwrites it.
+- Add this step to the run record.
 
-- Display the target skill, whether this is a whole run or `run step N`, and the Checkpoint Dir.
+- `step_0.yaml` holds the latest invocation of its run: a `run step N` writes it again.
+
+- Display the target skill, whether this is a whole run or `run step N`, the Run Number and the Working Dir.
 
 
 ## Step 1 - Locate the Skill Source and Its RSDC
@@ -357,7 +382,7 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - Every run passes through this step, a `run step N` included (MUST FOLLOW).
 
-- Read the target skill back from `step-0.yaml`, and resolve the Skill Source from it: a path ending in `SKILL.md` is taken as it is, and a bare skill name is looked up as `<root>/skills/<name>/SKILL.md` under every `skillGroups` root.
+- Read the target skill back from `step_0.yaml`, and resolve the Skill Source from it: a path ending in `SKILL.md` is taken as it is, and a bare skill name is looked up as `<root>/skills/<name>/SKILL.md` under every `skillGroups` root.
   A name found under more than one root is ambiguous: list the matches and ask which one, never pick the first.
 
 - Confirm the Skill Source exists and its YAML frontmatter parses with a `name` key.
@@ -371,13 +396,15 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - Say whether a SKILL twin sits beside the Skill Source, and an RSDC twin beside the RSDC.
 
-- Save `step-1.yaml` with:
+- Save `step_1.yaml` with:
   - `skillSource`
   - `rsdc`: its path, or `null` when there is none yet.
   - `skillTwin`: whether it exists.
   - `rsdcTwin`: whether it exists.
 
-- `step-1.yaml` holds this invocation only, like `step-0.yaml`, and the next run's Step 1 overwrites it.
+- Add this step to the run record.
+
+- `step_1.yaml` holds the latest invocation of its run, like `step_0.yaml`: a `run step N` writes it again.
 
 - Display the resolved Skill Source path, the RSDC path or that there is none yet, and whether the SKILL twin and the RSDC twin exist.
 
@@ -401,12 +428,14 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
   - `2`: a file is missing, records no version, does not link the standard, or records no fingerprint after a link to it.
     Report what it printed, and stop.
 
-- Save `step-2.yaml` with:
+- Save `step_2.yaml` with:
   - `standardVersion`
   - `templateVersion`
   - `twinVersion`
   - `pins`: for each file of the standard the template links, the fingerprint the template and its twin record, and the file's fingerprint now
   - `exitStatus`
+
+- Add this step to the run record.
 
 - Display the three versions and each file's fingerprint, recorded and now, and whether they agree.
 
@@ -427,9 +456,11 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 - If no step of the step inventory runs a program, **stop the skill here**: the system is the programs a skill runs, so the target skill has none, and no RSDC is written for it.
   Say so, and write no document.
 
-- Save `step-3.yaml` with:
+- Save `step_3.yaml` with:
   - `exitStatus`
   - `stepInventory`: each step's number and title, and the programs it runs, each marked as inside the target skill's directory or not.
+
+- Add this step to the run record.
 
 - Display the step inventory as a table with columns **Step**, **Title** and **Programs**, each program marked as inside the target skill's directory or not.
 
@@ -438,7 +469,7 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - **Purpose**: settle what the RSDC specifies before a line of it is written — the boundary between the system and the skill shapes every chapter, and moving it afterwards rewrites most of them.
 
-- Read the step inventory back from `step-3.yaml`.
+- Read the step inventory back from `step_3.yaml`.
 
 - Read, whole:
   - the Skill Source;
@@ -469,24 +500,26 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
   3. The stages, in order, each named for its activity, with the component that performs it and that component's role name.
   4. The inputs, grouped as the Dataflow will draw them; the records; the request and the outcome; the roles outside the system.
   5. The prose documents whose rules the programs carry as copies, if any, and the constants that hold them.
-  6. What stays in the target skill: its reading and judgement, its MD report and that report's contract, its YAML checkpoint, and where it keeps its files.
+  6. What stays in the target skill: its reading and judgement, its MD report and that report's contract, its step files, and where it keeps its files.
   7. Every disagreement between the Skill Source and the programs, with the file and line of each side.
 
 - Display the delimitation as a **Delimitation table** with columns **Item**, **Decision** and **Why**, followed by the disagreements.
   Then ask the user to confirm or correct it.
   Write nothing until it is confirmed; apply a correction, and display the table again.
 
-- Save `step-4.yaml` with:
+- Save `step_4.yaml` with:
   - `delimitation`: the seven decisions as confirmed.
   - `corrections`: the changes the user made before confirming.
   - `disagreements`
+
+- Add this step to the run record.
 
 
 ## Step 5 - Write the RSDC
 
 - **Purpose**: write the design itself — the one part of this workflow that is authorship, and the reason the skill exists.
 
-- Read the delimitation back from `step-4.yaml`.
+- Read the delimitation back from `step_4.yaml`.
 
 - Read the RSDC standard and the RSDC template, whole.
 
@@ -513,11 +546,13 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
   Through that line the `chinese` skill copies every sentence the RSDC shares with the template from the template's twin, and a later check can tell when the template changed.
   - Example: `python {skillGroups.common}/scripts/depends_on.py record "{skillGroups.dedi}/skills/check-stop-price/references/StopPriceChecker-RSDC.md" --target "[[RSDC-Skill-System-tmp]]" --config config.yaml`
 
-- Save `step-5.yaml` with:
+- Save `step_5.yaml` with:
   - `rsdc`: its path.
   - `lines`
   - `outcome`: `new` when this run wrote the first RSDC, `rewritten` when it replaced one, or `refused` when the user kept the existing one.
   - `templateRecorded`: the fingerprint and date recorded after the link to the RSDC template — absent when the user kept the existing RSDC.
+
+- Add this step to the run record.
 
 - Display the RSDC path and its line count, whether it is new, rewritten or kept, and the template fingerprint recorded.
 
@@ -541,10 +576,12 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 - Apply the chosen changes to the RSDC.
   Where a change moves a rule, update every citation of it, its row of the goals table and its row of the Verification Obligations along with it.
 
-- Save `step-6.yaml` with:
+- Save `step_6.yaml` with:
   - `findings`: each class's numbered items, each with the sections it names and the change proposed.
   - `applied`: the items the user chose, and every contradiction.
   - `lines`
+
+- Add this step to the run record.
 
 - Display how many changes were made, and the new line count.
 
@@ -566,10 +603,12 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - Read every `[WARN]`: correct a real defect; leave a false alarm, and say why it stays.
 
-- Save `step-7.yaml` with:
+- Save `step_7.yaml` with:
   - `verdict`
   - `runs`: how many times the checker ran before it passed.
   - `warningsLeft`: each with the reason it stays.
+
+- Add this step to the run record.
 
 - Display the verdict line, and each warning left with the reason it stays.
 
@@ -590,7 +629,7 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
   - **MUST FOLLOW** gains four rules: tokens are spent in the skill, never in the system — never do by reading what a program does; `<system name>-RSDC` is the source of record for the system — a step names the section it builds against, and where the two disagree the RSDC wins and the disagreement is reported rather than resolved in the run; `<system name>-RSDC` is never edited during a run — a change to the system is made deliberately, to both halves of the pair under the same number; and `<system name>-RSDC` never names the skill — the names the skill depends on are defined in its chapter 2, the skill cites none of its chapters 3 and 4, and where the programs are kept is stated under CONFIGURATION and Directory Structure.
   - **Dataflow**, a `# Dataflow` section after Prompt Examples, drawn as the README template's `## Dataflow` is: one diagram of the Workflow's steps and the data each reads and writes, with its legend, and no table or prose beside it — the steps already say what each one reads and writes.
     A step that runs a program of the system is a double-edged box, `[["…"]]`, never drawn open: its inside is the system's, and the legend cites §2.3 *Dataflow* for it — redrawn here, it would be a second copy of the RSDC's diagram, and the two would drift.
-    Its arrows are what the step hands the program, the records the program writes, and the step's own group of the YAML checkpoint: the program writes only its records, and the step only that group.
+    Its arrows are what the step hands the program, the records the program writes, and the step's own step file: the program writes only its records, and the step only its step file.
   - **Report Contract**, a `# Report Contract` section with `## Presentation Contract` and `## Presentation Form`, when the skill writes an MD report.
     The report is the skill's, so its contract lives here and not in the RSDC; it keeps plain everything the RSDC's Presentation Contract says, and the step that writes the report reads this contract, not the RSDC.
   - **Workflow**: a step that runs a program gives its full command — `python <program>` with every argument the CLI sets — and what to do on each exit status.
@@ -603,10 +642,12 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - Then review the Skill Source section by section for repetition, sorting the findings into A, B and C as Step 6 does — where a contract a step must read on its own, such as the Report Contract, is not repetition: display the findings, ask which to apply, and apply them.
 
-- Save `step-8.yaml` with:
+- Save `step_8.yaml` with:
   - `changes`: what changed in each part of the Skill Source.
   - `findings`: the repetition findings.
   - `applied`: the findings applied.
+
+- Add this step to the run record.
 
 - Display the Skill Source path, and what changed, part by part.
 
@@ -617,7 +658,7 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - Run the **Source Scanner** on the Skill Source, as Step 3 does.
   It must exit `0`.
-  Its step inventory must also list the steps of the step inventory in `step-3.yaml`; a step that changed without the user's agreement is put back.
+  Its step inventory must also list the steps of the step inventory in `step_3.yaml`; a step that changed without the user's agreement is put back.
 
 - Run the **RSDC Checker** on the RSDC and the Skill Source.
   - Example: `python {skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py --rsdc "{skillGroups.dedi}/skills/check-stop-price/references/StopPriceChecker-RSDC.md" --skill "{skillGroups.dedi}/skills/check-stop-price/SKILL.md"`
@@ -629,7 +670,7 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
     When the skill needs a name the RSDC does not define, the RSDC lacks a contract: add it to chapter 2 of the RSDC, and run the Step 7 script again as well.
   - `2`: correct the command or the paths, and run it again.
 
-- Save `step-9.yaml` with:
+- Save `step_9.yaml` with:
   - `scannerVerdict`
   - `inventoryMatches`
   - `checkerVerdict`
@@ -637,34 +678,43 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
   - `contractsAdded`: the names added to chapter 2 of the RSDC, if any.
   - `dependencyRecorded`: the fingerprint recorded in the Skill Source, and its date.
 
+- Add this step to the run record.
+
 - Display both verdicts, the fingerprint recorded, and the contracts added, if any.
 
 
 ## Step 10 - Write the MD Report
 
-- **Purpose**: tell the run once, from what its steps saved — a report appended step by step has a writer for every section, and a step run again alone leaves it telling two different runs.
+- **Purpose**: tell the run once, from what its steps saved — a report appended step by step has a writer for every section; and a `run step N` that wrote the report whole again would set what it ran beside what it only read back, as if one invocation had run every step.
 
-- Every run ends with this step, a `run step N` and a run a step has stopped included (MUST FOLLOW), once Step 0 has resolved the Checkpoint Dir.
+- Every run ends with this step, a `run step N` and a run a step has stopped included (MUST FOLLOW), once Step 0 has found the run.
 
-- Read every `step-{N}.yaml` in the Checkpoint Dir.
+- **A whole run** reads every `step_{N}.yaml` in the Working Dir, and writes the MD report whole.
 
-- Write the MD report as [report-md-rules.md](../../rules/report-md-rules.md) gives it, titled `RSDC for <target skill>`: the header, with the Checkpoint Dir as its Checkpoint and the canonical skill invocation in `step-0.yaml` as its Prompt, then one section per step file, in step order, each written from that file alone, and a last section on the twins:
-  - **Run** (`step-0.yaml`): the target skill, whether this was a whole run or `run step N`, and the Checkpoint Dir.
-  - **Target Skill** (`step-1.yaml`): the Skill Source path, the RSDC path or that there is none yet, and whether the SKILL twin and the RSDC twin exist.
-  - **Template and Standard** (`step-2.yaml`): the three versions and each file's fingerprint, recorded and now, and whether they agree.
-  - **Step Inventory** (`step-3.yaml`): a table with columns **Step**, **Title** and **Programs**, each program marked as inside the target skill's directory or not.
-  - **Delimitation** (`step-4.yaml`): the Delimitation table as confirmed, followed by the disagreements.
-  - **RSDC** (`step-5.yaml`): its path and line count, and whether it is new, rewritten or kept.
-  - **Review** (`step-6.yaml`): the findings, one numbered list per class, each item marked applied or not, and the new line count.
-  - **RSDC Check** (`step-7.yaml`): the verdict line, and each warning left with the reason it stays.
-  - **Skill Source** (`step-8.yaml`): its path, what changed part by part, and the repetition findings, each marked applied or not.
-  - **Citation Check** (`step-9.yaml`): both verdicts, the fingerprint recorded, and the contracts added, if any.
-  - **Twins**: each twin `step-1.yaml` found, and whether this run changed what it translates — the RSDC for the RSDC twin, the Skill Source for the SKILL twin — which leaves it stale for the `chinese` skill to refresh.
+- **A `run step N`** reads the step files of the steps this invocation ran — Steps 0, 1, 2 and N — and the MD report of the run.
+  It updates only the sections of those steps and the **Twins** section, and keeps every other section, and the Created and the Prompt of the header, as they are.
+  The run record tells which invocation ran each step.
+  If the MD report is not there, it writes the report whole, as a whole run does.
 
-- A step whose file holds `stopped` gets its section all the same, saying why; a step with no file in the Checkpoint Dir gets no section.
+- The MD report is written as [report-md-rules.md](../../rules/report-md-rules.md) gives it, titled `RSDC for <target skill>`: the header, with the path of the run record as its Checkpoint and the `prompt` of the run record as its Prompt, then one section per step file, in step order, each written from that file alone, and a last section on the twins:
+  - **Run** (`step_0.yaml`): the target skill, whether this was a whole run or `run step N`, the Run Number and the Working Dir.
+  - **Target Skill** (`step_1.yaml`): the Skill Source path, the RSDC path or that there is none yet, and whether the SKILL twin and the RSDC twin exist.
+  - **Template and Standard** (`step_2.yaml`): the three versions and each file's fingerprint, recorded and now, and whether they agree.
+  - **Step Inventory** (`step_3.yaml`): a table with columns **Step**, **Title** and **Programs**, each program marked as inside the target skill's directory or not.
+  - **Delimitation** (`step_4.yaml`): the Delimitation table as confirmed, followed by the disagreements.
+  - **RSDC** (`step_5.yaml`): its path and line count, and whether it is new, rewritten or kept.
+  - **Review** (`step_6.yaml`): the findings, one numbered list per class, each item marked applied or not, and the new line count.
+  - **RSDC Check** (`step_7.yaml`): the verdict line, and each warning left with the reason it stays.
+  - **Skill Source** (`step_8.yaml`): its path, what changed part by part, and the repetition findings, each marked applied or not.
+  - **Citation Check** (`step_9.yaml`): both verdicts, the fingerprint recorded, and the contracts added, if any.
+  - **Twins**: each twin `step_1.yaml` found, and whether this run changed what it translates — the RSDC for the RSDC twin, the Skill Source for the SKILL twin — which leaves it stale for the `chinese` skill to refresh.
 
-- Save `step-10.yaml` with:
+- A step whose file holds `stopped` gets its section all the same, saying why; a step with no file in the Working Dir gets no section.
+
+- Save `step_10.yaml` with:
   - `mdReport`: its path.
-  - `sections`: the sections written.
+  - `sections`: the sections written or updated.
 
-- Close with the paths of the MD report, the Checkpoint Dir, the RSDC and the Skill Source as clickable Markdown links (MUST FOLLOW), and name each twin this run left stale.
+- Add this step to the run record, and write its `result`, as run-data-rules.md tells: `completed`, or `stopped`, with `stopped_at` naming the step that stopped the skill.
+
+- Close with the paths of the MD report, the run record, the RSDC and the Skill Source as clickable Markdown links (MUST FOLLOW), and name each twin this run left stale.

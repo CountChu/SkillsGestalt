@@ -63,8 +63,9 @@ reviewer 對照草稿與原文的方式，就像在 code review 裡讀程式碼�
 - **Caller** —— 1.1 所說的 caller 在本章中的 role：呼叫 app 路由的一方。
 - **Hub** —— 1.4 所說的 hub 在本章中的 role：app 自己的 server 以外、在它自己選定的路徑前綴之下提供這個 app 的程式。
 - **Reviewer** —— 1.1 的 reviewer：打開 review page、為它的 item 加上標記的人。
-- **Run directory** —— asd-ste 的一個 Checkpoint Dir：存放一份草稿的執行所寫出的一切的目錄，review page 也在其中。
-- **Review root** —— app 提供其中各個 run directory 的那個目錄：伺服器啟動所在目錄下的 `checkpoints/asd-ste`，除非另外告訴伺服器。
+- **Run directory** —— asd-ste 的一個 Checkpoint Dir：存放 asd-ste 一次執行所寫出的一切的目錄，review page 也在其中。
+- **Workspace root** —— app 的程式啟動時所在 workspace 的根目錄：告訴那支程式的目錄，否則是從目前的目錄往上，最近一個 `config.yaml` 含有 `skillGroups` 的目錄；絕不是從程式自己的位置找到的目錄，因為 workspace 可以從另一個 workspace 就地讀取存放這個 app 的 skill group。
+- **Review root** —— app 提供其中各個 run directory 的那個目錄：workspace root 下的 `checkpoints/asd-ste`，除非另外告訴伺服器；以相對路徑給的 review root，也從 workspace root 讀起。
 - **Item** —— review notes 的一個清單項目；它底下的每個 item，各自也是一個 item。
 - **Review status** —— 一個 item 帶的標記：待審、審核通過、待解釋或不通過。
   審核通過表示草稿在這一處照現狀通過；不通過表示草稿這一處必須修改，reviewer 同意這個 item 的建議時也是如此；待解釋表示 reviewer 看不懂這個 item 的處理方式，由 agent 在對話中解釋。
@@ -88,13 +89,14 @@ app 處理的每一種資料：它是什麼、用來做什麼，以及它的內�
 
 其餘的輸入位在 run directory 裡：
 
-- **Run checkpoint** —— 這份草稿執行的 YAML record：必須有 STE check 的 verdict 與留下的 warning，也可以有保留原文措辭的陳述。
+- **Run checkpoint** —— 這份草稿那次執行的 step file：STE check 的必須有它的 verdict 與留下的 warning，改寫的那一份若存在，則有保留原文措辭的陳述。
 - **Review notes** —— agent 請 reviewer 判斷的重點，是由標題與清單組成的 HTML 片段，以繁體中文寫，每一行都以 line reference 指出。
 
 **Record**
 
 - **Review page** —— 一次建頁寫進 run directory 的頁面：三個 tab 上的 the four files、run checkpoint 與草稿對這次改寫說了什麼、每個 item 前有狀態方框的 review notes，以及建頁當時的 review statuses。
 - **Review statuses** —— 存在 run directory 裡的 record，記錄每個不是待審的 item 的 review status，連同標記當時這個 item 的文字，以及最後一次儲存的時間。
+  還沒有它的 run directory 建頁時，可以從同一份原文較早的 run directory 的 review statuses 開始。
 
 **One-run data**
 
@@ -108,7 +110,7 @@ app 處理的每一種資料：它是什麼、用來做什麼，以及它的內�
 
 - **Build the page** 以 the four files 檢查每一個 line reference，並寫出 review page，連同建頁所依據的 review statuses。
 - **Show the page** 回答 review page，或列出每一份 review page 及其審核進度的索引。
-- **Read the statuses** 把最後一次儲存的 review statuses 交給頁面，讓 reviewer 看到最新的標記，而不是建頁當時的。
+- **Read the statuses** 把最後一次儲存的 review statuses 交給頁面，讓 reviewer 看到最新的標記，而不是建頁當時的；它的 run directory 還沒有 review statuses 時，頁面保留建頁時的標記，第一次儲存就把它們寫進那裡。
 - **Save the statuses** 以那一份 review page 的 item 檢查頁面送來的標記，並把它們寫成 review statuses。
 
 ### DFD
@@ -190,11 +192,11 @@ flowchart TB
 
 app 寫出或讀取的資料如何命名與配置。
 
-- **Run directory** —— review root 底下直接的一個目錄，名稱只有字母、數字、`.`、`_` 與 `-`；asd-ste 依原文把它命名為 `{parent}-{name}`。
+- **Run directory** —— review root 底下直接的一個目錄，名稱只有字母、數字、`.`、`_` 與 `-`；asd-ste 把它命名為 `{yymmdd}.{N}`，也就是那次執行的 Run Number，而它的 `step_0.yaml` 以 `source_file` 指名原文。
 - **Review page** —— run directory 裡的 `step_6-review.html`，UTF-8 HTML。
 - **Review notes** —— run directory 裡的 `step_6-notes.html`，UTF-8 HTML。
 - **Review statuses** —— run directory 裡的 `step_6-status.json`，UTF-8 JSON。
-- **Run checkpoint** —— run directory 裡的 `process.yaml`。
+- **Run checkpoint** —— run directory 裡的 `step_3.yaml`，以及存在時的 `step_2.yaml`。
 - **Line reference** —— `{{en-o:N}}` 指原文、`{{en-d:N}}` 指 STE 草稿、`{{tw-o:N}}` 指原文的 twin、`{{tw-d:N}}` 指草稿的 twin；`N-M` 是範圍，`N,M` 是清單，例如 `{{tw-d:7,9-10}}`。
   `{{` 與 `}}` 在 review notes 裡沒有其他意思：兩者之間任何不是 line reference 的內容，都會讓建頁失敗。
 - **Item key** —— 指稱一個 item 的 12 個小寫十六進位字元。
@@ -223,9 +225,9 @@ review statuses 的欄位：
 
 ## 2.5 Config Schemas
 
-app 不讀任何設定檔，所以沒有 schema。
-設定檔原本會放的內容，改由命令列提供，作為每支程式啟動方式的一部分：review root、監聽的 port 與位址，以及建頁用的路徑。
-省略某個值時，伺服器使用 review root `checkpoints/asd-ste`、port 8790 與位址 127.0.0.1，建頁則以原文的檔名作為頁面標題。
+app 不讀任何設定檔，所以沒有 schema：伺服器只讀 `config.yaml` 裡有沒有 `skillGroups`，以找到 workspace root。
+設定檔原本會放的內容，改由命令列提供，作為每支程式啟動方式的一部分：workspace root、review root、監聽的 port 與位址，以及建頁用的路徑。
+省略某個值時，伺服器使用它找到的 workspace root、review root `checkpoints/asd-ste`、port 8790 與位址 127.0.0.1，建頁則使用它找到的 workspace root，並以原文的檔名作為頁面標題。
 
 ## 2.6 Derivation Rules
 
@@ -301,19 +303,19 @@ caller 只透過這些路由、或 hub 所掛載的 handler 接觸 app，絕不 
 除了這些路由，app 還有兩個命令列入口，由 agent 執行：
 
 - **The build** —— 執行 Build the page。
-  - **Takes** —— the four files、run checkpoint、review notes、要寫出的 review page 的路徑，有的話再加上 review statuses 的路徑；以及指定時的標題。
+  - **Takes** —— the four files、run checkpoint、review notes、要寫出的 review page 的路徑，有的話再加上 review statuses 的路徑，相對路徑從 workspace root 讀起；以及指定時的 workspace root 與標題。
   - **Answers** —— review page 與一份摘要：它的路徑、節數與行數、找到的 line reference、各 review status 的 item 數；exit status 0。
-  - **Refuses** —— 指不到任何一行的 line reference，以 exit status 1 回應，不寫出頁面；讀不到的檔案、沒有 STE check 結果的 run checkpoint，或錯誤的參數，以 exit status 2 回應。
+  - **Refuses** —— 指不到任何一行的 line reference，以 exit status 1 回應，不寫出頁面；讀不到的檔案、沒有 STE check 結果的 run checkpoint、錯誤的參數，或找不到 workspace root 的相對路徑，以 exit status 2 回應。
 - **The server** —— 啟動下面的路由，或在要求探測時，說明有沒有審核伺服器在回應。
-  - **Takes** —— review root、port 與位址，或全部省略；或是探測與 port。
+  - **Takes** —— workspace root、review root、port 與位址，或全部省略；或是探測與 port。
   - **Answers** —— 伺服器的 process 編號、它的 review root 與位址，然後一直執行到被停止；探測在有審核伺服器回應時以 0 結束，沒有任何東西回應時以 1，別的程式回應時以 2。
-  - **Refuses** —— 已被占用的 port，以 exit status 1 回應；超出範圍的 port 或不認得的參數，以 exit status 2 回應。
+  - **Refuses** —— 已被占用的 port，以 exit status 1 回應；超出範圍的 port、不認得的參數，或要提供頁面時找不到 workspace root，以 exit status 2 回應。
 
 路由：
 
 - `GET /` —— 執行 Show the page。
   - **Takes** —— 無
-  - **Answers** —— 索引：每一個有 review page 的 run directory，附上它的 item 數，以及審核通過、待解釋、不通過與待審各幾項，還有最後一次儲存的時間；以及如何關掉伺服器
+  - **Answers** —— 索引：每一個有 review page 的 run directory，附上它的 `step_0.yaml` 指名的原文、它的 item 數，以及審核通過、待解釋、不通過與待審各幾項，還有最後一次儲存的時間；以及如何關掉伺服器
   - **Refuses** —— 不拒絕任何東西
 - `GET /{run directory}/` —— 執行 Show the page。
   - **Takes** —— run directory 的名稱
@@ -321,7 +323,7 @@ caller 只透過這些路由、或 hub 所掛載的 handler 接觸 app，絕不 
   - **Refuses** —— 不符合 run directory 命名的名稱，或沒有 review page 的名稱，以 404 回應；其他 method，以 405 回應
 - `GET /{run directory}/status` —— 執行 Read the statuses。
   - **Takes** —— run directory 的名稱
-  - **Answers** —— review statuses；還沒有 record 或讀不到時，回答空的一組
+  - **Answers** —— review statuses；還沒有 record 或讀不到時，回答空的一組，而且沒有儲存的時間
   - **Refuses** —— 同 `GET /{run directory}/`
 - `PUT /{run directory}/status` —— 執行 Save the statuses。
   - **Takes** —— 帶 `items` 的 JSON body：頁面上所有不是待審的標記
@@ -418,8 +420,8 @@ Review Server 只決定要保存哪些標記：它從頁面讀出 item key，並
 
 ### Review Builder
 
-1. `main` 檢查 the four files 每一個都是檔案，並以 `read_lines` 讀入。
-2. 它以 PyYAML 載入 run checkpoint，沒有 `step_3` 群組時停下（2.8）。
+1. `main` 從 `workspace_root` 找到的 workspace root 讀起每一個相對路徑，檢查 the four files 每一個都是檔案，並以 `read_lines` 讀入。
+2. 它以 PyYAML 載入 run checkpoint，也就是 `--checkpoint` 指名的 run directory 裡的 `step_3.yaml` 與 `step_2.yaml`，沒有 `step_3.yaml` 時停下（2.8）。
 3. 它以 `pane` 建出 English 與中文兩個 tab，在第一層標題處以 `sections` 切開每個檔案，以 `render` 呈現每一行，並把每個 fenced block 摺起來；再以 `line_pane` 建出逐行對照的 tab，它略過 `pairing_block` 找到的 twin 的 pairing line。
 4. 它以 `facts` 列出 run checkpoint 與草稿說了什麼。
 5. `check_refs` 以各 tab 顯示的行，檢查這份清單與 review notes 裡的每一個 line reference；只要有一個有錯，建頁就在寫出任何東西之前以 exit status 1 結束。
@@ -432,14 +434,14 @@ Review Server 只決定要保存哪些標記：它從頁面讀出 item key，並
 1. `show` 切換 tab；跟著捲動的開關打開時，`follow` 把另一欄捲到同一節的同一處。
 2. 點一個行號連結時，`mark` 把它反白，展開含有那一行的摺疊區塊，並捲過去；另一個 item 裡的連結會清掉上一個 item 的反白。
 3. 拖曳分隔線或按方向鍵，調整上下兩區的大小；`where` 寫出每一欄所在的 chapter。
-4. 狀態的部分先畫出建頁時的標記，接著 `load` 向伺服器要 review statuses；直接以檔案開啟的頁面，或伺服器沒有回應時，它保留建頁時的標記，並說明不會儲存。
+4. 狀態的部分先畫出建頁時的標記，接著 `load` 向伺服器要 review statuses，只在它們有儲存的時間時，才用它們取代建頁時的標記；直接以檔案開啟的頁面，或伺服器沒有回應時，它保留建頁時的標記，並說明不會儲存。
 5. 點一個狀態方框，它就換到下一個標記；頁面是由伺服器提供時，`save` 送出整組標記。
 
 ### Review Server
 
-1. `main` 以 `parseArgs` 讀取參數；要求探測時，`probe` 詢問 `/healthz` 後結束。
+1. `main` 以 `parseArgs` 讀取參數，它從 `workspaceRoot` 以 `isWorkspaceConfig` 找到的 workspace root 讀出 review root；要求探測時，`probe` 詢問 `/healthz` 後結束。
 2. 否則它開始監聽；port 已被占用時以 exit status 1 結束。
-3. `handler` 解碼路徑，以 `indexPage` 回答 `/`，自己回答 `/healthz`，並在做任何事之前，先檢查 run directory 的名稱與它的 review page。
+3. `handler` 解碼路徑，以 `indexPage` 回答 `/`——它以 `sourceOf` 指名每一個 run directory 的原文——自己回答 `/healthz`，並在做任何事之前，先檢查 run directory 的名稱與它的 review page。
 4. 儲存交給 `saveStatus`：`readBody` 最多讀 1 MiB，`pageKeys` 從 review page 讀出 item key，每一個標記都經過檢查，record 先寫到暫存檔，再改名放到定位。
 
 ## 3.3 Directory Structure
@@ -451,11 +453,12 @@ app 的兩支程式跟 asd-ste skill 放在一起，它們寫出的東西放在 
 - `skill-groups/common/skills/asd-ste/scripts/review_server.js` —— Review Server。
 - `checkpoints/asd-ste/{run directory}/step_6-review.html` —— review page。
 - `checkpoints/asd-ste/{run directory}/step_6-status.json` —— review statuses。
-- `checkpoints/asd-ste/{run directory}/step_6-notes.html` 與 `process.yaml` —— review notes 與 run checkpoint，由 asd-ste 寫出。
+- `checkpoints/asd-ste/{run directory}/step_6-notes.html`、`step_2.yaml` 與 `step_3.yaml` —— review notes 與 run checkpoint，由 asd-ste 寫出。
+- `checkpoints/asd-ste/{run directory}/step_0.yaml` —— 那次執行的原文，索引會指名它。
 
 **什麼可以搬動，搬動的代價是什麼。**
-兩支程式可以一起搬，也可以分開搬：兩者都不寫死對方的路徑，建頁讀寫的每一個路徑都以參數傳入。
-review root 以伺服器啟動所在的目錄為基準解析，所以在 workspace 根目錄以外的地方啟動的伺服器，若沒有另外指定，就會提供另一個 root。
+兩支程式可以一起搬，也可以分開搬：兩者都不寫死對方的路徑，建頁讀寫的每一個路徑都以參數傳入，相對路徑則從 workspace root 讀起。
+review root 從 workspace root 讀起，絕不從伺服器自己的目錄讀起，所以伺服器的檔案可以放在另一個 workspace 就地讀取的 skill group 裡；在所有 workspace 之外啟動的伺服器找不到 workspace root，就會停下。
 
 ## 3.4 Presentation Form
 
@@ -519,6 +522,9 @@ review root 以伺服器啟動所在的目錄為基準解析，所以在 workspa
 
 - **本機的頁面無法在桌面版 app 的瀏覽器面板裡保存資料。**
   面板把本機的 HTML 檔以 `data:` 位址載入，瀏覽器在那裡什麼都不保存，所以把標記存在瀏覽器裡的頁面，每次載入都失去標記；因此標記改由伺服器保存，寫進檔案。
+- **從自己檔案之上找 workspace 的伺服器，提供了另一個 workspace 的執行。**
+  2026-11-09，從 InvestForge 的根目錄啟動的伺服器——InvestForge 從 SkillsGestalt 就地讀取這個 skill group——給出的 review root 是 SkillsGestalt 的 `checkpoints/asd-ste`。
+  因此伺服器從目前的目錄找 workspace root（2.1）。
 
 ## 4.5 Verification Obligations
 
@@ -530,15 +536,19 @@ review root 以伺服器啟動所在的目錄為基準解析，所以在 workspa
 | Review Builder 在每一個 line reference 都指到一行時，寫出頁面與它的摘要 | 2.8 the build | 四個 15 行的測試檔與三個 item：exit 0，各 3 節，4 個 line reference，3 個 item 待審 | agent，2026-11-01 |
 | Review Builder 在 line reference 指不到任何一行時，不寫出頁面 | 2.10；2.8 Line references | 15 行草稿中的 `{{en-d:99}}`：exit 1，一行 `[FAIL]`，沒有寫出頁面 | agent，2026-11-01 |
 | Review Builder 拒絕缺少的檔案，以及沒有 STE check 結果的 run checkpoint | 2.8 the build | 缺少的草稿，以及沒有 `step_3` 的 checkpoint：各以 exit 2 結束 | agent，2026-11-01 |
+| Review Builder 從 run directory 的 step file 讀取 run checkpoint | 2.4 Run checkpoint | 有 `step_3.yaml`、沒有 `step_2.yaml` 的 run directory：exit 0，寫出頁面 | agent，2026-11-06 |
+| Review Builder 從 workspace root 讀起相對路徑 | 2.8 the build；2.1 Workspace root | 在測試 workspace 之下的目錄建頁，每一個路徑都相對於它的根目錄：exit 0，頁面寫在 run directory 裡，執行的地方什麼都沒有留下；在所有 workspace 之外：exit 2；每一個路徑都是絕對路徑：exit 0 | agent，2026-11-09 |
 | 重建只保留沒有改變的 item 的標記 | 2.6 Item Key；2.10 | `--status` 帶一個認得與一個不認得的 key：一項通過、兩項待審；改寫一個 item：只有它的 key 改變 | agent，2026-11-01 |
 | 行號帶著它們的箭頭 | 2.7 | 測試頁：原文是 `◄ 3`，兩份草稿是 `3 ►` 與 `7 ►` | agent，2026-11-01 |
 | Review Server 列出每一份 review page 與它的計數，並標出在有標記之前建的頁 | 2.8 `GET /`；2.6 How Far a Review Is | 有兩個 run directory 的 review root，其中一頁沒有狀態方框：計數，以及要它重建的說明 | agent，2026-11-01 |
+| Review Server 在 workspace root 下找到它的 review root，並在索引上指名每一個 run directory 的原文 | 2.1 Workspace root；3.3；2.8 `GET /` | 從測試 workspace 之下、一個沒有 `skillGroups` 的 `config.yaml` 旁邊啟動的伺服器，以及從 InvestForge 的根目錄啟動的伺服器：`/healthz` 給出那個 workspace 的根目錄下的 `checkpoints/asd-ste`；在所有 workspace 之外啟動的伺服器以 exit 2 停下；`/` 列出兩次執行與它們的 `source_file` | agent，2026-11-09 |
 | Review Server 提供頁面、把少了最後 `/` 的位址導向正確位址，並拒絕其餘的 | 2.8 Guards | 200；301；POST 405；DELETE 405；沒有頁面的目錄 404；其他部分 404；`..%2f..%2fetc` 404；錯誤的編碼 400 | agent，2026-11-01 |
 | Review Server 整份儲存有效的標記，並拒絕無效的、什麼都不儲存 | 2.8 `PUT`；4.3 | 一個 `?` 被儲存並讀回；不認得的 key、狀態 `y`、不是 JSON 的 body、沒有 items 的 body：各以 400 回應 | agent，2026-11-01 |
 | Review Server 對超過 1 MiB 的 body 關閉連線 | 2.8 Body size | 1.1 MB 的 body：連線被重設，沒有回答 | agent，2026-11-01 |
 | 探測與已被占用的 port | 2.8 the server | 沒有東西：exit 1；審核伺服器：exit 0；別的程式：exit 2；同一個 port 上的第二個伺服器：exit 1；port 70000：exit 2 | agent，2026-11-01 |
 | Page Script 切換 tab、讓兩欄跟著捲、反白一個重點的各行，並顯示每一欄所在的 chapter | 2.6 Where a Column Is；2.7 | 一份測試頁與 RSDC-Standard 的頁，在瀏覽器中以 1280×800 與 700 像素寬開啟 | agent，2026-10-13（[[Task 40]] 第 1、5、7 項） |
 | Page Script 依序在四種標記之間切換、每次點擊都儲存，重新載入後仍保留 | 2.1 Review status；2.3 Save the statuses | 測試頁在瀏覽器中、由 Review Server 提供：`[v]`、`[?]`、`[x]`、`[ ]`，每一個都進了 record | agent，2026-10-13（[[Task 40]] 第 3、8 項） |
+| 以較早一次執行的 statuses 建出的頁面，在它的 run directory 還沒有 statuses 時保留它們，第一次儲存就把它們寫進那裡 | 2.3 Read the statuses | 以較早 run directory 的 `--status` 建出的頁面，在沒有 record 的 run directory 下提供，於瀏覽器面板中：顯示較早的 `[v]`，點一下就把兩個標記都存進它自己的 record | agent，2026-11-06 |
 | 直接以檔案開啟的頁面，顯示建頁時的標記，並說明不會儲存 | 2.7 | 測試頁以檔案開啟，以及由一個沒有狀態路由的靜態伺服器提供 | agent，2026-10-18（[[Task 40]] 第 9 項） |
 | 頁面說明同意建議要標成不通過 | 2.7 | scratch-rules 的頁，由 Review Server 提供，以及作為靜態頁 | agent，2026-10-18（[[Task 40]] 第 9 項） |
 | hub 能掛載這個 app | 2.9 | — | *not verified*：沒有 `app.js` |
@@ -560,5 +570,8 @@ app 做了第 2 章說它不該做之事的每一處，各附觀察到的地方�
   在兩個分頁裡標記的 reviewer，或在另一次儲存之前就載入的頁面上標記的 reviewer，會在沒有任何提示的情況下失去標記。
 - **超過 1 MiB 的 body 得不到回答。**
   伺服器關閉連線，而不是回答 400，2026-11-01 觀察到；頁面這時只會說伺服器沒有回應。
+- **探測分辨不出審核伺服器服務的是哪一個 workspace。**
+  port 上的一個伺服器提供它啟動時所在 workspace 的 review root（2.1），而探測對任何審核伺服器都以 0 結束（2.8）：2026-11-09，從 SkillsGestalt 發出的探測，對從 InvestForge 的根目錄啟動的伺服器以 0 結束。
+  連到那個伺服器的連結，會連到另一個 workspace 的執行；探測會印出它得到的 review root，由此可以看出來。
 - **監聽的位址可以被擴大，卻沒有任何提示。**
   伺服器接受給它的任何位址，雖然它自己的說明寫著只用 loopback；以別的位址啟動時，它把每一份 review page 提供給整個網路，沒有任何警告（2.7，第 8 題）。

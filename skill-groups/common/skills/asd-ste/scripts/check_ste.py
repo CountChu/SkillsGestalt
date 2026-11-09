@@ -32,9 +32,14 @@ inside them as it reads the rest of the sentence; only quoted text is left out. 
 condition such as "If ..., " - is an instruction, with a limit of 20 words (rule 5.1); every other
 sentence is descriptive, with a limit of 25 (rule 6.3).
 
-Either mode can also keep what it found, for the skill's YAML checkpoint: --report writes the
+Either mode can also keep what it found, for the skill's Checkpoint Dir: --report writes the
 printed report to a file as well, and --findings writes every finding to a JSON file in full - every
-list the report shortens, such as the unapproved words with all their lines, is whole there.
+list the report shortens, such as the unapproved words with all their lines, is whole there. A relative
+--report or --findings is read from the workspace root, never from the current directory: the root of
+the workspace the skill runs in, which save_step.py's workspace_root finds - the directory --workspace
+names, or else the nearest directory, from the current directory up, whose config.yaml has
+skillGroups. A check run from a directory below the root thus writes into the Checkpoint Dir, and
+makes no checkpoints/ where it runs. An absolute path needs no root.
 
 --custom names the project-approved words and rules, ste-custom.md: a Markdown table of the words
 this project approves beyond the dictionary, with the columns Word, Part of speech, Forms, Meaning and
@@ -60,14 +65,16 @@ note lists as a technical word is never reported, and neither is a quotation or 
 md-style.md keeps a quotation, a proper name and a name that other documents or code use as written.
 
 Usage:
-  python check_ste.py --src <file.md> --dict <ste-dictionary.json> [--custom <ste-custom.md>] [--spelling <us-spelling.json>] [--report <txt>] [--findings <json>]
-  python check_ste.py --src <file.md> --ste <file-ste.md> --dict <ste-dictionary.json> [--custom <ste-custom.md>] [--spelling <us-spelling.json>] [--report <txt>] [--findings <json>]
-  python check_ste.py --ste <file.md> --dict <ste-dictionary.json> [--custom <ste-custom.md>] [--spelling <us-spelling.json>] [--report <txt>] [--findings <json>]
+  python check_ste.py --src <file.md> --dict <ste-dictionary.json> [--custom <ste-custom.md>] [--spelling <us-spelling.json>] [--report <txt>] [--findings <json>] [--workspace <root>]
+  python check_ste.py --src <file.md> --ste <file-ste.md> --dict <ste-dictionary.json> [--custom <ste-custom.md>] [--spelling <us-spelling.json>] [--report <txt>] [--findings <json>] [--workspace <root>]
+  python check_ste.py --ste <file.md> --dict <ste-dictionary.json> [--custom <ste-custom.md>] [--spelling <us-spelling.json>] [--report <txt>] [--findings <json>] [--workspace <root>]
 
 Exit status: 0 the inventory is printed, or the STE file passes; 1 the STE file fails a check;
-2 a file is missing or unreadable, or, in an inventory, the source is not English; 3 in an
-inventory, the source has to change first (SOURCE-FIRST).
-Standard library only.
+2 a file is missing or unreadable, no workspace root is found for a relative --report or --findings,
+or, in an inventory, the source is not English; 3 in an inventory, the source has to change first
+(SOURCE-FIRST).
+Standard library only, but a relative --report or --findings needs PyYAML to find the workspace root,
+as save_step.py does.
 """
 from __future__ import annotations
 
@@ -1127,6 +1134,22 @@ class Tee:
             stream.flush()
 
 
+def from_workspace(path: Path | None, workspace: str | None) -> Path | None:
+    """An output path as given when it is absolute; a relative one under the workspace root, which
+    save_step.py's workspace_root finds - looked up only here, because it reads config.yaml with PyYAML."""
+    if path is None or path.is_absolute():
+        return path
+    try:
+        import save_step
+    except ImportError as e:
+        raise Fault(f'{path} is relative, and finding the workspace root needs PyYAML ({e}): '
+                    'give an absolute path, or run with the Python of the workspace')
+    try:
+        return save_step.workspace_root(workspace) / path
+    except save_step.SaveError as e:
+        raise Fault(f'{path} is relative: {e}')
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description='Inventory a Markdown file for an STE rewrite, or check the rewrite.')
     ap.add_argument('--src', type=Path, help='the source file')
@@ -1138,6 +1161,9 @@ def main() -> None:
                                                   'each with its American spelling (rule 1.14)')
     ap.add_argument('--report', type=Path, help='also write the printed report to this file')
     ap.add_argument('--findings', type=Path, help='write every finding, in full, to this JSON file')
+    ap.add_argument('--workspace', help='the root of the workspace the skill runs in, which a relative --report or '
+                                        '--findings is read from (default: the nearest directory, from the current '
+                                        'directory up, whose config.yaml has skillGroups)')
     a = ap.parse_args()
     if a.src is None and a.ste is None:
         ap.error('give --src, --ste, or both')
@@ -1145,6 +1171,8 @@ def main() -> None:
     status = 2
     data: dict = {}
     try:
+        a.report = from_workspace(a.report, a.workspace)
+        a.findings = from_workspace(a.findings, a.workspace)
         if a.report:
             a.report.parent.mkdir(parents=True, exist_ok=True)
             report = a.report.open('w', encoding='utf-8')

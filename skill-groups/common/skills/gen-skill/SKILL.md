@@ -1,17 +1,22 @@
 ---
 name: gen-skill
-description: Creates a new skill from the SKILL and README templates, step by step - it parses the skill name and description from the prompt, asks which outputs the new skill produces and whether it gets 繁體中文 twins, copies the SKILL template into the chosen skillGroups root and generates the workflow by replacing every placeholder, and creates a placeholder for any script or reference file that workflow needs. It then writes the skill's README.md from the README template - the Dataflow, the Purpose of each step, the files each step uses, what changes together, and the files its header quote declares, whose fingerprints depends_on.py records. An existing skill of the same name is overwritten only once the user confirms. When the user asked for twins, it has the chinese skill write SKILL-tw.md and README-tw.md rather than translating anything itself.
+description: Creates a new skill from the SKILL and README templates, step by step - it parses the skill name and description from the prompt, asks which outputs the new skill produces, which Working Dir it uses and whether it gets 繁體中文 twins, copies the SKILL template into the chosen skillGroups root and generates the workflow by replacing every placeholder, and creates a placeholder for any script or reference file that workflow needs. It then writes the skill's README.md from the README template - the Dataflow, the Purpose of each step, the files each step uses, what changes together, and the files its header quote declares, whose fingerprints depends_on.py records. An existing skill of the same name is overwritten only once the user confirms. When the user asked for twins, it has the chinese skill write SKILL-tw.md and README-tw.md rather than translating anything itself.
 ---
 
 # TERMINOLOGY
 
 Terms that mean the same thing in every skill.
 
-- **Checkpoint Dir** — the per-run directory holding a skill's YAML checkpoint.
-  Every skill has its own.
-- **YAML checkpoint** — the `process.yaml` inside the Checkpoint Dir.
-  Every step writes its outputs there under a `step_{N}` group, so a later step reads them back instead of recomputing them.
-- **MD report** — the Markdown report a skill writes into the wiki vault, in a folder named after that skill, carrying the standard header (Skill, Checkpoint, Created, Updated, Prompt) above its result sections.
+- **Run Number** — the number of one run, `{yymmdd}.{N}`.
+  `{N}` is the sequence number of the run of this skill on that date, and it starts at 1.
+- **Working Dir** — the per-run directory that holds all the working data of a run: its step files, its data files and its temporary files.
+  It is the Temp Dir or the Checkpoint Dir, and the CONFIGURATION of a skill gives which one.
+- **Temp Dir** — a Working Dir at `temp\<skill-name>\{yymmdd}.{N}\`, under the workspace root.
+- **Checkpoint Dir** — a Working Dir at `checkpoints\<skill-name>\{yymmdd}.{N}\`, under the workspace root.
+- **Step file** — the `step_{N}.yaml` inside the Working Dir.
+  Every step writes its outputs to its own step file, so a later step reads them back instead of recomputing them.
+- **Run record** — `database\skill-runs\<skill-name>\{yymmdd}.{N}.yaml`, the time and the model of each step of one run; every skill writes one.
+- **MD report** — the Markdown report a skill writes into the wiki vault, in a folder named after that skill, carrying the standard header (Skill, Run record, Created, Updated, Prompt) above its result sections.
 
 # DEDICATED TERMINOLOGY
 
@@ -34,11 +39,22 @@ Terms specific to this skill's domain.
 
 Concrete values this skill runs with.
 
+The inputs and tools, which the run reads or runs:
+
+- **Workspace configuration** — the [config.yaml](config.yaml) at the root of the workspace.
 - **SKILL template** — `{skillGroups.common}\templates\SKILL-tmp.md`.
 - **README template** — `{skillGroups.common}\templates\README-tmp.md`.
+- **Dependency Checker** — `{skillGroups.common}\scripts\depends_on.py`.
+- **DFD notation** — `{skillGroups.common}\references\DFD.md`.
+- **skill-writing rules** — `{skillGroups.common}\rules\skill-writing.md`.
+- **run data rules** — `{skillGroups.common}\rules\run-data-rules.md`.
+- **chinese skill** — `{skillGroups.common}\skills\chinese\SKILL.md`.
+
+The last outputs, which a person, a different skill or a subsequent analysis reads:
+
+- **Run record** — `database\skill-runs\gen-skill\{yymmdd}.{N}.yaml`.
 - **new skill directory** — `{skillGroups[<group>]}\skills\<skill-name>\`, where `<group>` is the **Skill group** chosen in Step 0.
 - **TW twins** — `SKILL-tw.md` and `README-tw.md`, in the **new skill directory**.
-- **Dependency Checker** — `{skillGroups.common}\scripts\depends_on.py`.
 
 # MUST FOLLOW
 
@@ -46,8 +62,13 @@ Concrete values this skill runs with.
 - **This skill has no `run step N` selector — every run is a whole run.**
   Every step feeds the next and none of them is expensive, so there is nothing worth resuming into.
   Never invent a step selector for it.
-- **This skill produces neither an MD report nor a YAML checkpoint.**
+- **This skill produces neither an MD report nor step files.**
   Its output is the **new skill directory**: the `SKILL.md` Step 2 copies and Step 3 fills in, any `scripts\` or `references\` placeholder file Step 4 creates, the `README.md` Step 5 writes, and the **TW twins** when the user asked for them in Step 1.
+  Beside it, every run writes its own **Run record**.
+- Obey [run-data-rules.md](skill-groups/common/rules/run-data-rules.md) for the Run Number, the run record and the Working Dir of a run.
+  A run that stops before its last step writes `result: stopped` and `stopped_at` in the run record, as it tells.
+- **Before the skill ends, display the path of the run record** — the path only, never its contents, rendered as a clickable Markdown link and never as inline code or plain text.
+  Use a link target that starts at the workspace, with the forward slash as the separator: `[{yymmdd}.{N}.yaml](database/skill-runs/gen-skill/{yymmdd}.{N}.yaml)`.
 - **The generated `SKILL.md` never links to its `README.md`.**
   A skill loads its whole `SKILL.md` each time it runs, and a link would lead a run into a file that holds nothing a run needs.
 - **The new skill's `SKILL.md` and `README.md` carry none of a template's STE marks.**
@@ -123,24 +144,40 @@ https://dev.azure.com/contoso/Firmware/_build/results?buildId=1234500&view=resul
 - Check if a skill with the same name already exists under any `skillGroups` root (`{skillGroups[<group>]}\skills\<skill-name>\`).
   If it does, warn the user and ask whether to overwrite.
 
+- Keep the canonical skill invocation, for the `prompt` of the run record.
+
+- Get the Run Number, as run-data-rules.md tells, and write the run record of the run.
+  Add this step to the run record.
+
 
 ## Step 1 - Ask which output files the skill produces
 
-- Ask the user which of these the new skill produces, and accept `both`, `md`, `yaml`, or `none`:
+- Ask the user which of these the new skill produces, and accept `both`, `md`, `steps`, or `none`:
   - an **MD report** under `{wikiDir}\<skill-name>\`.
-  - a **YAML checkpoint** in a Checkpoint Dir under `checkpoints\<skill-name>\`.
+  - **step files** in its **Working Dir**.
+  Every skill writes a **run record**, so it is not asked.
 
 - If an MD report is produced, ask for its filename pattern (e.g. `run-pr-{prId}-{yymmdd}`).
-- If a YAML checkpoint is produced, ask for the Checkpoint Dir naming pattern.
+
+- Ask which **Working Dir** the new skill uses, and accept `temp`, `checkpoints`, or `none`:
+  - `temp` → the **Temp Dir**, `temp\<skill-name>\{yymmdd}.{N}\`.
+  - `checkpoints` → the **Checkpoint Dir**, `checkpoints\<skill-name>\{yymmdd}.{N}\`.
+  - `none` → the skill writes no working data: no step file, no data file and no temporary file.
+  A run never uses both, so its step files, its data files and its temporary files all go into the one chosen here.
+  Accept `none` only when the skill produces no step files and writes no data file and no temporary file; otherwise ask again.
 
 - Ask whether the new skill also gets **TW twins**, and accept `yes` or `no`.
   Default to `no` — a twin doubles what every later edit has to touch, since a section changed on one side must be changed on the other in the same run.
   It is asked here, with the outputs, because the answer shapes the `README.md` as well: a skill with twins lists them among what changes together, and declares the `chinese` skill it depends on.
 
+- Add this step to the run record.
+
 
 ## Step 2 - Copy Template
 
 - Copy the **SKILL template** to the **new skill directory**'s `SKILL.md`, and display the destination path.
+
+- Add this step to the run record.
 
 
 ## Step 3 - Build SKILL.md
@@ -153,12 +190,21 @@ https://dev.azure.com/contoso/Firmware/_build/results?buildId=1234500&view=resul
   - `{SKILL_GROUP}` → the **Skill group** chosen in Step 0.
   - `{NATURAL_LANGUAGE_PROMPT}` → a realistic natural-language example prompt.
   - `{REPORT_FILENAME}` → the MD report filename pattern from Step 1.
-  - `{CHECKPOINT_DIR_NAME}` → the Checkpoint Dir naming pattern from Step 1.
+  - `{WORKING_DIR}` → the Working Dir Step 1 chose, with the new skill's name and without the last backslash: `temp\<skill-name>\{yymmdd}.{N}` or `checkpoints\<skill-name>\{yymmdd}.{N}`.
+    With `none`, the step that uses it is written without it.
 
 - Edit the MUST FOLLOW section according to the Step 1 answer:
   - No MD report → remove the report-md-rules and MD report lines.
-  - No YAML checkpoint → remove the report-yaml-rules and YAML checkpoint lines, and the one-writer-per-JSON item with the item after it, which gives its reason — without a Checkpoint Dir they govern nothing.
-  - Neither → also remove the display-the-paths line.
+  - In CONFIGURATION, list under "The inputs and tools" each file the skill reads, each script it runs and each other program it uses, such as a template, a reference or another skill; nothing the skill writes goes there.
+  - In CONFIGURATION, remove the Handoff file line if no other skill reads its output.
+  - In CONFIGURATION, keep only the Working Dir line of the Step 1 answer, the Temp Dir line or the Checkpoint Dir line, and remove the other; with `none`, remove both.
+    Add after the kept path what the skill puts in it; a step that runs a script which writes temporary files gives the script the Run Number.
+  - In TERMINOLOGY, keep the Working Dir term and the term of the one kind Step 1 chose, and remove the other kind.
+    In the Working Dir term, change "It is the Temp Dir or the Checkpoint Dir, and **CONFIGURATION** gives which one." to name the chosen kind, for example "In this skill, it is the Checkpoint Dir, and **CONFIGURATION** gives it."
+    With `none`, remove all three and the Step file term.
+  - After CONFIGURATION, call the directory the Working Dir, never the Temp Dir or the Checkpoint Dir, and name a file in it as `step_3.yaml` in the Working Dir rather than by its full path.
+  - No Working Dir → remove the one-writer-per-file item with the item after it, which gives its reason — without a Working Dir they govern nothing.
+  - Keep the run-data-rules line and the display-the-paths line in every skill, because every skill writes a run record; without an MD report, the paths line shows only the run record.
 
 - Edit Step 0 - Warmup:
   - Remove the `.venv` line if the skill does not need a virtual environment.
@@ -166,14 +212,16 @@ https://dev.azure.com/contoso/Firmware/_build/results?buildId=1234500&view=resul
   - Remove the `ADO_PAT` resolution and validation bullets if the skill does not call Azure DevOps.
   - Remove the scripts/files check section, or list the skill's scripts in place of `{SCRIPT_PATH_1}`.
   - Replace `{INPUT_1}` / `{INPUT_2}` with the inputs the skill parses from its prompt.
-  - Remove the YAML checkpoint line if Step 1 said no YAML checkpoint.
+  - Remove the `step_0.yaml` line if Step 1 said no step files; keep the Run Number and run record lines.
 
 - Replace the `{STEP_N_TITLE}` placeholder sections — and every placeholder inside them, including the ones not named `{STEP_N_*}` (e.g. `{SCRIPT_1_ACTION_1}`, `{ROW_1}`, `{COLUMN_1}`) — with the workflow steps inferred in Step 0.
-  Add or remove step sections as needed, and drop each section's `Save YAML checkpoint` / `Save MD report file` line for any output the skill does not produce.
+  Add or remove step sections as needed, and drop each section's `Save step_N.yaml` / `Save MD report file` line for any output the skill does not produce; keep each `Add this step to the run record` line.
 
 - Leave no **placeholder** behind — before finishing, scan the file for a capital letter right after `{`; only `{PLACEHOLDER}` may remain.
 
 - Display the generated SKILL.md content.
+
+- Add this step to the run record.
 
 
 ## Step 4 - Create supporting files
@@ -181,6 +229,8 @@ https://dev.azure.com/contoso/Firmware/_build/results?buildId=1234500&view=resul
 - If any step written in Step 3 runs a script, create a placeholder script file for it under the **new skill directory**'s `scripts\`.
 - If any step written in Step 3 needs a reference template, create a placeholder file for it under the **new skill directory**'s `references\`.
 - Display the list of created files.
+
+- Add this step to the run record.
 
 
 ## Step 5 - Build README.md
@@ -193,15 +243,15 @@ https://dev.azure.com/contoso/Firmware/_build/results?buildId=1234500&view=resul
   - `{SKILL_DIR}` → the **new skill directory**, workspace-relative, with forward slashes.
   - `{COMMON_DIR}` → `{skillGroups.common}`, workspace-relative, with forward slashes.
   - `{COMMON_PATH}` → the path from the **new skill directory** to `{skillGroups.common}`, relative, with forward slashes — `../..` for a skill in the `common` group.
-  - `{MORE_PATH_ABBREVIATIONS}` → one line for each further short name the diagrams use, such as the file a run works on or the Checkpoint Dir, or nothing when there is none.
+  - `{MORE_PATH_ABBREVIATIONS}` → one line for each further short name the diagrams use, such as the file a run works on or the Working Dir, or nothing when there is none.
 
 - Keep the header quote lines that apply to the new skill, and remove the rest:
-  - Always: `DFD.md`, `md-style.md`, `skill-writing.md`, `SKILL-tmp.md` and `README-tmp.md`.
-  - `report-md-rules.md` when it writes an MD report, `report-yaml-rules.md` when it writes a YAML checkpoint, and `scratch-rules.md` when its MUST FOLLOW kept that line.
+  - Always: `DFD.md`, `md-style.md`, `skill-writing.md`, `run-data-rules.md`, `SKILL-tmp.md` and `README-tmp.md`.
+  - `report-md-rules.md` when it writes an MD report.
   - `chinese/SKILL.md` when Step 1's answer asked for **TW twins**.
   - Add a line for every other file outside the **new skill directory** that a step reads or runs, such as a shared script — a path link relative to the `README.md`, as the template's lines are.
 
-- **Dataflow**: redraw the template's diagram so that it draws this skill rather than the template's example, in the notation of [DFD.md](skill-groups/common/references/DFD.md): every step a rounded box named exactly as its heading, and every input a step reads and every record it writes — the prompt, `config.yaml`, each document read, each data file in the Checkpoint Dir, and each step's own group of the YAML checkpoint and section of the MD report.
+- **Dataflow**: redraw the template's diagram so that it draws this skill rather than the template's example, in the notation of [DFD.md](skill-groups/common/references/DFD.md): every step a rounded box named exactly as its heading, and every input a step reads and every record it writes — the prompt, `config.yaml`, each document read, each data file in the Working Dir, and each step's own step file and section of the MD report.
   Drop what Step 1 said the skill does not produce, number the blue arrows in `linkStyle` anew, and bring the legend beneath it in line with what the diagram now draws.
 
 - **Step Purposes**: one item for each step, its heading on the first line and its Purpose indented beneath — one sentence saying why the step exists as a step, what the skill would lose by folding it into its neighbour, and never a summary of what the step does.
@@ -223,10 +273,12 @@ https://dev.azure.com/contoso/Firmware/_build/results?buildId=1234500&view=resul
 
 - Display the `README.md` path as a clickable Markdown link.
 
+- Add this step to the run record.
+
 
 ## Step 6 - Create the TW twins
 
-- If Step 1's answer was `no`, say that no twin was written and end the run.
+- If Step 1's answer was `no`, say that no twin was written, and go on to the last two items of this step.
 
 - If it was `yes`, run the `chinese` skill against the **new skill directory**'s `SKILL.md`, then against its `README.md`, handing it each path — e.g. `/chinese {skillGroups[<group>]}\skills\<skill-name>\SKILL.md`.
   Each run writes one of the **TW twins** beside its source, keeps every heading, inline-code span, link target and placeholder token in English — the `README.md`'s header quote among them — and ends with its own parity check; the run on `SKILL.md` also adds the pairing line under the twin's frontmatter.
@@ -234,3 +286,7 @@ https://dev.azure.com/contoso/Firmware/_build/results?buildId=1234500&view=resul
 - Do not translate either file here, and do not edit the generated `SKILL.md` or `README.md` while doing it — the `chinese` skill treats its source as read-only.
 
 - Display the paths of the **TW twins** as clickable Markdown links.
+
+- Add this step to the run record, and write `result: completed`, because it is the last step.
+
+- Close with the path of the run record, as a clickable Markdown link.

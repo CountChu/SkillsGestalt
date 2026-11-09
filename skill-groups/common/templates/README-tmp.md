@@ -4,8 +4,7 @@
 > [md-style.md]({COMMON_PATH}/rules/md-style.md)
 > [skill-writing.md]({COMMON_PATH}/rules/skill-writing.md)
 > [report-md-rules.md]({COMMON_PATH}/rules/report-md-rules.md)
-> [report-yaml-rules.md]({COMMON_PATH}/rules/report-yaml-rules.md)
-> [scratch-rules.md]({COMMON_PATH}/rules/scratch-rules.md)
+> [run-data-rules.md]({COMMON_PATH}/rules/run-data-rules.md)
 > [SKILL-tmp.md]({COMMON_PATH}/templates/SKILL-tmp.md)
 > [README-tmp.md]({COMMON_PATH}/templates/README-tmp.md)
 > [chinese/SKILL.md]({COMMON_PATH}/skills/chinese/SKILL.md)
@@ -13,7 +12,7 @@
 > [[ste-custom]]  `2026-11-02`  `c612bdfa1ea7`
 
 > This file is in ASD-STE100 Simplified Technical English (STE), Issue 9.
-> Technical words: black, blue, box, checkpoint, Checkpoint Dir, content, cylinder, data file, diagram, document, dotted arrow, external input, file, flag, format, header quote, heading, hexagon, line, link, MD report, notation, one-run data, parallelogram, parse, path, record, script, section, skill, two-headed arrow, user, workflow, YAML checkpoint.
+> Technical words: black, blue, box, content, cylinder, data file, diagram, document, dotted arrow, external input, file, flag, format, header quote, heading, hexagon, line, link, MD report, model, notation, one-run data, parallelogram, parse, path, run record, record, script, section, skill, step file, two-headed arrow, user, workflow, Working Dir.
 
 This README.md tells about the parts of the {SKILL_NAME} skill, and about the files that its [SKILL.md](SKILL.md) depends on.
 Each time a skill runs, it reads all of its SKILL.md.
@@ -48,12 +47,11 @@ flowchart TB
     PROMPT>"Prompt"]
     CONFIG[/"config.yaml"/]
     INPUT[/"{AN_INPUT_THE_SKILL_READS}"/]
-    CK0[("YAML checkpoint: step_0")]
+    CK0[("Step file: step_0.yaml")]
     OUT1[("{STEP_1_OUTPUT}")]
-    CK1[("YAML checkpoint: step_1")]
+    CK1[("Step file: step_1.yaml")]
     MD1[("MD report: {STEP_1_SECTION}")]
-    OUT2[("step_2.json")]
-    CK2[("YAML checkpoint: step_2")]
+    CK2[("Step file: step_2.yaml")]
     MD2[("MD report: {STEP_2_SECTION}")]
 
     USER --> PROMPT
@@ -66,20 +64,20 @@ flowchart TB
     S1 --> CK1
     S1 --> MD1
     OUT1 --> S2(["Step 2 - {STEP_2_TITLE}"])
-    S2 --> OUT2
     S2 --> CK2
     S2 --> MD2
     MD1 --> USER
     MD2 --> USER
 
-    linkStyle 0,1,3,5,6,7,8,9,10,11,12 stroke:#2563eb,stroke-width:2.5px
+    linkStyle 0,1,3,5,6,7,8,9,10,11 stroke:#2563eb,stroke-width:2.5px
 ```
 
 How to read the diagram:
 
 - A parallelogram is an external input, a flag is one-run data, and a cylinder is a record.
-  The records are the group of each step in the YAML checkpoint and the section of each step in the MD report.
-  Each data file in the Checkpoint Dir is also a record.
+  The records are the step file of each step and the section of each step in the MD report.
+  Each data file in the Working Dir is also a record.
+  Each step also adds its time and model to the run record, and the diagram does not show this record.
   A rounded box is a step.
 - A hexagon is a role external to the skill: the user, who supplies the prompt and reads the MD report.
 - A solid arrow moves data, in the direction in which the data moves.
@@ -111,19 +109,18 @@ Step 0 - Warmup
   reads   config.yaml
   checks  that these exist:
           {SKILL_NAME}/scripts/{SCRIPT_PATH_1}
-  writes  the YAML checkpoint: step_0
+  writes  the step file: step_0.yaml
 
 Step 1 - {STEP_1_TITLE}
   runs    {SCRIPT_PATH_1}
           ├─ reads {AN_INPUT_THE_SKILL_READS}
           └─ writes {STEP_1_OUTPUT}
-  writes  the YAML checkpoint: step_1
+  writes  the step file: step_1.yaml
   writes  the MD report: {STEP_1_SECTION}
 
 Step 2 - {STEP_2_TITLE}
   reads   {STEP_1_OUTPUT}
-  writes  step_2.json
-  writes  the YAML checkpoint: step_2
+  writes  the step file: step_2.yaml
   writes  the MD report: {STEP_2_SECTION}
 ```
 
@@ -146,8 +143,7 @@ No run reads SKILL-tw.md, this README.md or README-tw.md.
  │     what Step 1 says the script does, its arguments and its output
  ├─▶ common/rules/skill-writing.md: how the steps are written
  ├─▶ common/rules/report-md-rules.md: the MD report's header and shape
- ├─▶ common/rules/report-yaml-rules.md: the shape of the YAML checkpoint and the fields it requires
- ├─▶ common/rules/scratch-rules.md: where a run's throwaway files go and how they are cleaned up
+ ├─▶ common/rules/run-data-rules.md: the step files, the run record and the Working Dir of a run
  └─▶ common/rules/md-style.md: one sentence on each line
        └─ checked by reformat_md.py and check_reformat.py (--twin: the twin's sentences one for one)
 
@@ -183,8 +179,7 @@ To keep SKILL.md short, this README.md gives the files external to the skill tha
   ─▶ common/rules/md-style.md
   ─▶ common/rules/skill-writing.md
   ─▶ common/rules/report-md-rules.md
-  ─▶ common/rules/report-yaml-rules.md
-  ─▶ common/rules/scratch-rules.md
+  ─▶ common/rules/run-data-rules.md
   ─▶ common/templates/SKILL-tmp.md
   ─▶ common/templates/README-tmp.md
   ─▶ common/skills/chinese/SKILL.md

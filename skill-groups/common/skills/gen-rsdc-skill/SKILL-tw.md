@@ -1,7 +1,7 @@
 ---
 name: gen-rsdc-skill
 description: >-
-  為一個 skill 所執行的程式所構成的 system 撰寫 RSDC 設計文件，再讓該 skill 引用它。給定一個 target skill，它列出該 skill 各 step 所執行的程式，與使用者確定其中哪些構成 system、哪些留在 skill，然後從它自己 assets 中的 RSDC template 開始，依 RSDC-Standard.md，在該 skill 的 references 中寫出 <SystemName>-RSDC.md：RSDC 絕不提到該 skill，skill 只引用 RSDC 的 Specification，且只透過它的 CLI 接觸 system。它寫出的每份文件都由程式檢查——RSDC 本身，以及 skill 對 RSDC 的引用。繁體中文 twin 由 chinese skill 撰寫。各 step 都不執行程式的 skill 沒有 system，會被拒絕，且不寫出任何文件。每個 step 都把輸出存進自己的 YAML 檔，最後一個 step 寫出一份 MD report，記下每個 step 的發現與決定。觸發語：「write an RSDC for this skill」、「build the design document of」、「幫這個 skill 建 RSDC」。
+  為一個 skill 所執行的程式所構成的 system 撰寫 RSDC 設計文件，再讓該 skill 引用它。給定一個 target skill，它列出該 skill 各 step 所執行的程式，與使用者確定其中哪些構成 system、哪些留在 skill，然後從它自己 assets 中的 RSDC template 開始，依 RSDC-Standard.md，在該 skill 的 references 中寫出 <SystemName>-RSDC.md：RSDC 絕不提到該 skill，skill 只引用 RSDC 的 Specification，且只透過它的 CLI 接觸 system。它寫出的每份文件都由程式檢查——RSDC 本身，以及 skill 對 RSDC 的引用。繁體中文 twin 由 chinese skill 撰寫。各 step 都不執行程式的 skill 沒有 system，會被拒絕，且不寫出任何文件。每個 step 都把輸出存進自己的 step file，並把它的時間與 model 加進這次執行的 run record，最後一個 step 寫出一份 MD report，記下每個 step 的發現與決定。觸發語：「write an RSDC for this skill」、「build the design document of」、「幫這個 skill 建 RSDC」。
 ---
 
 本文件為 [SKILL.md](SKILL.md) 的繁體中文版。
@@ -14,11 +14,18 @@ description: >-
 在每個 skill 中意義都相同的 term。
 
 - **`run step N`** — 放在 prompt 結尾、指名某一個 step 的選擇子。
-  它**只**執行那一個 step，並從 YAML checkpoint 讀回每一個較早 step 的輸出。
-- **Checkpoint Dir** — 存放某個 skill 之 YAML checkpoint 的每次執行目錄。
-  每個 skill 都有自己的；本 skill 的列在 **CONFIGURATION** 之下。
-- **YAML checkpoint** — Checkpoint Dir 內的 step 檔案：Step N 把它的輸出寫進 `step-{N}.yaml`，其他 step 都不改它，讓後續 step 讀回而不必重算。
-- **MD report** — skill 寫進 wiki vault 的 Markdown 報告，放在以該 skill 命名的資料夾中，於結果各節之上帶有標準表頭（Skill、Checkpoint、Created、Updated、Prompt）。
+  它**只**執行那一個 step，並從每一個較早 step 的 step file 讀回它的輸出。
+- **Run Number** — 一次執行的編號，`{yymmdd}.{N}`。
+  `{N}` 是這個 skill 在那一天執行的序號，從 1 開始。
+- **Working Dir** — 一次執行所用的目錄，存放這次執行所有的 working data：它的 step file、資料檔與暫存檔。
+  在本 skill 中，它是 Checkpoint Dir，**CONFIGURATION** 列出它。
+  skill 不移除它。
+- **Checkpoint Dir** — 位於 workspace 根目錄 `checkpoints\` 的 Working Dir。
+- **Step file** — Working Dir 裡的 `step_{N}.yaml`。
+  Step N 把它的輸出寫在那裡，其他 step 都不改它，讓後續 step 讀回而不必重算。
+- **Run record** — 記錄一次執行中每個 step 所用時間與 model 的檔案。
+  分析一個 skill 的效率時會用到它。
+- **MD report** — skill 寫進 wiki vault 的 Markdown 報告，放在以該 skill 命名的資料夾中，於結果各節之上帶有標準表頭（Skill、Run record、Created、Updated、Prompt）。
 - **no forward-reference** — 一個 step 絕不可依賴排在它之後的 step 的規則。
   為了控制流程而指名後面的 step 並不違反它；借用那個 step 的輸出才違反。
 
@@ -35,9 +42,9 @@ description: >-
 - **system name** — Step 4 給 system 的 PascalCase 名稱，例如 `StopPriceChecker`。
   RSDC pair 以它命名。
 - **delimitation** — Step 4 的決定，經使用者確認：system、它的名稱、它的 stage、它各組件的 role 名稱、它各類的資料，以及哪些留在 target skill。
-  Step 4 把它存在 `step-4.yaml`，Step 5 從那裡讀回。
+  Step 4 把它存在 `step_4.yaml`，Step 5 從那裡讀回。
 - **Answers** — 使用者在一次執行中，對各個 step 提問的回答：一個選擇、一個確認，或一處修正。
-  它們是 one-run data：提問的 step 把回答所決定的事存進自己的 step 檔案，而不存回答本身；重新執行那個 step 時會再問一次。
+  它們是 one-run data：提問的 step 把回答所決定的事存進自己的 step file，而不存回答本身；重新執行那個 step 時會再問一次。
   只有對 delimitation 的修正會成為 RSDC 的內容；其餘的回答只決定提問的那個 step 怎麼做。
 - **RSDC** — Skill Source 的 `references/` 中的 `<system name>-RSDC.md`：system 的設計。
 - **RSDC twin** — RSDC 旁邊的 `<system name>-RSDC-tw.md`：同一份設計的繁體中文版，逐行對應。
@@ -51,7 +58,7 @@ description: >-
 - **stage** — dataflow 的一個活動，取 RSDC standard 中的意義。
   system 的 stage 在 RSDC 中命名；target skill 自己的 Dataflow 畫的則是它的 step（Step 8）。
 - **step inventory** — Source Scanner 列出的 Skill Source 各 step，各附上它執行的程式。
-  Step 3 把它存在 `step-3.yaml`。
+  Step 3 把它存在 `step_3.yaml`。
 - **target scripts and data** — target skill 的 script——step inventory 中的每一支程式，以及它們從 workspace 載入的每一個模組——以及它們的資料：程式讀取的輸入，和 target skill 最近幾次執行的輸出。
   RSDC 的事實從這裡讀出（Step 4 與 Step 5）；本 skill 從不寫它們。
 - **Source Scanner** — compile-skill 的 `scan_source.py`，驗證一份 `SKILL.md` 並印出它的 step inventory。
@@ -67,13 +74,26 @@ description: >-
 
 本 skill 執行時所用的具體值。
 
-- **Checkpoint Dir** — `checkpoints/gen-rsdc-skill/{target}-{yymmdd-hhmm}/`，每個 step 在其中各有一份 `step-{N}.yaml`；其中 `{target}` 是 target skill 的目錄名稱，`{yymmdd-hhmm}` 由完整執行的 Step 0 蓋上；`run step N` 沿用同一個 target skill 最新的 Checkpoint Dir。
-- **MD report** — `{wikiDir}/gen-rsdc-skill/gen-rsdc-skill-{target}-{yymmdd-hhmm}.md`，只由 Step 10 寫入，與 Checkpoint Dir 帶有相同的 `{target}` 與時間戳記，其中 `wikiDir` 來自 workspace 的 [config.yaml](config.yaml)（於 Step 0 解析）——絕不寫死 wiki 根目錄。
+執行時讀取或執行的輸入與工具：
+
+- **Workspace configuration** — workspace 根目錄的 [config.yaml](config.yaml)。
 - **RSDC standard** — `{skillGroups.common}/references/RSDC-Standard.md`，其圖的記法在 `{skillGroups.common}/references/DFD.md`。
 - **RSDC template** — [RSDC-Skill-System-tmp.md](assets/RSDC-Skill-System-tmp.md) 及其 twin [RSDC-Skill-System-tmp-tw.md](assets/RSDC-Skill-System-tmp-tw.md)，位於 `{skillGroups.common}/skills/gen-rsdc-skill/assets/`。
 - **Source Scanner** — `{skillGroups.common}/skills/compile-skill/scripts/scan_source.py`。
 - **RSDC Checker** — `{skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py`。
 - **Dependency Checker** — `{skillGroups.common}/scripts/depends_on.py`。
+- **README template** — `{skillGroups.common}/templates/README-tmp.md`。
+- **shared report rules** — `{skillGroups.common}/rules/report-md-rules.md` 與 `{skillGroups.common}/rules/run-data-rules.md`。
+- **target scripts and data** — target skill 的 script 及其資料，Step 4 會整份讀過。
+
+一次執行的 working data，執行結束後沒有人、也沒有 skill 讀它：
+
+- **Working Dir** — Checkpoint Dir，`checkpoints\gen-rsdc-skill\{yymmdd}.{N}\`，每個 step 在其中各有一份 step file；`run step N` 使用 Step 0 為它找到的那次執行的 Working Dir。
+
+最後的輸出，人、另一個 skill 或之後的分析會讀它：
+
+- **Run record** — `database\skill-runs\gen-rsdc-skill\{yymmdd}.{N}.yaml`，與 Working Dir 帶有相同的 Run Number。
+- **MD report** — `{wikiDir}/gen-rsdc-skill/gen-rsdc-skill-{target}-{yymmdd}.{N}.md`，只由 Step 10 寫入，其中 `{target}` 是 target skill 的目錄名稱，`{yymmdd}.{N}` 是 Run Number，而 `wikiDir` 來自 workspace 的 [config.yaml](config.yaml)（於 Step 0 解析）——絕不寫死 wiki 根目錄。
 - **Skill Source** — `{skillGroups[<group>]}/skills/<skill-name>/SKILL.md`，於 Step 1 解析。
 - **RSDC** — Skill Source 的 `references/` 中的 `<system name>-RSDC.md`。
 
@@ -85,16 +105,15 @@ description: >-
 - 程式能以 deterministic 方式完成的 step，必須以腳本執行。
   需要閱讀、判斷或摘要的 step **絕不可**寫成腳本——要寫成自然語言的指示，由 agent 直接執行。
 - **遵守 `run step N` 選擇子**：先執行 Step 0、Step 1 與 Step 2——每次執行都需要 Step 0 設定好的執行、Step 1 找到的檔案與 Step 2 所做的檢查——若 Step N 在它們之後，再執行 Step N，然後執行寫出 MD report 的 Step 10，再停止；絕不執行其他 step。
-  Step N 從同一個 target skill 最新的 Checkpoint Dir 中，讀回每一個較早 step 自己檔案裡的輸出；執行經過的每一個 step 改寫自己的 `step-{N}.yaml`，其他 step 的檔案則保持原樣。
-- **除了它的 YAML checkpoint 與 MD report，本 skill 只寫 RSDC 與 Skill Source**——此外什麼都不寫，也不寫任何繁體中文。
+  Step N 從 Step 0 找到的那次執行的 Working Dir 中，讀回每一個較早 step 的 step file 裡的輸出；執行經過的每一個 step 改寫自己的 `step_{N}.yaml`，並把自己加進那次執行的 run record，其他 step 的 step file 保持原樣，而 Step 10 只更新執行過的那些 step 的節。
+- **除了它的 step file、run record 與 MD report，本 skill 只寫 RSDC 與 Skill Source**——此外什麼都不寫，也不寫任何繁體中文。
   RSDC twin 與 SKILL twin 由 `chinese` skill 撰寫，絕不由本 skill 撰寫；改動了 RSDC 或 Skill Source 的執行，會讓旁邊的 twin 過時，而 MD report 會說明這點。
 - 依照 [report-md-rules.md](../../rules/report-md-rules.md) 決定 MD report 的表頭與形狀。
-- 依照 [report-yaml-rules.md](../../rules/report-yaml-rules.md) 決定每一份 step 檔案帶有的欄位——`title` 與 `time`，以及在 `step-0.yaml` 中另有 `skill`、`model` 與 `prompt`——但不依照它的佈局：本 skill 每個 step 各保留一份 `step-{N}.yaml`，而不是在一份 `process.yaml` 中分 `step_{N}` 群組。
-- **`step-{N}.yaml` 恰好只有一個寫入者：Step N。**
+- 依照 [run-data-rules.md](../../rules/run-data-rules.md) 決定 Run Number、step file、run record 與一次執行的 Working Dir。
+- **`step_{N}.yaml` 恰好只有一個寫入者：Step N。**
   其他 step 絕不在其中新增、修改或刪除任何東西，即使是為了取代它也不行；後續得出結論的 step，把結論寫進自己的檔案。
   多個 step 都會寫入的檔案，一旦它的第一個 step 重新執行就會遺失：重新執行會整份改寫它，之後每個 step 的結果都無聲地消失。
-- 依照 [scratch-rules.md](../../rules/scratch-rules.md) 決定一次執行的拋棄式檔案放在哪裡、以及如何清理。
-- **讓本 skill 停止的 step，要先保存自己的 `step-{N}.yaml`，以 `stopped` 說明它為什麼停止，而 Step 10 仍然會執行**——前提是 Step 0 已經解析出 Checkpoint Dir——讓 MD report 說出這次執行停在哪裡、為什麼停。
+- **讓本 skill 停止的 step，要先保存自己的 `step_{N}.yaml`，以 `stopped` 說明它為什麼停止，而 Step 10 仍然會執行**——前提是 Step 0 已經解析出 Working Dir——讓 MD report 說出這次執行停在哪裡、為什麼停。
   停止時報告裡一個字都沒有的執行，讀起來就像從未執行過。
 - **RSDC 是什麼，由 RSDC standard 與 RSDC template 決定；怎麼寫，由本文件決定。**
   每一次撰寫或審閱 RSDC 的執行，都要完整讀過 standard 與 template，絕不憑前一次執行的記憶。
@@ -105,7 +124,7 @@ description: >-
   本 skill 寫的是文件。
   行為有誤的程式，或與程式矛盾的 Skill Source step，都回報給使用者，由使用者決定是否修正——而修正是一項獨立的變更，不是撰寫設計的副作用。
 - **兩份文件之間的依賴是單向的。**
-  Skill Source 是 upper document：它引用 RSDC，而 RSDC 絕不提到 target skill——不提它的名稱、它的 step、它的 `SKILL.md`、它的目錄、它的 MD report、它的 YAML checkpoint、它的 agent。
+  Skill Source 是 upper document：它引用 RSDC，而 RSDC 絕不提到 target skill——不提它的名稱、它的 step、它的 `SKILL.md`、它的目錄、它的 MD report、它的 step file、它的 agent。
   只拿到 RSDC 的 agent，必須仍然能執行 system；提到自己 caller 的設計，就不再能獨立成立，而 skill 的某個 step 一改名，它就無聲地失真。
 - **RSDC 在第 2 章定義 skill 所依賴的每一個名稱**：它執行的程式及其參數（CLI）、它給的 request、它讀回的 record，以及它讓其保持一致的常數（Rule Constants）。
   skill 需要、RSDC 卻沒有定義的名稱，是 skill 自己發明的，沒有任何東西讓兩邊的拼法保持一致。
@@ -118,10 +137,10 @@ description: >-
   import 會把 skill 綁在 system 的內部，而重構可以在一個參數都不改的情況下重新安排內部——讓 skill 在沒有任何錯誤訊息的情況下壞掉。
 - **程式放在哪裡，由 skill 決定**，寫在它的 CONFIGURATION 與 Directory Structure——所以 RSDC 沒有 Directory Structure 一節，這是本 skill 唯一偏離 RSDC standard 之處。
   含有目錄樹的 RSDC 會提到 skill 的目錄，而且 skill 一搬動就過時。
-- **在 skill 結束前，顯示 MD report、Checkpoint Dir、RSDC 與 Skill Source 的路徑**——只顯示路徑，絕不顯示其內容，每一個都呈現為可點擊的 Markdown 連結，絕不用 inline code 或純文字。
+- **在 skill 結束前，顯示 MD report、run record、RSDC 與 Skill Source 的路徑**——只顯示路徑，絕不顯示其內容，每一個都呈現為可點擊的 Markdown 連結，絕不用 inline code 或純文字。
   每次執行都要這麼做，包含像 `run step 9` 這樣的部分執行。
-  - 以 `obsidian://open?vault={vaultName}&file=<vault-relative-path>` URI 連結 **MD report**——vault 位於本 workspace 之外，因此 workspace 相對的目標無法解析到它（例如 `[gen-rsdc-skill-check-stop-price-261009-1530.md](obsidian://open?vault={vaultName}&file=gen-rsdc-skill/gen-rsdc-skill-check-stop-price-261009-1530.md)`）。
-  - 以 workspace 相對、正斜線的目標連結 **Checkpoint Dir**（例如 `[check-stop-price-261009-1530/](checkpoints/gen-rsdc-skill/check-stop-price-261009-1530/)`）。
+  - 以 `obsidian://open?vault={vaultName}&file=<vault-relative-path>` URI 連結 **MD report**——vault 位於本 workspace 之外，因此 workspace 相對的目標無法解析到它（例如 `[gen-rsdc-skill-check-stop-price-261009.1.md](obsidian://open?vault={vaultName}&file=gen-rsdc-skill/gen-rsdc-skill-check-stop-price-261009.1.md)`）。
+  - 以 workspace 相對、正斜線的目標連結 **run record**（例如 `[261009.1.yaml](database/skill-runs/gen-rsdc-skill/261009.1.yaml)`）。
 
 # Prompt Examples
 
@@ -168,17 +187,17 @@ flowchart TB
     CODE[/"target scripts and data"/]
     SRC[("Skill Source")]
     RSDC[("RSDC")]
-    CK0[("step-0.yaml")]
-    CK1[("step-1.yaml")]
-    CK2[("step-2.yaml")]
-    CK3[("step-3.yaml")]
-    CK4[("step-4.yaml")]
-    CK5[("step-5.yaml")]
-    CK6[("step-6.yaml")]
-    CK7[("step-7.yaml")]
-    CK8[("step-8.yaml")]
-    CK9[("step-9.yaml")]
-    CK10[("step-10.yaml")]
+    CK0[("Step file: step_0.yaml")]
+    CK1[("Step file: step_1.yaml")]
+    CK2[("Step file: step_2.yaml")]
+    CK3[("Step file: step_3.yaml")]
+    CK4[("Step file: step_4.yaml")]
+    CK5[("Step file: step_5.yaml")]
+    CK6[("Step file: step_6.yaml")]
+    CK7[("Step file: step_7.yaml")]
+    CK8[("Step file: step_8.yaml")]
+    CK9[("Step file: step_9.yaml")]
+    CK10[("Step file: step_10.yaml")]
     MD[("MD report")]
 
     USER --> PROMPT
@@ -186,7 +205,7 @@ flowchart TB
     PROMPT --> S0(["Step 0 - Warmup"])
     CONFIG --> S0
     ANS --> S0
-    S0 --> CK0
+    S0 <--> CK0
     CK0 --> S1(["Step 1 - Locate the Skill Source and Its RSDC"])
     SRC --> S1
     ANS --> S1
@@ -236,7 +255,7 @@ flowchart TB
     CK8 --> S10
     CK9 --> S10
     S10 --> CK10
-    S10 --> MD
+    S10 <--> MD
     MD --> USER
     RSDC --> USER
     SRC --> USER
@@ -249,7 +268,8 @@ flowchart TB
 
 - 平行四邊形是 external input：`config.yaml`、RSDC standard、RSDC template、README template，以及 target scripts and data。
   旗形是 one-run data：prompt 與 Answers。
-  圓柱是 record：每個 step 自己在 Checkpoint Dir 中的檔案、MD report、Skill Source 與 RSDC。
+  圓柱是 record：每個 step 的 step file、MD report、Skill Source 與 RSDC。
+  每個 step 也把它的時間與 model 加進 run record，這張圖不畫這份 record。
   圓角方框是 step；雙邊框是執行某個 RSDC system 程式的 step，畫成關閉的——Step 3 與 Step 9 執行 Source Scanner，它的工作由 [SkillCompiler-RSDC](skill-groups/common/skills/compile-skill/references/SkillCompiler-RSDC.md) §2.3 *Dataflow* 畫出；Step 9 另外還執行 RSDC Checker。
 - 六角形是 skill 之外的 role：User，提供 prompt 與 Answers，並讀取 MD report、RSDC 與 Skill Source。
 - 實線箭頭沿著資料移動的方向搬移資料；雙頭箭頭表示某個 step 對同一份資料既讀又寫。
@@ -259,20 +279,19 @@ flowchart TB
 
 # Steps at a Glance
 
-每個 step 的總覽：它執行的 script，以及它存進 Checkpoint Dir 的內容。
-Step N 寫 `step-{N}.yaml`，其他 step 都不改它。
+每個 step 的總覽：它執行的 script，以及它存進自己 step file 的內容。
+Step N 寫 `step_{N}.yaml`，其他 step 都不改它。
+每個 step 的標題、時間與 model 記進 run record，不記進它的 step file。
 
-共用的 key，每個 step 的檔案都一樣：
+任何一份 step file 都可能帶有的 key：
 
-- `title`：step 的標題，與它的標題列相同，例如 `Warmup`。
-- `time`：`begin`、`end` 與 `taken`，格式依 [report-yaml-rules.md](../../rules/report-yaml-rules.md)。
 - `stopped`：只在該 step 讓本 skill 停止時才有——說明它為什麼停止（MUST FOLLOW）。
 
 各 step 執行的 script（若有），以及它自己的 key——每個 key 由存檔的那個 step 說明：
 
-| Step | Script | YAML |
+| Step | Script | Step file |
 |---|---|---|
-| Step 0 - Warmup | — | `skill`, `model`, `prompt`, `targetSkill`, `runStep`, `checkpointDir`, `mdReport` |
+| Step 0 - Warmup | — | `runNumber`, `targetSkill`, `runStep`, `checkpointDir`, `mdReport` |
 | Step 1 - Locate the Skill Source and Its RSDC | — | `skillSource`, `rsdc`, `skillTwin`, `rsdcTwin` |
 | Step 2 - Check the RSDC Template Against the Standard | `check_rsdc.py --standard` | `standardVersion`, `templateVersion`, `twinVersion`, `pins`, `exitStatus` |
 | Step 3 - Scan the Skill Source | `scan_source.py` | `exitStatus`, `stepInventory` |
@@ -293,7 +312,7 @@ Step N 寫 `step-{N}.yaml`，其他 step 都不改它。
 
 ## Step 0 - Warmup
 
-- **Purpose**：把這次執行設定好——它的 config、它為哪一個 skill 撰寫設計、是完整執行還是只跑一個 step，以及每個 step 存檔的 Checkpoint Dir——讓後面的 step 不必再推導自己的檔案放在哪裡。
+- **Purpose**：把這次執行設定好——它的 config、它為哪一個 skill 撰寫設計、是完整執行還是只跑一個 step，以及這次執行——每個 step 存進它的 Working Dir，並把自己加進它的 run record——讓後面的 step 不必再推導自己的檔案放在哪裡。
 
 - 先執行 `.venv`。
   Source Scanner 會 import `PyYAML`：用 `python -c "import yaml"` 確認它在；若缺少，就停止並指出缺了什麼。
@@ -325,23 +344,28 @@ Step N 寫 `step-{N}.yaml`，其他 step 都不改它。
 
 - 若缺少 target skill，請使用者輸入它的名稱或路徑，並等待回答。
 
-- 解析 Checkpoint Dir：
-  - **完整執行**從系統時鐘蓋上 `{yymmdd-hhmm}`，並建立 Checkpoint Dir。
-    MD report 的路徑帶著同一個時間戳記；這個檔案由 Step 10 寫出。
-  - **`run step N`** 取用 `checkpoints/gen-rsdc-skill/` 之下同一個 target skill 最新的 Checkpoint Dir。
-    若沒有，說明這點並停止：Step N 要讀回較早的執行所保存的東西，而還沒有任何執行保存過。
+- 保存 canonical skill invocation，讓 run record 把它當作 `prompt` 記下。
 
-- 保存標準化的 skill 叫用方式，供後續 step 參考。
+- 找出這次執行、它的 Working Dir 與它的 MD report：
+  - **完整執行**依 run-data-rules.md 取得 Run Number，並寫出這次執行的 run record。
+    它的 Working Dir 是 `checkpoints\gen-rsdc-skill\{yymmdd}.{N}\`，它的 MD report 的路徑帶著 target skill 與同一個 Run Number；這個檔案由 Step 10 寫出。
+  - **`run step N`** 不取得自己的 Run Number：它取用 `checkpoints\gen-rsdc-skill\` 中 `step_0.yaml` 指名同一個 target skill、Run Number 最大的那次執行，並使用那次執行的 Working Dir 與 MD report。
+    它依 run-data-rules.md，把它執行的 step 加進那次執行的 run record，並保留該 record 的 `prompt`：開始那次執行的叫用方式。
+  - 若 `run step N` 找不到這樣的執行，說明這點並停止：Step N 要讀回較早的執行所保存的東西，而還沒有任何執行保存過。
+    停止之前，它照完整執行的做法取得 Run Number 並寫出 run record，讓 Step 10 能說明這次執行為什麼停止。
 
-- 保存 `step-0.yaml`，內容為：
+- 保存 `step_0.yaml`，內容為：
+  - `runNumber`
   - `targetSkill`
   - `runStep`：N；完整執行時為 `null`。
   - `checkpointDir`
   - `mdReport`
 
-- `step-0.yaml` 只記這一次的叫用，下一次執行的 Step 0 會覆寫它。
+- 把這個 step 加進 run record。
 
-- 顯示 target skill、這次是完整執行還是 `run step N`，以及 Checkpoint Dir。
+- `step_0.yaml` 記的是它那次執行最近一次的叫用：`run step N` 會再寫一次。
+
+- 顯示 target skill、這次是完整執行還是 `run step N`、Run Number，以及 Working Dir。
 
 
 ## Step 1 - Locate the Skill Source and Its RSDC
@@ -350,7 +374,7 @@ Step N 寫 `step-{N}.yaml`，其他 step 都不改它。
 
 - 每一次執行都會經過這個 step，`run step N` 也一樣（MUST FOLLOW）。
 
-- 從 `step-0.yaml` 讀回 target skill，並據以解析出 Skill Source：以 `SKILL.md` 結尾的路徑照原樣採用；裸的 skill 名稱則在每個 `skillGroups` 根目錄下以 `<root>/skills/<name>/SKILL.md` 尋找。
+- 從 `step_0.yaml` 讀回 target skill，並據以解析出 Skill Source：以 `SKILL.md` 結尾的路徑照原樣採用；裸的 skill 名稱則在每個 `skillGroups` 根目錄下以 `<root>/skills/<name>/SKILL.md` 尋找。
   在不只一個根目錄下都找到的名稱是有歧義的：列出所有相符項並詢問是哪一個，絕不挑第一個。
 
 - 確認 Skill Source 存在，且其 YAML frontmatter 能解析出 `name` 鍵。
@@ -364,13 +388,15 @@ Step N 寫 `step-{N}.yaml`，其他 step 都不改它。
 
 - 說明 Skill Source 旁邊是否有 SKILL twin，以及 RSDC 旁邊是否有 RSDC twin。
 
-- 保存 `step-1.yaml`，內容為：
+- 保存 `step_1.yaml`，內容為：
   - `skillSource`
   - `rsdc`：它的路徑；尚無時為 `null`。
   - `skillTwin`：是否存在。
   - `rsdcTwin`：是否存在。
 
-- `step-1.yaml` 和 `step-0.yaml` 一樣，只記這一次的叫用，下一次執行的 Step 1 會覆寫它。
+- 把這個 step 加進 run record。
+
+- `step_1.yaml` 和 `step_0.yaml` 一樣，記的是它那次執行最近一次的叫用：`run step N` 會再寫一次。
 
 - 顯示解析後的 Skill Source 路徑、RSDC 路徑（或說明尚無），以及 SKILL twin 與 RSDC twin 是否存在。
 
@@ -394,12 +420,14 @@ Step N 寫 `step-{N}.yaml`，其他 step 都不改它。
   - `2`：某個檔案不存在、沒有記下版本、沒有連到 standard，或某個連到 standard 的連結後面沒有記下指紋。
     回報它印出的內容，然後停止。
 
-- 保存 `step-2.yaml`，內容為：
+- 保存 `step_2.yaml`，內容為：
   - `standardVersion`
   - `templateVersion`
   - `twinVersion`
   - `pins`：template 所連到的每一個 standard 檔案，template 與它的 twin 記下的指紋，以及該檔案現在的指紋
   - `exitStatus`
+
+- 把這個 step 加進 run record。
 
 - 顯示三個版本與每個檔案的指紋（記下的與現在的），以及它們是否一致。
 
@@ -420,9 +448,11 @@ Step N 寫 `step-{N}.yaml`，其他 step 都不改它。
 - 若 step inventory 中沒有任何 step 執行程式，**在此停止本 skill**：system 就是 skill 所執行的程式，所以 target skill 沒有 system，也不為它撰寫 RSDC。
   說明這點，不寫出任何文件。
 
-- 保存 `step-3.yaml`，內容為：
+- 保存 `step_3.yaml`，內容為：
   - `exitStatus`
   - `stepInventory`：每個 step 的編號與標題，以及它執行的程式，並標明每支程式是否位於 target skill 的目錄內。
+
+- 把這個 step 加進 run record。
 
 - 以一張欄位為 **Step**、**Title** 與 **Programs** 的表格顯示 step inventory，並標明每支程式是否位於 target skill 的目錄內。
 
@@ -431,7 +461,7 @@ Step N 寫 `step-{N}.yaml`，其他 step 都不改它。
 
 - **Purpose**：在 RSDC 寫下任何一行之前，先確定它要規範什麼——system 與 skill 之間的邊界決定了每一章的樣貌，事後再移動它，大部分章節都得重寫。
 
-- 從 `step-3.yaml` 讀回 step inventory。
+- 從 `step_3.yaml` 讀回 step inventory。
 
 - 完整讀過：
   - Skill Source；
@@ -462,24 +492,26 @@ Step N 寫 `step-{N}.yaml`，其他 step 都不改它。
   3. 各個 stage，依序排列，各以其活動命名，並附上執行它的組件及該組件的 role 名稱。
   4. 輸入——依 Dataflow 將會畫出的方式分組；record；request 與 outcome；system 外部的 role。
   5. 若程式以副本形式攜帶某些散文文件的規則，列出那些文件，以及存放副本的常數。
-  6. 留在 target skill 的部分：它的閱讀與判斷、它的 MD report 及該報告的契約、它的 YAML checkpoint，以及它把檔案放在哪裡。
+  6. 留在 target skill 的部分：它的閱讀與判斷、它的 MD report 及該報告的契約、它的 step file，以及它把檔案放在哪裡。
   7. Skill Source 與程式之間的每一處不一致，附上雙方的檔案與行號。
 
 - 以一張 **Delimitation table** 顯示 delimitation，欄位為 **Item**、**Decision** 與 **Why**，其後列出各處不一致。
   然後請使用者確認或更正。
   確認之前什麼都不寫；套用更正後，再顯示一次這張表。
 
-- 保存 `step-4.yaml`，內容為：
+- 保存 `step_4.yaml`，內容為：
   - `delimitation`：確認後的七項決定。
   - `corrections`：使用者在確認前做的更正。
   - `disagreements`
+
+- 把這個 step 加進 run record。
 
 
 ## Step 5 - Write the RSDC
 
 - **Purpose**：撰寫設計本身——這是本 workflow 中唯一屬於撰寫的部分，也是本 skill 存在的理由。
 
-- 從 `step-4.yaml` 讀回 delimitation。
+- 從 `step_4.yaml` 讀回 delimitation。
 
 - 完整讀過 RSDC standard 與 RSDC template。
 
@@ -506,11 +538,13 @@ Step N 寫 `step-{N}.yaml`，其他 step 都不改它。
   `chinese` skill 透過那一行，把 RSDC 與 template 共有的每一個句子從 template 的 twin 照抄過來；之後的檢查也能看出 template 是否改過。
   - Example: `python {skillGroups.common}/scripts/depends_on.py record "{skillGroups.dedi}/skills/check-stop-price/references/StopPriceChecker-RSDC.md" --target "[[RSDC-Skill-System-tmp]]" --config config.yaml`
 
-- 保存 `step-5.yaml`，內容為：
+- 保存 `step_5.yaml`，內容為：
   - `rsdc`：它的路徑。
   - `lines`
   - `outcome`：本次執行寫出第一份 RSDC 時為 `new`，取代既有的一份時為 `rewritten`，使用者保留既有的一份時為 `refused`。
   - `templateRecorded`：記在 RSDC template 連結後面的指紋與日期——使用者保留既有的 RSDC 時沒有這一項。
+
+- 把這個 step 加進 run record。
 
 - 顯示 RSDC 的路徑與行數、它是新寫的、改寫的還是保留原樣，以及記下的 template 指紋。
 
@@ -534,10 +568,12 @@ Step N 寫 `step-{N}.yaml`，其他 step 都不改它。
 - 把選定的修改套用到 RSDC。
   修改若搬動了一條規則，連同它的每一處引用、它在目標表的那一列，以及它在 Verification Obligations 的那一列，一起更新。
 
-- 保存 `step-6.yaml`，內容為：
+- 保存 `step_6.yaml`，內容為：
   - `findings`：每一類的編號項目，各附它指名的章節與建議的修改。
   - `applied`：使用者選定的項目，以及每一處矛盾。
   - `lines`
+
+- 把這個 step 加進 run record。
 
 - 顯示做了幾處修改，以及新的行數。
 
@@ -559,10 +595,12 @@ Step N 寫 `step-{N}.yaml`，其他 step 都不改它。
 
 - 讀過每一個 `[WARN]`：真正的缺陷就修正；誤報就保留，並說明保留的理由。
 
-- 保存 `step-7.yaml`，內容為：
+- 保存 `step_7.yaml`，內容為：
   - `verdict`
   - `runs`：checker 在通過之前執行了幾次。
   - `warningsLeft`：每一個都附上保留的理由。
+
+- 把這個 step 加進 run record。
 
 - 顯示 verdict 那一行，以及每一個保留下來的警告與保留的理由。
 
@@ -583,7 +621,7 @@ Step N 寫 `step-{N}.yaml`，其他 step 都不改它。
   - **MUST FOLLOW** 增加四條規則：token 在 skill 裡花，絕不在 system 裡花——程式做的事，絕不靠閱讀來做；`<system name>-RSDC` 是 system 的正本——step 指名它所依據的章節，兩者不一致時以 RSDC 為準，並回報這個不一致，而不是在執行中自行解決；執行期間絕不編輯 `<system name>-RSDC`——對 system 的變更，要刻意地改在這一對文件的兩半、同一個節號之下；以及 `<system name>-RSDC` 絕不提到這個 skill——skill 所依賴的名稱定義在它的第 2 章，skill 不引用它的第 3、4 章，程式放在哪裡寫在 CONFIGURATION 與 Directory Structure。
   - **Dataflow**，一節 `# Dataflow`，放在 Prompt Examples 之後，畫法照 README template 的 `## Dataflow`：一張圖畫出 Workflow 的各個 step 與每個 step 讀寫的資料，附上圖例，旁邊不加表格或說明——各個 step 已經寫明自己讀寫什麼。
     執行 system 程式的 step 畫成雙框 `[["…"]]`，絕不展開：它的內部屬於 system，由圖例引用 §2.3 *Dataflow*——在這裡重畫，就成了 RSDC 那張圖的第二份副本，兩者會偏離。
-    它的箭頭是 step 交給程式的東西、程式寫出的 record，以及 step 自己在 YAML checkpoint 中的群組：程式只寫它的 record，step 只寫那個群組。
+    它的箭頭是 step 交給程式的東西、程式寫出的 record，以及 step 自己的 step file：程式只寫它的 record，step 只寫它的 step file。
   - **Report Contract**，當 skill 會寫 MD report 時，放一節 `# Report Contract`，其下有 `## Presentation Contract` 與 `## Presentation Form`。
     報告屬於 skill，所以它的契約放在這裡，不放在 RSDC；它要講清楚 RSDC 的 Presentation Contract 所要求的每一件事，而寫報告的 step 讀的是這份契約，不是 RSDC。
   - **Workflow**：執行程式的 step 寫出完整的命令——`python <program>` 加上 CLI 規定的每一個參數——以及每一種 exit status 要怎麼處理。
@@ -596,10 +634,12 @@ Step N 寫 `step-{N}.yaml`，其他 step 都不改它。
 
 - 然後逐節審閱 Skill Source 的重複內容，依 Step 6 的做法分成 A、B、C 三類——一個 step 必須單獨閱讀的契約，例如 Report Contract，不算重複：顯示發現、詢問要套用哪些，然後套用。
 
-- 保存 `step-8.yaml`，內容為：
+- 保存 `step_8.yaml`，內容為：
   - `changes`：Skill Source 每一部分改了什麼。
   - `findings`：重複內容的發現。
   - `applied`：已套用的發現。
+
+- 把這個 step 加進 run record。
 
 - 顯示 Skill Source 的路徑，並逐部分列出改了什麼。
 
@@ -610,7 +650,7 @@ Step N 寫 `step-{N}.yaml`，其他 step 都不改它。
 
 - 照 Step 3 的做法，對 Skill Source 執行 **Source Scanner**。
   它必須以 `0` 結束。
-  它的 step inventory 還必須列出 `step-3.yaml` 中 step inventory 的那些 step；未經使用者同意而改變的 step，要改回來。
+  它的 step inventory 還必須列出 `step_3.yaml` 中 step inventory 的那些 step；未經使用者同意而改變的 step，要改回來。
 
 - 對 RSDC 與 Skill Source 執行 **RSDC Checker**。
   - 範例：`python {skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py --rsdc "{skillGroups.dedi}/skills/check-stop-price/references/StopPriceChecker-RSDC.md" --skill "{skillGroups.dedi}/skills/check-stop-price/SKILL.md"`
@@ -622,7 +662,7 @@ Step N 寫 `step-{N}.yaml`，其他 step 都不改它。
     若 skill 需要的名稱 RSDC 沒有定義，就是 RSDC 缺了一項契約：把它加進 RSDC 的第 2 章，並也再執行一次 Step 7 的腳本。
   - `2`：修正命令或路徑，再執行一次。
 
-- 保存 `step-9.yaml`，內容為：
+- 保存 `step_9.yaml`，內容為：
   - `scannerVerdict`
   - `inventoryMatches`
   - `checkerVerdict`
@@ -630,34 +670,43 @@ Step N 寫 `step-{N}.yaml`，其他 step 都不改它。
   - `contractsAdded`：加進 RSDC 第 2 章的名稱（若有）。
   - `dependencyRecorded`：記進 Skill Source 的指紋，以及日期。
 
+- 把這個 step 加進 run record。
+
 - 顯示兩個 verdict、記下的指紋，以及加進去的契約（若有）。
 
 
 ## Step 10 - Write the MD Report
 
-- **Purpose**：依各 step 保存的內容，一次講完這次執行——逐 step 附加的報告，每一節都有自己的寫入者；某個 step 單獨重新執行之後，報告就同時講著兩次不同的執行。
+- **Purpose**：依各 step 保存的內容，一次講完這次執行——逐 step 附加的報告，每一節都有自己的寫入者；而把報告整份重寫的 `run step N`，會把它執行的內容與它只是讀回的內容並列，彷彿每個 step 都是同一次叫用執行的。
 
-- 每一次執行都以這個 step 結束，`run step N` 與被某個 step 停止的執行也一樣（MUST FOLLOW），前提是 Step 0 已經解析出 Checkpoint Dir。
+- 每一次執行都以這個 step 結束，`run step N` 與被某個 step 停止的執行也一樣（MUST FOLLOW），前提是 Step 0 已經找到這次執行。
 
-- 讀取 Checkpoint Dir 中的每一份 `step-{N}.yaml`。
+- **完整執行**讀取 Working Dir 中的每一份 `step_{N}.yaml`，並整份寫出 MD report。
 
-- 依 [report-md-rules.md](../../rules/report-md-rules.md) 寫出 MD report，標題為 `RSDC for <target skill>`：表頭以 Checkpoint Dir 作為它的 Checkpoint、以 `step-0.yaml` 中標準化的 skill 叫用方式作為它的 Prompt；其後依 step 的順序，每一份 step 檔案一節，每一節只依據那一份檔案寫出，最後一節講 twin：
-  - **Run**（`step-0.yaml`）：target skill、這次是完整執行還是 `run step N`，以及 Checkpoint Dir。
-  - **Target Skill**（`step-1.yaml`）：Skill Source 路徑、RSDC 路徑（或說明尚無），以及 SKILL twin 與 RSDC twin 是否存在。
-  - **Template and Standard**（`step-2.yaml`）：三個版本與每個檔案的指紋（記下的與現在的），以及它們是否一致。
-  - **Step Inventory**（`step-3.yaml`）：一張欄位為 **Step**、**Title** 與 **Programs** 的表格，並標明每支程式是否位於 target skill 的目錄內。
-  - **Delimitation**（`step-4.yaml`）：確認後的 Delimitation table，其後列出各處不一致。
-  - **RSDC**（`step-5.yaml`）：它的路徑與行數，以及它是新寫的、改寫的，還是保留原樣。
-  - **Review**（`step-6.yaml`）：每一類各一份編號清單列出發現，每一項標明是否已套用，以及新的行數。
-  - **RSDC Check**（`step-7.yaml`）：verdict 那一行，以及每一個保留下來的警告與保留的理由。
-  - **Skill Source**（`step-8.yaml`）：它的路徑、逐部分改了什麼，以及重複內容的發現，每一項標明是否已套用。
-  - **Citation Check**（`step-9.yaml`）：兩個 verdict、記下的指紋，以及加進去的契約（若有）。
-  - **Twins**：`step-1.yaml` 找到的每一份 twin，以及本次執行是否改動了它所翻譯的文件——RSDC twin 對應 RSDC，SKILL twin 對應 Skill Source——改動了就讓它過時，由 `chinese` skill 更新。
+- **`run step N`** 讀取這次叫用所執行之 step 的 step file——Step 0、1、2 與 N——以及那次執行的 MD report。
+  它只更新那些 step 的節與 **Twins** 一節，其他每一節以及表頭的 Created 與 Prompt 都保持原樣。
+  run record 說明每個 step 是由哪一次叫用執行的。
+  若 MD report 不存在，就照完整執行的做法整份寫出。
 
-- 檔案中有 `stopped` 的 step，仍然有它的一節，並說明原因；Checkpoint Dir 中沒有檔案的 step，就沒有它的一節。
+- MD report 依 [report-md-rules.md](../../rules/report-md-rules.md) 寫出，標題為 `RSDC for <target skill>`：表頭以 run record 的路徑作為它的 Checkpoint、以 run record 的 `prompt` 作為它的 Prompt；其後依 step 的順序，每一份 step file 一節，每一節只依據那一份檔案寫出，最後一節講 twin：
+  - **Run**（`step_0.yaml`）：target skill、這次是完整執行還是 `run step N`、Run Number，以及 Working Dir。
+  - **Target Skill**（`step_1.yaml`）：Skill Source 路徑、RSDC 路徑（或說明尚無），以及 SKILL twin 與 RSDC twin 是否存在。
+  - **Template and Standard**（`step_2.yaml`）：三個版本與每個檔案的指紋（記下的與現在的），以及它們是否一致。
+  - **Step Inventory**（`step_3.yaml`）：一張欄位為 **Step**、**Title** 與 **Programs** 的表格，並標明每支程式是否位於 target skill 的目錄內。
+  - **Delimitation**（`step_4.yaml`）：確認後的 Delimitation table，其後列出各處不一致。
+  - **RSDC**（`step_5.yaml`）：它的路徑與行數，以及它是新寫的、改寫的，還是保留原樣。
+  - **Review**（`step_6.yaml`）：每一類各一份編號清單列出發現，每一項標明是否已套用，以及新的行數。
+  - **RSDC Check**（`step_7.yaml`）：verdict 那一行，以及每一個保留下來的警告與保留的理由。
+  - **Skill Source**（`step_8.yaml`）：它的路徑、逐部分改了什麼，以及重複內容的發現，每一項標明是否已套用。
+  - **Citation Check**（`step_9.yaml`）：兩個 verdict、記下的指紋，以及加進去的契約（若有）。
+  - **Twins**：`step_1.yaml` 找到的每一份 twin，以及本次執行是否改動了它所翻譯的文件——RSDC twin 對應 RSDC，SKILL twin 對應 Skill Source——改動了就讓它過時，由 `chinese` skill 更新。
 
-- 保存 `step-10.yaml`，內容為：
+- 檔案中有 `stopped` 的 step，仍然有它的一節，並說明原因；Working Dir 中沒有檔案的 step，就沒有它的一節。
+
+- 保存 `step_10.yaml`，內容為：
   - `mdReport`：它的路徑。
-  - `sections`：寫出的各節。
+  - `sections`：寫出或更新的各節。
 
-- 以 MD report、Checkpoint Dir、RSDC 與 Skill Source 的路徑作為可點擊的 Markdown 連結作結（MUST FOLLOW），並指名本次執行讓哪些 twin 過時了。
+- 把這個 step 加進 run record，並依 run-data-rules.md 寫入它的 `result`：`completed`，或 `stopped`，並以 `stopped_at` 指名讓本 skill 停止的那個 step。
+
+- 以 MD report、run record、RSDC 與 Skill Source 的路徑作為可點擊的 Markdown 連結作結（MUST FOLLOW），並指名本次執行讓哪些 twin 過時了。

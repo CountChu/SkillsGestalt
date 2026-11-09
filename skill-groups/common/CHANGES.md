@@ -5,6 +5,13 @@ SkillsGestalt 的 `common` skill group 裡，會影響 Forge 的改動。
 每一筆寫明改了什麼、commit，以及 Forge 要做什麼；新的日期在前。
 Forge 以 chore [follow-gestalt](../../chores/follow-gestalt.md) 處理這裡的條目：它的執行紀錄記下處理到哪一筆，比那一筆新的就該做了。
 
+### 2026-11-09
+
+- **asd-ste 的 review server 與 imp-home 的 `test_hub.js` 也從目前的目錄找 workspace 的根目錄**（接續 `8eae02d`）：兩支都多了 `--workspace`；除了只在 SkillsGestalt 執行的 `publish_snapshot.py`，`common` 裡已經沒有從 script 自己的位置找根目錄的 script。
+  review server 的設計不變：port 8790 上只跑一個，服務啟動它的 workspace 的 `checkpoints\asd-ste\`；探測不分辨 workspace，所以另一個 workspace 啟動的 review server 占著 8790 時，探測照樣以 0 結束，連結連到的是那個 workspace 的執行（[ReviewPage-RSDC.md](skills/asd-ste/references/ReviewPage-RSDC.md) 4.6）。
+  ReviewPage-RSDC.md 多了 Workspace root 一詞，asd-ste 的 README 重記 run-data-rules.md。
+  Forge 要做的：要在 Forge 審核 asd-ste 的 draft 時，先看 8790 上的 review server 服務哪個 workspace：`--probe` 會印出它的 review root；是 SkillsGestalt 的，就用 `/healthz` 給的 pid 停掉它，Step 6 會為 Forge 啟動一個。
+
 ### 2026-11-08
 
 - **task 改成八章：`1. 背景` 後面多了 `2. 結論`，`2. 現況` 改名為 `3. 過程`**：[task-rules.md](rules/task-rules.md) 的章依序是 `1. 背景`、`2. 結論`、`3. 過程`、`4. 要做的`、`5. 驗證`、`6. 與其他 task 的關係`、`7. 知識`、`8. 日誌`。
@@ -14,6 +21,58 @@ Forge 以 chore [follow-gestalt](../../chores/follow-gestalt.md) 處理這裡的
   日誌以外，指向這些節或章的引用（例如 `2.8`、`3. 要做的`）跟著改；日誌是當天的紀錄，不改；講 chore 的章（例如 chore 的 `4. 驗證`）與講舊格式歷史的句子也不改。
   自己的 skill、chore 若寫了 task 的章名或章號（例如 `## 7. 日誌`），也要改。
   SkillsGestalt 自己的 127 個 task 已改好。
+
+### 2026-11-07
+
+- **script 的根目錄是 skill 執行所在的 workspace，不從 script 自己的位置找**：Forge 就地讀取 `common`，所以從 script 自己的檔案往上找 `config.yaml` 的 script，在 Forge 執行時找到的是 SkillsGestalt 的根目錄、`skillGroups`、`wikiDir` 與 `checkpoints\`。
+  現在根目錄是指令選項指定的目錄，否則是從目前的目錄往上、最近一個 `config.yaml` 有 `skillGroups` 的目錄；skill 自己的 config 仍在 skill 的檔案旁邊找。
+  照這個找法改的有：imp-app 的 `resolve_session.py`、`run_tests.py`、`deploy_app.py`（`--workspace`，`1acb108`），gen-imp-app 的 `resolve_session.py`、`check_owner_skill.py`（`--workspace`，resolver 的 JSON 多了 `workspace`），asd-ste 的 `save_step.py`（`--root`）與 `draft.py`（`runs --workspace`），check-skill 的 `scan_skill.py`（`--config`）與 `update_dashboard.py`（`--workspace`），imp-home 的 `setup_target.py`（`--root`）。
+  [run-data-rules.md](rules/run-data-rules.md) 把這條寫成一條規則；check-skill 的準則 5.8 改名為 Paths that follow the current directory or the script's location，從 `__file__` 或 `__dirname` 往上找 `config.yaml` 的 script 也報 issue。
+  asd-ste 的 `review_server.js` 與 imp-home 的 `test_hub.js` 還是從自己的位置找根目錄，還沒改；asd-ste 的 README 因此還沒重記 run-data-rules.md。
+  Forge 要做的：從 Forge 的根目錄或其下的目錄執行 skill；自己的 script 若從 `__file__` 或 `__dirname` 找 workspace 的 `config.yaml`（例如 `Path(__file__).parents[4]`），改成上面的找法，check-skill 的 5.8 會對它報 issue；引用 run-data-rules.md 的 README 報 CHANGED，讀過新規則後以 `depends_on.py record --target` 重記。
+- **連到別的 vault 的 topic 用 Obsidian URI，`check_tasks.py` 也檢查這種連結**（`4b6946b`）：[task-rules.md](rules/task-rules.md) 說，`6. 知識` 的項目寫進 topic 之後，topic 在 task 檔所在的 vault 時用 wikilink，在別的 vault 時用 `[<Title>](obsidian://open?vault=<vault>&file=<path>)`，空格寫成 `%20`；vault 是從檔案往上最近一個含有 `.obsidian` 目錄的目錄，`write-topic` 的 topic 在 `wikiDir` 這個 vault。
+  新 topic 的標題不用 `#`、`^`、`[`、`]`、`|`，因為 Obsidian 的連結找不到檔名含有這些字元的檔案。
+  [check_tasks.py](scripts/check_tasks.py) 的檢查 10 從 Obsidian 的 vault 清單（Obsidian 設定目錄裡的 `obsidian.json`，或 `--obsidian-config` 指定的檔）依名稱或 id 找 vault；`file=` 的路徑不在那個 vault、vault 不在清單裡、清單讀不到，或連結裡留著空格，都判 FAIL；`obsidian://search` 這類別的動作不檢查。
+  Forge 要做的：task 檔裡連到別的 vault 的 topic 的 wikilink（檢查 10 本來就判 FAIL）改成上面的 URI；`obsidian://open` 連結的 vault 不在這台機器的 Obsidian vault 清單裡，或 topic 改了名，檢查 10 會從 PASS 變成 FAIL，照它列出的連結修正。
+  InvestForge 現有的 task 檔用的就是這種 URI，檢查 10 通過。
+
+### 2026-11-06
+
+- **Working Dir**（Task 100.12）：[run-data-rules.md](rules/run-data-rules.md) 把 Temp Dir 與 Checkpoint Dir 定為兩種 Working Dir；一次執行所有的 working data（step 檔、資料檔、暫存檔）都放在它唯一的 Working Dir，由寫 skill 的人二選一。[SKILL-tmp.md](templates/SKILL-tmp.md) 的 CONFIGURATION 列兩行 Working Dir、只留一行，CONFIGURATION 之後都寫 Working Dir，新增 `{WORKING_DIR}` placeholder；gen-skill 問要用哪一種；check-skill 的準則 1.15 要求只有一個 Working Dir，準則 5.7 檢查 working data 都在 Working Dir 裡。imp-home 的 `test_hub.js --run` 改寫到 `checkpoints\imp-home\{yymmdd}.{N}\test-hub\`。
+  Forge 要做的：自己的 skill 若同時有 Temp Dir 與 Checkpoint Dir，併成一個；CONFIGURATION 那行改成 `- **Working Dir** — the Checkpoint Dir, ...`（或 the Temp Dir），之後的 Checkpoint Dir／Temp Dir 改成 Working Dir；check-skill 會對兩個 Working Dir 報 issue，對其餘舊寫法報 recommendation。
+- **Scratch files 改成 Temp Dir**（Task 100.11）：[run-data-rules.md](rules/run-data-rules.md) 把一次執行的暫存檔放進 Temp Dir `temp\{skill}\{yymmdd}.{N}\`，結構和 Checkpoint Dir 一樣，檔名不必以 skill 名開頭，skill 不移除它；step 執行的 script 由 step 傳入 Run Number。[SKILL-tmp.md](templates/SKILL-tmp.md) 的 Glossary 與 CONFIGURATION 把 Scratch file(s) 換成 Temp Dir。check-skill 的 `scan_skill.py` 改用 `--run-number`，不再有 `--out`，facts file 是 Temp Dir 裡的 `facts.yaml`；準則 5.7 檢查 Temp Dir 的規則。imp-home 的 `test_hub.js` 加上 `--run`。
+  [tw-keep-english.md](references/tw-keep-english.md) 換成 261106 版，加上 working data，中文版不再寫「執行時的工作資料」。
+  Forge 要做的：自己的 skill 把 `temp\{skill}-*` 的暫存檔改放進 Temp Dir，拿掉以完整名稱移除暫存檔的步驟；中文版的「工作資料」改成 working data；做 keep-english chore；check-skill 可能對還在舊位置的暫存檔報 recommendation。
+- **CONFIGURATION 先列輸入與工具**（Task 100.8）：[SKILL-tmp.md](templates/SKILL-tmp.md) 的 CONFIGURATION 依序是「The inputs and tools」、「The working data of a run」、「The last outputs」；gen-skill 照它寫，check-skill 的準則 1.3 檢查組的順序。
+  Forge 要做的：自己的 skill 把讀取的檔、執行的 script 與用到的程式列在第一組；check-skill 可能對放錯組的行報 recommendation。
+- **Process record 改名為 Run record，22 個 skill 的 CONFIGURATION 分成兩類**（Task 100.7）：run-data-rules 的「The Data of the Process」改成「The Working Data of a Run」；`database\skill-runs\` 的檔改稱 run record，script 輸出的欄位改成 `run_record`、`runRecord`；MD report 的表頭欄是 `Run record`。
+  Forge 要做的：自己的 skill 與文件照新名稱改；讀 `resolve_session.py` 或 `save_step.py` 輸出的地方，欄位名改成 `runRecord` 或 `run_record`。
+- **CONFIGURATION 照兩類分組，MD report 的 Checkpoint 欄改名為 Process record**（Task 100.7）：[SKILL-tmp.md](templates/SKILL-tmp.md) 的 CONFIGURATION 分成過程產生的資料（Scratch files、Checkpoint Dir）與最後的輸出（Process record、Handoff file、MD report），TERMINOLOGY 加上 Scratch file 與 Handoff file；[report-md-rules.md](rules/report-md-rules.md) 的表頭欄 `Checkpoint` 改成 `Process record`，placeholder 改成 `{PROCESS_RECORD_PATH}`。
+  Forge 要做的：自己的 skill 寫 MD report 時，表頭用 `Process record` 欄；引用 SKILL-tmp.md 的 README 會顯示 CHANGED。
+- **其餘 9 個 skill 也寫 process record**（Task 100.6）：add-tags、add-tags-note、ask-note、check-wiki-doc、chinese、del-tags、write-note、write-note-new-files、write-note-tags；現在 `common` 的每個 skill 都寫 process record。
+  check-wiki-doc 讀的設定名稱從 `wikiRootDir` 改成 config.yaml 實際有的 `wikiDir`。
+  Forge 要做的：沒有；第一次 run 時建立 `database\skill-runs\`。
+- **13 個 skill 照 run-data-rules 改，兩個舊規則檔刪掉**（Task 100.4）：asd-ste、check-md-deps、check-skill、compile-skill、gen-imp-app、gen-rsdc-app、gen-rsdc-skill、gen-skill、imp-app、imp-home、reformat-md、set-tag-status、write-topic。
+  - 每個 skill 都寫 process record；有 checkpoint 的改成 `checkpoints\{skill}\{yymmdd}.{N}\` 的 step 檔；script 的根目錄從 `config.yaml` 找，不跟著目前目錄。
+  - gen-rsdc-app 交回的結果寫進 `handoff\gen-rsdc-app\`，gen-imp-app 的 prompt log 寫進 `handoff\gen-imp-app\`；imp-app 與 gen-imp-app 從 handoff 檔讀。
+  - run-data-rules.md 加一條例外：不可以找到 workspace 檔案的測試，可以用系統的暫存目錄（compile-skill 的驗證試跑）。
+  - scratch-rules.md、report-yaml-rules.md 與中文版刪掉。
+  Forge 要做的：引用這兩個舊檔的檔改連 [run-data-rules.md](rules/run-data-rules.md)；舊格式的 Checkpoint Dir（例如 `checkpoints\asd-ste\{parent}-{name}\`）不會再被讀到，要留的資料自己搬；`database\skill-runs\` 與 `handoff\` 第一次 run 時建立。
+- **範本、gen-skill 與 check-skill 照 run-data-rules 改**（Task 100.3）：
+  - [SKILL-tmp.md](templates/SKILL-tmp.md)：Glossary 加上 Run Number、Step file 與 Process record，拿掉 YAML checkpoint；Checkpoint Dir 是 `checkpoints\{SKILL_NAME}\{yymmdd}.{N}\`；Step 0 取得 Run Number 並寫出 process record；每一步保存 `step_N.yaml`，再把自己加進 process record；`{CHECKPOINT_DIR_NAME}` 拿掉。
+  - [README-tmp.md](templates/README-tmp.md)：header quote 與依賴樹改連 run-data-rules.md；Dataflow 畫 step 檔，不畫 process record。
+  - gen-skill 的 Step 1 改問 MD report 與 step 檔；每個 skill 都寫 process record。
+  - check-skill 加上 5.7（用系統的暫存目錄）與 5.8（路徑跟著目前目錄）兩項。
+  Forge 要做的：用 gen-skill 寫新的 skill 時照新範本；已有的 skill 照 Task 100.4 的做法改，check-skill 的 5.7 與 5.8 可能報出新的 issue；引用 SKILL-tmp.md 或 README-tmp.md 的 README 會顯示 CHANGED。
+- **run-data-rules.md 取代 scratch-rules.md 與 report-yaml-rules.md**（Task 100.2）：[run-data-rules.md](rules/run-data-rules.md) 把 run 寫的資料分成兩類。
+  - 過程產生的資料：`temp\` 的暫存檔，script 的暫存檔也放這裡，不用系統的暫存目錄；`checkpoints\{skill}\{yymmdd}.{N}\` 的 `step_{N}.yaml`。
+  - 最後的輸出：`database\skill-runs\{skill}\{yymmdd}.{N}.yaml` 的 process record（每一步的時間與 model）、`handoff\{skill}\{yymmdd}.{N}.md`、`database\`，以及 vault 的 MD report。
+  [report-md-rules.md](rules/report-md-rules.md) 的 Checkpoint 欄改成 process record 的路徑；兩個舊檔只剩一句指向新檔；`.gitignore` 加上 `handoff/`。
+  Forge 要做的：`.gitignore` 加上 `handoff/`；範本與 skill 照新規則改的部分在 Task 100.3 與 100.4，做完會再加一筆。
+- **6 個很少用的 skill 搬到 `skill-groups/archived/skills/`**（Task 100.1）：report-logs、report-week、report-skills、notify-week、synch-two-mds 從 `common` 搬走，eli5 從 `external` 搬走；`skill-groups/archived/` 不在 `skillGroups` 裡，裡面的 skill 不能執行。
+  [publish_snapshot.py](scripts/publish_snapshot.py) 發佈時也排除 `skill-groups/archived/`。
+  Forge 要做的：用到這幾個 skill 的 Forge，把它們從自己的 skill 清單、workspace 檔或文件裡拿掉；InvestForge 的 `InvestForge.code-workspace` 仍列著 `skill-groups/external/skills`，這個目錄現在沒有 skill。
+  add-tags 與 del-tags 仍會改 `{wikiDir}\report-logs\` 裡舊的報告，report-logs 不再產生新的報告。
 
 ### 2026-11-02
 

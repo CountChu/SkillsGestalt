@@ -1,6 +1,6 @@
 # Checking Criteria
 
-> [[README-tmp]]  `2026-10-30`  `43ace64a88a6`
+> [[README-tmp]]  `2026-11-06`  `549f2d3ba535`
 > [[skill-writing]]  `2026-11-02`  `4884a31a0b2c`
 
 The rubric the `check-skill` skill applies.
@@ -44,13 +44,15 @@ Report a missing section only when the skill plainly needs it.
    Those are the templates' own headings, so judge against them and never against a remembered list.
    Read `missing_headings`, and `readme_shape.missing_headings`, `heading_order_ok` and `title_is_skill_name`.
    A missing `# TERMINOLOGY` or `# DEDICATED TERMINOLOGY` is an issue whenever the steps lean on nouns the skill never defines — which is nearly always; only a skill with no domain vocabulary of its own may omit the dedicated one.
-   A missing `# CONFIGURATION` is an issue for any skill that writes an MD report or a YAML checkpoint, since their paths have nowhere else to live.
+   A missing `# CONFIGURATION` is an issue for any skill that writes an MD report or step files, since their paths have nowhere else to live.
    **A skill with no `README.md` (`readme_shape.has_readme: false`) has one issue here, not one for each section it lacks**: its Dataflow, its Step Purposes and what changes with it have nowhere else to live, and check 6 has nothing to judge.
    A missing `## Dataflow` in a `README.md` is an issue for every skill, for the reason check 6 gives.
 3. **Glossary placement** — does `terms_defined_in_configuration` name a term that `# CONFIGURATION` defines rather than merely gives a path for?
    `# CONFIGURATION` carries concrete values; the glossary owns definitions.
    A `- **X** — <path>` line is correct there; a `- **X** — <what X means>` line belongs in `# TERMINOLOGY` or `# DEDICATED TERMINOLOGY`.
-4. **MUST FOLLOW contract** — does it declare the step-by-step rule, its `run step N` rule — how the selector behaves, or an explicit statement that the skill has none — and its output contract (MD report / YAML checkpoint, or an explicit statement that it produces neither)?
+   `# CONFIGURATION` has at most three groups, in the template's order: the inputs and tools the run reads or runs, the working data of a run, and the last outputs; a line in the wrong group, such as a template among the outputs, is a recommendation.
+   The Working Dir lines of the working-data group are criterion 15's to judge.
+4. **MUST FOLLOW contract** — does it declare the step-by-step rule, its `run step N` rule — how the selector behaves, or an explicit statement that the skill has none — and its output contract (MD report / step files, or an explicit statement that it produces neither)?
    The no-forward-reference rule and the script-versus-judgement rule are not declared here: [skill-writing.md](skill-groups/common/rules/skill-writing.md) holds them for every skill, criterion 7 judges the first in the steps themselves, and criterion 12 the answer to the second.
 5. **Step 0 - Warmup** — does it exist, is it titled `Warmup`, and does it resolve everything the later steps actually use?
 6. **Step numbering** — do the `## Step N` headings run contiguously from 0, with no duplicated or skipped number?
@@ -80,6 +82,13 @@ Report a missing section only when the skill plainly needs it.
     Never judge a fingerprint by eye; the status is the script's.
 14. **The README's twin** — when `SKILL.md` has a 繁體中文 twin (`readme_shape.skill_has_twin`), does `README.md` have one too (`readme_shape.has_twin`)?
     A missing `README-tw.md` is a recommendation: [skill-writing.md](skill-groups/common/rules/skill-writing.md) asks for it, but the skill runs the same without it.
+15. **One Working Dir** — does `# CONFIGURATION` give at most one Working Dir, and does the skill call it the Working Dir after `# CONFIGURATION`?
+    Read `template_shape.working_dir`: `configuration_lines`, `kinds` and `names_after_configuration`.
+    Two Working Dir lines, or two kinds — a Temp Dir and a Checkpoint Dir — are an issue: [run-data-rules.md](../../../rules/run-data-rules.md) gives a run one Working Dir, and the writer of the skill selects one of the two.
+    A line named `Temp Dir` or `Checkpoint Dir` in place of `Working Dir` is a recommendation; the fix is ``- **Working Dir** — the Temp Dir, `temp\<skill>\{yymmdd}.{N}\` `` or ``- **Working Dir** — the Checkpoint Dir, `checkpoints\<skill>\{yymmdd}.{N}\` ``, followed by what the line already says the directory holds.
+    A generic `Temp Dir` or `Checkpoint Dir` in the body after `# CONFIGURATION` is a recommendation: the fix is `Working Dir`, and a full path to a file in it, such as `checkpoints\<skill>\{yymmdd}.{N}\step_3.yaml`, becomes `step_3.yaml` in the Working Dir.
+    A name the skill only *shows* (`backticked` or `fenced`), or one that names the two kinds where they are the subject, as when a skill asks a writer to select one, is not a finding; a command example may keep a concrete path that a script needs.
+    A skill that writes no working data has no Working Dir line, and that is not a finding.
 
 ## 2. Config conformance
 
@@ -87,7 +96,7 @@ Report a missing section only when the skill plainly needs it.
 
 `config.yaml` is the single source of truth for `wikiDir` and `skillGroups`.
 A skill that needs either must resolve it in Step 0 rather than hardcode it.
-**Not every literal path is a defect** — `checkpoints\`, `database\` and `packages\` live inside the workspace and are correctly written literally, and a Markdown link target such as `](skill-groups/common/rules/report-md-rules.md)` is the project's own link convention: the link has to resolve on disk, so it is written literally on purpose and is never a finding.
+**Not every literal path is a defect** — `checkpoints\`, `temp\`, `database\` and `packages\` live inside the workspace and are correctly written literally, and a Markdown link target such as `](skill-groups/common/rules/report-md-rules.md)` is the project's own link convention: the link has to resolve on disk, so it is written literally on purpose and is never a finding.
 
 Its subject is the **whole skill directory**, not just `SKILL.md`.
 Criteria 1-6 judge the `config_shape` facts of `SKILL.md`; criteria 7-8 judge the `dir_config_shape` facts of every other text file in that directory — the scripts, the references, the 繁體中文 twin and the skill's own `config.yaml`.
@@ -131,7 +140,7 @@ A path baked into a script breaks exactly as one baked into a step does, and not
 1. **Overstated** — does the description claim an input, action or output that no step performs?
    This is an issue: it gets the skill selected for work it cannot do.
 2. **Unstated output** — does the skill always write something the description never names?
-   Compare against every output the MUST FOLLOW contract declares — MD report, YAML checkpoint, data store, HTML page.
+   Compare against every output the MUST FOLLOW contract declares — MD report, step files, run record, data store, HTML page.
 3. **Unstated action** — does a step do something material the description omits, such as writing to ADO, connecting to a host, triggering a pipeline, sending mail, or mutating a shared file?
 4. **Stale** — does the description still describe behaviour a step has since changed, such as a renamed output directory or a dropped argument?
 5. **Trigger coverage** — would a user asking in plain language for what this skill does actually match this description?
@@ -146,7 +155,7 @@ A path baked into a script breaks exactly as one baked into a step does, and not
 - A variant is only a defect when it means the **same thing** as the term.
   Confirm the referent first — the same words can name a different object, and capitalising them would then invert the meaning.
 
-1. **Literal instead of term** — does a section name the raw artefact where a term is defined for it (e.g. `process.yaml` where **YAML checkpoint** is defined)?
+1. **Literal instead of term** — does a section name the raw artefact where a term is defined for it (e.g. `step_1.yaml` where **Step file** is defined)?
    The glossary entry that introduces the literal keeps it; every other prose use should be the term.
 2. **Wrong term** — does a section use one term where another is meant (e.g. naming the directory when the thing referred to lives *inside* the file)?
    This is an issue, not style: it misstates the referent.
@@ -182,6 +191,16 @@ Its steps must also run on every agent: a step names the action, never a tool th
 6. **Agent-specific tool names** — does a step name a tool that only one agent has, such as `vscode_askQuestions` in Copilot or `AskUserQuestion` in Claude Code, where it should name the action, such as asking the user one multiple-choice question?
    It is an issue: every other agent finds no such tool, so the step fails or is skipped.
    A tool name quoted as an example of what not to do is not a finding, and neither is a function or a URL scheme that only shares the prefix, such as a script's `vscode_url`.
+7. **Working data outside the Working Dir** — does a step, or a script the skill names, write a temporary file, a step file or a data file outside the one Working Dir of the run that `# CONFIGURATION` gives, where [run-data-rules.md](../../../rules/run-data-rules.md) puts all the working data of a run?
+   A file in the other kind of Working Dir — a temporary file in `temp\` for a skill whose Working Dir is the Checkpoint Dir, or a step file in `checkpoints\` for one whose Working Dir is the Temp Dir — is an issue: a run uses one Working Dir only.
+   Read `template_shape.working_dir`: `kinds` and `paths_after_configuration`, then the paths the scripts write.
+   A file written through `tempfile`, `os.tmpdir()`, `mkdtemp` or `/tmp` is an issue: a different run, a different agent and the user cannot find these files, and on a failure nobody can see how much of the work the run did.
+   A recommendation is a temporary file in `temp\` or `checkpoints\` but not in the Working Dir of a run, such as `temp\{skill}-{what}.py`; a step that runs a script which writes temporary files, but does not give it the Run Number; and a step or a script that removes the Working Dir or a file in it, which the user removes manually.
+   The one exception is a test that must not find the files of the workspace, such as its `config.yaml`, and that removes its directory when it stops, also after an error: it is not a finding.
+8. **Paths that follow the current directory or the script's location** — does a script that a step runs take the workspace root, the Working Dir or an `--out` path relative to the current directory, or find the workspace root from its own location, where it should use the root of the workspace the skill runs in: the directory an option of its command names, or else the nearest directory, from the current directory up, whose `config.yaml` has `skillGroups`?
+   It is an issue when a run from a different directory writes its data in the wrong place, for example a new `checkpoints\` beside the current directory.
+   It is an issue too when a script finds the root by walking up from its own file — `__file__` in Python, `__dirname` in Node — to a `config.yaml`: a workspace that reads the skill group in place from a different workspace then reads that workspace's `skillGroups` and `wikiDir`, and writes its run records and its Working Dir there.
+   A file of the skill or of its skill group that a script finds from its own location, such as the skill's own config, is not a finding: it belongs to the skill group, not to a workspace.
 
 ## 6. Dataflow
 
@@ -209,7 +228,7 @@ A Dataflow left in `SKILL.md` is criterion 1.11's to report, never this check's.
 3. **Agreement with the steps** — does what the diagram says each step reads and writes match what the step's own section reads and writes at run time?
    Compare each step's section with its arrows.
    A gap either way is an issue: a read the diagram leaves out is data whose source nobody drew, and a write it leaves out is a record whose writer nobody sees.
-4. **One writer per record** — does every record have exactly one writer: each data file in the Checkpoint Dir, each `step_{N}` group of the YAML checkpoint, each section of the MD report?
+4. **One writer per record** — does every record have exactly one writer: each data file in the Working Dir, each step file, each section of the MD report?
    Read `multi_writer_records`, and `records_edited_in_turn`.
    A record that a later step writes without reading it is an issue, whether the diagram draws it or the steps do it: re-running one of them silently erases the other's result.
    A record every later writer also reads — the two-headed arrow — is edited in turn, and is no defect (DFD.md); judge only what re-running its first writer does to the edits after it, and make it a recommendation when the steps do not say, such as a first writer that overwrites without asking while the later steps are not run again.

@@ -1,7 +1,7 @@
 ---
 name: chinese
 description: >-
-  把一份英文 Markdown 檔翻譯成繁體中文，寫在原檔旁邊作為它的 twin，檔名是在 .md 前面加上 -tw。標題、glossary term、inline code、fenced block、連結目標、placeholder，以及 keep-English list 上的 term，都保留英文。沒有 frontmatter 的檔案以 line for line 翻譯；SKILL.md 則逐個標題比對，它的 twin 會多出一行 pairing line。twin 已經在 git 裡時，只重新翻譯 git diff 顯示來源檔自 twin 上一次 commit 以來改動的部分。它拒絕本來就是繁體中文、或本身就是 -tw.md twin 的來源檔，絕不編輯來源檔，除了 twin 之外只會寫入它新增到 keep-English list 的 term。每一次執行都以 parity check 作結，接著詢問是否把 twin 連同它的來源檔一起 commit。英文檔旁邊有 -tw.md twin 時，只要英文檔一改動，就在同一次執行中對它執行這個 skill。觸發語：「translate this skill」、「translate this md」、「build the chinese version of」、「update the twin」、「SKILL-tw」、「-tw.md」。
+  把一份英文 Markdown 檔翻譯成繁體中文，寫在原檔旁邊作為它的 twin，檔名是在 .md 前面加上 -tw。標題、glossary term、inline code、fenced block、連結目標、placeholder，以及 keep-English list 上的 term，都保留英文。沒有 frontmatter 的檔案以 line for line 翻譯；SKILL.md 則逐個標題比對，它的 twin 會多出一行 pairing line。twin 已經在 git 裡時，只重新翻譯 git diff 顯示來源檔自 twin 上一次 commit 以來改動的部分。它拒絕本來就是繁體中文、或本身就是 -tw.md twin 的來源檔，絕不編輯來源檔，除了 twin 與它的 run record 之外只會寫入它新增到 keep-English list 的 term。每一次執行都以 parity check 作結，接著詢問是否把 twin 連同它的來源檔一起 commit。英文檔旁邊有 -tw.md twin 時，只要英文檔一改動，就在同一次執行中對它執行這個 skill。觸發語：「translate this skill」、「translate this md」、「build the chinese version of」、「update the twin」、「SKILL-tw」、「-tw.md」。
 ---
 
 本文件為 [SKILL.md](skill-groups/common/skills/chinese/SKILL.md) 的繁體中文版。
@@ -15,6 +15,10 @@ description: >-
   它**只**執行那一個 step，然後停止。
 - **no forward-reference** — 一個 step 絕不可依賴排在它之後的 step 的規則。
   為了控制流程而指名後面的 step 並不違反它；借用那個 step 的輸出才違反。
+- **Run Number** — 一次執行的編號 `{yymmdd}.{N}`。
+  `{N}` 是這個 skill 在那一天的執行序號，從 1 開始。
+- **Run record** — 記下一次執行每個 step 的時間與模型的檔案。
+  分析一個 skill 的效率時使用它。
 
 # DEDICATED TERMINOLOGY
 
@@ -25,7 +29,7 @@ description: >-
 - **TW twin** — 本次執行寫在 source file 旁邊的檔案，檔名是在 `.md` 前面插入 `-tw`：`SKILL.md` 變成 `SKILL-tw.md`，`RSDC-App-tmp.md` 變成 `RSDC-App-tmp-tw.md`。
   其中的 `tw` 指台灣，取自語系代碼 `zh-TW`——台灣使用的繁體中文——而不是 twin 的縮寫。
   它是 twin，而不只是譯文：同一份文件換成另一種語言，source file 的骨架——標題、fenced block、表格與連結——原封不動，並與它保持同步：任一份改了某節，另一份必須在同一次執行中一起改。
-  它是本 skill 的輸出；一次執行唯一會寫入的其他檔案是 **keep-English list**，而且只用來新增 term。
+  它是本 skill 的輸出；一次執行會寫入的其他檔案只有它的 run record 與 **keep-English list**，而 keep-English list 只用來新增 term。
 - **line for line** — source file 沒有 frontmatter 時，TW twin 的排法：行數與來源檔相同，每一行都是同一行號那一行的譯文——來源檔是空行的地方是空行，是清單項目的地方是同樣縮排的清單項目，表格列有同樣多的儲存格，每一條 fence 行與 fence 裡的每一行都逐字相同。
   這樣兩份就能以機械方式比對，一份裡改過的節，在另一份的同一行就找得到。
   有 frontmatter 的來源檔——每一份 `SKILL.md`——不在此列：它譯好的 `description` 會變成一個 folded block，它的 twin 也多出一行 **pairing line**，所以它的各行無法保住行號，改為逐個標題比對。
@@ -54,10 +58,21 @@ description: >-
 
 本 skill 執行時所使用的具體值。
 
+執行時讀取或執行的輸入與工具：
+
+- **Workspace configuration** — workspace 根目錄的 [config.yaml](config.yaml)。
 - **source file** — prompt 給的 `.md` 路徑，相對於 workspace 或絕對路徑皆可；prompt 指名的是一個 skill 時，則是 `{skillGroups[<group>]}\skills\<skill-name>\SKILL.md`。
   於 Step 0 解析。
-- **TW twin** — `<name>-tw.md`，位於 source file 自己的目錄，其中 `<name>` 是 source file 去掉 `.md` 的檔名。
 - **keep-English list** — `{skillGroups.common}\references\tw-keep-english.md`。
+- **template** — source file 的檔頭引用區所指名的 `-tmp` 檔案，以及它的 TW twin（有的話）。
+  Step 1 與 Step 3 拿 source file 和它們比對。
+- **Scripts** — `{skillGroups.common}\skills\chinese\scripts\scan_md.py`、`{skillGroups.common}\skills\chinese\scripts\diff_md.py` 與 `{skillGroups.common}\skills\chinese\scripts\check_parity.py`。
+- **Header-quote script** — `{skillGroups.common}\scripts\depends_on.py`，`scan_md.py` 與 `check_parity.py` 會載入它；Step 0 檢查它存在。
+
+最後的輸出，人、另一個 skill 或之後的分析會讀它：
+
+- **TW twin** — `<name>-tw.md`，位於 source file 自己的目錄，其中 `<name>` 是 source file 去掉 `.md` 的檔名。
+- **Run record** — `database\skill-runs\chinese\{yymmdd}.{N}.yaml`。
 
 # MUST FOLLOW
 
@@ -67,10 +82,13 @@ description: >-
 - 程式能以 deterministic 方式完成的 step 必須以腳本執行。
   需要閱讀、判斷或摘要的 step **不可**腳本化——請寫成自然語言指示，讓 agent 直接執行。
 - **遵守 `run step N` 選擇子**：執行 Step N，然後停止；絕不執行較後的 step。
-  本 skill 不寫 YAML checkpoint，所以每個 step 都從 prompt 與磁碟上的檔案重新推導自己的輸入——它做得到，因為 source file、TW twin 與它們的 git history 是任何 step 唯一需要的狀態。
-- **本 skill 既不產出 MD report，也不產出 YAML checkpoint。**
-  TW twin 是它的輸出；它唯一會寫入的其他檔案是 **keep-English list**，而且只用來新增本次執行決定的 term。
+  本 skill 不寫 step 檔，所以每個 step 都從 prompt 與磁碟上的檔案重新推導自己的輸入——它做得到，因為 source file、TW twin 與它們的 git history 是任何 step 唯一需要的狀態。
+  `run step N` 的執行仍然先取得它的 Run Number 並寫出它的 run record，做法與 Step 0 相同；這時 Step N 就是它的最後一個 step。
+- **本 skill 不產出 MD report，也不產出 step 檔。**
+  TW twin 是它的輸出；它會寫入的其他檔案只有它的 run record 與 **keep-English list**，而 keep-English list 只用來新增本次執行決定的 term。
   它唯一的另一項寫入，是 Step 4 所做的 commit，而且只在使用者答應時才做。
+- 一次執行的 Run Number、run record 與 Working Dir，遵守 [run-data-rules.md](skill-groups/common/rules/run-data-rules.md)。
+- 在最後一個 step 之前停止的執行，在它的 run record 寫出 `result: stopped` 與 `stopped_at`——沒有完成的那個 step，例如 `step_1`。
 - **只在使用者答應時 commit，而且只 commit 本次執行的檔案。**
   Step 4 在目前所在的分支上，commit TW twin、它的 source file 與 **keep-English list** 中有改動的那幾份——絕不包含其他已暫存或已修改的檔案，也絕不推送、不建立新分支、不改寫既有的 commit。
   沒有先問就做的 commit，會把使用者對來源檔尚未完成的修改，連同 twin 一起寫進歷史紀錄。
@@ -116,7 +134,8 @@ description: >-
 - **英文與中文之間留一個空白。**
   英文詞、數字、inline-code span 或 placeholder token（`{PLACEHOLDER}`、`{variable}`）緊貼中文字時，中間留一個空白；緊貼全形標點時不必留。
   兩個中文字之間永遠不留空白，中間隔著粗體標記也一樣——所以 placeholder 填入的若是中文，它在 template 裡前後的空白要一併拿掉。
-- **在 skill 結束前，顯示 TW twin 的路徑**——只顯示路徑，絕不顯示其內容，呈現為可點擊的 Markdown 連結，絕不用 inline code 或純文字。
+- **在 skill 結束前，顯示 TW twin 與 run record 的路徑**——只顯示路徑，絕不顯示其內容，各自呈現為可點擊的 Markdown 連結，絕不用 inline code 或純文字。
+  run record 的連結目標從 workspace 起算，以正斜線作為分隔符號：`[{yymmdd}.{N}.yaml](database/skill-runs/chinese/{yymmdd}.{N}.yaml)`。
   每一次執行都要這麼做，包括像 `run step 0` 這樣的部分執行。
 
 # Prompt Examples
@@ -235,7 +254,7 @@ flowchart TB
 # Steps at a Glance
 
 每個 step 的總覽：它執行的 script。
-本 skill 不寫 YAML checkpoint——每個 step 都從 prompt 與磁碟上的檔案重新推導自己的輸入（MUST FOLLOW）——所以 YAML 欄一律是「—」。
+本 skill 不寫 step 檔——每個 step 都從 prompt 與磁碟上的檔案重新推導自己的輸入（MUST FOLLOW）——所以 YAML 欄一律是「—」。
 
 | Step | Script | YAML |
 |---|---|---|
@@ -293,7 +312,11 @@ flowchart TB
 
 - 保存標準化的 skill 叫用方式，供後續 step 參考。
 
+- 照 run-data-rules.md 取得 Run Number，並寫出這次執行的 run record。
+
 - 顯示解析出的 source file 路徑與 TW twin 路徑。
+
+- 把這個 step 加進 run record。
 
 
 ## Step 1 - Inventory the Kept-English Spans and the Changes
@@ -351,6 +374,8 @@ flowchart TB
 
 - 顯示清冊的簡短摘要：標題數、fence 數、term 數、keep-English term 數、連結數、表格數、shared line 數，以及 twin 是否以 line for line 寫成——還有 verdict，以及它留下多少行或多少節要翻譯。
 
+- 把這個 step 加進 run record。
+
 
 ## Step 2 - Translate into the TW Twin
 
@@ -405,6 +430,8 @@ flowchart TB
 - 以不帶 BOM 的 UTF-8，把 TW twin 寫到 Step 0 推導出的路徑，使用建立檔案的工具。
 
 - 顯示 TW twin 的路徑，以及翻譯了多少行或多少節。
+
+- 把這個 step 加進 run record。
 
 
 ## Step 3 - Parity Check
@@ -467,6 +494,8 @@ flowchart TB
 
 - 顯示 parity 的結果。
 
+- 把這個 step 加進 run record。
+
 
 ## Step 4 - Offer to Commit
 
@@ -496,4 +525,6 @@ flowchart TB
 
 - 使用者拒絕時，什麼都不 commit，並說明下一次執行會發現 twin 帶著尚未 commit 的修改，所以在它 commit 之前，無法就地更新它。
 
-- 顯示每一個 commit 的 hash 與主旨，或說明什麼都沒有 commit，最後以可點擊的 Markdown 連結呈現 TW twin 的路徑作結。
+- 把這個 step 加進 run record，並寫出 `result: completed`，因為它是最後一個 step。
+
+- 顯示每一個 commit 的 hash 與主旨，或說明什麼都沒有 commit，最後以可點擊的 Markdown 連結呈現 TW twin 與 run record 的路徑作結。

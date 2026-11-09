@@ -8,7 +8,7 @@ chore 檔的格式與摘要表的維護方式，見 [chore-rules.md](../skill-gr
 | Chore | Started | Title | 何時要做 | 上次執行 | Status |
 | --- | --- | --- | --- | --- | --- |
 | [[follow-gestalt]] | 2026-10-31 | 跟上 Gestalt 的改動 | `{skillGroups.common}/CHANGES.md` 有比上次處理的那一筆新的條目 | — | 🔁 |
-| [[pull-gestalt]] | 2026-10-31 | 把 GitHub 上的新快照拿進工作分支 | 發佈之前、git fetch 看到新快照時，或使用者要求時 | 2026-11-02 | 🔁 |
+| [[pull-gestalt]] | 2026-10-31 | 把 GitHub 上的新快照拿進工作分支 | 發佈之前、git fetch 看到新快照時，或使用者要求時 | 2026-11-10 | 🔁 |
 | [[publish-gestalt]] | 2026-10-30 | 發佈到 GitHub | 使用者要求發佈到 GitHub 時 | 2026-11-09 | 🔁 |
 | [[keep-english]] | 2026-10-18 | keep-English 稽核 | tw-keep-english.md 換了版本，和上次稽核的版本不同 | 2026-11-09 | 🔁 |
 | [[rerecord-ste-custom]] | 2026-10-18 | 集中重記 ste-custom.md | 當天改過 ste-custom.md，而且當天的修改都做完了 | 2026-10-30 | 🔁 |
@@ -20,6 +20,16 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 ## 執行紀錄
 
 ### pull-gestalt
+
+#### 2026-11-10
+
+- 拿進 `countdell` 發佈的兩個快照 `bb7eca1` 與 `8f47eda`（SkillsGestalt 2026-11-09）：變動 137 個檔，作者與 committer 是 CountChu，`incoming` 的掃描是 `nothing found`。
+  經使用者同意，舊的 `m1`（`a04f0d1`）存成 tag `archive/m1-261110-pull`；本機 `main` 從 `1b41f68` 移到 `8f47eda`；`m1` 的 157 個 commit rebase 上去。
+  開始之前，經使用者同意還原 `tasks/Task 97.md` 在 2026-11-06 只補空白的表格對齊，並移除 `.git/rebase-merge`，它是 2026-10-31 留下的空目錄。
+- 衝突：`dashboard/chore-summary.md` 與 `CHANGES.md` 兩邊都留，照日期排；`tw-keep-english.md` 與中文版的 Technical words 取聯集，版本改成 261110，所以 [[keep-english]] 該做了。
+  `task-rules.md` 與中文版的 Technical words 取聯集，`m1` 新加的 topic 規則照八章寫成 `7. 知識` 與 `8. 日誌`。
+- 新快照把 task 改成八章：只在 `m1` 上的 13 份 Task 100 照 CHANGES.md 改好，`2. 結論` 寫 `—`（`72f88dc`）。
+- `git diff main m1` 仍有 `external/` 與 `skill-groups/external/`；`gen_agents_md.py --check` 要用 `.venv` 的 python，它與 `check_tasks.py`、`check_chores.py` 都是 PASS。
 
 #### 2026-11-02
 
@@ -45,6 +55,14 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
   先做 [[pull-gestalt]]：本機的 `main` 和 `origin/main` 都是 `1b41f68`，沒有東西要拿進來；`check` 與 `publish` 的掃描都是 `nothing found`，快照的作者與 committer 是 `publish_snapshot.py` 的 `IDENTITY`。
   程式推送失敗：這個 clone 仍沒有 GitHub 的帳號資料，由使用者自己執行 `git push origin main:main`；之後用程式的 `restart_work` 讓 `countdell` 從 `bb7eca1` 重新開始（`4feaeaf`），舊的在 tag `archive/countdell-261109`。
   GitHub 上確認：`main` 是 `bb7eca1`，只比 `1b41f68` 多 1 個 commit，沒有排除的路徑。
+
+#### 2026-11-02
+
+- 以 `m1` 的 `2a2ff3d` 做出快照 `1b41f68`，接在 `65c25e5` 之後，推到 `main`；變動 295 個檔，改名 159、修改 110、新增 23、刪除 3，共 45 個 commit。
+  主要是 [[Task 97]] 把 `.github` 搬到 `skill-groups`、把規則搬進 `AGENTS.md`；其餘來自 [[Task 18.8]]、[[Task 27]]、[[Task 41]]、[[Task 41.1]]、[[Task 92]] 到 [[Task 99]]、兩個 task-rules 的修改，以及上次發佈的執行紀錄。
+  先做 [[pull-gestalt]]：`incoming` 印出 `nothing to pull`；`check` 與 `publish` 的掃描都是 `nothing found`，快照的作者與 committer 是 `publish_snapshot.py` 的 `IDENTITY`。
+  快照的訊息有六段英文摘要；照使用者的決定，這次不加 Co-Authored-By。
+  `m1` 跟著從 `1b41f68` 重新開始（`3507e58`），舊的在 tag `archive/m1-261102`；GitHub 上確認：`main` 有 7 個 commit，最新的是 `1b41f68`，tree 和本機做出的 `7f8582e` 相同，313 個檔裡沒有排除的路徑，也沒有舊的 `.github/`。
 
 #### 2026-10-31
 
@@ -80,6 +98,17 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 - 「英文也寫中文」1 行，不算進警告：MermaidView-RSDC-tw.md 的「角色」，和上次相同。
 - 只列出，沒有改中文版；要改的仍記在 [[Task 73]]。
 - 報告：`checkpoints/chores/keep-english/2026-11-09-261108.txt`，只在 `countdell` 的 clone。
+
+#### 2026-11-06
+
+- 清單 261106 版（[[Task 100.11]] 加上 working data）：38 對中英對照，19 份中文版有 191 行警告；working data 的「工作資料」沒有找到任何一筆。
+- 和 2026-10-30 的 261030 版相比，報告列出 37 筆新出現、37 筆消失，大多是 `.github/common/` 搬到 `skill-groups/common/` 的路徑；照新路徑對照，實際的差異是：
+  - 增加：imp-home `SKILL-tw.md` 的「步驟」24 → 31 行，check-skill `SKILL-tw.md` 的「腳本」22 → 25 行，checking-criteria-tw.md 的「腳本」13 → 14 行與「範本」1 行，gen-skill `SKILL-tw.md` 的「範本」1 行，ReviewPage-RSDC-tw.md 與 MermaidView-RSDC-tw.md 的「識別碼」各 1 行。
+  - 減少：MermaidView-RSDC-tw.md 的「腳本」「範本」「術語」，gen-rsdc-skill `SKILL-tw.md` 的「標準化的 skill 叫用方式」，asd-ste `SKILL-tw.md` 的「標準形式的 skill 呼叫」2 → 1 行。
+- 最多的 3 種譯法：script 的「腳本」132 行（14 份）、step 的「步驟」31 行（1 份）、identifier 的「識別碼」9 行（7 份）。
+- 「英文也寫中文」1 行，不算進警告，和上次相同。
+- 只列出，沒有改中文版；要改的仍記在 [[Task 73]]。
+- 報告：`checkpoints/chores/keep-english/2026-11-06-261106.txt`。
 
 #### 2026-10-30
 

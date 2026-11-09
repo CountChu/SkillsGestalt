@@ -4,7 +4,7 @@
 > [[ste-custom]]  `2026-11-02`  `c612bdfa1ea7`
 
 > This file is in ASD-STE100 Simplified Technical English (STE), Issue 9.
-> Technical words: argument, backtick, byte, cache, canonical skill invocation, checkpoint, clock, command, content, disk, double-quoted string, editor, escape character, escaping, fence, field, file, file-editing tool, filename, frontmatter, hard-code, header, here-string, interpolation, line, orchestration, parse, path, pipe, placeholder, root, section, shell, single-quoted here-string, skill, string, table, template, text, title, wiki, workflow, workspace, wrapper.
+> Technical words: argument, backtick, byte, cache, canonical skill invocation, clock, command, content, disk, double-quoted string, editor, escape character, escaping, fence, field, file, file-editing tool, filename, frontmatter, hard-code, header, here-string, interpolation, line, orchestration, parse, path, pipe, placeholder, root, section, shell, single-quoted here-string, skill, string, table, template, text, title, wiki, workflow, workspace, wrapper.
 
 - Each skill gives the filename of its report (for example, `run-pr-{prId}-{yymmdd}`) in its MUST FOLLOW section.
 - Create the MD report file at `{wikiDir}\{skill_name}\{REPORT_FILENAME}.md`.
@@ -18,7 +18,7 @@
   # {REPORT_TITLE}
 
   - **Skill**: {SKILL_NAME}
-  - **Checkpoint**: `{CHECKPOINT_PATH}`
+  - **Run record**: `{RUN_RECORD_PATH}`
   - **Created**: {DATETIME}
   - **Updated**: {DATETIME}
   - **Prompt**:
@@ -30,7 +30,7 @@
   Placeholders:
   - `{REPORT_TITLE}` → the title of the report for this run of the skill.
   - `{SKILL_NAME}` → the name of the skill, from the YAML frontmatter.
-  - `{CHECKPOINT_PATH}` → the path of the YAML checkpoint of this run, as the MUST FOLLOW section of the skill gives it (for example, `checkpoints\report-pipeline\{reportName}\process.yaml` or `checkpoints\report-known-issues\{reportName}.yaml`).
+  - `{RUN_RECORD_PATH}` → the path of the run record of this run, as [run-data-rules.md](run-data-rules.md) gives it (for example, `database\skill-runs\report-pipeline\261106.1.yaml`).
   - `{DATETIME}` → the current local date and time (`YYYY-MM-DD HH:MM`).
     Read it from the system clock when you write it.
     In PowerShell, use `Get-Date -Format "yyyy-MM-dd HH:mm"`.

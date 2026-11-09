@@ -47,7 +47,7 @@
     在 Forge，它的根目錄是 SkillsGestalt 裡那個目錄的路徑。
   - `dedi`——一個 Forge 的 skill group：只有那個 Forge 使用的 skill。
     在 InvestForge，它的根目錄是 `.claude`。
-  - `external`——來源不是 agency 的 skill，例如 eli5。
+  - `external`——來源不是 agency 的 skill。
 - **agent**——在 workspace 裡工作的 AI 助理，例如 Claude Code。
   它讀 workspace 的 `AGENTS.md` 裡的指示，並執行 skill 的 step。
 - **task**——跨過一個 session 繼續、最後會完成的工作。

@@ -10,6 +10,32 @@ description: >-
   newly added wiki Markdown file.
 ---
 
+# TERMINOLOGY
+
+Each skill uses these terms with the same definition.
+
+- **Run Number** — the number of one run, `{yymmdd}.{N}`.
+  `{N}` is the sequence number of the run of this skill on that date, and it starts at 1.
+- **Run record** — the file that records the time and the model of each step of one run.
+  The analysis of the efficiency of a skill uses it.
+
+# CONFIGURATION
+
+The values that this skill uses in a run.
+
+The inputs and tools, which the run reads or runs:
+
+- **Workspace configuration** — the [config.yaml](config.yaml) at the root of the workspace.
+- **Tag database** — `database\tags.yaml` at the root of the workspace, which gives the approved tags.
+- **Recently-added-files data** — `{wikiDir}\.obsidian\plugins\recently-added-files\data.json`, or the path that the prompt gives.
+  Step 1 reads its `recentFiles.newFiles`.
+
+The last outputs, which a person, a different skill or a subsequent analysis reads:
+
+- **Run record** — `database\skill-runs\write-note-new-files\{yymmdd}.{N}.yaml`.
+- **Note file** — `{wikiDir}\write-note\note-{yyMMdd}-{day}.md`.
+  Step 2 makes it, or writes its New Notes section.
+
 # MUST FOLLOW
 
 - Must run workflow step by step, and display each step number.
@@ -23,6 +49,12 @@ description: >-
   For the `Note:` line, **prefer an Obsidian wikilink** `Note: [[<basename>]]`, and **fall back** to the `Note: [<name>](<relative-path>)` Markdown link only when that wikilink is not workable (see Step 2).
 - `Note:` is the current label; `Notes:` is its legacy form.
   Write only `Note:`, but recognize an existing `Notes:` line as the same kind of entry when merging and de-duplicating.
+- Obey [run-data-rules.md](skill-groups/common/rules/run-data-rules.md) for the Run Number and the run record of a run.
+- **Before the skill stops, show the paths of the note file and of the run record.**
+  Show the path of the note file only if the run wrote it.
+  Write the path of the run record as a Markdown link that starts at the workspace, with the forward slash as the separator: `[{yymmdd}.{N}.yaml](database/skill-runs/write-note-new-files/{yymmdd}.{N}.yaml)`.
+  Do this for each run, also for a run that stops before Step 2.
+- A run that stops before Step 2 ends writes `result: stopped` and `stopped_at` in its run record.
 
 # Prompt Examples
 
@@ -71,6 +103,12 @@ Add today's Obsidian recently-added files as a new Notes section in today's dail
 
 - Get the current local date-time using `Get-Date -Format "yyyy-MM-dd HH:mm"` for the header timestamps.
 
+- Save the canonical skill invocation, thus the run record can store it as its prompt.
+
+- Get the Run Number, as run-data-rules.md tells, and write the run record of the run.
+
+- Add this step to the run record.
+
 
 ## Step 1 - Read newFiles
 
@@ -89,6 +127,8 @@ Add today's Obsidian recently-added files as a new Notes section in today's dail
   Say so when skipping it.
 
 - Display the resolved list as a short table: `#`, basename, path.
+
+- Add this step to the run record.
 
 
 ## Step 2 - Write the "New Notes" Section
@@ -117,3 +157,5 @@ Add today's Obsidian recently-added files as a new Notes section in today's dail
 - Save the file.
 
 - Display the saved file path and a short preview of the `New Notes` section (indicate whether it was created or merged).
+
+- Add this step to the run record, and write `result: completed`, because it is the last step.

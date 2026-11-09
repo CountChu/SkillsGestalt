@@ -3,6 +3,32 @@ name: write-note
 description: The skill creates a daily note Markdown file in wiki/write-note, translating any non-English content (e.g., Chinese) to English.
 ---
 
+# TERMINOLOGY
+
+Each skill uses these terms with the same definition.
+
+- **Run Number** — the number of one run, `{yymmdd}.{N}`.
+  `{N}` is the sequence number of the run of this skill on that date, and it starts at 1.
+- **Run record** — the file that records the time and the model of each step of one run.
+  The analysis of the efficiency of a skill uses it.
+
+# CONFIGURATION
+
+The values that this skill uses in a run.
+
+The inputs and tools, which the run reads or runs:
+
+- **Workspace configuration** — the [config.yaml](config.yaml) at the root of the workspace.
+- **Tag database** — `database\tags.yaml` at the root of the workspace, which gives the approved tags.
+- **Referenced note** — the wiki Markdown file that the `notes:` line of the prompt gives, in `{wikiDir}\`.
+  Step 0 finds it, and Step 1 writes its path in the `Note:` line.
+
+The last outputs, which a person, a different skill or a subsequent analysis reads:
+
+- **Run record** — `database\skill-runs\write-note\{yymmdd}.{N}.yaml`.
+- **Note file** — `{wikiDir}\write-note\note-{yyMMdd}-{day}.md`.
+  Step 1 makes it, or adds a section to it.
+
 # MUST FOLLOW
 
 - Must run workflow step by step, and display each step number.
@@ -17,6 +43,12 @@ description: The skill creates a daily note Markdown file in wiki/write-note, tr
 - If the prompt specifies `tags:`, every tag MUST be defined in `database/tags.yaml`.
   If it specifies `notes:`, the referenced note MD MUST exist (resolve it under `{wikiDir}\`).
   Validate both in Step 0 before writing anything.
+- Obey [run-data-rules.md](skill-groups/common/rules/run-data-rules.md) for the Run Number and the run record of a run.
+- **Before the skill stops, show the paths of the note file and of the run record.**
+  Show the path of the note file only if the run wrote it.
+  Write the path of the run record as a Markdown link that starts at the workspace, with the forward slash as the separator: `[{yymmdd}.{N}.yaml](database/skill-runs/write-note/{yymmdd}.{N}.yaml)`.
+  Do this for each run, also for a run that stops before Step 1.
+- A run that stops before Step 1 ends writes `result: stopped` and `stopped_at` in its run record.
 
 # Prompt Examples
 
@@ -84,6 +116,12 @@ Pipeline 觸發後 結果會 mail 給我
 
 - Get the current local date-time using `Get-Date -Format "yyyy-MM-dd HH:mm"` for header timestamps.
 
+- Save the canonical skill invocation, thus the run record can store it as its prompt.
+
+- Get the Run Number, as run-data-rules.md tells, and write the run record of the run.
+
+- Add this step to the run record.
+
 
 ## Step 1 - Create or Append Note File
 
@@ -150,6 +188,8 @@ Pipeline 觸發後 結果會 mail 給我
 - Save the file.
 
 - Display the saved file path and a short preview (the appended section).
+
+- Add this step to the run record, and write `result: completed`, because it is the last step.
 
 
 # Translation Rules

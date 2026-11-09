@@ -34,6 +34,15 @@ being sent; one the target does not carry is not invented here.
 One unreachable target does not stop the others: each is reported on its own and the exit code says
 whether any failed.
 
+Each run writes one `deploy-{target}-{K}.json` per target into the Checkpoint Dir, where `{K}` is
+one more than the largest `{K}` of that target already there, so a later `deploy` of the same session
+does not overwrite the manifest of an earlier one. A relative `--app-dir` or `--out` resolves against
+the workspace root, not the current directory. The root is the directory `--workspace` names, or else
+the nearest one, from the current directory up, whose `config.yaml` has `skillGroups`: the session
+resolver's `workspace_root` finds it, so it is the root that resolver prints the Checkpoint Dir
+relative to. It is never found from this file, which can be in a different workspace; the skill
+config is, because it belongs to this skill and not to a workspace.
+
 Standard library plus PyYAML, which the workspace has - it never runs on the target.
 """
 from __future__ import annotations
@@ -41,6 +50,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import sys
 import time
@@ -48,6 +58,9 @@ from datetime import datetime
 from pathlib import Path
 
 import yaml
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from resolve_session import WORKSPACE_HELP, workspace_root  # noqa: E402  the root the session resolver prints its paths relative to
 
 SKILL_DIR = Path(__file__).resolve().parent.parent
 SKILL_CONFIG = SKILL_DIR / "assets" / "config.yaml"
@@ -58,6 +71,19 @@ CODE_DIRS = ("public", "scripts")
 APP_CONFIG = "app.config.json"
 # In the app dir and never sent: the app's own history and source of record.
 NOT_SENT = ("docs", "tests")
+
+
+def from_root(path: str, root: Path) -> Path:
+    """An absolute path as given; a relative one against the workspace root, not the current directory."""
+    p = Path(path)
+    return p if p.is_absolute() else root / p
+
+
+def next_manifest(out_dir: Path, target: str) -> Path:
+    """deploy-{target}-{K}.json with K one more than the largest K of this target in out_dir."""
+    pat = re.compile(rf"^deploy-{re.escape(target)}-(?P<k>[1-9]\d*)\.json$")
+    taken = [int(m.group("k")) for m in (pat.match(p.name) for p in out_dir.iterdir()) if m]
+    return out_dir / f"deploy-{target}-{max(taken, default=0) + 1}.json"
 # On the target and never written: that machine's own work.
 UNTOUCHED = ("data", "logs", "temp")
 
@@ -230,11 +256,13 @@ def main() -> int:
     ap.add_argument("--dry-run", action="store_true",
                     help="report what would be written without writing it")
     ap.add_argument("--out", required=True,
-                    help="the run's Checkpoint Dir; deploy-{target}.json is written there")
+                    help="the run's Checkpoint Dir; deploy-{target}-{K}.json is written there")
+    ap.add_argument("--workspace", help=WORKSPACE_HELP)
     args = ap.parse_args()
     began = time.time()
 
-    app_dir = Path(args.app_dir).resolve()
+    root = workspace_root(args.workspace)
+    app_dir = from_root(args.app_dir, root).resolve()
     if not app_dir.is_dir():
         sys.exit(f"no such app dir: {app_dir}")
     args.app_dir = str(app_dir)
@@ -252,17 +280,20 @@ def main() -> int:
     reports = [deploy_one(name, dest, overrides, base, files, args)
                for name, dest, overrides in chosen]
 
-    out_dir = Path(args.out)
+    out_dir = from_root(args.out, root)
     out_dir.mkdir(parents=True, exist_ok=True)
+    saved = []
     for report in reports:
-        (out_dir / f"deploy-{report['target']}.json").write_text(
-            json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+        path = next_manifest(out_dir, report["target"])
+        with open(path, "x", encoding="utf-8") as fh:
+            fh.write(json.dumps(report, indent=2, ensure_ascii=False))
+        saved.append(str(path))
 
     manifest = {
-        "appDir": os.path.relpath(app_dir, Path.cwd()) if str(app_dir).startswith(str(Path.cwd())) else str(app_dir),
+        "appDir": app_dir.relative_to(root).as_posix() if app_dir.is_relative_to(root) else str(app_dir),
         "codeFiles": len(files),
         "targets": reports,
-        "savedTo": str(out_dir),
+        "savedTo": saved,
         "elapsed": f"{time.time() - began:.1f}s",
         "restartNeeded": any(r["written"] and not args.dry_run for r in reports),
     }

@@ -4,8 +4,7 @@
 > [md-style.md]({COMMON_PATH}/rules/md-style.md)
 > [skill-writing.md]({COMMON_PATH}/rules/skill-writing.md)
 > [report-md-rules.md]({COMMON_PATH}/rules/report-md-rules.md)
-> [report-yaml-rules.md]({COMMON_PATH}/rules/report-yaml-rules.md)
-> [scratch-rules.md]({COMMON_PATH}/rules/scratch-rules.md)
+> [run-data-rules.md]({COMMON_PATH}/rules/run-data-rules.md)
 > [SKILL-tmp.md]({COMMON_PATH}/templates/SKILL-tmp.md)
 > [README-tmp.md]({COMMON_PATH}/templates/README-tmp.md)
 > [chinese/SKILL.md]({COMMON_PATH}/skills/chinese/SKILL.md)
@@ -13,7 +12,7 @@
 > [[ste-custom]]  `2026-11-02`  `c612bdfa1ea7`
 
 > 本檔案以 ASD-STE100 Simplified Technical English（STE）第 9 版寫成。
-> 技術用字：black、blue、box、checkpoint、Checkpoint Dir、content、cylinder、data file、diagram、document、dotted arrow、external input、file、flag、format、header quote、heading、hexagon、line、link、MD report、notation、one-run data、parallelogram、parse、path、record、script、section、skill、two-headed arrow、user、workflow、YAML checkpoint。
+> 技術用字：black、blue、box、content、cylinder、data file、diagram、document、dotted arrow、external input、file、flag、format、header quote、heading、hexagon、line、link、MD report、model、notation、one-run data、parallelogram、parse、path、run record、record、script、section、skill、step file、two-headed arrow、user、workflow、Working Dir。
 
 這份 README.md 說明 {SKILL_NAME} skill 由哪些部分組成，以及它的 [SKILL.md](SKILL.md) 依賴哪些檔案。
 skill 每次執行時，都會讀取整份 SKILL.md。
@@ -48,12 +47,11 @@ flowchart TB
     PROMPT>"Prompt"]
     CONFIG[/"config.yaml"/]
     INPUT[/"{AN_INPUT_THE_SKILL_READS}"/]
-    CK0[("YAML checkpoint: step_0")]
+    CK0[("Step file: step_0.yaml")]
     OUT1[("{STEP_1_OUTPUT}")]
-    CK1[("YAML checkpoint: step_1")]
+    CK1[("Step file: step_1.yaml")]
     MD1[("MD report: {STEP_1_SECTION}")]
-    OUT2[("step_2.json")]
-    CK2[("YAML checkpoint: step_2")]
+    CK2[("Step file: step_2.yaml")]
     MD2[("MD report: {STEP_2_SECTION}")]
 
     USER --> PROMPT
@@ -66,20 +64,20 @@ flowchart TB
     S1 --> CK1
     S1 --> MD1
     OUT1 --> S2(["Step 2 - {STEP_2_TITLE}"])
-    S2 --> OUT2
     S2 --> CK2
     S2 --> MD2
     MD1 --> USER
     MD2 --> USER
 
-    linkStyle 0,1,3,5,6,7,8,9,10,11,12 stroke:#2563eb,stroke-width:2.5px
+    linkStyle 0,1,3,5,6,7,8,9,10,11 stroke:#2563eb,stroke-width:2.5px
 ```
 
 圖的讀法：
 
 - 平行四邊形是 external input，旗形是 one-run data，圓柱是 record。
-  這些 record 是 YAML checkpoint 中每個 step 的群組，以及 MD report 中每個 step 的一節。
-  Checkpoint Dir 中的每個資料檔也是 record。
+  這些 record 是每個 step 的 step 檔，以及 MD report 中每個 step 的一節。
+  Working Dir 中的每個資料檔也是 record。
+  每個 step 也把它的時間與模型加進 run record，圖中不畫這個 record。
   圓角方框是 step。
 - 六角形是 skill 外部的 role：使用者，提供 prompt 並閱讀 MD report。
 - 實線箭頭沿著資料移動的方向搬移資料。
@@ -111,19 +109,18 @@ Step 0 - Warmup
   reads   config.yaml
   checks  that these exist:
           {SKILL_NAME}/scripts/{SCRIPT_PATH_1}
-  writes  the YAML checkpoint: step_0
+  writes  the step file: step_0.yaml
 
 Step 1 - {STEP_1_TITLE}
   runs    {SCRIPT_PATH_1}
           ├─ reads {AN_INPUT_THE_SKILL_READS}
           └─ writes {STEP_1_OUTPUT}
-  writes  the YAML checkpoint: step_1
+  writes  the step file: step_1.yaml
   writes  the MD report: {STEP_1_SECTION}
 
 Step 2 - {STEP_2_TITLE}
   reads   {STEP_1_OUTPUT}
-  writes  step_2.json
-  writes  the YAML checkpoint: step_2
+  writes  the step file: step_2.yaml
   writes  the MD report: {STEP_2_SECTION}
 ```
 
@@ -146,8 +143,7 @@ Step 2 - {STEP_2_TITLE}
  │     what Step 1 says the script does, its arguments and its output
  ├─▶ common/rules/skill-writing.md: how the steps are written
  ├─▶ common/rules/report-md-rules.md: the MD report's header and shape
- ├─▶ common/rules/report-yaml-rules.md: the shape of the YAML checkpoint and the fields it requires
- ├─▶ common/rules/scratch-rules.md: where a run's throwaway files go and how they are cleaned up
+ ├─▶ common/rules/run-data-rules.md: the step files, the run record and the Working Dir of a run
  └─▶ common/rules/md-style.md: one sentence on each line
        └─ checked by reformat_md.py and check_reformat.py (--twin: the twin's sentences one for one)
 
@@ -183,8 +179,7 @@ header quote 列出一個檔案所依賴的檔案。
   ─▶ common/rules/md-style.md
   ─▶ common/rules/skill-writing.md
   ─▶ common/rules/report-md-rules.md
-  ─▶ common/rules/report-yaml-rules.md
-  ─▶ common/rules/scratch-rules.md
+  ─▶ common/rules/run-data-rules.md
   ─▶ common/templates/SKILL-tmp.md
   ─▶ common/templates/README-tmp.md
   ─▶ common/skills/chinese/SKILL.md

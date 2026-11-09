@@ -1,11 +1,11 @@
 # Terms Kept in English in 繁體中文 Twins
 
-> Version: 261108
+> Version: 261110
 > [[ASD-STE100_ISSUE9.pdf]]  `2026-10-18`  `d1f4ea9e7cd6`
 > [[ste-custom]]  `2026-11-02`  `c612bdfa1ea7`
 
 > 本檔案以 ASD-STE100 Simplified Technical English（STE）第 9 版寫成。
-> 技術用字：agency、agent、alias、app、argument、automated、baseline、bug、build、caller、canonical skill invocation、cell、character、checkpoint、class、clean mode、clock、cognitive、column、command、command line、commit、context、contract、data structure、delimiter、design document、diff、docstring、document、epoch、event、exit status、external input、feature、fence、fenced block、file、fingerprint、flag、folded block scalar、Forge、frontmatter、Gestalt、glossary、handler、handoff、hard break、hash、heading、here-string、hexagon、hook、hunk、idempotent-only mode、identifier、import、inline code、inline-code span、interactive、interpolation、introspection、line、line break、link、link target、list、match、math、MD report、metadata、no-op、non-breaking space、null、one-run data、operating system、pairing line、parse、path、pattern、pipe、pipeline、placeholder、plain scalar、process、prose、pull request、raw mode、record、regular expression、rendering、repository、request、route、scalar、schema、script、second、section、section partial、sentence、separator、server、session、shell、skill、span、spelling、stage、stale、statement、step、string、string literal、style、table、template、term、test case、text、token、traceback、twin、variable、verdict、version、wiki、wireframe、word、word character、work item、workflow、workspace。
+> 技術用字：agency、agent、alias、app、argument、automated、baseline、bug、build、caller、canonical skill invocation、cell、character、checkpoint、class、clean mode、clock、cognitive、column、command、command line、commit、context、contract、data structure、delimiter、design document、diff、docstring、document、epoch、event、exit status、external input、feature、fence、fenced block、file、fingerprint、flag、folded block scalar、Forge、frontmatter、Gestalt、glossary、handler、handoff、hard break、hash、heading、here-string、hexagon、hook、hunk、idempotent-only mode、identifier、import、inline code、inline-code span、interactive、interpolation、introspection、line、line break、link、link target、list、match、math、MD report、metadata、no-op、non-breaking space、null、one-run data、operating system、pairing line、parse、path、pattern、pipe、pipeline、placeholder、plain scalar、process、prose、pull request、raw mode、record、regular expression、rendering、repository、request、route、scalar、schema、script、second、section、section partial、sentence、separator、server、session、shell、skill、span、spelling、stage、stale、statement、step、string、string literal、style、table、template、term、test case、text、token、traceback、twin、variable、verdict、version、wiki、wireframe、word、word character、work item、workflow、working data、workspace。
 
 每一份 `-tw` twin，都在它的正文中把下列清單的 term 保留為英文。
 twin 的例子有 skill 的 `SKILL-tw.md`、設計文件的 `-RSDC-tw.md`，以及 wireframe 的 `-tw.md`。
@@ -151,6 +151,7 @@ twin 的正文使用英文的 term。
 | word character | 文字字元, 單字字元 | 文字字元, 單字字元 | 它是正規表示式中一類字元的名稱，而且 twin 已用了兩種譯法。 |
 | work item | 工作項目 | 工作項目 | 它是 Azure DevOps 中一種項目的名稱。 |
 | workflow | 工作流程, 流程 | 工作流程 | twin 已用了兩種譯法，而且它是 skill 中一節的名稱。 |
+| working data | 工作資料, 執行時的工作資料 | 工作資料 | 它是一次執行寫出的兩種資料之一的名稱，skill 的範本列出它。 |
 | workspace | 工作區, 工作空間 | — | twin 已用了兩種譯法，而且它是 system 讀取資料的位置的名稱。 |
 
 ## Adding a term

@@ -35,7 +35,7 @@ work branch 不推，要設 `branch.<work branch>.pushRemote no_push`，在它�
 ### 步驟
 
 1. 在 work branch 上，從根目錄執行 `python {skillGroups.common}/scripts/publish_snapshot.py check`；不在 work branch 上就加 `--work <work branch>`。
-   它先印出用的 `work`，再做出要公開的 tree，也就是 work branch 的內容拿掉 `external/` 與 `skill-groups/external/`，掃描每個檔，再列出和上次發佈相比的變動；它不寫入任何東西。
+   它先印出用的 `work`，再做出要公開的 tree，也就是 work branch 的內容拿掉 `external/`、`skill-groups/external/` 與 `skill-groups/archived/`，掃描每個檔，再列出和上次發佈相比的變動；它不寫入任何東西。
    掃描找的是：email、私有 IP、Azure DevOps 的組織、使用者的家目錄、token 與私鑰、關鍵字檔裡的名稱，以及不該在 tree 裡的路徑。
 2. 有 `[FIND]` 就以 `1` 結束：在 work branch 上改掉那些內容並 commit，再回到第 1 步。
    是誤報的話，改 [publish_snapshot.py](../skill-groups/common/scripts/publish_snapshot.py) 的允許清單（`EMAIL_ALLOWED`、`ADO_ALLOWED`），不要為了通過掃描而改內容。
@@ -56,7 +56,7 @@ work branch 不推，要設 `branch.<work branch>.pushRemote no_push`，在它�
 這些決定來自 [[Task 78]]：
 
 - 本機專用、不進 git：根目錄的 `config.yaml`（範本是 [config.example.yaml](../config.example.yaml)）、`*.mermaid.html` 預覽檔、`publish-keywords.local.txt`。
-- 快照排除、work branch 照舊：`external/` 是 ASD-STE100 規格的 PDF，規格的版權頁寫明不得散布；`skill-groups/external/` 是從外面來的 eli5，原作者與授權不明。
+- 快照排除、work branch 照舊：`external/` 是 ASD-STE100 規格的 PDF，規格的版權頁寫明不得散布；`skill-groups/external/` 放從外面來的 skill；`skill-groups/archived/` 放封存的 skill，不能執行，其中的 eli5 原作者與授權不明（[[Task 100.1]]）。
 - `ste-dictionary.json` 公開，是使用者的決定。
 - 每次發佈之後都重做 work branch，讓它的歷史一直很短；舊的歷史留在本機的 tag，不推。
 - GitHub 的預設分支是 `main`；快照 commit 的訊息是 `SkillsGestalt yyyy-mm-dd`，內文先寫這次改動的摘要，再寫它取自哪個 work branch 的哪個 commit。
@@ -65,7 +65,7 @@ work branch 不推，要設 `branch.<work branch>.pushRemote no_push`，在它�
 
 - `check` 與 `publish` 的掃描都是 `nothing found`。
 - GitHub 上 `main` 最新的 commit 是新的快照，只比上次多一個 commit，沒有 work branch 的歷史。
-- GitHub 上的檔案裡沒有 `checkpoints/`、`external/`、`skill-groups/external/`、`config.yaml`、預覽檔與 PDF。
+- GitHub 上的檔案裡沒有 `checkpoints/`、`external/`、`skill-groups/external/`、`skill-groups/archived/`、`config.yaml`、預覽檔與 PDF。
 
 ## 5. 與其他 task、chore 的關係
 

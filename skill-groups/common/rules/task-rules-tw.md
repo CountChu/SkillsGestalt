@@ -4,7 +4,7 @@
 > [[ste-custom]]  `2026-11-02`  `c612bdfa1ea7`
 
 > 本檔案以 ASD-STE100 Simplified Technical English（STE）第 9 版寫成。
-> 技術用字：blob、bold、bug、build、chapter、chore、column、command、commit、content、day、directory、document、feature、file、format、hash、heading、hunk、icon、indent、index、legend、line、link、list、lowercase、note、paragraph、path、prefix、pull request、repository、root、section、sentence、server、session、shell、skill、stage、status、subject、summary、table、term、test case、text、title、topic、tree line、twin、URL、vault、wikilink、word、work item、workspace。
+> 技術用字：blob、bold、bug、build、chapter、character、chore、column、command、commit、content、day、directory、document、feature、file、format、hash、heading、hunk、icon、indent、index、legend、line、link、list、lowercase、note、paragraph、path、prefix、pull request、repository、root、section、sentence、server、session、shell、skill、stage、status、subject、summary、table、term、test case、text、title、topic、tree line、twin、URI、URL、vault、wikilink、word、work item、workspace。
 
 這些規則說明怎麼寫一個 workspace 的 task，以及怎麼維護它們的摘要表。
 task 是一次 session 結束之後仍要繼續、而且會完成的工作。
@@ -105,8 +105,19 @@ task 檔的格式如下：
   在 `適合併進現有 topic` 裡，寫要併進哪個 topic，以及要補的內容。
   在 `不算知識` 裡，寫只屬於這次工作的事實，例如某一個檔案的路徑。
   該由另一個 task 修的工具問題，也寫在那裡。
-- **`7. 知識` 的一個項目寫進 topic 之後，在它前面加上 ✅，並加一個連到那個 topic 的 wikilink。**
+- **新 topic 的標題不要用 `#`、`^`、`[`、`]` 或 `|`。**
+  標題就是 topic 檔的檔名。
+  在 Obsidian 裡，連結找不到檔名含有其中任何一個字元的檔案。
+- **`7. 知識` 的一個項目寫進 topic 之後，在它前面加上 ✅，並加一個連到那個 topic 的連結。**
+  topic 在 task 檔所在的 vault 時，用 wikilink，例如 `[[<Title>]]`。
+  topic 在別的 vault 時，用連到 Obsidian URI 的 Markdown 連結，例如 `[<Title>](obsidian://open?vault=<vault>&file=<path>)`。
+  `<vault>` 是 vault 目錄的名稱，`<path>` 是 topic 檔從那個目錄算起的路徑。
+  URI 裡的每個空格都寫成 `%20`。
   還沒檢視過這個 task 的這類內容時，這一章只寫 `—`。
+- **一個檔案的 vault，是從它往上最近一個含有 `.obsidian` 目錄的目錄。**
+  `write-topic` 的 topic，vault 就是 `config.yaml` 的 `wikiDir` 指定的目錄。
+  在 Obsidian 與 `check_tasks.py` 中，wikilink 都只在 task 檔所在的 vault 裡找檔案。
+  Obsidian 找不到這個檔案時，點這個 wikilink 會在那個 vault 裡建一個空的筆記。
 - **在 `8. 日誌` 裡，每天寫一個 `### yyyy-mm-dd` section，記錄那一天的改動。**
   新的日期放在前面。
   同一天再改這個 task，就補在那一天的 section。

@@ -73,7 +73,7 @@
 提出時問了 8 個問題，決定如下：
 
 - **範圍**：4 份原檔，都沒有 frontmatter。
-  - [report-yaml-rules.md](../skill-groups/common/rules/report-yaml-rules.md)（17 行）
+  - `report-yaml-rules.md`（17 行）
   - [report-md-rules.md](../skill-groups/common/rules/report-md-rules.md)（61 行）
   - [md-style.md](../skill-groups/common/rules/md-style.md)（76 行）
   - [tw-keep-english.md](../skill-groups/common/references/tw-keep-english.md)（82 行）
@@ -119,6 +119,10 @@
 —
 
 ## 8. 日誌
+
+### 2026-11-06
+
+- [[Task 100.4]] 刪掉 scratch-rules.md 與 report-yaml-rules.md，本檔連到它們的連結改成純文字的檔名。
 
 ### 2026-11-02
 

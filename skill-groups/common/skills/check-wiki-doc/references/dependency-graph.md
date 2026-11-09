@@ -128,10 +128,10 @@ graph TD
 
 ```bash
 python3 {skillGroups.common}/skills/check-wiki-doc/scripts/build_dependency_graph.py \
-  --arch "<架構文件路徑>" --root "<wikiRootDir>"
+  --arch "<架構文件路徑>" --root "<wikiDir>"
 ```
 
-- `--root` 取 `config.yaml` 的 `wikiRootDir`，路徑開頭的 `~` 先展開。
+- `--root` 取 `config.yaml` 的 `wikiDir`，路徑開頭的 `~` 先展開。
   腳本在它底下依檔名找納管文件。
 	- 同名檔案有多份時，優先取與架構文件同一個 Obsidian 庫裡的那份，並印出警告。
 - `--out` 可另指輸出路徑，預設就是 6.1 的位置。

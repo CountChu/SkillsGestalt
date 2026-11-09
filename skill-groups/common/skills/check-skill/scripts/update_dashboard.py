@@ -13,6 +13,11 @@ re-applies every one of that skill's checks in full clears the flag, and a parti
   <check>:<issues>:<recommendations>:<criteria>   a check narrowed to some criteria, e.g. 1:0:1:1.3+1.5
   <check>:na                                      the check does not apply, e.g. 4:na
 
+A relative --dashboard or --path is taken from the workspace root, never from the current
+directory: the directory --workspace names, or else the nearest one, from the current directory up,
+whose config.yaml has skillGroups, as the Skill Scanner finds it. It is never found from this file,
+which can be in a different workspace. Only a relative path needs the root, and PyYAML to find it.
+
 Examples:
   python update_dashboard.py --dashboard "<wikiDir>\dashboard\skills.md" --run 260927-17
       --skill imp-app --group common --path "<skillGroups.common>\skills\imp-app\SKILL.md"
@@ -27,6 +32,10 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from urllib.parse import quote
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))  # scan_skill, which finds the workspace root
+WORKSPACE_HELP = ("the root of the workspace the skill runs in (default: the nearest directory, "
+                  "from the current directory up, whose config.yaml has skillGroups)")
 
 CHECKS = {
     1: "Template alignment",
@@ -251,8 +260,23 @@ def parse_results(specs, ap):
     return out
 
 
-def vscode_url(skill_md):
-    target = Path(skill_md)
+def workspace_path(value, workspace=None):
+    """A path argument with either separator; a relative one is taken from the workspace root.
+
+    On macOS and Linux a backslash is an ordinary character, so `{wikiDir}\\dashboard\\skills.md`
+    would name one file with backslashes in it; every backslash becomes a forward slash, which
+    Windows reads as a separator too. The current directory is never the base: the root is the one
+    the Skill Scanner's workspace_root finds, never one found from this file.
+    """
+    path = Path(value.replace("\\", "/")).expanduser()
+    if path.is_absolute():
+        return path
+    from scan_skill import workspace_root  # read here, for the scanner needs PyYAML
+    return workspace_root(workspace) / path
+
+
+def vscode_url(skill_md, workspace=None):
+    target = workspace_path(skill_md, workspace)
     if not target.is_file():
         sys.exit(f"--path is not a file: {skill_md}")
     return "vscode://file/" + quote(str(target.resolve()).replace("\\", "/"), safe="/:")
@@ -271,9 +295,10 @@ def main():
     ap.add_argument(
         "--mark-modified", action="store_true", help="flag the skill as edited since its last check, and change nothing else"
     )
+    ap.add_argument("--workspace", help=WORKSPACE_HELP)
     args = ap.parse_args()
 
-    path = Path(args.dashboard)
+    path = workspace_path(args.dashboard, args.workspace)
     created, rows, suffix = load(path)
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
     row = rows.get(args.skill)
@@ -296,7 +321,7 @@ def main():
         if run_date is None:
             ap.error("--run must be a {yymmdd-hh} stamp, e.g. 260927-17")
         results = parse_results(args.result, ap)
-        url = vscode_url(args.path) if args.path else None
+        url = vscode_url(args.path, args.workspace) if args.path else None
         if row is None:
             row = Row(args.skill, None, None, None, {n: Cell("never") for n in CHECKS}, False)
             rows[args.skill] = row

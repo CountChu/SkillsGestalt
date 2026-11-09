@@ -7,8 +7,8 @@ description: >-
   提出了哪些要求的檔案，或 none。它先確認 design template 跟上了 RSDC standard，沒有就停下；然後讀完整份
   原始碼、畫出 components，每一句陳述都從程式碼做了什麼推導，而不是從被要求了什麼推導——每一項不一致都是
   一項 finding——並拿標準核對各章、以 RSDC Checker 檢查英文文件、以 chinese skill 的 parity check 檢查
-  twin。它不改任何程式碼、不留下任何正在跑的東西、不寫 MD report 也不寫 YAML checkpoint，最後交回它寫下的
-  components、findings、缺陷與 verification obligations。
+  twin。它不改任何程式碼、不留下任何正在跑的東西、不寫 MD report，為這次執行留下一份 run record，最後
+  在一份 handoff file 裡，把它寫下的 components、findings、缺陷與 verification obligations 交回給執行它的 skill。
 ---
 
 本文件為 [SKILL.md](skill-groups/common/skills/gen-rsdc-app/SKILL.md) 的繁體中文版；真正會執行的是 SKILL.md，任一份改了某節，另一份必須在同一次執行中、以相同編號一起改。
@@ -17,11 +17,18 @@ description: >-
 
 每個 skill 裡都是同一個意思的詞。
 
-- **Checkpoint Dir** — 存放某個 skill 的 YAML checkpoint、每次執行各一份的目錄。
-  每個 skill 都有自己的。
-- **YAML checkpoint** — Checkpoint Dir 裡的 `process.yaml`。
-  每個 step 把它的輸出寫在那裡的 `step_{N}` 群組底下，於是後面的 step 把它們讀回來，而不是重算一次。
-- **MD report** — 某個 skill 寫進 wiki vault 的那份 Markdown 報告，放在一個以那個 skill 命名的資料夾裡，在它的結果各節上方帶著標準的表頭（Skill、Checkpoint、Created、Updated、Prompt）。
+- **Run Number** — 一次執行的編號，`{yymmdd}.{N}`。
+  `{N}` 是這個 skill 在那一天執行的序號，從 1 開始。
+- **Working Dir** — 一次執行所用的目錄，存放這次執行所有的 working data：它的 step file、資料檔與暫存檔。
+  在本 skill 中，它是 Checkpoint Dir，**CONFIGURATION** 列出它。
+  skill 不移除它。
+- **Checkpoint Dir** — 位於 workspace 根目錄 `checkpoints\` 的 Working Dir。
+- **Step file** — Working Dir 裡的 `step_{N}.yaml`。
+  每個 step 把它的輸出寫在那裡，於是後面的 step 把它們讀回來，而不是重算一次。
+- **Run record** — 記錄一次執行中每個 step 所用時間與 model 的檔案。
+  分析一個 skill 的效率時會用到它。
+- **Handoff file** — 一次執行寫給另一個 skill 讀的 Markdown 檔，放在 `handoff\{skill}\` 裡，以 **Run Number** 命名。
+- **MD report** — 某個 skill 寫進 wiki vault 的那份 Markdown 報告，放在一個以那個 skill 命名的資料夾裡，在它的結果各節上方帶著標準的表頭（Skill、Run record、Created、Updated、Prompt）。
 - **no forward-reference** — 一個 step 絕不能依賴排在它後面的 step 這條規則。
   為了安排控制流而指名後面的 step 不算違反；借用那個 step 的輸出才算。
 
@@ -69,11 +76,26 @@ description: >-
 這個 skill 執行時用到的具體值。
 下面每一條路徑都是這個 skill 的常數；被寫文件的那個 app 的一切，都從 prompt 指名的東西讀取。
 
+執行時讀取或執行的輸入與工具：
+
+- **Workspace configuration** — workspace 根目錄的 [config.yaml](config.yaml)。
 - **design template** — `{skillGroups.common}\skills\gen-rsdc-app\assets\RSDC-App-tmp.md`，它的 twin `RSDC-App-tmp-tw.md` 就在旁邊。
 - **RSDC standard** — `{skillGroups.common}\references\RSDC-Standard.md`，其圖的記法在 `{skillGroups.common}\references\DFD.md`。
 - **dependency checker** — `{skillGroups.common}\scripts\depends_on.py`。
 - **RSDC Checker** — `{skillGroups.common}\skills\gen-rsdc-skill\scripts\check_rsdc.py`。
 - **chinese skill** — `{skillGroups.common}\skills\chinese\SKILL.md`。
+- **run-data rules** — `{skillGroups.common}\rules\run-data-rules.md`。
+- **app source** — prompt 指名的 **app dir** 的整份來源：`server.js`、`app.js`、`public\`、`scripts\`、**app config** 與 `tests\`。
+- **requirements record** — prompt 指名的檔案，或 `none`。
+
+一次執行的 working data，執行結束後沒有人、也沒有 skill 讀它：
+
+- **Working Dir** — Checkpoint Dir，`checkpoints\gen-rsdc-app\{yymmdd}.{N}\`。
+
+最後的輸出，人、另一個 skill 或之後的分析會讀它：
+
+- **Run record** — `database\skill-runs\gen-rsdc-app\{yymmdd}.{N}.yaml`。
+- **Handoff file** — `handoff\gen-rsdc-app\{yymmdd}.{N}.md`。
 - **design pair** — `{output dir}\{app name}-RSDC.md` 與 `{output dir}\{app name}-RSDC-tw.md`。
 
 # MUST FOLLOW
@@ -85,9 +107,16 @@ description: >-
   一個需要閱讀、判斷或摘要的 step **絕不可**腳本化——把它寫成自然語言指示，讓 agent 自己直接執行。
 - **這個 skill 沒有 `run step N` 選擇器——每一次執行都是完整執行。**
   Step 1 從對原始碼的一次閱讀寫出設計；單獨執行它，就是從沒有讀過的東西寫出設計。
-- **這個 skill 既不產生 MD report，也不產生 YAML checkpoint。**
+- Run Number、step file、run record 與一次執行的 Working Dir，遵守 [run-data-rules.md](skill-groups/common/rules/run-data-rules.md)。
+- **這個 skill 不產生 MD report。**
   它的產出是 **design pair**。
-  一次執行發現了什麼——**components**、**findings**、缺陷與 **verification obligations**——在最後交回，讓執行它的一方記錄。
+  一次執行發現了什麼——**components**、**findings**、缺陷與 **verification obligations**——在最後寫進 **handoff file** `handoff\gen-rsdc-app\{yymmdd}.{N}.md` 交回，讓執行它的一方記錄。
+  最後一個 step 整份寫出它；執行這個 skill 的 skill 讀它。
+- **這個 skill 停下之前，顯示 handoff file 與 run record 的路徑。**
+  只顯示這兩個路徑，不顯示它們的內容。
+  把它們寫成連結目標從 workspace 開始、以正斜線為分隔符號的 Markdown 連結，不寫成 inline code 或純文字。
+  例如：`[{yymmdd}.{N}.md](handoff/gen-rsdc-app/{yymmdd}.{N}.md)` 與 `[{yymmdd}.{N}.yaml](database/skill-runs/gen-rsdc-app/{yymmdd}.{N}.yaml)`。
+  在最後一個 step 之前停下的執行也這樣做：它顯示 run record，只有寫了 handoff file 時才顯示 handoff file。
 - **每一份文件都是一對，而兩個半邊一起移動。**
   寫出 `{app name}-RSDC.md` 的那一次執行，會在同一次執行中讓 **chinese skill** 依它寫出 `{app name}-RSDC-tw.md`。
   兩份一旦分岔，就不再說出這個 app 是什麼；它們在爭論它。
@@ -100,7 +129,7 @@ description: >-
   任何 **app name**、**app dir** 路徑、通訊埠、標題或端點都不得出現在這個檔案裡、**design template** 裡，或這個 skill 的工具裡。
   prompt 指名那個 app。
 - **這個 skill 不改任何程式碼，也不留下任何正在跑的東西。**
-  它讀 **the app**；它從不啟動它，除了 **design pair** 之外也不寫任何檔案——它所執行的 **chinese skill** 可能在它的 keep-English list 裡加一個詞，而且只在得到同意時才 commit。
+  它讀 **the app**；它從不啟動它，除了 **design pair** 與 [run-data-rules.md](skill-groups/common/rules/run-data-rules.md) 的執行資料——step file、run record 與 **handoff file**——之外也不寫任何檔案；它所執行的 **chinese skill** 可能在它的 keep-English list 裡加一個詞，而且只在得到同意時才 commit。
 - **output dir 裡已經有的 design pair 能不能被取代，由執行這個 skill 的一方決定。**
   這個 skill 會整份取代它，因為重新推導正是它存在的目的；一份後來被加進了原始碼無法顯示之決定的 design pair，不是可以拿它來重跑的對象。
 
@@ -149,71 +178,73 @@ flowchart TB
     TTW[/"design template's twin"/]
     SRC[/"app source"/]
     REQ[/"requirements record"/]
-    INPUTS>"Inputs"]
-    FOUND>"What Step 1 found"]
+    CK0[("Step file: step_0.yaml")]
+    CK1[("Step file: step_1.yaml")]
     ANSWER>"Answer to the commit"]
     EN[("{app name}-RSDC.md")]
     TW[("{app name}-RSDC-tw.md")]
     KEEP[("keep-English list")]
     GIT[("git history")]
-    BACK>"What was written"]
+    CK2[("Step file: step_2.yaml")]
+    HAND[("Handoff file: {yymmdd}.{N}.md")]
 
     CALLER --> PROMPT
     PROMPT --> S0(["Step 0 - Warmup"])
     CONFIG --> S0
     STD --> S0
     TMPL --> S0
-    S0 --> INPUTS
-    INPUTS --> S1(["Step 1 - Derive the Design Pair from the Source"])
+    S0 --> CK0
+    CK0 --> S1(["Step 1 - Derive the Design Pair from the Source"])
     SRC --> S1
     REQ --> S1
     TMPL --> S1
     STD --> S1
     CONFIG --> S1
     S1 <--> EN
-    S1 --> FOUND
-    INPUTS --> S2(["Step 2 - Have chinese Write the Twin"])
+    S1 --> CK1
+    CK0 --> S2(["Step 2 - Have chinese Write the Twin"])
     CONFIG --> S2
     EN --> S2
     TTW --> S2
-    FOUND --> S2
+    CK1 --> S2
     CALLER --> ANSWER
     ANSWER --> S2
     S2 <--> TW
     S2 <--> KEEP
     S2 <--> GIT
-    S2 --> BACK
-    BACK --> CALLER
+    S2 --> CK2
+    S2 --> HAND
+    HAND --> CALLER
     EN --> CALLER
     TW --> CALLER
 
-    linkStyle 7,8,9,12,16,17,21,22,23 stroke:#2563eb,stroke-width:2.5px
+    linkStyle 1,5,7,8,9,12,13,16,17,18,21,22,23,24,25 stroke:#2563eb,stroke-width:2.5px
 ```
 
 圖的讀法：
 
 - 平行四邊形是 external input：`config.yaml`、**RSDC standard**、**design template** 與它的 twin、**app dir** 裡的原始碼，以及 **requirements record**。
-  旗形是 one-run data：prompt、Step 0 確定下來的輸入、Step 1 發現的東西、caller 對 **chinese skill** 所提議之 commit 的回答，以及 Step 2 交回的東西。
-  圓柱是 record：**design pair** 的兩個半邊、**chinese skill** 可能加進一個詞的 keep-English list，以及它可能加進一個 commit 的 git 歷史。
+  旗形是 one-run data：prompt，以及 caller 對 **chinese skill** 所提議之 commit 的回答。
+  圓柱是 record：每個 step 的 step file、**design pair** 的兩個半邊、**chinese skill** 可能加進一個詞的 keep-English list、它可能加進一個 commit 的 git 歷史，以及 Step 2 交回的 **handoff file**。
+  每個 step 也把它的時間與 model 加進 run record，這張圖不畫這份 record。
   圓角框是 step。
-- 六角形是 skill 外部的 role：caller——一個人，或一個執行這個 skill 的 skill——它提供 prompt 與對 commit 的回答，並讀 **design pair** 與交回的東西。
+- 六角形是 skill 外部的 role：caller——一個人，或一個執行這個 skill 的 skill——它提供 prompt 與對 commit 的回答，並讀 **design pair** 與 **handoff file**。
 - 實線箭頭承載資料，方向就是資料移動的方向；雙向箭頭是同一個 step 既讀又寫的資料。
   虛線箭頭不承載資料：它是一個順序，或一次手動做的改動。
-- 藍色箭頭承載的資料本身被寫進一份 record，或被轉成一份 record 的內容：原始碼、**requirements record** 與 **design template** 變成英文半邊；英文半邊與 template 的 twin 變成 twin；**chinese skill** 保留英文的詞進入它的清單，這一對則進入 git 歷史。
-  其他箭頭都是黑色；**RSDC standard**、`config.yaml`、Step 1 發現的東西與對 commit 的回答只決定 step 怎麼做、或被交回，即使那個 step 寫了 record，它們仍是黑色。
+- 藍色箭頭承載的資料本身被寫進一份 record，或被轉成一份 record 的內容：prompt 變成 `step_0.yaml` 裡的輸入；原始碼、**requirements record** 與 **design template** 變成英文半邊；Step 1 發現的東西進入 `step_1.yaml`，再從那裡進入 **handoff file**；英文半邊與 template 的 twin 變成 twin；**chinese skill** 保留英文的詞進入它的清單，這一對則進入 git 歷史；**chinese skill** 回報的東西進入 `step_2.yaml`。
+  其他箭頭都是黑色；**RSDC standard**、`config.yaml`、`step_0.yaml` 裡的輸入與對 commit 的回答只決定 step 怎麼做，即使那個 step 寫了 record，它們仍是黑色。
 - 每一份 record 只有一個寫入者。
   Step 1 讀它即將取代的英文半邊，好說出那裡已經有什麼；Step 2 讀它更新的 twin、它加詞的清單，以及它從中找到 twin 的 baseline、並 commit 進去的歷史。
 
 # Steps at a Glance
 
-每一個 step 一覽，一個 step 一列，完全照它的標題命名：它執行的腳本，不執行時寫一條橫線，以及它存進 YAML checkpoint 的東西。
-這個 skill 不寫 YAML checkpoint，所以每一個 YAML 欄位都是一條橫線。
+每一個 step 一覽，一個 step 一列，完全照它的標題命名：它執行的腳本，不執行時寫一條橫線，以及它存進自己 step file 的東西。
 
-| Step | Script | YAML |
+| Step | Script | Step file |
 |---|---|---|
-| Step 0 - Warmup | `depends_on.py check` | — |
-| Step 1 - Derive the Design Pair from the Source | `depends_on.py record`, `check_rsdc.py` | — |
-| Step 2 - Have chinese Write the Twin | — | — |
+| Step 0 - Warmup | `depends_on.py check` | `step_0.yaml`：**app dir**、**app name**、**output dir**、**requirements record** 或 `none`、template 檢查 |
+| Step 1 - Derive the Design Pair from the Source | `depends_on.py record`, `check_rsdc.py` | `step_1.yaml`：**components**、**findings**、缺陷、**RSDC Checker** 的 verdict 與警告 |
+| Step 2 - Have chinese Write the Twin | — | `step_2.yaml`：**chinese skill** 回報的東西、**handoff file** 的路徑 |
 
 
 # Workflow
@@ -260,6 +291,13 @@ flowchart TB
 
 - 顯示 **app dir**、**app name**、**output dir**、**requirements record** 或沒有它這件事，以及 template 檢查發現了什麼。
 
+- 存下 canonical skill invocation，讓 run record 把它當作 `prompt` 記下。
+
+- 依 run-data-rules.md 取得 Run Number，並寫出這次執行的 run record。
+
+- 存下 `step_0.yaml`，內容為：**app dir**、**app name**、**output dir**、**requirements record** 或 `none`，以及 template 檢查發現了什麼。
+  把這個 step 加進 run record。
+
 ## Step 1 - Derive the Design Pair from the Source
 
 - **Purpose**：把這個 app **是**什麼用文字定下來，是從這個 app 本身推導、而不是從當初被要求的東西推導——那是一個 app 不再是一場對話、而成為後來的讀者能拿來對照檢查的東西的那個時點。
@@ -304,7 +342,8 @@ flowchart TB
   推導漏掉的東西——漏寫的一節、留下的 placeholder——在這裡被抓到，趕在英文半邊被翻譯之前。
   - 範例：`python {skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py --rsdc "{output dir}/{app name}-RSDC.md"`
 
-- 把這個 step 發現的東西留下來，在這次執行結束時交回：**components**，連同每一個的原始碼住在哪裡、以及提到它的主張；**findings**；每一項缺陷，連同記錄它的那一節；以及 **RSDC Checker** 對英文半邊的 verdict，連同每一則留著的警告和它的理由。
+- 存下 `step_1.yaml`，內容為這個 step 發現的東西，在這次執行結束時交回：**components**，連同每一個的原始碼住在哪裡、以及提到它的主張；**findings**；每一項缺陷，連同記錄它的那一節；以及 **RSDC Checker** 對英文半邊的 verdict，連同每一則留著的警告和它的理由。
+  把這個 step 加進 run record。
 
 ## Step 2 - Have chinese Write the Twin
 
@@ -328,7 +367,8 @@ flowchart TB
   它回報的英文半邊缺陷，等它結束之後才修正，然後再執行一次 **chinese skill**。
 
 - **交回寫了什麼**，讓執行這個 skill 的一方記錄。
-  顯示：
+  以這次執行的 Run Number 整份寫出 **handoff file** `handoff\gen-rsdc-app\{yymmdd}.{N}.md`；Step 1 發現的東西從 `step_1.yaml` 讀。
+  它包含：
   - **design pair** 作為兩個連結，附上它的兩個半邊是以哪些章節計數比對過的；
   - 一張 **Components** 表，欄位為 **Component**（它在 design pair 裡的名字）、**File**（它的原始碼在 **app dir** 裡住在哪裡）與 **Obligations**（提到它的那些 **verification obligations** 的主張，尚未證明的每一項標 *not verified*）；
   - 一張 **Findings** 表，欄位為 **Asked for**（那筆 **requirements record**，沒有時則是 `—`）、**What the code does** 與 **Recorded as**（現在承載它的那一節）；
@@ -336,3 +376,8 @@ flowchart TB
   - **RSDC Checker** 對英文半邊發現了什麼：它的 verdict，以及每一則留著的警告和它的理由；
   - **chinese skill** 回報了什麼：它翻譯了整份 twin 還是只翻譯改了的部分、它的 parity 結果，以及這一對有沒有被 commit；
   - 以及沒有任何程式碼改動、也沒有留下任何正在跑的東西。
+
+- 存下 `step_2.yaml`，內容為：**chinese skill** 回報了什麼——它翻譯了整份 twin 還是只翻譯改了的部分、它的 parity 結果，以及這一對有沒有被 commit——以及 **handoff file** 的路徑。
+  把這個 step 加進 run record，並寫入 `result: completed`，因為它是最後一個 step。
+
+- 依 **MUST FOLLOW** 所說，顯示 **handoff file** 與 run record 的路徑。

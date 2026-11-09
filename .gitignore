@@ -28,6 +28,7 @@ wiki/
 
 .obsidian/
 database/
+handoff/
 temp/
 
 # Local configuration: copy config.example.yaml to config.yaml

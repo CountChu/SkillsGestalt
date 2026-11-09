@@ -47,7 +47,7 @@ Each term has the same sense in each document of each agency.
     In a Forge, its root is the path of that directory in SkillsGestalt.
   - `dedi` — the skill group of one Forge: the skills that only that Forge uses.
     In InvestForge, its root is `.claude`.
-  - `external` — the skills that come from a source that is not an agency, for example eli5.
+  - `external` — the skills that come from a source that is not an agency.
 - **agent** — an AI assistant, for example Claude Code, that does work in a workspace.
   It reads the instructions in the `AGENTS.md` of the workspace, and it does the steps of the skills.
 - **task** — work that continues after one session, and that becomes complete.

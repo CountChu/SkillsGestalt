@@ -8,10 +8,10 @@ description: >-
   step by identifier via --step, the hidden --export-schema JSON a caller reads, and the
   exit code a cognitive step hands off with instead of calling an LLM. A source that is not
   skills/<name>/SKILL.md with Step N headings under its Workflow is refused with nothing written.
-  The source is never edited; skill.py is the only output - no MD report, no YAML checkpoint. Every
-  run ends by running it: a check of its source fingerprint, schema, handoffs and headless rule, then each
-  deterministic step on a side-effect-free input. Triggers "compile this skill", "make skill.py",
-  "run a skill without the agent".
+  The source is never edited; skill.py is the only output beside the run's run record - no MD
+  report, no step files. Every run ends by running it: a check of its source fingerprint, schema,
+  handoffs and headless rule, then each deterministic step on a side-effect-free input. Triggers
+  "compile this skill", "make skill.py", "run a skill without the agent".
 ---
 
 # TERMINOLOGY
@@ -20,9 +20,12 @@ Terms that mean the same thing in every skill.
 
 - **`run step N`** — a trailing prompt selector naming one step.
   It runs **only** that step, then stops.
-- **MD report** — the Markdown report a skill writes into the wiki vault, in a folder named after that skill, carrying the standard header (Skill, Checkpoint, Created, Updated, Prompt) above its result sections.
-- **YAML checkpoint** — the `process.yaml` in a skill's per-run checkpoint directory.
-  Every step writes its outputs there under a `step_{N}` group, so a later step reads them back instead of recomputing them.
+- **MD report** — the Markdown report a skill writes into the wiki vault, in a folder named after that skill, carrying the standard header (Skill, Run record, Created, Updated, Prompt) above its result sections.
+- **Run Number** — the number of one run, `{yymmdd}.{N}`.
+  `{N}` is the sequence number of the run of this skill on that date, and it starts at 1.
+- **Step file** — the `step_{N}.yaml` in a skill's per-run checkpoint directory, where a step writes its outputs so a later step reads them back instead of recomputing them.
+- **Run record** — the file that records the time and the model of each step of one run.
+  The analysis of the efficiency of a skill uses it.
 - **no forward-reference** — the rule that a step must never depend on a step that comes after it.
   Naming a later step to route control flow does not break it; borrowing that step's output does.
 
@@ -60,11 +63,19 @@ The glossary owns each definition — a step uses the term rather than restating
 
 Concrete values this skill runs with.
 
+The inputs and tools, which the run reads or runs:
+
+- **Workspace configuration** — the [config.yaml](config.yaml) at the root of the workspace.
 - **compile SOP** — [SKILL-Compile.md](skill-groups/common/skills/compile-skill/references/SKILL-Compile.md), in `{skillGroups.common}\skills\compile-skill\references\`.
 - **Skill Source** — `{skillGroups[<group>]}\skills\<skill-name>\SKILL.md`, resolved in Step 0 from the name or path the prompt gives.
-- **Compiled Script** — `skill.py`, in the **Skill Source**'s own directory (the **compile SOP**'s *Terms and Rules*).
 - **Source Scanner** — `{skillGroups.common}\skills\compile-skill\scripts\scan_source.py`.
 - **Contract Checker** — `{skillGroups.common}\skills\compile-skill\scripts\check_compiled.py`.
+- **run data rules** — `{skillGroups.common}\rules\run-data-rules.md`.
+
+The last outputs, which a person, a different skill or a subsequent analysis reads:
+
+- **Run record** — `database\skill-runs\compile-skill\{yymmdd}.{N}.yaml`.
+- **Compiled Script** — `skill.py`, in the **Skill Source**'s own directory (the **compile SOP**'s *Terms and Rules*).
 
 # MUST FOLLOW
 
@@ -74,10 +85,11 @@ Concrete values this skill runs with.
 - A step that a program can do deterministically must be run as a script.
   A step that needs reading, judgement, or summarization **must not** be scripted — write it as natural-language instructions for the agent to perform directly.
 - **Honour a `run step N` selector**: run Step N, then stop; never a later step.
-  This skill writes no YAML checkpoint, so each step re-derives its inputs from the prompt and from the files on disk — which it can, because the **Skill Source** and the **Compiled Script** are the only state any step needs.
-- **This skill produces neither an MD report nor a YAML checkpoint.**
-  The **Compiled Script** is its only output.
-- Follow [scratch-rules.md](skill-groups/common/rules/scratch-rules.md) for where a run's throwaway files go and how they are cleaned up.
+  This skill writes no step files, so each step re-derives its inputs from the prompt and from the files on disk — which it can, because the **Skill Source** and the **Compiled Script** are the only state any step needs.
+- **This skill produces neither an MD report nor step files.**
+  The **Compiled Script** is its only output, beside the run record of the run.
+- Obey [run-data-rules.md](skill-groups/common/rules/run-data-rules.md) for the Run Number, the run record and the Working Dir of a run.
+  A run that stops before its last step writes `result: stopped` and `stopped_at` in the run record, as it tells.
 - **This file runs every program; the compile SOP runs none, and names neither a program nor this skill.**
   A step below runs the **Source Scanner**, the **Contract Checker** or the **Compiled Script**, and hands what they print and write to the **compile SOP** step it names, as that step's input.
   It is the lower document and this file the upper one: the **compile SOP** holds only the judgments a compile needs, and a **compile SOP** that named a program or this skill would know the system it is kept apart from.
@@ -85,12 +97,13 @@ Concrete values this skill runs with.
   A step below adds only what a run needs around them — the programs, the **target skill**, the questions put to the user, and what is displayed — and never restates what they say: a rule copied into this file is a second copy, and the two will drift.
   Where this file and the **compile SOP** disagree, the **compile SOP** wins; report the disagreement rather than resolving it in the run.
 - **The compile SOP's steps map onto this skill's**: its Step 1 and Step 2 are done in Step 2, its Step 3 in Step 3 when a check fails and in Step 4 when a difference lies in the script, and its Step 4 in Step 4.
-  Where it says stop, the run ends there, with what it reports, and nothing more is written.
+  Where it says stop, the run ends there, with what it reports, and nothing more is written but the run record.
 - **Never edit the compile SOP while compiling.**
   A change to what a **Compiled Script** must be is a change of its own, made deliberately and outside any run — never a side effect of compiling one skill.
-- **Write only the Compiled Script.**
+- **Write only the Compiled Script and the run record.**
   Never the **Agentic Panel**, and never another file of the **target skill**.
-- **Before the skill ends, display the Compiled Script path** — the path only, never its contents, rendered as a clickable Markdown link and never as inline code or plain text.
+- **Before the skill ends, display the paths of the Compiled Script and of the run record** — the paths only, never their contents, rendered as clickable Markdown links and never as inline code or plain text.
+  For the run record, use a link target that starts at the workspace, with the forward slash as the separator: `[{yymmdd}.{N}.yaml](database/skill-runs/compile-skill/{yymmdd}.{N}.yaml)`.
   Do this for every run, including a partial one such as `run step 0`.
 
 # Prompt Examples
@@ -100,20 +113,20 @@ Concrete values this skill runs with.
 
 ```
 /compile-skill
-report-skills
+chinese
 ```
 
 ## Prompt 2
 
 ```
-/compile-skill report-logs --force
+/compile-skill reformat-md --force
 ```
 
 ## Prompt 3
 
 ```
 /compile-skill
-report-skills
+chinese
 run step 3
 ```
 
@@ -155,6 +168,10 @@ Compile the report-suts-usage skill into skill.py so I can run it directly.
 
 - If the **target skill** is missing, ask the user for it.
 
+- Keep the canonical skill invocation, for the `prompt` of the run record.
+
+- Get the Run Number, as run-data-rules.md tells, and write the run record of the run.
+
 - Confirm the **Skill Source** exists.
   Whether it is one this skill accepts is Step 1's verdict, not this step's.
 
@@ -169,11 +186,13 @@ Compile the report-suts-usage skill into skill.py so I can run it directly.
 
 - Display the resolved **Skill Source** path and **Compiled Script** path.
 
+- Add this step to the run record.
+
 
 ## Step 1 - Validate the Skill Source
 
 - Run the **Source Scanner**, `scan_source.py`, on the **Skill Source** resolved in Step 0.
-  - Example: `python {skillGroups.common}/skills/compile-skill/scripts/scan_source.py --file "{skillGroups.common}/skills/report-skills/SKILL.md"`
+  - Example: `python {skillGroups.common}/skills/compile-skill/scripts/scan_source.py --file "{skillGroups.common}/skills/chinese/SKILL.md"`
 
 - Act on the exit code:
   - `0`, valid: continue, keeping the **step inventory** and the **source fingerprint** it printed.
@@ -181,6 +200,8 @@ Compile the report-suts-usage skill into skill.py so I can run it directly.
   - `64`, no verdict — the command was malformed, or the file is missing or cannot be read: correct the command or the path, and run it again.
 
 - Display the **step inventory** — number and title per step — and any warnings.
+
+- Add this step to the run record.
 
 
 ## Step 2 - Classify and Compile the Step Actions
@@ -200,18 +221,20 @@ Compile the report-suts-usage skill into skill.py so I can run it directly.
     3. **Cognitive** — the classification was wrong, and the step becomes a **handoff step**.
 
 - If the **Compiled Script** already exists and `--force` was not given, say so and ask whether to overwrite it before writing anything — with the **Classification table** in view, so the answer is given knowing what would replace it.
-  A refusal ends the run with nothing written.
+  A refusal ends the run with no **Compiled Script** written.
 
 - Do **compile SOP** Step 2 *Write the Compiled Script*, giving it the classification, the user's decisions and the **source fingerprint** Step 1 printed, and writing to the path Step 0 derived.
 
 - Display the **Compiled Script** path and its size.
 
+- Add this step to the run record.
+
 
 ## Step 3 - Check the Script Contracts
 
 - Run the **Contract Checker**, `check_compiled.py`, on the **Skill Source** and the **Compiled Script**.
-  - Example: `python {skillGroups.common}/skills/compile-skill/scripts/check_compiled.py --source "{skillGroups.common}/skills/report-skills/SKILL.md" --script "{skillGroups.common}/skills/report-skills/skill.py"`
-  - It runs the script only in temporary places outside the workspace, and runs no deterministic **Step Action**'s real work: Step 4 proves that.
+  - Example: `python {skillGroups.common}/skills/compile-skill/scripts/check_compiled.py --source "{skillGroups.common}/skills/chinese/SKILL.md" --script "{skillGroups.common}/skills/chinese/skill.py"`
+  - It runs the script only in the temporary directory of the system, outside the workspace, because the proving run must not find the workspace's `config.yaml`, as run-data-rules.md allows for an isolated test; it removes the directory when done, and runs no deterministic **Step Action**'s real work: Step 4 proves that.
 
 - Act on the exit code:
   - `0`, every check passed: continue.
@@ -227,11 +250,13 @@ Compile the report-suts-usage skill into skill.py so I can run it directly.
 
 - Display the result: how many checks passed, and the **Step Action** list the script printed.
 
+- Add this step to the run record.
+
 
 ## Step 4 - Prove the Deterministic Steps
 
 - Run the **Compiled Script** on disk with `--export-schema`, and give the **Step Action** list it prints, with the **Skill Source**, to **compile SOP** Step 4 *Prove the Steps*: it chooses a **side-effect-free input** for each deterministic **Step Action**, or says why the step is not run.
-  - Example: `python {skillGroups.common}/skills/report-skills/skill.py --export-schema`
+  - Example: `python {skillGroups.common}/skills/chinese/skill.py --export-schema`
 
 - Run each step it chose, as it says, with the input it chose: `python <Compiled Script> --step <id>`, plus those arguments.
   Give each run's exit code, what it printed and what it wrote back to **compile SOP** Step 4 *Prove the Steps*, which judges it.
@@ -242,4 +267,6 @@ Compile the report-suts-usage skill into skill.py so I can run it directly.
   - The command that runs one **Step Action**: `python <Compiled Script> --step <id>`, plus the arguments that step declares.
   - A **Result table** with columns **Step identifier**, **Step Action type** and **Result** — `passed` with what it produced, `not run` with why, or `handoff` for a **handoff step**, naming the source step the user or an agent must perform there.
 
-- Close with the **Compiled Script** path as a clickable Markdown link.
+- Add this step to the run record, and write `result: completed`, because it is the last step.
+
+- Close with the paths of the **Compiled Script** and of the run record, as clickable Markdown links.

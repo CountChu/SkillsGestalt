@@ -1,6 +1,6 @@
 ---
 name: chinese
-description: Translates one English Markdown file into Traditional Chinese, writing it beside the original as its twin with -tw before .md. Headings, glossary terms, inline code, fenced blocks, link targets, placeholders and terms on the keep-English list stay English. A file without a frontmatter is translated line for line; a SKILL.md is matched heading by heading, and its twin gains a pairing line. When the twin is already in git, only what git diff shows changed in the source since the twin's last commit is translated again. It refuses a source already in Traditional Chinese or itself a -tw.md twin, never edits the source, and besides the twin writes only a term it adds to the keep-English list. Every run ends with a parity check, then offers to commit the twin with its source. Whenever an English file with a -tw.md twin beside it changes, run this skill on it in the same run. Triggers "translate this skill", "translate this md", "build the chinese version of", "update the twin", "SKILL-tw", "-tw.md".
+description: Translates one English Markdown file into Traditional Chinese, writing it beside the original as its twin with -tw before .md. Headings, glossary terms, inline code, fenced blocks, link targets, placeholders and terms on the keep-English list stay English. A file without a frontmatter is translated line for line; a SKILL.md is matched heading by heading, and its twin gains a pairing line. When the twin is already in git, only what git diff shows changed in the source since the twin's last commit is translated again. It refuses a source already in Traditional Chinese or itself a -tw.md twin, never edits the source, and besides the twin and its run record writes only a term it adds to the keep-English list. Every run ends with a parity check, then offers to commit the twin with its source. Whenever an English file with a -tw.md twin beside it changes, run this skill on it in the same run. Triggers "translate this skill", "translate this md", "build the chinese version of", "update the twin", "SKILL-tw", "-tw.md".
 ---
 
 # TERMINOLOGY
@@ -11,6 +11,10 @@ Terms that mean the same thing in every skill.
   It runs **only** that step, then stops.
 - **no forward-reference** — the rule that a step must never depend on a step that comes after it.
   Naming a later step to route control flow does not break it; borrowing that step's output does.
+- **Run Number** — the number of one run, `{yymmdd}.{N}`.
+  `{N}` is the sequence number of the run of this skill on that date, and it starts at 1.
+- **Run record** — the file that records the time and the model of each step of one run.
+  The analysis of the efficiency of a skill uses it.
 
 # DEDICATED TERMINOLOGY
 
@@ -21,7 +25,7 @@ Terms specific to this skill's domain.
 - **TW twin** — the file this run writes beside the source file, named by inserting `-tw` before `.md`: `SKILL.md` becomes `SKILL-tw.md`, `RSDC-App-tmp.md` becomes `RSDC-App-tmp-tw.md`.
   The `tw` is Taiwan's, as in the locale `zh-TW` — 繁體中文 as written in Taiwan — and is not short for twin.
   It is a twin, not just a translation: the same document in another language, with the source file's skeleton — its headings, fenced blocks, tables and links — kept unchanged, and kept in step with it: a section changed in one is changed in the other in the same run.
-  It is this skill's output; the only other file a run writes to is the **keep-English list**, and only to add a term.
+  It is this skill's output; the only other files a run writes to are its run record and the **keep-English list**, and the list only to add a term.
 - **line for line** — how a TW twin is laid out when its source file has no frontmatter: as many lines as the source, each the translation of the line at the same number — a blank line where the source has one, a list item where it has one at the same indent, a table row with as many cells, and every fence line and fenced line byte for byte.
   The two can then be compared mechanically, and a section changed in one is found at the same line in the other.
   A source with a frontmatter — every `SKILL.md` — is exempt: its translated `description` becomes a folded block and its twin gains a **pairing line**, so its lines cannot keep their numbers, and it is matched heading by heading instead.
@@ -50,10 +54,21 @@ Terms specific to this skill's domain.
 
 Concrete values this skill runs with.
 
+The inputs and tools, which the run reads or runs:
+
+- **Workspace configuration** — the [config.yaml](config.yaml) at the root of the workspace.
 - **source file** — the `.md` path the prompt gives, workspace-relative or absolute; or `{skillGroups[<group>]}\skills\<skill-name>\SKILL.md` when the prompt names a skill instead.
   Resolved in Step 0.
-- **TW twin** — `<name>-tw.md`, in the source file's own directory, where `<name>` is the source file's name without `.md`.
 - **keep-English list** — `{skillGroups.common}\references\tw-keep-english.md`.
+- **template** — the `-tmp` file that the header quote of the source file names, and its TW twin, when there is one.
+  Step 1 and Step 3 compare the source file against them.
+- **Scripts** — `{skillGroups.common}\skills\chinese\scripts\scan_md.py`, `{skillGroups.common}\skills\chinese\scripts\diff_md.py` and `{skillGroups.common}\skills\chinese\scripts\check_parity.py`.
+- **Header-quote script** — `{skillGroups.common}\scripts\depends_on.py`, which `scan_md.py` and `check_parity.py` load; Step 0 checks that it exists.
+
+The last outputs, which a person, a different skill or a subsequent analysis reads:
+
+- **TW twin** — `<name>-tw.md`, in the source file's own directory, where `<name>` is the source file's name without `.md`.
+- **Run record** — `database\skill-runs\chinese\{yymmdd}.{N}.yaml`.
 
 # MUST FOLLOW
 
@@ -63,10 +78,13 @@ Concrete values this skill runs with.
 - A step that a program can do deterministically must be run as a script.
   A step that needs reading, judgement, or summarization **must not** be scripted — write it as natural-language instructions for the agent to perform directly.
 - **Honour a `run step N` selector**: run Step N, then stop; never a later step.
-  This skill writes no YAML checkpoint, so each step re-derives its inputs from the prompt and from the files on disk — which it can, because the source file, the TW twin and their git history are the only state any step needs.
-- **This skill produces neither an MD report nor a YAML checkpoint.**
-  The TW twin is its output; the only other file it writes to is the **keep-English list**, and only to add a term the run decided.
+  This skill writes no step file, so each step re-derives its inputs from the prompt and from the files on disk — which it can, because the source file, the TW twin and their git history are the only state any step needs.
+  A `run step N` run still gets its Run Number and writes its run record first, as Step 0 does; Step N is then its last step.
+- **This skill produces no MD report and no step file.**
+  The TW twin is its output; the only other files it writes to are its run record and the **keep-English list**, and the list only to add a term the run decided.
   Its one other write is the commit Step 4 makes, and only on the user's yes.
+- Obey [run-data-rules.md](skill-groups/common/rules/run-data-rules.md) for the Run Number, the run record and the Working Dir of a run.
+- A run that stops before its last step writes `result: stopped` and `stopped_at` — the step that did not complete, for example `step_1` — into its run record.
 - **Commit only on the user's yes, and only this run's files.**
   Step 4 commits the TW twin, its source file and the **keep-English list**, where they changed, on the branch already checked out — never another file that is staged or modified, and never with a push, a new branch or an amend.
   A commit made without asking puts the user's unfinished edits to the source into history along with the twin.
@@ -112,7 +130,8 @@ Concrete values this skill runs with.
 - **A space sets English apart from Chinese.**
   An English word, a number, an inline-code span or a placeholder token (`{PLACEHOLDER}`, `{variable}`) that touches a Chinese character has one space between them, and needs none against full-width punctuation.
   Two Chinese characters never have a space between them, whether or not a bold marker stands between them too — so a placeholder filled with Chinese words loses the spaces it had in the template.
-- **Before the skill ends, display the TW twin path** — the path only, never its contents, rendered as a clickable Markdown link and never as inline code or plain text.
+- **Before the skill ends, display the TW twin path and the run record path** — the paths only, never their contents, each rendered as a clickable Markdown link and never as inline code or plain text.
+  The run record's link target starts at the workspace and uses the forward slash: `[{yymmdd}.{N}.yaml](database/skill-runs/chinese/{yymmdd}.{N}.yaml)`.
   Do this for every run, including a partial one such as `run step 0`.
 
 # Prompt Examples
@@ -231,7 +250,7 @@ How to read the diagram:
 # Steps at a Glance
 
 Each step at a glance: the script it runs.
-This skill writes no YAML checkpoint — each step re-derives its inputs from the prompt and from the files on disk (MUST FOLLOW) — so every YAML cell is a dash.
+This skill writes no step file — each step re-derives its inputs from the prompt and from the files on disk (MUST FOLLOW) — so every YAML cell is a dash.
 
 | Step | Script | YAML |
 |---|---|---|
@@ -289,7 +308,11 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - Save the canonical skill invocation for reference in later steps.
 
+- Get the Run Number, as run-data-rules.md tells, and write the run record of the run.
+
 - Display the resolved source file path and TW twin path.
+
+- Add this step to the run record.
 
 
 ## Step 1 - Inventory the Kept-English Spans and the Changes
@@ -347,6 +370,8 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - Display a short summary of the inventory: heading count, fence count, term count, keep-English term count, link count, table count, shared line count, and whether the twin is written line for line — and the verdict, with how many lines or sections it leaves to translate.
 
+- Add this step to the run record.
+
 
 ## Step 2 - Translate into the TW Twin
 
@@ -401,6 +426,8 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 - Write the TW twin to the path Step 0 derived, as UTF-8 without a BOM, using the file-creation tool.
 
 - Display the TW twin path, and how many lines or sections were translated.
+
+- Add this step to the run record.
 
 
 ## Step 3 - Parity Check
@@ -463,6 +490,8 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - Display the parity result.
 
+- Add this step to the run record.
+
 
 ## Step 4 - Offer to Commit
 
@@ -492,4 +521,6 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - On a no, commit nothing, and say that the next run will find the twin with uncommitted changes, so it cannot update it in place until it is committed.
 
-- Display each commit's hash and subject, or that nothing was committed, then close with the TW twin path as a clickable Markdown link.
+- Add this step to the run record, and write `result: completed`, because it is the last step.
+
+- Display each commit's hash and subject, or that nothing was committed, then close with the TW twin path and the run record path as clickable Markdown links.

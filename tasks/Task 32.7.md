@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-審核 [[Task 31]] 為 [scratch-rules.md](../skill-groups/common/rules/scratch-rules.md) 產生的 STE 草稿與草稿中文版；通過就由 asd-ste 的 Step 7 取代原檔與它的中文版。
+審核 [[Task 31]] 為 `scratch-rules.md` 產生的 STE 草稿與草稿中文版；通過就由 asd-ste 的 Step 7 取代原檔與它的中文版。
 分工、取代的方式與「每取代一份要一併做的」，見 [[Task 32]]。
 
 ## 2. 結論
@@ -66,6 +66,10 @@
 —
 
 ## 8. 日誌
+
+### 2026-11-06
+
+- [[Task 100.4]] 刪掉 scratch-rules.md 與 report-yaml-rules.md，本檔連到它們的連結改成純文字的檔名。
 
 ### 2026-11-02
 

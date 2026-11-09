@@ -63,8 +63,9 @@ Every noun the later sections rely on and none of them defines, each defined her
 - **Caller** — a caller of 1.1, in the role this chapter gives it: whoever calls a route of the app.
 - **Hub** — the hub of 1.4, in the role this chapter gives it: a program other than the app's own server that serves the app, under a path prefix it chooses.
 - **Reviewer** — the reviewer of 1.1: the person who opens a review page and marks its items.
-- **Run directory** — one Checkpoint Dir of asd-ste: the directory that holds everything one draft's run wrote, the review page among it.
-- **Review root** — the directory whose run directories the app serves: `checkpoints/asd-ste` under the directory the server starts in, unless the server is told another.
+- **Run directory** — one Checkpoint Dir of asd-ste: the directory that holds everything one run of asd-ste wrote, the review page among it.
+- **Workspace root** — the root of the workspace a program of the app is started in: the directory the program is told, or else the nearest directory, from the current directory up, whose `config.yaml` has `skillGroups`; never one found from the program's own location, since a workspace can read the skill group that holds the app in place from a different workspace.
+- **Review root** — the directory whose run directories the app serves: `checkpoints/asd-ste` under the workspace root, unless the server is told another; a review root given as a relative path is read from the workspace root as well.
 - **Item** — one list item of the review notes, each item under it being an item of its own.
 - **Review status** — the mark an item carries: pending, approved, to be explained or rejected.
   Approved means the draft passes at that point as it stands; rejected means the draft must change there, including when the reviewer agrees with the item's suggestion; to be explained means the reviewer does not follow how the item is handled, and the agent explains it in the conversation.
@@ -88,13 +89,14 @@ They lie wherever the build call names them, which asd-ste keeps beside the sour
 
 The other inputs lie in the run directory:
 
-- **Run checkpoint** — the YAML record of the draft's run: it must hold the STE check's verdict and the warnings left, and may hold the statements kept in source wording.
+- **Run checkpoint** — the step files of the draft's run: the STE check's must hold its verdict and the warnings left, and the rewrite's, when there is one, holds the statements kept in source wording.
 - **Review notes** — the points the agent asks the reviewer to judge, as an HTML fragment of headings and lists, in 繁體中文, with every line given as a line reference.
 
 **Records**
 
 - **Review page** — the page one build writes into the run directory: the four files on three tabs, what the run checkpoint and the draft say about the rewrite, the review notes with a status box on each item, and the review statuses as they were at the build.
 - **Review statuses** — the record, in the run directory, of each item's review status that is not pending, with the item's text as it was marked and the time of the last save.
+  A build of a run directory that has none yet may start from the review statuses of an earlier run directory of the same source.
 
 **One-run data**
 
@@ -108,7 +110,7 @@ A call has these stages, in this order:
 
 - **Build the page** checks every line reference against the four files, and writes the review page with the review statuses it was built from.
 - **Show the page** answers the review page, or the index of every review page with how far each review is.
-- **Read the statuses** gives the page the review statuses saved last, so the reviewer sees the latest marks, not those of the build.
+- **Read the statuses** gives the page the review statuses saved last, so the reviewer sees the latest marks, not those of the build; while its run directory has none, the page keeps the marks it was built with, and its first save writes them there.
 - **Save the statuses** checks the marks a page sends against the items of that review page, and writes them as the review statuses.
 
 ### DFD
@@ -190,11 +192,11 @@ What the diagram cannot show about the data it draws — where it applies, wheth
 
 How the data the app writes or reads is named and laid out.
 
-- **Run directory** — a directory directly under the review root, whose name is letters, digits, `.`, `_` and `-` only; asd-ste names it `{parent}-{name}` after the source.
+- **Run directory** — a directory directly under the review root, whose name is letters, digits, `.`, `_` and `-` only; asd-ste names it `{yymmdd}.{N}`, the Run Number of its run, and its `step_0.yaml` names the source as `source_file`.
 - **Review page** — `step_6-review.html` in the run directory, UTF-8 HTML.
 - **Review notes** — `step_6-notes.html` in the run directory, UTF-8 HTML.
 - **Review statuses** — `step_6-status.json` in the run directory, UTF-8 JSON.
-- **Run checkpoint** — `process.yaml` in the run directory.
+- **Run checkpoint** — `step_3.yaml`, and `step_2.yaml` when there is one, in the run directory.
 - **Line reference** — `{{en-o:N}}` for the source file, `{{en-d:N}}` for the STE draft, `{{tw-o:N}}` for the source twin and `{{tw-d:N}}` for the draft twin; `N-M` is a range and `N,M` a list, as `{{tw-d:7,9-10}}`.
   `{{` and `}}` mean nothing else in the review notes: anything between them that is not a line reference fails the build.
 - **Item key** — 12 lowercase hexadecimal characters that name an item.
@@ -223,9 +225,9 @@ The fields that hold code labels, with every code label each may hold:
 
 ## 2.5 Config Schemas
 
-The app reads no configuration file, so it has no schema.
-What a configuration file would hold is given on the command line instead, as part of how each program is started: the review root, the port and the address to listen on, and the paths of a build.
-Where a value is left out, the server uses the review root `checkpoints/asd-ste`, the port 8790 and the address 127.0.0.1, and a build titles the page after the source file.
+The app reads no configuration file, so it has no schema: the server only reads whether a `config.yaml` has `skillGroups`, to find the workspace root.
+What a configuration file would hold is given on the command line instead, as part of how each program is started: the workspace root, the review root, the port and the address to listen on, and the paths of a build.
+Where a value is left out, the server uses the workspace root it finds, the review root `checkpoints/asd-ste`, the port 8790 and the address 127.0.0.1, and a build uses the workspace root it finds and titles the page after the source file.
 
 ## 2.6 Derivation Rules
 
@@ -301,19 +303,19 @@ A caller reaches the app only through these routes, or the handler a hub mounts,
 Besides the routes, the app has two command-line entrances, run by the agent:
 
 - **The build** — runs Build the page.
-  - **Takes** — the paths of the four files, the run checkpoint, the review notes, the review page to write and, when there is one, the review statuses; and, if given, a title.
+  - **Takes** — the paths of the four files, the run checkpoint, the review notes, the review page to write and, when there is one, the review statuses, a relative one read from the workspace root; and, if given, the workspace root and a title.
   - **Answers** — the review page, and a summary: its path, the section and line counts, the line references found, the items with each review status; exit status 0.
-  - **Refuses** — a line reference that names no line, with exit status 1 and no page; a file that cannot be read, a run checkpoint with no STE check result, or a bad argument, with exit status 2.
+  - **Refuses** — a line reference that names no line, with exit status 1 and no page; a file that cannot be read, a run checkpoint with no STE check result, a bad argument, or a relative path with no workspace root, with exit status 2.
 - **The server** — starts the routes below, or, asked to probe, says whether a review server answers.
-  - **Takes** — the review root, the port and the address, or none of them; or the probe and the port.
+  - **Takes** — the workspace root, the review root, the port and the address, or none of them; or the probe and the port.
   - **Answers** — the server's process number, its review root and its address, and then it runs until it is stopped; a probe exits 0 when a review server answers, 1 when nothing does, and 2 when another program does.
-  - **Refuses** — a port that is taken, with exit status 1; a port out of range or an unknown argument, with exit status 2.
+  - **Refuses** — a port that is taken, with exit status 1; a port out of range, an unknown argument, or no workspace root to serve, with exit status 2.
 
 The routes:
 
 - `GET /` — runs Show the page.
   - **Takes** — nothing
-  - **Answers** — the index: each run directory that holds a review page, with its items, how many are approved, to be explained, rejected and pending, and the last save's time; and how to stop the server
+  - **Answers** — the index: each run directory that holds a review page, with the source its `step_0.yaml` names, its items, how many are approved, to be explained, rejected and pending, and the last save's time; and how to stop the server
   - **Refuses** — nothing
 - `GET /{run directory}/` — runs Show the page.
   - **Takes** — the run directory's name
@@ -321,7 +323,7 @@ The routes:
   - **Refuses** — a name that breaks the run directory's naming, or one with no review page, with 404; another method, with 405
 - `GET /{run directory}/status` — runs Read the statuses.
   - **Takes** — the run directory's name
-  - **Answers** — the review statuses; none, when there is no record yet or it cannot be read
+  - **Answers** — the review statuses; none, and no time of a save, when there is no record yet or it cannot be read
   - **Refuses** — as `GET /{run directory}/`
 - `PUT /{run directory}/status` — runs Save the statuses.
   - **Takes** — a JSON body with `items`: the page's whole set of marks that are not pending
@@ -418,8 +420,8 @@ Chapter 2's rules are cited here, never restated.
 
 ### Review Builder
 
-1. `main` checks that each of the four files is a file, and reads them with `read_lines`.
-2. It loads the run checkpoint with PyYAML, and stops when it has no `step_3` group (2.8).
+1. `main` reads each relative path from the workspace root that `workspace_root` finds, checks that each of the four files is a file, and reads them with `read_lines`.
+2. It loads the run checkpoint, `step_3.yaml` and `step_2.yaml` in the run directory that `--checkpoint` names, with PyYAML, and stops when there is no `step_3.yaml` (2.8).
 3. It builds the English and 中文 tabs with `pane`, which splits each file at its level-1 headings with `sections` and renders each line with `render`, folding each fenced block; and the line-by-line tab with `line_pane`, which sets aside the twin's pairing lines found by `pairing_block`.
 4. It lists what the run checkpoint and the draft say with `facts`.
 5. `check_refs` checks every line reference in that list and in the review notes against the lines the tabs show; one at fault ends the build with exit status 1, before anything is written.
@@ -432,14 +434,14 @@ Chapter 2's rules are cited here, never restated.
 1. `show` switches tabs; `follow` scrolls the other column to the same place in the same section while the switch to follow is on.
 2. A click on a line link marks it with `mark`, opening a folded block that holds the line, and scrolls to it; a link in another item clears the marks of the last.
 3. A drag or the arrow keys on the divider resize the two regions; `where` writes each column's chapter.
-4. The status part paints the marks of the build, then `load` asks the server for the review statuses; on a page opened as a file, or when the server does not answer, it keeps the build's marks and says that none is saved.
+4. The status part paints the marks of the build, then `load` asks the server for the review statuses, and takes them in place of the build's only when they have the time of a save; on a page opened as a file, or when the server does not answer, it keeps the build's marks and says that none is saved.
 5. A click on a status box moves it to the next mark, and `save` sends the whole set when the page was served.
 
 ### Review Server
 
-1. `main` reads the arguments with `parseArgs`; with the probe, `probe` asks `/healthz` and exits.
+1. `main` reads the arguments with `parseArgs`, which reads the review root from the workspace root that `workspaceRoot` finds with `isWorkspaceConfig`; with the probe, `probe` asks `/healthz` and exits.
 2. Otherwise it listens; a taken port ends it with exit status 1.
-3. `handler` decodes the path, answers `/` with `indexPage` and `/healthz` itself, and checks the run directory's name and its review page before anything else.
+3. `handler` decodes the path, answers `/` with `indexPage`, which names the source of each run directory with `sourceOf`, and `/healthz` itself, and checks the run directory's name and its review page before anything else.
 4. A save goes to `saveStatus`: `readBody` reads up to 1 MiB, `pageKeys` reads the item keys out of the review page, every mark is checked, and the record is written to a temporary file and renamed into place.
 
 ## 3.3 Directory Structure
@@ -451,11 +453,12 @@ The app's two programs live with the asd-ste skill, and what they write lives in
 - `skill-groups/common/skills/asd-ste/scripts/review_server.js` — the Review Server.
 - `checkpoints/asd-ste/{run directory}/step_6-review.html` — the review page.
 - `checkpoints/asd-ste/{run directory}/step_6-status.json` — the review statuses.
-- `checkpoints/asd-ste/{run directory}/step_6-notes.html` and `process.yaml` — the review notes and the run checkpoint, which asd-ste writes.
+- `checkpoints/asd-ste/{run directory}/step_6-notes.html`, `step_2.yaml` and `step_3.yaml` — the review notes and the run checkpoint, which asd-ste writes.
+- `checkpoints/asd-ste/{run directory}/step_0.yaml` — the source of the run, which the index names.
 
 **What is relocatable, and what that costs.**
-The two programs can move together or apart: neither names the other's path, and the build takes every path it reads and writes as an argument.
-The review root is resolved against the directory the server starts in, so a server started anywhere but the workspace root serves another root unless it is given one.
+The two programs can move together or apart: neither names the other's path, and the build takes every path it reads and writes as an argument, and reads a relative one from the workspace root.
+The review root is read from the workspace root, never from the server's own directory, so the server's file can live in a skill group that a different workspace reads in place; a server started outside every workspace finds no workspace root, and stops.
 
 ## 3.4 Presentation Form
 
@@ -519,6 +522,9 @@ Only cases that have actually produced a plausible but wrong result:
 
 - **A local page cannot keep data in the desktop app's browser pane.**
   The pane loads a local HTML file as a `data:` address, where the browser keeps nothing, so a page that saved its marks in the browser lost them on every load; marks are therefore kept by a server and written to a file.
+- **A server that found its workspace above its own file served the runs of another workspace.**
+  On 2026-11-09, a server started from the InvestForge root, which reads this skill group in place from SkillsGestalt, gave SkillsGestalt's `checkpoints/asd-ste` as its review root.
+  The server therefore finds the workspace root from the current directory (2.1).
 
 ## 4.5 Verification Obligations
 
@@ -530,15 +536,19 @@ A rule is proven when its behaviour has been observed, not when the code meant t
 | The Review Builder writes the page, and its summary, when every line reference names a line | 2.8 the build | four 15-line test files and three items: exit 0, 3 sections each, 4 line references, 3 items pending | agent, 2026-11-01 |
 | The Review Builder writes no page when a line reference names no line | 2.10; 2.8 Line references | `{{en-d:99}}` in a 15-line draft: exit 1, a `[FAIL]` line, no page written | agent, 2026-11-01 |
 | The Review Builder refuses a missing file and a run checkpoint with no STE check result | 2.8 the build | a missing draft, and a checkpoint without `step_3`: exit 2 each | agent, 2026-11-01 |
+| The Review Builder reads the run checkpoint from the step files of a run directory | 2.4 Run checkpoint | a run directory with `step_3.yaml`, and no `step_2.yaml`: exit 0, the page written | agent, 2026-11-06 |
+| The Review Builder reads a relative path from the workspace root | 2.8 the build; 2.1 Workspace root | a build from a directory below a test workspace, with every path relative to its root: exit 0, the page written in the run directory, nothing where it ran; outside every workspace: exit 2; every path absolute: exit 0 | agent, 2026-11-09 |
 | A rebuild keeps the marks of unchanged items, and only those | 2.6 Item Key; 2.10 | `--status` with one known and one unknown key: one approved, two pending; one item reworded: only its key changed | agent, 2026-11-01 |
 | Line numbers carry their pointers | 2.7 | the test page: `◄ 3` for the source, `3 ►` and `7 ►` for the drafts | agent, 2026-11-01 |
 | The Review Server lists every review page with its counts, and marks one built before marks | 2.8 `GET /`; 2.6 How Far a Review Is | a review root with two run directories, one page with no status box: the counts, and the note to build it again | agent, 2026-11-01 |
+| The Review Server finds its review root under the workspace root, and names the source of each run directory on the index | 2.1 Workspace root; 3.3; 2.8 `GET /` | servers started below a test workspace, beside a `config.yaml` with no `skillGroups`, and from the InvestForge root: `/healthz` gives `checkpoints/asd-ste` under that workspace's root; one started outside every workspace stops with exit 2; `/` lists both runs with their `source_file` | agent, 2026-11-09 |
 | The Review Server serves a page, redirects the address without its last `/`, and refuses the rest | 2.8 Guards | 200; 301; POST 405; DELETE 405; a directory with no page 404; another part 404; `..%2f..%2fetc` 404; a bad encoding 400 | agent, 2026-11-01 |
 | The Review Server saves valid marks whole, and refuses invalid ones with nothing saved | 2.8 `PUT`; 4.3 | one `?` saved and read back; an unknown key, a status `y`, a body not JSON, and one with no items: 400 each | agent, 2026-11-01 |
 | The Review Server closes the connection on a body over 1 MiB | 2.8 Body size | 1.1 MB body: connection reset, no answer | agent, 2026-11-01 |
 | The probe and a taken port | 2.8 the server | nothing: exit 1; a review server: exit 0; another program: exit 2; a second server on the same port: exit 1; port 70000: exit 2 | agent, 2026-11-01 |
 | The Page Script switches tabs, follows columns, marks a point's lines, and shows each column's chapter | 2.6 Where a Column Is; 2.7 | a test page and the RSDC-Standard page in the browser at 1280×800 and 700 pixels wide | agent, 2026-10-13 ([[Task 40]] items 1, 5, 7) |
 | The Page Script moves a mark through the four in order, saves each click, and keeps them over a reload | 2.1 Review status; 2.3 Save the statuses | the test page in the browser, served by the Review Server: `[v]`, `[?]`, `[x]`, `[ ]`, each in the record | agent, 2026-10-13 ([[Task 40]] items 3, 8) |
+| A page built from an earlier run's statuses keeps them while its run directory has none, and its first save writes them there | 2.3 Read the statuses | a page built with `--status` of an earlier run directory, served for a run directory with no record, in the browser pane: the earlier `[v]` shown, and one click saved both marks into its own record | agent, 2026-11-06 |
 | A page opened as a file shows its build's marks and says it saves none | 2.7 | the test page opened as a file, and served by a static server that has no status route | agent, 2026-10-18 ([[Task 40]] item 9) |
 | The page says that agreeing with a suggestion is marked rejected | 2.7 | the scratch-rules page served by the Review Server, and as a static page | agent, 2026-10-18 ([[Task 40]] item 9) |
 | A hub can mount the app | 2.9 | — | *not verified*: there is no `app.js` |
@@ -560,5 +570,8 @@ Every place where the app does what chapter 2 says it should not, each where it 
   A reviewer who marks in two tabs, or in a page loaded before another save, loses marks without a sign.
 - **A body over 1 MiB gets no answer.**
   The server closes the connection instead of answering 400, observed on 2026-11-01; the page then says only that the server did not answer.
+- **A probe does not tell which workspace a review server serves.**
+  One server on the port serves the review root of the workspace it was started in (2.1), and a probe exits 0 for any review server (2.8): on 2026-11-09, a probe from SkillsGestalt exited 0 for a server started from the InvestForge root.
+  A link to that server leads to the runs of the other workspace; the probe prints the review root it was given, which shows it.
 - **The address to listen on can be widened, and nothing says so.**
   The server takes any address it is given, though its own description says loopback only; started on another address, it serves every review page to the network without a warning (2.7, question 8).

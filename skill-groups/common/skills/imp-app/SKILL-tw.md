@@ -8,9 +8,9 @@ description: >-
   一份 RSDC design pair 與一份 wireframe pair，各有英文與繁體中文；`update` 先改那些文件、後改程式碼；
   `test` 先跑 unit tests，再在瀏覽器裡驅動頁面；`start` 啟動這個 app 並說出它在哪裡；
   `deploy` 把它複製到這個 skill 的 target list 裡的某個 target。順序是單向的：
-  第一次 `reverse` 關上 `vibe`，第一次 `update` 關上 `reverse`。每個 app 寫一份 MD report 與
-  一份 YAML checkpoint，由每一個 command 往後追加，另外還有 app dir 裡的 lifecycle record
-  `.imp-app.json`，單向順序正是依它來強制執行。
+  第一次 `reverse` 關上 `vibe`，第一次 `update` 關上 `reverse`。每個 app 寫一份 MD report、
+  一個放 step file 的 Checkpoint Dir 與一份 run record，都由每一個 command 往後追加，
+  另外還有 app dir 裡的 lifecycle record `.imp-app.json`，單向順序正是依它來強制執行。
 ---
 
 本文件為 [SKILL.md](skill-groups/common/skills/imp-app/SKILL.md) 的繁體中文版；真正會執行的是 SKILL.md，任一份改了某節，另一份必須在同一次執行中、以相同編號一起改。
@@ -20,12 +20,19 @@ description: >-
 每個 skill 裡都是同一個意思的詞。
 
 - **`run step N`** — 一個放在 prompt 結尾、指名某一個 step 的選擇器。
-  它**只**執行那一個 step，並把每一個更早 step 的輸出從 YAML checkpoint 讀回來。
-- **Checkpoint Dir** — 存放某個 skill 的 YAML checkpoint、每次執行各一份的目錄。
-  每個 skill 都有自己的；這個 skill 的寫在 **CONFIGURATION** 底下。
-- **YAML checkpoint** — Checkpoint Dir 裡的 `process.yaml`。
-  每個 step 把它的輸出寫在那裡的 `step_{N}` 群組底下，於是後面的 step 把它們讀回來，而不是重算一次。
-- **MD report** — 這個 skill 寫進 wiki vault 的那份 Markdown 報告，放在一個以這個 skill 命名的資料夾裡，在它的結果各節上方帶著標準的表頭（Skill、Checkpoint、Created、Updated、Prompt）。
+  它**只**執行那一個 step，並把每一個更早 step 的輸出從它的 step file 讀回來。
+- **Run Number** — 一次執行的編號，`{yymmdd}.{N}`。
+  `{N}` 是這個 skill 在那一天執行的序號，從 1 開始。
+- **Working Dir** — 一次執行所用的目錄，存放這次執行所有的 working data：它的 step file、資料檔與暫存檔。
+  這個 skill 的 Working Dir 是 Checkpoint Dir，**CONFIGURATION** 列出它。
+  skill 不移除它。
+- **Checkpoint Dir** — 位於 workspace 根目錄 `checkpoints\` 的 Working Dir。
+- **Step file** — Working Dir 裡的 `step_{N}.yaml`。
+  每個 step 把它的輸出寫在那裡，於是後面的 step 把它們讀回來，而不是重算一次。
+- **Run record** — 記錄一次執行中每個 step 所用時間與 model 的檔案。
+  分析一個 skill 的效率時會用到它。
+- **Handoff file** — 一次執行為另一個 skill 產生的檔案，放在 `handoff\`。
+- **MD report** — 這個 skill 寫進 wiki vault 的那份 Markdown 報告，放在一個以這個 skill 命名的資料夾裡，在它的結果各節上方帶著標準的表頭（Skill、Run record、Created、Updated、Prompt）。
 - **no forward-reference** — 一個 step 絕不能依賴排在它後面的 step 這條規則。
   為了安排控制流而指名後面的 step 不算違反；借用那個 step 的輸出才算。
 
@@ -37,13 +44,13 @@ description: >-
 - **app dir** — prompt 在它第二行指名的目錄，例如 `artifacts\InvCov`，相對於 workspace 根目錄，位於 wiki vault 之外。
   它是這個 app 住的地方，而且從第一次 **vibe** 起，它就是那個 app 的**原始碼**，不是建置產物。
 - **app name** — **app dir** 路徑的最後一段，去掉結尾的 `-app`，拼法完全照那個目錄怎麼寫（`artifacts\InvCov` 得到 `InvCov`，`artifacts\redfish-test-app` 得到 `redfish-test`）。
-  它為 Checkpoint Dir、**MD report** 與 **design pair** 命名。
+  它為 **MD report** 與 **design pair** 命名，而每一次執行的 `step_0.yaml` 都帶著它，於是 **session resolver** 找得到同一個 app 的那些執行。
 - **command** — prompt 第三行的那個字：**vibe**、**reverse**、**update**、**test**、**start** 或 **deploy**。
   一次執行剛好一個，而它決定哪一個 step 會執行。
 - **lifecycle** — `vibe` → `reverse` → `update` 這個單向順序，而 **test**、**start** 與 **deploy** 一旦有程式碼，在任何時點都可用。
   它有兩道只往一邊開的門：第一次 **reverse** 為那個 **app dir** 永久關上 **vibe**，而第一次 **update** 關上 **reverse**。
 - **lifecycle record** — `{appDir}\.imp-app.json`，承載 **phase** 以及每一個對這個 **app dir** 執行過的 **command** 及其時間戳記的 `history`。
-  它住在 **app dir** 裡而不是住在某個 checkpoint 裡，因為 **lifecycle** 跨越多個工作階段，而一份每次執行各一份的檔案會忘記它。
+  它住在 **app dir** 裡而不是住在 Checkpoint Dir 裡，因為 **lifecycle** 跨越多個工作階段，而一份每次執行各一份的檔案會忘記它。
   這個 app 從不讀它。
 - **phase** — **lifecycle record** 承載的最後一個會改變狀態的 **command**：`vibe`、`reverse` 或 `update`。
   **test**、**start** 與 **deploy** 什麼都不改，因此永遠不會改它。
@@ -106,7 +113,7 @@ description: >-
 - **verification obligation** — **design pair** 的 Coding 部分中，Verification Obligations 的一列：一個主張、它證明的規則、證明它的觀察與由誰來做——或標 *not verified*，並寫明目前讀過了什麼。
   每一個 **component** 都至少出現在一列；這些列是這個 skill 對「已證明」唯一的定義。
 - **prompt log** — 每一次 **vibe** 與 **update** 的要求、它改了什麼、以及那次改動是怎麼被證明的，依序留下的記錄。
-  它在 YAML checkpoint 裡累積，並被渲染進 `{appDir}\docs\Prompts.md`——那是*為什麼*這個 app 長成這樣的歷史，而那是程式碼無法顯示的。
+  它在 `step_1.yaml` 與 `step_3.yaml` 裡累積，並被渲染進 `{appDir}\docs\Prompts.md`——那是*為什麼*這個 app 長成這樣的歷史，而那是程式碼無法顯示的。
 - **target** — 這個 app 被送達的某個目的地，在 prompt 第四行指名，並透過 **target list** 解析。
   它是這個 app 在別處的一份副本，絕不是第二份原始碼。
 - **target list** — **skill config** 的 `targets` **清單**：一筆項目對一個目的地，每一筆承載一個 `name`、程式碼**在那台機器上**要去的 `appDir`，以及那些在那裡為真、而在 **app dir** 裡為假的 **app config** 值。
@@ -115,7 +122,7 @@ description: >-
 - **skill config** — 這個 skill 裡的 `assets\config.yaml`，承載 **target list**。
   只有這個 skill 自己的工具會讀它；沒有任何 app 會讀，而且它不隨一次 **deploy** 出發。
 - **session resolver** — 這個 skill 的 `scripts\` 裡的 `resolve_session.py`。
-  它在第一個 **command** 時為這個 app 的 Checkpoint Dir 打上戳記，並在之後每一次呼叫時重新開啟現存最新的那一個，於是同一個 app 的兩次呼叫不可能落在不同的目錄裡。
+  它在第一個 **command** 時為這個 app 取得 Run Number，並在之後每一次呼叫時重新開啟這個 app 的一次執行——使用者指名的那一次，否則就是最新的那一次——於是同一個 app 的兩次呼叫不可能落在不同的目錄裡。
 - **test runner** — 這個 skill 的 `scripts\` 裡的 `run_tests.py`。
   它發現並執行 **unit tests**，並印出一份 JSON 結果。
   它是這個 skill 的工具，不是這個 app 的一部分。
@@ -129,12 +136,9 @@ description: >-
 這個 skill 執行時所用的具體值。
 底下每一條路徑都是這個 skill 的常數；關於正在處理的那個 app 的一切，都從 prompt 指名的 **app dir** 讀進來。
 
-- **Checkpoint Dir** — `checkpoints\imp-app\{app}-{yymmdd-hhmm}\`，其中 `{app}` 是 **app name**，而 `{yymmdd-hhmm}` 由對那個 **app dir** 執行的**第一個** **command** 打上戳記。
-- **YAML checkpoint** — Checkpoint Dir 裡的 `process.yaml`。
-- **MD report** — `{wikiDir}\imp-app\imp-app-{app}-{yymmdd-hhmm}.md`，帶著與 Checkpoint Dir 相同的 `{app}` 與戳記，其中 `wikiDir` 來自 workspace 的 [config.yaml](config.yaml)（在 Step 0 解析）——絕不把 wiki 根目錄寫死。
-- **lifecycle record** — `{appDir}\.imp-app.json`。
-- **app documents** — `{appDir}\docs\`。
-- **prompt log** — `{appDir}\docs\Prompts.md`。
+執行時讀取或執行的輸入與工具：
+
+- **Workspace configuration** — workspace 根目錄的 [config.yaml](config.yaml)。
 - **document templates** — `{skillGroups.common}\skills\gen-rsdc-app\assets\RSDC-App-tmp.md` 與 `{skillGroups.common}\skills\imp-app\assets\Wireframe-tmp.md`。
 - **gen-rsdc-app** — `{skillGroups.common}\skills\gen-rsdc-app\SKILL.md`。
 - **RSDC standard** — `{skillGroups.common}\references\RSDC-Standard.md`，其圖的記法在 `{skillGroups.common}\references\DFD.md`。
@@ -142,7 +146,25 @@ description: >-
 - **session resolver** — `{skillGroups.common}\skills\imp-app\scripts\resolve_session.py`。
 - **test runner** — `{skillGroups.common}\skills\imp-app\scripts\run_tests.py`。
 - **deploy tool** — `{skillGroups.common}\skills\imp-app\scripts\deploy_app.py`。
-- **shared report rules** — `{skillGroups.common}\rules\report-md-rules.md`、`{skillGroups.common}\rules\report-yaml-rules.md` 與 `{skillGroups.common}\rules\scratch-rules.md`。
+- **shared report rules** — `{skillGroups.common}\rules\report-md-rules.md` 與 `{skillGroups.common}\rules\run-data-rules.md`。
+- **referenced notes** — 需求所指名的 wiki 筆記，在 `{wikiDir}\write-note\` 底下。
+- **gen-rsdc-app handoff file** — `handoff\gen-rsdc-app\{yymmdd}.{N}.md`，由 **reverse** 讀回。
+- **configs of other skills** — `skillGroups` 各根目錄底下每個 skill 的 config，第一次 **vibe** 會搜尋其中是否有對 **app dir** 的宣告。
+- **Node** — `PATH` 上的 `node`，用來啟動 app。
+- **playwright-cli** — 在 **test** 中於真正的瀏覽器裡驅動頁面的 skill。
+
+一次執行的 working data，執行結束後沒有人、也沒有 skill 讀它：
+
+- **Working Dir** — Checkpoint Dir，`checkpoints\imp-app\{yymmdd}.{N}\`，其中 `{yymmdd}.{N}` 是對那個 **app dir** 執行的**第一個** **command** 取得的 Run Number：step file、資料檔、探測，以及 **app dir** 在其中 `{app}-copy\` 的拋棄式副本。
+
+最後的輸出，人、另一個 skill 或之後的分析會讀它：
+
+- **Run record** — `database\skill-runs\imp-app\{yymmdd}.{N}.yaml`，帶著同一個 Run Number。
+- **MD report** — `{wikiDir}\imp-app\imp-app-{app}-{yymmdd}.{N}.md`，其中 `{app}` 是 **app name**，Run Number 是 Working Dir 的那一個，而 `wikiDir` 來自 workspace 的 [config.yaml](config.yaml)（在 Step 0 解析）——絕不把 wiki 根目錄寫死。
+  它的 **Run record** 欄位給出 run record 的路徑。
+- **lifecycle record** — `{appDir}\.imp-app.json`。
+- **app documents** — `{appDir}\docs\`。
+- **prompt log** — `{appDir}\docs\Prompts.md`。
 
 # MUST FOLLOW
 
@@ -163,7 +185,7 @@ description: >-
   在 `{app name}-RSDC.md` 裡寫下或改過的一節，要在同一次執行中、以相同編號在 `{app name}-RSDC-tw.md` 裡寫下或改過；**wireframe pair** 帶著同一條規則。
   兩份漂移開的檔案不再說出這個 app 是什麼；它們是在為它爭論。
 - **繁體中文 twin 的每一個標題都保留英文**——一個字元一個字元照它的來源怎麼寫——於是兩份可以並排閱讀，而審閱者一眼就能看出沒有東西漏掉。
-  檔名、路徑、config 鍵、checkpoint 欄位名稱與詞彙表用詞同樣保持原樣；被翻譯的是圍繞它們的散文。
+  檔名、路徑、config 鍵、step file 欄位名稱與詞彙表用詞同樣保持原樣；被翻譯的是圍繞它們的散文。
 - **design pair 的各章是單向的。**
   Requirements 不陳述任何技術選擇，Specification 只透過 caller 使用的介面提到 component，Design 不涉及任何程式庫或語法，而且沒有任何一節指向編號在它之後的節。
   向後借來的詞彙，等於在那一章就把後面那一章存在的理由先答掉了，讀者再也分不出哪些是需要、哪些是做出來的東西。
@@ -223,11 +245,14 @@ description: >-
   prompt 指名 **app dir**；**skill config** 指名 **targets**。
 - **每一個 command 都往 lifecycle record 追加。**
   一個改了 **app dir** 卻沒有把自己記下的 **command**，會把 **phase** 留給下一次執行去猜，而上面那道閘門的可靠程度，就等於它讀到的東西的可靠程度。
-- **一個 app 的每一份輸出都帶著同一個 `{yymmdd-hhmm}` 戳記**——每個 app 一份 Checkpoint Dir 與一份 **MD report**，由第一個 **command** 打上戳記，並由之後每一個往後追加。
-  **app dir** 本身**不帶戳記**：它是當前的那個 app，而為它打上戳記會在讀者預期只有一個資料夾的地方留下一長串 stale 副本。
+- **一個 app 的每一份輸出都帶著同一個 Run Number**——每個 app 一份 Working Dir、一份 run record 與一份 **MD report**，由第一個 **command** 編號，並由之後每一個往後追加。
+  **app dir** 本身**不帶編號**：它是當前的那個 app，而為它編號會在讀者預期只有一個資料夾的地方留下一長串 stale 副本。
 - **MD report 每個 app 建立一次，此後都是往後追加。**
   **shared report rules** 裡的建立規則，在檔案已存在時會清掉表頭以下的一切；那條適用於一次*新的*執行，而這裡後來的一個 **command** 屬於*同一個*工作階段。
   所以在之後的呼叫裡，刷新表頭的 **Updated** 欄位並**追加**新的一節——絕不清掉本文，因為那是更早的那些 **command** 做了什麼的唯一記錄。
+- **同一個工作階段後來的 command 延續它的執行。**
+  它保留 Run Number，把自己的 step 加進 run record 的 `steps`，寫入自己的 `prompt`，並寫入新的 `result`，一如 run-data-rules.md 對重新開始一次執行的 `run step N` 所說。
+  同一個 app 的新執行，只在使用者要求時才取得，方法是對 **session resolver** 加上 `--new`。
 - 必須一步一步執行 workflow，並顯示每一個 step 編號。
 - 每個 step 必須自我完備。
   **No forward-reference.**
@@ -235,15 +260,21 @@ description: >-
   一個需要閱讀、判斷或摘要的 step **絕不可**腳本化——把它寫成自然語言指示，讓 agent 自己直接執行。
 - **遵守 `run step N` 選擇器**：執行 Step N，然後停下；絕不執行更後面的 step。
 - MD report 的表頭與形狀依 `{skillGroups.common}\rules\report-md-rules.md`。
-- YAML checkpoint 的形狀與必要欄位依 `{skillGroups.common}\rules\report-yaml-rules.md`。
-- 一次執行的拋棄式檔案放在哪裡、以及怎麼清掉，依 `{skillGroups.common}\rules\scratch-rules.md`——每一次探測、每一份 **app dir** 的拋棄式副本與每一份被擷取下來的輸出，正是那種東西。
-- **Checkpoint Dir 裡的每一份 JSON 都恰好只有一個寫入它的 step。**
-  產生某份資料檔的那個 step 一次把它整份寫完，並擁有它；之後得出結論的 step 在它旁邊寫自己的 `step_{N}.json`，絕不在另一個 step 寫的檔案裡新增、修改或刪除任何一個鍵——即使是為了取代它也不行。
-  YAML checkpoint 是唯一的例外：它是往後追加的，每個 step 一個 `step_{N}` 群組，而不是整份重寫。
+- Run Number、step file、run record 與一次執行的 Working Dir，遵守 [run-data-rules.md](skill-groups/common/rules/run-data-rules.md)——每一次探測、每一份 **app dir** 的拋棄式副本與每一份被擷取下來的輸出，都放進 Working Dir。
+- **Working Dir 裡的每一份檔案都只有一個寫入它的 step。**
+  產生某份資料檔的那個 step 一次把它整份寫完，並擁有它；之後得出結論的 step 把結論寫進自己的 step file，絕不在另一個 step 寫的檔案裡新增、修改或刪除任何一個鍵——即使是為了取代它也不行。
   一份被好幾個 step 回寫的資料檔，在它的第一個 step 重跑的那一刻就毀了——一次 parser 修正或一次 `run step 1`，就會把它整份重寫，無聲無息地抹掉之後每一個 step 的結果。
-- **在這個 skill 結束之前，顯示 server origin、app dir、MD report 與 YAML checkpoint**——只顯示那四樣，並把每一樣都渲染成可點擊的 Markdown 連結。
+- **一個會重複的 command 的 step file，每次呼叫增長一筆。**
+  `step_1.yaml`、`step_3.yaml`、`step_4.yaml`、`step_5.yaml` 與 `step_6.yaml` 各自承載一份清單，由它自己的 step 讀出、追加一筆、再寫回去；`step_0.yaml` 只承載目前這一次呼叫。
+- **這個 skill 的資料檔放在 Working Dir 裡，而且沒有一份會被寫兩次。**
+  `{K}` 比那裡已有的最大 `{K}` 多 1，於是同一個工作階段後來的 **command** 保留更早一次的檔案，而 step file 裡的那一筆指名它寫出的檔案。
+  - `unit-tests-{K}.json` — Step 4 裡 **test runner** 的結果，每次 **test** 一份。
+  - `deploy-{target}-{K}.json` — Step 6 裡 **deploy tool** 的清單，每次 **deploy** 的每一個 **target** 一份。
+- **lifecycle record 與 prompt log 依設計留在 app dir 裡。**
+  `{appDir}\.imp-app.json` 與 `{appDir}\docs\Prompts.md` 是這個 app 跨工作階段的記錄，不是一次執行的資料，所以 run-data-rules.md 裡讓執行資料遠離它的原始碼的那條規則不適用於它們。
+- **在這個 skill 結束之前，顯示 server origin、app dir、MD report 與 run record**——只顯示那四樣，並把每一樣都渲染成可點擊的 Markdown 連結。
   **server origin** 是一個 `http://` URL，就以它自己作為連結，而且只由啟動過伺服器的那些 **command** 顯示——**test**、**start**，以及一次能在它的 **target** 上把這個 app 啟動起來的 **deploy**，那一次會在旁邊顯示 **target origin**；**vibe**、**reverse** 與 **update** 省略它，因為它們沒有留下任何正在跑的東西。
-  MD report 住在 vault 裡、在這個 workspace 之外，所以用 `obsidian://open?vault={vaultName}&file=<vault-relative-path>` URI 連結它（例如 `[imp-app-InvCov-260924-1130.md](obsidian://open?vault={vaultName}&file=imp-app/imp-app-InvCov-260924-1130.md)`）；**app dir** 與 YAML checkpoint 保持相對於 workspace、使用正斜線的目標（例如 `[process.yaml](checkpoints/imp-app/InvCov-260924-1130/process.yaml)`）。
+  MD report 住在 vault 裡、在這個 workspace 之外，所以用 `obsidian://open?vault={vaultName}&file=<vault-relative-path>` URI 連結它（例如 `[imp-app-InvCov-{yymmdd}.{N}.md](obsidian://open?vault={vaultName}&file=imp-app/imp-app-InvCov-{yymmdd}.{N}.md)`）；**app dir** 與 run record 保持相對於 workspace、使用正斜線的目標（例如 `[{yymmdd}.{N}.yaml](database/skill-runs/imp-app/{yymmdd}.{N}.yaml)`）。
   - 每一次執行都這樣做，包含像 `run step 0` 這種只跑一部分的執行。
 
 # Prompt Examples
@@ -323,7 +354,7 @@ Step 1 只為 **vibe** 執行、Step 2 為 **reverse**、Step 3 為 **update**�
 那道切分正是讓一次疊代只付它所改動的代價的東西，也正是讓一次執行不會暗示它檢查了它從未看過的東西的東西。
 代價是一次 **vibe** 或一次 **update** 可以在這個 app 事後從未被提供服務的情況下結束——這件事被說出來，而不是被藏起來。
 
-**Step 0、4 與 6 執行腳本，Step 1、2、3 與 5 不執行**，因為為一個工作階段打上戳記、發現並執行測試、以及把一棵目錄樹複製到一個已審閱的目的地都是 deterministic 的，而從散文寫出一個 app、從原始碼推導出設計、把一項改動穿過設計帶進程式碼、以及像一個使用者那樣讀一個頁面，都是判斷。
+**Step 0、4 與 6 執行腳本，Step 1、2、3 與 5 不執行**，因為為一個工作階段取得 Run Number、發現並執行測試、以及把一棵目錄樹複製到一個已審閱的目的地都是 deterministic 的，而從散文寫出一個 app、從原始碼推導出設計、把一項改動穿過設計帶進程式碼、以及像一個使用者那樣讀一個頁面，都是判斷。
 Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是被判斷的那半邊不會被遺落在被檢查的那半邊後面。
 
 ## Step 0 - Warmup
@@ -344,7 +375,7 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
 - 這個 skill 不呼叫任何 API，也不需要自己的任何憑證。
   某個 **target** 可能需要一個才到得了；那屬於已經把它掛起來的那個東西與 **target list**，絕不屬於命令列。
 
-- 在執行 workflow 之前檢查底下這些腳本／檔案存在。
+- 在執行 workflow 之前檢查底下這些 script／檔案存在。
   - `{skillGroups.common}\skills\imp-app\scripts\resolve_session.py`
   - `{skillGroups.common}\skills\imp-app\scripts\run_tests.py`
   - `{skillGroups.common}\skills\imp-app\scripts\deploy_app.py`
@@ -370,7 +401,7 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
     在 `{wikiDir}\write-note\` 底下解析它，並在做任何其他事之前先讀它；它通常承載著散文只是點到為止的那些需求。
   - 結尾一個可選的 **`run step N`** 選擇器。
 
-- 從 **app dir** 推導出 **app name**，並在使用它們之中任何一個之前，把它與它所隱含的路徑一起顯示出來——Checkpoint Dir、**MD report** 與 **design pair** 的檔名。
+- 從 **app dir** 推導出 **app name**，並在使用它們之中任何一個之前，把它與它所隱含的 **design pair** 檔名一起顯示出來；下面的 **session resolver** 給出 Working Dir 與 **MD report**。
   讓使用者可以覆寫它。
 
 - **讀 lifecycle record 並強制那道閘門。**
@@ -399,14 +430,20 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
 
 - 執行 **session resolver** 來解析這個 app 的工作階段，它以 deterministic 的方式擁有這件事，於是同一個 app 的兩次呼叫不可能落在不同的目錄裡。
   - 例：`python {skillGroups.common}/skills/imp-app/scripts/resolve_session.py --app InvCov --command vibe`
-  - 它重新開啟**現存最新的** `{app}-*` Checkpoint Dir，並且只在完全沒有時才打上一個新戳記——對一個 **app dir** 的第一個 **command** 開啟這個工作階段，之後每一個都加入它，無論那是哪一個 **command**。
-  - 它印出一個 JSON 物件，承載 `app`、`stamp`、`checkpointDir`、`processYaml`、`mdReport`、`opened`（`created` 或 `reopened`）與 `sessions`。
+  - 它重新開啟這個 app 的一次執行——使用者指名、以 `--run {yymmdd}.{N}` 傳入的那一次，否則就是 `step_0.yaml` 帶著這個 **app name** 的**最新**那一次——並且只在完全沒有、或 `--new` 要求時，才取得一個新的 Run Number：對一個 **app dir** 的第一個 **command** 開啟這個工作階段，之後每一個都加入它，無論那是哪一個 **command**。
+  - 新的 Run Number 依 run-data-rules.md 所說取得，而且 resolver 立刻寫出帶 `skill` 與 `run` 的 run record，於是另一次執行不可能拿到同一個編號。
+  - 它找出這次執行所在的 workspace 的根目錄：`--workspace` 指名的目錄，否則就是從目前的目錄往上、`config.yaml` 含有 `skillGroups` 的最近一個目錄。
+    它絕不從自己檔案所在的位置找出根目錄，因為一個 workspace 可以從另一個 workspace 就地讀取這個 skill。
+    `--dry-run` 印出它會解析出什麼，而不寫任何東西。
+  - 它印出一個 JSON 物件，承載 `workspace`、`app`、`run`、`checkpointDir`、`runRecord`、`mdReport`、`opened`（`created` 或 `reopened`）與 `runs`。
+    如果 `workspace` 不是上面讀取其 `config.yaml` 的那個 workspace 根目錄，就停下，並說出它找到的是哪一個根目錄。
     這次執行接下來逐字使用那些路徑。
 
-- 把這次標準的 skill 呼叫存起來，供後面的 step 參考。
+- 把這次的 canonical skill invocation 存起來，並把它寫成 run record 的 `prompt`。
 
-- 儲存 YAML checkpoint `step_0`，內含解析出來的 `wikiDir`、**app dir**（存成 `appDir`，也就是 **session resolver** 用來判斷一個被重新開啟的工作階段的那個欄位）、**app name**、**command**、**target** 與它解析成什麼、從 **lifecycle record** 讀到的 **phase** 與 `history`、這個 app dir 是否為 **adopted**、閘門判定、通訊埠與它是否被占用、逐字的 **requirements**、**referenced notes**、Node 與 Python 版本、戳記與這個工作階段是被建立還是被重新開啟、輸出路徑、step 選擇器，以及計時。
-  - **`step_0` 只承載這一次呼叫**，並會被下一次覆寫。
+- 儲存 `step_0.yaml`，內含解析出來的 `wikiDir`、**app dir**（存成 `appDir`）、**app name**（存成 `app`，也就是 **session resolver** 用來找出這個 app 那些執行的欄位）、**command**、**target** 與它解析成什麼、從 **lifecycle record** 讀到的 **phase** 與 `history`、這個 app dir 是否為 **adopted**、閘門判定、通訊埠與它是否被占用、逐字的 **requirements**、**referenced notes**、Node 與 Python 版本、Run Number 與這個工作階段是被建立還是被重新開啟、輸出路徑，以及 step 選擇器。
+  把這個 step 加進 run record。
+  - **`step_0.yaml` 只承載這一次呼叫**，並會被下一次覆寫。
     逐次執行的歷史屬於 **lifecycle record** 與 **prompt log**，這正是為什麼兩者都住在 **app dir** 裡而不是住在這裡。
 
 - 顯示 **app dir**、**command**、**phase** 與那道閘門決定了什麼。
@@ -419,13 +456,13 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
 - **只為 `vibe` 這個 command 執行。**
   對任何其他 **command**，跳到那個 command 路由到的 step。
 
-- 從 YAML checkpoint 的 `step_0` 群組讀回 **app dir**、**requirements**、**phase** 與這個 app dir 是否為 **adopted**。
+- 從 `step_0.yaml` 讀回 **app dir**、**requirements**、**phase** 與這個 app dir 是否為 **adopted**。
 
 - **這個 step 沒有腳本**——從散文寫出一個 app 就是 vibe coding 的全部，需要判斷。
 
 - **在對一個空 app dir 的第一輪**，用一段話說回這個 app 是為了什麼、它取代什麼、以及使用者會點什麼。
   在寫程式碼**之前**把那件事談定：之後的一切都建在它上面。
-  在後面的一輪，先從 checkpoint 讀回 **prompt log**，於是這一輪從這個 app 已經是什麼開始。
+  在後面的一輪，先從 `step_1.yaml` 讀回 **prompt log**，於是這一輪從這個 app 已經是什麼開始。
 
 - **把這個 app 寫成 fixed shape**，並從第一版就遵守 **MUST FOLLOW** 裡的生產程式碼規則，而不是當成事後的清理。
   一個 **adopted** app dir 是隨著需求觸及每個部分而一輪一輪被帶到 **fixed shape** 的，而還不在那個形狀裡的東西要被指名，而不是被假設。
@@ -446,7 +483,7 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
      追加一筆 **prompt log**：逐字的需求、被觸及的檔案、寫出的測試、那份證明，以及這項改動揭露出來、卻沒有人問過的任何東西。
 
 - **往這份輪次清單追加；絕不覆寫它。**
-  `step_1` 承載一份 `rounds` 清單，每次呼叫增長一筆。
+  `step_1.yaml` 承載一份 `rounds` 清單，每次呼叫增長一筆。
   讀它、追加、寫回去——一輪如果替換掉這份清單，就抹掉了 **reverse** 會讀的那段歷史，而沒有其他地方留有副本。
 
 - **也把 prompt log 寫出到 `{appDir}\docs\Prompts.md`**，依輪次順序。
@@ -458,7 +495,8 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
   還沒有 **app documents**，而那是刻意的。
   更多 **vibe** 輪次，或在這個 app 對了的時候用 **reverse**；要看它就用 **test** 或 **start**，而這個 **command** 並沒有留下任何正在跑的東西。
 
-- 在 `step_1` 底下儲存 YAML checkpoint，內含：`appDir`、`entry`、`serverPort`、`fixedShapeFiles`、`pythonKernel`、`pageFiles`、`appConfigKeys`、`unitTests`、`rounds`（追加一筆，承載 `n`、`requirement`、`filesTouched`、`test`、`proof`、`notes`）、`roundCount`、`openIssues`，以及計時。
+- 儲存 `step_1.yaml`，內含：`appDir`、`entry`、`serverPort`、`fixedShapeFiles`、`pythonKernel`、`pageFiles`、`appConfigKeys`、`unitTests`、`rounds`（追加一筆，承載 `n`、`requirement`、`filesTouched`、`test`、`proof`、`notes`）、`roundCount` 與 `openIssues`。
+  把這個 step 加進 run record，並寫入 `result: completed`，因為它是這個 **command** 的最後一個 step。
 
 - 儲存 MD report 檔案。
   往一節 **Vibe** 追加（或建立它）：
@@ -478,7 +516,7 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
 - **只為 `reverse` 這個 command 執行。**
   對任何其他 **command**，跳到那個 command 路由到的 step。
 
-- 從 YAML checkpoint 的 `step_0` 與 `step_1` 群組讀回 **app dir**、**app name** 與 **prompt log**。
+- 從 `step_0.yaml` 與 `step_1.yaml` 讀回 **app dir**、**app name** 與 **prompt log**。
   一個 **adopted** app dir 沒有 **prompt log**；把這件事說出來——設計就只從原始碼推導。
 
 - **這個 step 沒有腳本**——**design pair** 由 **gen-rsdc-app** 推導，而讀一個正在跑的頁面是判斷；一個被要求做這兩件事的程式，只會是在聲稱它做了。
@@ -498,7 +536,8 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
     在那裡停下，這個 **command** 也跟著停下：把這件事說出來，並說明 template 由 **gen-rsdc-app** 負責跟上標準。
   - 它會整份取代 `{appDir}\docs\` 裡已經有的 **design pair**——閘門只在第一次 **update** 之前允許這麼做。
   - 它從原始碼推導設計，而不是從 **prompt log**，並把兩者之間每一項不一致記成一項發現。
-    讀回它交回的東西——**components**、發現、缺陷、**verification obligations**、它檢查英文半邊的結果，以及 `chinese` skill 對 twin 的回報——供下面的 checkpoint 與報告使用。
+    依 [run-data-rules.md](skill-groups/common/rules/run-data-rules.md) 所說，讀 gen-rsdc-app 的 handoff file：使用者指名的那一份 `handoff\gen-rsdc-app\{yymmdd}.{N}.md`，否則就是編號最大的那一份，並說出你讀的是哪一份。
+    從它讀回它交回的東西——**components**、發現、缺陷、**verification obligations**、它檢查英文半邊的結果，以及 `chinese` skill 對 twin 的回報——供下面的 step file 與報告使用。
   - 它所執行的 `chinese` skill 會問要不要 commit **design pair**：把這個問題轉給使用者。
     那個 commit 只含這一對，而不論回答是什麼，這個 **command** 都繼續往下做。
 
@@ -519,7 +558,8 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
   這個 **command** 寫了文件、沒有改任何程式碼，而且沒有留下任何正在跑的東西。
   下一個 **command** 是 **test**，或是用 **update** 做對著文件的第一次改動。
 
-- 在 `step_2` 底下儲存 YAML checkpoint，內含：`components`、`designPair`、`wireframePair`、`sectionsWritten`、`wireframeScan`（這個頁面是怎麼被到達的、以及哪些可見狀態被打開過）、`findings`（原始碼與 **prompt log** 之間每一項不一致）、`defects`、`verificationObligations`、被追加的 **lifecycle record**，以及計時。
+- 儲存 `step_2.yaml`，內含：`components`、`designPair`、`wireframePair`、`sectionsWritten`、`wireframeScan`（這個頁面是怎麼被到達的、以及哪些可見狀態被打開過）、`findings`（原始碼與 **prompt log** 之間每一項不一致）、`defects`、`verificationObligations` 與被追加的 **lifecycle record**。
+  把這個 step 加進 run record，並寫入 `result: completed`，因為它是這個 **command** 的最後一個 step。
 
 - 儲存 MD report 檔案。
   追加並顯示一節 **Documents**：
@@ -541,7 +581,7 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
 - **只為 `update` 這個 command 執行。**
   對任何其他 **command**，跳到那個 command 路由到的 step。
 
-- 從 YAML checkpoint 的 `step_0` 群組讀回 **app dir** 與 **requirements**，並在改動任何東西之前先讀 **app documents** 本身。
+- 從 `step_0.yaml` 讀回 **app dir** 與 **requirements**，並在改動任何東西之前先讀 **app documents** 本身。
 
 - **這個 step 沒有腳本**——決定一行需求是什麼意思、它在設計裡屬於哪裡、以及它隱含什麼程式碼，都是判斷。
 
@@ -565,19 +605,22 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
 
 - **在同一輪裡寫出或擴充那個能抓到這項改動缺席的 unit test**，並新增或修改提到所改 **component** 的那些 **verification obligations**，涵蓋這項改動讓那個 component 新增、要被證明的東西。
 
-- **重新證明這項改動可能弄壞的東西**，用一個備用通訊埠、對著 workspace `temp\` 底下一份 **app dir** 的拋棄式副本——絕不用真正的通訊埠，也絕不對著 **app dir** 本身。
+- **重新證明這項改動可能弄壞的東西**，用一個備用通訊埠、對著 Working Dir 裡 `{app}-copy\` 這份 **app dir** 的拋棄式副本——絕不用真正的通訊埠，也絕不對著 **app dir** 本身。
   重跑提到這項改動觸及之 **component** 的那些 **verification obligations**，以及它改過的那些檔案的 **unit tests**。
+  從 **app dir** 重新做出這份副本：這次執行先前的 **update** 留在那裡的副本要被取代，不能沿用。
+  探測做完時，停掉那個伺服器；副本留在 Working Dir 裡。
 
 - **往 lifecycle record 追加**：一筆帶時間戳記的 `update`，以及 **phase** `update`。
   如果這是第一次，明白地說出 **reverse** 現在對這個 **app dir** 關上了。
 
-- **把這一輪追加進 prompt log**，在 checkpoint 裡與在 `{appDir}\docs\Prompts.md` 裡。
+- **把這一輪追加進 prompt log**，在 `step_3.yaml` 裡與在 `{appDir}\docs\Prompts.md` 裡。
 
 - **說出接下來是什麼，並且精確說出上面那些探測證明了什麼、沒證明什麼。**
   它們是對著一份拋棄式副本跑的，所以它們證明的是這項改動沒有弄壞它們所涵蓋的東西——不是 **app dir** 提供得了服務。
   下一個 **command** 是 **test**，或用 **start** 單純把它帶起來。
 
-- 在 `step_3` 底下儲存 YAML checkpoint，內含：`updates`（追加一筆，承載 `n`、`requirement`、`documentSections`、`filesChanged`、`test`、`probes`、`results`、`costsRecorded`）、`updateCount`、`verificationObligations`、被追加的 **lifecycle record**，以及計時。
+- 儲存 `step_3.yaml`，內含：`updates`（追加一筆，承載 `n`、`requirement`、`documentSections`、`filesChanged`、`test`、`probes`、`results`、`costsRecorded`）、`updateCount`、`verificationObligations` 與被追加的 **lifecycle record**。
+  把這個 step 加進 run record，並寫入 `result: completed`，因為它是這個 **command** 的最後一個 step。
 
 - 儲存 MD report 檔案。
   往一節 **Update** 追加（或建立它）：
@@ -596,7 +639,7 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
 - **只為 `test` 這個 command 執行。**
   沒有其他 **command** 會判斷這個 app。
 
-- 從 YAML checkpoint 的 `step_0` 群組讀回 **app dir**、通訊埠與任何 **review focus**。
+- 從 `step_0.yaml` 讀回 **app dir**、通訊埠與任何 **review focus**。
 
 - **這個 step 有兩個半邊，而它們依那個順序執行：先被檢查的，再被判斷的。**
   前者是腳本化且 deterministic 的；後者兩者都不是，而且做不到。
@@ -605,9 +648,11 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
 ### The checked half
 
 - **執行 test runner**，它擁有發現與執行，於是一個測試不可能被無聲地跳過。
-  - 例：`python {skillGroups.common}/skills/imp-app/scripts/run_tests.py --app-dir artifacts/InvCov --out "checkpoints/imp-app/InvCov-260924-1130"`
+  - 例：`python {skillGroups.common}/skills/imp-app/scripts/run_tests.py --app-dir artifacts/InvCov --out "checkpoints/imp-app/{yymmdd}.{N}"`
   - 它發現 `{appDir}\tests\` 底下的 **unit tests**，用 `unittest` 那些對著 **python kernel** 跑、用 `node:test` 那些對著伺服器跑，並印出一份 JSON 結果，承載每個測試的結果、各項計數、每一個沒有任何測試提到過的原始檔，以及每一個命名成兩個 runner 都不會發現的測試檔案。
-  - 它把那份結果存成輸出目錄裡的 `unit-tests.json`。
+  - 它把那份結果存成輸出目錄裡的 `unit-tests-{K}.json`，`{K}` 比那裡已有的最大值多 1，於是這個工作階段更早一次 **test** 的結果留著。
+    相對的 `--app-dir` 或 `--out` 對著 workspace 根目錄解析，而不是對著目前的目錄。
+    它找出這個根目錄的方式與 **session resolver** 相同，也接受同樣的 `--workspace`。
   - **當有測試失敗、或什麼都沒跑到時，它以非零離開。**
     那是這個 app 的判定，不是這個工具的故障：讀那份結果並繼續這個 step，而不是重跑它。
   - **一個沒有任何測試提到的檔案，是關於這些測試的事實，不是一項覆蓋率聲稱。**
@@ -643,7 +688,8 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
     所以在這裡發現的一項缺陷，會晚一個 **command** 才被寫下來，而這份報告必須承載足夠的東西，讓那次 **update** 不必再觀察一次就寫得出來。
 - 不要修這個 app、不要重啟另一個伺服器，也不要編輯 **app dir** 裡的任何東西。
 
-- 在 `step_4` 底下儲存 YAML checkpoint，內含：`tests`（每次呼叫追加一筆，承載 **server origin**、綁定的通訊埠與主機、行程 id、Node 與 Python 版本、`/healthz` 回應、unit test 各項計數與每一個失敗、這個頁面是在哪個瀏覽器裡被驅動的、到達過的每一個**可見狀態**、wireframe 核對、發現的那些缺陷、整體判定與建議的下一個 **command**）、`testCount`，以及計時。
+- 儲存 `step_4.yaml`，內含：`tests`（每次呼叫追加一筆，承載 **test runner** 寫出的 `unit-tests-{K}.json`、**server origin**、綁定的通訊埠與主機、行程 id、Node 與 Python 版本、`/healthz` 回應、unit test 各項計數與每一個失敗、這個頁面是在哪個瀏覽器裡被驅動的、到達過的每一個**可見狀態**、wireframe 核對、發現的那些缺陷、整體判定與建議的下一個 **command**）與 `testCount`。
+  把這個 step 加進 run record，並寫入 `result: completed`，因為它是這個 **command** 的最後一個 step。
 
 - 儲存 MD report 檔案。
   往一節 **Test** 追加（或建立它）：
@@ -666,7 +712,7 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
 
 - **只為 `start` 這個 command 執行。**
 
-- 從 YAML checkpoint 的 `step_0` 群組讀回 **app dir** 與通訊埠。
+- 從 `step_0.yaml` 讀回 **app dir** 與通訊埠。
 
 - **這個 step 沒有腳本**——它是一道指令與一個請求，而把那兩者包進一個程式裡，只會藏住是哪一個失敗了。
 
@@ -679,7 +725,8 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
   這個 **command** 不打開頁面、不拿它跟任何東西比對，也不做出任何判定。
   如果 `/healthz` 沒有回應，說出它說了什麼、或說它什麼都沒說，然後就停在那裡——診斷它是一次 **test**。
 
-- 在 `step_5` 底下儲存 YAML checkpoint，內含：`starts`（追加一筆，承載 **server origin**、綁定的通訊埠與主機、行程 id、Node 與 Python 版本與 `/healthz` 回應）、`startCount`，以及計時。
+- 儲存 `step_5.yaml`，內含：`starts`（追加一筆，承載 **server origin**、綁定的通訊埠與主機、行程 id、Node 與 Python 版本與 `/healthz` 回應）與 `startCount`。
+  把這個 step 加進 run record，並寫入 `result: completed`，因為它是這個 **command** 的最後一個 step。
 
 - 儲存 MD report 檔案。
   往一節 **Start** 追加（或建立它）：**一行摘要，別無其他**——**server origin** 與 `/healthz` 報告了什麼。
@@ -691,7 +738,7 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
 
 - **只為 `deploy` 這個 command 執行。**
 
-- 從 YAML checkpoint 的 `step_0` 群組讀回 **app dir**、**target** 與它解析成什麼。
+- 從 `step_0.yaml` 讀回 **app dir**、**target** 與它解析成什麼。
 
 - **如果 phase 是 `vibe`，在送出之前把這件事說出來**：要出去的東西沒有 **app documents**，所以另一端沒有人能拿它去對照任何東西檢查。
   那是一個警告而不是一次拒絕——要不要出貨是使用者的決定，不是這個 skill 的。
@@ -701,9 +748,11 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
   把一個在本地啟動不了的 app 送出去，是把同一個失敗送到一個更難除錯的地方。
 
 - **執行 deploy tool**，它擁有那些複製，於是同一批檔案以同一種方式抵達每一個 **target**。
-  - 例：`python {skillGroups.common}/skills/imp-app/scripts/deploy_app.py --app-dir artifacts/InvCov --target ftp-server --out "checkpoints/imp-app/InvCov-260924-1130"`——`--target` 可以重複，而 `--all` 是每一個登記過的。
+  - 例：`python {skillGroups.common}/skills/imp-app/scripts/deploy_app.py --app-dir artifacts/InvCov --target ftp-server --out "checkpoints/imp-app/{yymmdd}.{N}"`——`--target` 可以重複，而 `--all` 是每一個登記過的。
   - 它透過 **target list** 解析每一個 **target**、把程式碼複製到那筆項目的 `appDir`、用這個 target 的值蓋過 **app dir** 的值寫出那個目的地自己的 **app config**，並印出一份 JSON 清單，列出它寫了什麼、什麼本來就已經是最新的、以及它放著沒動什麼。
-    它為每一個 target 在輸出目錄裡存一份 `deploy-{target}.json`。
+    它為每一個 target 在輸出目錄裡存一份 `deploy-{target}-{K}.json`，`{K}` 比那個 target 在那裡已有的最大值多 1，於是更早一次 **deploy** 的清單留著。
+    相對的 `--app-dir` 或 `--out` 對著 workspace 根目錄解析，而不是對著目前的目錄。
+    它找出這個根目錄的方式與 **session resolver** 相同，也接受同樣的 `--workspace`。
   - **它送的是程式碼，而且只有程式碼**：`server.js`、`app.js`、`start.cmd`、`README.txt`、`public\` 與 `scripts\`，加上它寫出的那份 **app config**。
     **app dir** 的 `docs\`、`tests\` 與 **lifecycle record** 留在 **app dir** 裡——那是這個 app 的歷史與它的存證來源，所以一個在某個 **target** 上發現的故障是改在 **app dir** 裡重現、而不是在那裡重現，而那也是它該去的地方，因為修正無論如何都是在那裡寫的。
     一個 **target** 自己的 `data\`、`logs\` 與 `temp\` 是**那台機器的**——它下載的東西、它自己的執行印出來的東西——覆蓋它們會拿掉它為自己做過的工作。
@@ -726,7 +775,8 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
 - **往 lifecycle record 追加**：一筆帶時間戳記、並帶著它去到的那個 **target** 的 `deploy`。
   **phase** 不改變：一次 **deploy** 不改變關於這個 app 是什麼的任何事。
 
-- 在 `step_6` 底下儲存 YAML checkpoint，內含：`deploys`（每一個 **target** 追加一筆，承載它的 `name` 與目的地 `appDir`、它是否到得了、**target origin**、寫出的那些檔案與大小、本來就已經最新的那些檔案、在那裡被放著沒動的東西、為那個目的地寫出的那些 **app config** 值與它們取代了 **app dir** 的哪些值、本地那份證明，以及抵達是怎麼被確認的）、`deployCount`、`phaseAtDeploy`、被追加的 **lifecycle record**，以及計時。
+- 儲存 `step_6.yaml`，內含：`deploys`（每一個 **target** 追加一筆，承載它的 `name` 與目的地 `appDir`、**deploy tool** 寫出的 `deploy-{target}-{K}.json`、它是否到得了、**target origin**、寫出的那些檔案與大小、本來就已經最新的那些檔案、在那裡被放著沒動的東西、為那個目的地寫出的那些 **app config** 值與它們取代了 **app dir** 的哪些值、本地那份證明，以及抵達是怎麼被確認的）、`deployCount`、`phaseAtDeploy` 與被追加的 **lifecycle record**。
+  把這個 step 加進 run record，並寫入 `result: completed`，因為它是這個 **command** 的最後一個 step。
 
 - 儲存 MD report 檔案。
   往一節 **Deploy** 追加（或建立它）：

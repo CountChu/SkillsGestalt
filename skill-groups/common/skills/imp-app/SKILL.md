@@ -9,8 +9,9 @@ description: >-
   those documents first, the code second; `test` runs the unit tests, then drives the page in a
   browser; `start` brings the app up and says where; `deploy` copies it to a target in this skill's target
   list. The order is one-way: the first `reverse` closes `vibe`, the first `update` closes `reverse`.
-  Per app it writes one MD report and one YAML checkpoint, appended to by every command, and a
-  lifecycle record, `.imp-app.json` in the app dir, that the order is enforced from.
+  Per app it writes one MD report, one Checkpoint Dir of step files and one run record, all
+  appended to by every command, and a lifecycle record, `.imp-app.json` in the app dir, that the
+  order is enforced from.
 ---
 
 # TERMINOLOGY
@@ -18,12 +19,19 @@ description: >-
 Terms that mean the same thing in every skill.
 
 - **`run step N`** — a trailing prompt selector naming one step.
-  It runs **only** that step, reading every earlier step's output back from the YAML checkpoint.
-- **Checkpoint Dir** — the per-run directory holding a skill's YAML checkpoint.
-  Every skill has its own; this skill's is given under **CONFIGURATION**.
-- **YAML checkpoint** — the `process.yaml` inside the Checkpoint Dir.
-  Every step writes its outputs there under a `step_{N}` group, so a later step reads them back instead of recomputing them.
-- **MD report** — the Markdown report this skill writes into the wiki vault, in a folder named after the skill, carrying the standard header (Skill, Checkpoint, Created, Updated, Prompt) above its result sections.
+  It runs **only** that step, reading every earlier step's output back from its step file.
+- **Run Number** — the number of one run, `{yymmdd}.{N}`.
+  `{N}` is the sequence number of the run of this skill on that date, and it starts at 1.
+- **Working Dir** — the directory for one run, which holds all the working data of the run: its step files, its data files and its temporary files.
+  For this skill it is the Checkpoint Dir, and **CONFIGURATION** gives it.
+  The skill does not remove it.
+- **Checkpoint Dir** — a Working Dir in `checkpoints\` at the root of the workspace.
+- **Step file** — the `step_{N}.yaml` in the Working Dir.
+  Each step writes its outputs there, so a later step reads them back instead of recomputing them.
+- **Run record** — the file that records the time and the model of each step of one run.
+  The analysis of the efficiency of a skill uses it.
+- **Handoff file** — a file that a run makes for a different skill, in `handoff\`.
+- **MD report** — the Markdown report this skill writes into the wiki vault, in a folder named after the skill, carrying the standard header (Skill, Run record, Created, Updated, Prompt) above its result sections.
 - **no forward-reference** — the rule that a step must never depend on a step that comes after it.
   Naming a later step to route control flow does not break it; borrowing that step's output does.
 
@@ -35,13 +43,13 @@ The glossary owns each definition — a step uses the term rather than restating
 - **app dir** — the directory the prompt names on its second line, e.g. `artifacts\InvCov`, relative to the workspace root and outside the wiki vault.
   It is where the app lives, and from the first **vibe** onward it is that app's **source**, not a build product.
 - **app name** — the **app dir**'s last path segment with a trailing `-app` stripped, spelled exactly as the directory is (`artifacts\InvCov` gives `InvCov`, `artifacts\redfish-test-app` gives `redfish-test`).
-  It names the Checkpoint Dir, the **MD report** and the **design pair**.
+  It names the **MD report** and the **design pair**, and the `step_0.yaml` of each run carries it, so the **session resolver** can find the runs of one app.
 - **command** — the word on the prompt's third line: **vibe**, **reverse**, **update**, **test**, **start** or **deploy**.
   Exactly one per run, and it decides which step executes.
 - **lifecycle** — the one-way order `vibe` → `reverse` → `update`, with **test**, **start** and **deploy** available at any point once there is code.
   It has two doors that open one way only: the first **reverse** closes **vibe** for that **app dir** forever, and the first **update** closes **reverse**.
 - **lifecycle record** — `{appDir}\.imp-app.json`, carrying the **phase** and a `history` of every **command** run against this **app dir** with its timestamp.
-  It lives in the **app dir** rather than in a checkpoint because the **lifecycle** spans sessions and a per-run file would forget it.
+  It lives in the **app dir** rather than in the Checkpoint Dir because the **lifecycle** spans sessions and a per-run file would forget it.
   The app never reads it.
 - **phase** — the last state-changing **command** the **lifecycle record** carries: `vibe`, `reverse` or `update`.
   **test**, **start** and **deploy** change nothing and so never change it.
@@ -104,7 +112,7 @@ The glossary owns each definition — a step uses the term rather than restating
 - **verification obligation** — a row of the **design pair**'s Verification Obligations, in its Coding part: a claim, the rule it proves, the observation that proves it and who makes it — or *not verified*, with what has been read so far.
   Every **component** is named in at least one; the rows are the only definition of "proved" this skill has.
 - **prompt log** — the ordered record of every **vibe** and **update** request, what it changed and how that change was proved.
-  It accumulates in the YAML checkpoint and is rendered into `{appDir}\docs\Prompts.md` — the history of *why* the app is shaped as it is, which the code cannot show.
+  It accumulates in `step_1.yaml` and `step_3.yaml` and is rendered into `{appDir}\docs\Prompts.md` — the history of *why* the app is shaped as it is, which the code cannot show.
 - **target** — a destination the app is delivered to, named on the prompt's fourth line and resolved through the **target list**.
   It is a copy of this app somewhere else, never a second source.
 - **target list** — the `targets` **list** of the **skill config**: one entry per destination, each carrying a `name`, the `appDir` the code goes to **on that machine**, and the **app config** values that are true there and false in the **app dir**.
@@ -113,7 +121,7 @@ The glossary owns each definition — a step uses the term rather than restating
 - **skill config** — `assets\config.yaml` in this skill, carrying the **target list**.
   Only this skill's own tools read it; no app ever does, and it does not travel with a **deploy**.
 - **session resolver** — `resolve_session.py` in this skill's `scripts\`.
-  It stamps the app's Checkpoint Dir on the first **command** and reopens the newest existing one on every later invocation, so two invocations of one app cannot land in different directories.
+  It gets the app's Run Number on the first **command**, and on every later invocation reopens a run of that app — the run the user names, or else the newest one — so two invocations of one app cannot land in different directories.
 - **test runner** — `run_tests.py` in this skill's `scripts\`.
   It discovers and runs the **unit tests** and prints one JSON result.
   It is this skill's tool, not part of the app.
@@ -127,12 +135,9 @@ The glossary owns each definition — a step uses the term rather than restating
 Concrete values this skill runs with.
 Every path below is a constant of the skill; everything about the app being worked on is read from the **app dir** the prompt names.
 
-- **Checkpoint Dir** — `checkpoints\imp-app\{app}-{yymmdd-hhmm}\`, where `{app}` is the **app name** and `{yymmdd-hhmm}` is stamped by the **first** **command** run against that **app dir**.
-- **YAML checkpoint** — `process.yaml` inside the Checkpoint Dir.
-- **MD report** — `{wikiDir}\imp-app\imp-app-{app}-{yymmdd-hhmm}.md`, carrying the same `{app}` and stamp as the Checkpoint Dir, where `wikiDir` comes from the workspace [config.yaml](config.yaml) (resolved in Step 0) — never hardcode the wiki root.
-- **lifecycle record** — `{appDir}\.imp-app.json`.
-- **app documents** — `{appDir}\docs\`.
-- **prompt log** — `{appDir}\docs\Prompts.md`.
+The inputs and tools, which the run reads or runs:
+
+- **Workspace configuration** — the [config.yaml](config.yaml) at the root of the workspace.
 - **document templates** — `{skillGroups.common}\skills\gen-rsdc-app\assets\RSDC-App-tmp.md` and `{skillGroups.common}\skills\imp-app\assets\Wireframe-tmp.md`.
 - **gen-rsdc-app** — `{skillGroups.common}\skills\gen-rsdc-app\SKILL.md`.
 - **RSDC standard** — `{skillGroups.common}\references\RSDC-Standard.md`, with its diagram notation in `{skillGroups.common}\references\DFD.md`.
@@ -140,7 +145,25 @@ Every path below is a constant of the skill; everything about the app being work
 - **session resolver** — `{skillGroups.common}\skills\imp-app\scripts\resolve_session.py`.
 - **test runner** — `{skillGroups.common}\skills\imp-app\scripts\run_tests.py`.
 - **deploy tool** — `{skillGroups.common}\skills\imp-app\scripts\deploy_app.py`.
-- **shared report rules** — `{skillGroups.common}\rules\report-md-rules.md`, `{skillGroups.common}\rules\report-yaml-rules.md` and `{skillGroups.common}\rules\scratch-rules.md`.
+- **shared report rules** — `{skillGroups.common}\rules\report-md-rules.md` and `{skillGroups.common}\rules\run-data-rules.md`.
+- **referenced notes** — the wiki notes that a requirement names, under `{wikiDir}\write-note\`.
+- **gen-rsdc-app handoff file** — `handoff\gen-rsdc-app\{yymmdd}.{N}.md`, which **reverse** reads back.
+- **configs of other skills** — the config of each skill under the roots of `skillGroups`, which a first **vibe** searches for a claim on the **app dir**.
+- **Node** — `node`, on `PATH`, which starts the app.
+- **playwright-cli** — the skill that drives the page in a real browser for **test**.
+
+The working data of a run, which no person and no skill reads after the run:
+
+- **Working Dir** — the Checkpoint Dir, `checkpoints\imp-app\{yymmdd}.{N}\`, where `{yymmdd}.{N}` is the Run Number that the **first** **command** run against that **app dir** got: the step files, the data files, the probes, and the throwaway copy of the **app dir** at `{app}-copy\` in it.
+
+The last outputs, which a person, a different skill or a subsequent analysis reads:
+
+- **Run record** — `database\skill-runs\imp-app\{yymmdd}.{N}.yaml`, with the same Run Number.
+- **MD report** — `{wikiDir}\imp-app\imp-app-{app}-{yymmdd}.{N}.md`, where `{app}` is the **app name** and the Run Number is the Working Dir's, and `wikiDir` comes from the workspace [config.yaml](config.yaml) (resolved in Step 0) — never hardcode the wiki root.
+  Its **Run record** field gives the path of the run record.
+- **lifecycle record** — `{appDir}\.imp-app.json`.
+- **app documents** — `{appDir}\docs\`.
+- **prompt log** — `{appDir}\docs\Prompts.md`.
 
 # MUST FOLLOW
 
@@ -161,7 +184,7 @@ Every path below is a constant of the skill; everything about the app being work
   A section written or changed in `{app name}-RSDC.md` is written or changed in `{app name}-RSDC-tw.md` in the same run, under the same number; the **wireframe pair** carries the same rule.
   Two files that drift no longer say what the app is; they argue about it.
 - **Keep every heading of a 繁體中文 twin in English** — character for character as its source has them — so the two can be read side by side and a reviewer can see at a glance that nothing is missing.
-  File names, paths, config keys, checkpoint field names and glossary terms keep their original form too; the prose around them is what is translated.
+  File names, paths, config keys, step file field names and glossary terms keep their original form too; the prose around them is what is translated.
 - **The chapters of a design pair run one way.**
   Requirements states no technical choice, Specification names a component only by the interface its callers use, Design names no library or syntax, and no section points at one numbered after it.
   A term borrowed from a later chapter settles there a question that chapter exists to answer, and the reader can no longer tell what was needed from what was built.
@@ -221,11 +244,14 @@ Every path below is a constant of the skill; everything about the app being work
   The prompt names the **app dir**; the **skill config** names the **targets**.
 - **Every command appends to the lifecycle record.**
   A **command** that changed the **app dir** and did not record itself leaves the next run to guess the **phase**, and the gate is only as good as what it reads.
-- **Every output of one app carries the one `{yymmdd-hhmm}` stamp** — one Checkpoint Dir and one **MD report** per app, stamped by the first **command** and appended to by every later one.
-  The **app dir** itself is **unstamped**: it is the current app, and stamping it would leave a trail of stale copies where a reader expects one folder.
+- **Every output of one app carries the one Run Number** — one Working Dir, one run record and one **MD report** per app, numbered by the first **command** and appended to by every later one.
+  The **app dir** itself is **unnumbered**: it is the current app, and numbering it would leave a trail of stale copies where a reader expects one folder.
 - **The MD report is created once per app and appended to thereafter.**
   The create rule in the **shared report rules** clears everything after the header when the file already exists; that applies to a *new* run, and a later **command** here is the *same* session.
   So on a later invocation, refresh the header's **Updated** field and **append** the new section — never clear the body, which is the only record of what the earlier **commands** did.
+- **A later command of the same session continues its run.**
+  It keeps the Run Number, adds its own steps to the `steps` of the run record, writes its own `prompt`, and writes the new `result`, as run-data-rules.md tells for a `run step N` that starts a run again.
+  A new run of the same app is got only when the user asks for one, with `--new` on the **session resolver**.
 - Must run workflow step by step, and display each step number.
 - Each step must be self-contained.
   **No forward-reference.**
@@ -233,15 +259,21 @@ Every path below is a constant of the skill; everything about the app being work
   A step that needs reading, judgement, or summarization **must not** be scripted — write it as natural-language instructions for the agent to perform directly.
 - **Honour a `run step N` selector**: run Step N, then stop; never a later step.
 - Follow `{skillGroups.common}\rules\report-md-rules.md` for the MD report's header and shape.
-- Follow `{skillGroups.common}\rules\report-yaml-rules.md` for the YAML checkpoint's shape and required fields.
-- Follow `{skillGroups.common}\rules\scratch-rules.md` for where a run's throwaway files go and how they are cleaned up — every probe, every throwaway copy of the **app dir** and every captured output is exactly that.
-- **Every JSON in the Checkpoint Dir has exactly one writer step.**
-  The step that produces a data file writes it whole and owns it; a later step that concludes something writes its own `step_{N}.json` beside it, and never adds to, edits or deletes a key in a file another step wrote — not even to supersede it.
-  The YAML checkpoint is the one exception: it is appended to, one `step_{N}` group per step, rather than rewritten.
+- Obey [run-data-rules.md](skill-groups/common/rules/run-data-rules.md) for the Run Number, the step files, the run record and the Working Dir of a run — every probe, every throwaway copy of the **app dir** and every captured output goes into the Working Dir.
+- **Each file in the Working Dir has one writer step only.**
+  The step that produces a data file writes it whole and owns it; a later step that concludes something writes it into its own step file, and never adds to, edits or deletes a key in a file another step wrote — not even to supersede it.
   A data file several steps write back into is lost the moment its first step is re-run — a parser fix or a `run step 1` rewrites it whole and erases every later step's result without a word.
-- **Before the skill ends, display the server origin, app dir, MD report and YAML checkpoint** — show only those four, and render each as a clickable Markdown link.
+- **The step file of a command that repeats grows by one entry per invocation.**
+  `step_1.yaml`, `step_3.yaml`, `step_4.yaml`, `step_5.yaml` and `step_6.yaml` each carry a list that its own step reads, appends one entry to, and writes back; `step_0.yaml` holds the current invocation only.
+- **The data files of this skill are in the Working Dir, and none is written twice.**
+  `{K}` is one more than the largest `{K}` already there, so a later **command** of the same session keeps the file of an earlier one, and the step file entry names the file it wrote.
+  - `unit-tests-{K}.json` — the result of the **test runner** in Step 4, one for each **test**.
+  - `deploy-{target}-{K}.json` — the manifest of the **deploy tool** in Step 6, one for each **target** of each **deploy**.
+- **The lifecycle record and the prompt log stay in the app dir, by design.**
+  `{appDir}\.imp-app.json` and `{appDir}\docs\Prompts.md` are the app's own record across sessions, not data of a run, so the rule of run-data-rules.md that keeps run data away from its source does not apply to them.
+- **Before the skill ends, display the server origin, app dir, MD report and run record** — show only those four, and render each as a clickable Markdown link.
   The **server origin** is an `http://` URL and links as itself, and is shown only by the **commands** that started a server — **test**, **start**, and a **deploy** that could start the app on its **target**, which shows the **target origin** beside it; **vibe**, **reverse** and **update** omit it, having left nothing running.
-  The MD report lives in the vault, outside this workspace, so link it with an `obsidian://open?vault={vaultName}&file=<vault-relative-path>` URI (e.g. `[imp-app-InvCov-260924-1130.md](obsidian://open?vault={vaultName}&file=imp-app/imp-app-InvCov-260924-1130.md)`); the **app dir** and the YAML checkpoint keep a workspace-relative, forward-slash target (e.g. `[process.yaml](checkpoints/imp-app/InvCov-260924-1130/process.yaml)`).
+  The MD report lives in the vault, outside this workspace, so link it with an `obsidian://open?vault={vaultName}&file=<vault-relative-path>` URI (e.g. `[imp-app-InvCov-{yymmdd}.{N}.md](obsidian://open?vault={vaultName}&file=imp-app/imp-app-InvCov-{yymmdd}.{N}.md)`); the **app dir** and the run record keep a workspace-relative, forward-slash target (e.g. `[{yymmdd}.{N}.yaml](database/skill-runs/imp-app/{yymmdd}.{N}.yaml)`).
   - Do this for every run, including a partial one such as `run step 0`.
 
 # Prompt Examples
@@ -321,7 +353,7 @@ Naming those steps here is routing, not a forward-reference: no step borrows a l
 That split is what lets an iteration cost only what it changed, and it is also what stops a run from implying it checked something it never looked at.
 The price is that a **vibe** or an **update** can finish with the app never having been served afterwards — stated, not hidden.
 
-**Steps 0, 4 and 6 run a script and Steps 1, 2, 3 and 5 do not**, because stamping a session, discovering and running tests, and copying a tree to a reviewed destination are deterministic, whereas writing an app from prose, deriving a design from source, carrying a change through a design into code, and reading a page as a user would are judgement.
+**Steps 0, 4 and 6 run a script and Steps 1, 2, 3 and 5 do not**, because getting the Run Number of a session, discovering and running tests, and copying a tree to a reviewed destination are deterministic, whereas writing an app from prose, deriving a design from source, carrying a change through a design into code, and reading a page as a user would are judgement.
 Step 4 carries both halves of that split and names them as halves, so the judged one cannot be lost behind the checked one.
 
 ## Step 0 - Warmup
@@ -368,7 +400,7 @@ Step 4 carries both halves of that split and names them as halves, so the judged
     Resolve it under `{wikiDir}\write-note\` and read it before doing anything else; it usually carries the requirements the prose only gestures at.
   - an optional trailing **`run step N`** selector.
 
-- Derive the **app name** from the **app dir** and display it with the paths it implies — the Checkpoint Dir, the **MD report** and the **design pair** filenames — before using any of them.
+- Derive the **app name** from the **app dir** and display it with the **design pair** filenames it implies before using any of them; the **session resolver** below gives the Working Dir and the **MD report**.
   Let the user override it.
 
 - **Read the lifecycle record and enforce the gate.**
@@ -397,14 +429,20 @@ Step 4 carries both halves of that split and names them as halves, so the judged
 
 - Resolve the app's session by running the **session resolver**, which owns this deterministically so two invocations of one app cannot land in different directories.
   - Example: `python {skillGroups.common}/skills/imp-app/scripts/resolve_session.py --app InvCov --command vibe`
-  - It reopens the **newest existing** `{app}-*` Checkpoint Dir, and stamps a new one only when there is none — the first **command** against a **app dir** opens the session and every later one joins it, whichever **command** that was.
-  - It prints one JSON object carrying `app`, `stamp`, `checkpointDir`, `processYaml`, `mdReport`, `opened` (`created` or `reopened`) and `sessions`.
+  - It reopens a run of this app — the one the user names, passed as `--run {yymmdd}.{N}`, or else the **newest** one whose `step_0.yaml` carries this **app name** — and gets a new Run Number only when there is none, or when `--new` asks for one: the first **command** against a **app dir** opens the session and every later one joins it, whichever **command** that was.
+  - A new Run Number is got as run-data-rules.md tells, and the resolver writes the run record at once, with `skill` and `run`, so a different run cannot take the same number.
+  - It finds the root of the workspace this run is in: the directory `--workspace` names, or else the nearest directory, from the current directory up, whose `config.yaml` has `skillGroups`.
+    It never finds the root from the location of its own file, because a workspace can read this skill in place from a different workspace.
+    `--dry-run` prints what it would resolve and writes nothing.
+  - It prints one JSON object carrying `workspace`, `app`, `run`, `checkpointDir`, `runRecord`, `mdReport`, `opened` (`created` or `reopened`) and `runs`.
+    If `workspace` is not the workspace root whose `config.yaml` was read above, stop and say which root it found.
     Use those paths verbatim for the rest of the run.
 
-- Save the canonical skill invocation for reference in later steps.
+- Save the canonical skill invocation, and write it as the `prompt` of the run record.
 
-- Save YAML checkpoint `step_0` with the resolved `wikiDir`, the **app dir** (as `appDir`, the field the **session resolver** checks a reopened session by), the **app name**, the **command**, the **target** and what it resolved to, the **phase** and `history` read from the **lifecycle record**, whether the app dir was **adopted**, the gate verdict, the port and whether it was in use, the **requirements** verbatim, the **referenced notes**, the Node and Python versions, the stamp and whether the session was created or reopened, the output paths, the step selector, and timing.
-  - **`step_0` holds this invocation only** and is overwritten by the next one.
+- Save `step_0.yaml`, with the resolved `wikiDir`, the **app dir** (as `appDir`), the **app name** (as `app`, the field the **session resolver** finds the runs of this app by), the **command**, the **target** and what it resolved to, the **phase** and `history` read from the **lifecycle record**, whether the app dir was **adopted**, the gate verdict, the port and whether it was in use, the **requirements** verbatim, the **referenced notes**, the Node and Python versions, the Run Number and whether the session was created or reopened, the output paths, and the step selector.
+  Add this step to the run record.
+  - **`step_0.yaml` holds this invocation only** and is overwritten by the next one.
     The run-by-run history is the **lifecycle record**'s and the **prompt log**'s, which is why both live in the **app dir** and not here.
 
 - Display the **app dir**, the **command**, the **phase** and what the gate decided.
@@ -417,13 +455,13 @@ Step 4 carries both halves of that split and names them as halves, so the judged
 - **Runs for the `vibe` command only.**
   For any other **command**, skip to the step that command routes to.
 
-- Read the **app dir**, the **requirements**, the **phase** and whether the app dir was **adopted** back from the `step_0` group of the YAML checkpoint.
+- Read the **app dir**, the **requirements**, the **phase** and whether the app dir was **adopted** back from `step_0.yaml`.
 
 - **No script for this step** — writing an app from prose is the whole of vibe coding and needs judgement.
 
 - **On the first round against an empty app dir**, say back in one paragraph what the app is for, what it replaces, and what the user will click.
   Get that agreed **before** writing code: everything after it is built on it.
-  On a later round, read the **prompt log** back from the checkpoint first, so this round starts from what the app already is.
+  On a later round, read the **prompt log** back from `step_1.yaml` first, so this round starts from what the app already is.
 
 - **Write the app to the fixed shape**, and honour the production-code rules in **MUST FOLLOW** from the first cut rather than as a later cleanup.
   An **adopted** app dir is brought to the **fixed shape** one round at a time as the requirements touch each part, and what is not yet in that shape is named rather than assumed.
@@ -444,7 +482,7 @@ Step 4 carries both halves of that split and names them as halves, so the judged
      Append one **prompt log** entry: the requirement verbatim, the files touched, the test written, the proof, and anything the change revealed that was not asked about.
 
 - **Append to the round list; never overwrite it.**
-  `step_1` holds a `rounds` list that grows by one entry per invocation.
+  `step_1.yaml` holds a `rounds` list that grows by one entry per invocation.
   Read it, append, write it back — a round that replaces the list erases the history **reverse** reads, and nothing else holds a copy.
 
 - **Write the prompt log out to `{appDir}\docs\Prompts.md`** as well, in round order.
@@ -456,7 +494,8 @@ Step 4 carries both halves of that split and names them as halves, so the judged
   There are no **app documents** yet and that is deliberate.
   More **vibe** rounds, or **reverse** when the app is right; **test** or **start** to look at it, which this **command** did not leave running.
 
-- Save YAML checkpoint under `step_1` with: `appDir`, `entry`, `serverPort`, `fixedShapeFiles`, `pythonKernel`, `pageFiles`, `appConfigKeys`, `unitTests`, `rounds` (append one entry carrying `n`, `requirement`, `filesTouched`, `test`, `proof`, `notes`), `roundCount`, `openIssues`, and timing.
+- Save `step_1.yaml`, with: `appDir`, `entry`, `serverPort`, `fixedShapeFiles`, `pythonKernel`, `pageFiles`, `appConfigKeys`, `unitTests`, `rounds` (append one entry carrying `n`, `requirement`, `filesTouched`, `test`, `proof`, `notes`), `roundCount`, and `openIssues`.
+  Add this step to the run record, and write `result: completed`, because it is the last step of this **command**.
 
 - Save MD report file.
   Append to (or create) a **Vibe** section:
@@ -476,7 +515,7 @@ Step 4 carries both halves of that split and names them as halves, so the judged
 - **Runs for the `reverse` command only.**
   For any other **command**, skip to the step that command routes to.
 
-- Read the **app dir**, the **app name** and the **prompt log** back from the `step_0` and `step_1` groups of the YAML checkpoint.
+- Read the **app dir**, the **app name** and the **prompt log** back from `step_0.yaml` and `step_1.yaml`.
   An **adopted** app dir has no **prompt log**; say so — the design is then derived from the source alone.
 
 - **No script for this step** — the **design pair** is derived by **gen-rsdc-app**, and reading a running page is judgement; a program asked to do either would only be asserting it had.
@@ -496,7 +535,8 @@ Step 4 carries both halves of that split and names them as halves, so the judged
     A stop there stops this **command** too: say so, and that the template is **gen-rsdc-app**'s to bring up to the standard.
   - It replaces a **design pair** already in `{appDir}\docs\` whole — which the gate allows only until the first **update**.
   - It derives the design from the source rather than from the **prompt log**, and records each disagreement between them as a finding.
-    Read back what it hands back — the **components**, the findings, the defects, the **verification obligations**, what its check of the English half found and what the `chinese` skill reported of the twin — for the checkpoint and the report below.
+    Read the handoff file of gen-rsdc-app, as [run-data-rules.md](skill-groups/common/rules/run-data-rules.md) tells: the file `handoff\gen-rsdc-app\{yymmdd}.{N}.md` that the user names, or else the one with the largest number, and say which file you read.
+    From it, read back what it hands back — the **components**, the findings, the defects, the **verification obligations**, what its check of the English half found and what the `chinese` skill reported of the twin — for the step file and the report below.
   - The `chinese` skill it runs asks whether to commit the **design pair**: pass the question to the user.
     The commit holds the pair alone, and this **command** goes on whatever the answer.
 
@@ -517,7 +557,8 @@ Step 4 carries both halves of that split and names them as halves, so the judged
   This **command** wrote documents and changed no code, and it left nothing running.
   The next **command** is **test**, or **update** for the first change against the documents.
 
-- Save YAML checkpoint under `step_2` with: `components`, `designPair`, `wireframePair`, `sectionsWritten`, `wireframeScan` (how the page was reached and which visibility states were opened), `findings` (each disagreement between source and **prompt log**), `defects`, `verificationObligations`, the **lifecycle record** appended, and timing.
+- Save `step_2.yaml`, with: `components`, `designPair`, `wireframePair`, `sectionsWritten`, `wireframeScan` (how the page was reached and which visibility states were opened), `findings` (each disagreement between source and **prompt log**), `defects`, `verificationObligations`, and the **lifecycle record** appended.
+  Add this step to the run record, and write `result: completed`, because it is the last step of this **command**.
 
 - Save MD report file.
   Append and display a **Documents** section:
@@ -539,7 +580,7 @@ Step 4 carries both halves of that split and names them as halves, so the judged
 - **Runs for the `update` command only.**
   For any other **command**, skip to the step that command routes to.
 
-- Read the **app dir** and the **requirements** back from the `step_0` group of the YAML checkpoint, and read the **app documents** themselves before changing anything.
+- Read the **app dir** and the **requirements** back from `step_0.yaml`, and read the **app documents** themselves before changing anything.
 
 - **No script for this step** — deciding what a requirement means, where in the design it belongs, and what code it implies is judgement.
 
@@ -563,19 +604,22 @@ Step 4 carries both halves of that split and names them as halves, so the judged
 
 - **Write or extend the unit test that would have caught the change's absence**, in this same round, and add or amend the **verification obligations** that name a **component** it changed, for anything new the change gives that component to be proved by.
 
-- **Re-prove what the change could have broken**, on a spare port against a throwaway copy of the **app dir** under the workspace `temp\` — never the real port and never the **app dir** itself.
+- **Re-prove what the change could have broken**, on a spare port against a throwaway copy of the **app dir** at `{app}-copy\` in the Working Dir — never the real port and never the **app dir** itself.
   Re-run the **verification obligations** that name a **component** this change touched, and the **unit tests** for the files it changed.
+  Make the copy fresh from the **app dir**: a copy that an earlier **update** of this run left there is replaced, not reused.
+  When the probes are done, stop that server; the copy stays in the Working Dir.
 
 - **Append to the lifecycle record**: an `update` entry with its timestamp, and **phase** `update`.
   If this is the first one, say plainly that **reverse** is now closed for this **app dir**.
 
-- **Append the round to the prompt log**, in the checkpoint and in `{appDir}\docs\Prompts.md`.
+- **Append the round to the prompt log**, in `step_3.yaml` and in `{appDir}\docs\Prompts.md`.
 
 - **Say what comes next, and be exact about what the probes above did and did not prove.**
   They ran against a throwaway copy, so they prove the change did not break what they cover — not that the **app dir** serves.
   The next **command** is **test**, or **start** to simply bring it up.
 
-- Save YAML checkpoint under `step_3` with: `updates` (append one entry carrying `n`, `requirement`, `documentSections`, `filesChanged`, `test`, `probes`, `results`, `costsRecorded`), `updateCount`, `verificationObligations`, the **lifecycle record** appended, and timing.
+- Save `step_3.yaml`, with: `updates` (append one entry carrying `n`, `requirement`, `documentSections`, `filesChanged`, `test`, `probes`, `results`, `costsRecorded`), `updateCount`, `verificationObligations`, and the **lifecycle record** appended.
+  Add this step to the run record, and write `result: completed`, because it is the last step of this **command**.
 
 - Save MD report file.
   Append to (or create) an **Update** section:
@@ -594,7 +638,7 @@ Step 4 carries both halves of that split and names them as halves, so the judged
 - **Runs for the `test` command only.**
   No other **command** judges the app.
 
-- Read the **app dir**, the port and any **review focus** back from the `step_0` group of the YAML checkpoint.
+- Read the **app dir**, the port and any **review focus** back from `step_0.yaml`.
 
 - **This step has two halves and they run in that order: first what is checked, then what is judged.**
   The first is scripted and deterministic; the second is neither, and cannot be made so.
@@ -603,9 +647,11 @@ Step 4 carries both halves of that split and names them as halves, so the judged
 ### The checked half
 
 - **Run the test runner**, which owns discovery and execution so that a test cannot be silently skipped.
-  - Example: `python {skillGroups.common}/skills/imp-app/scripts/run_tests.py --app-dir artifacts/InvCov --out "checkpoints/imp-app/InvCov-260924-1130"`
+  - Example: `python {skillGroups.common}/skills/imp-app/scripts/run_tests.py --app-dir artifacts/InvCov --out "checkpoints/imp-app/{yymmdd}.{N}"`
   - It discovers the **unit tests** under `{appDir}\tests\`, runs the `unittest` ones against the **python kernel** and the `node:test` ones against the server, and prints one JSON result carrying each test's outcome, the counts, every source file no test so much as mentions, and every test file named so that neither runner would have discovered it.
-  - It saves that result as `unit-tests.json` in the output directory.
+  - It saves that result as `unit-tests-{K}.json` in the output directory, with `{K}` one more than the largest one already there, so the result of an earlier **test** of the session stays.
+    A relative `--app-dir` or `--out` is resolved against the workspace root, not the current directory.
+    It finds that root as the **session resolver** does, and takes the same `--workspace`.
   - **It exits non-zero when a test failed or when nothing ran.**
     That is the app's verdict, not a fault in the tool: read the result and carry on with this step rather than re-running it.
   - **A file no test mentions is a fact about the tests, not a coverage claim.**
@@ -641,7 +687,8 @@ Step 4 carries both halves of that split and names them as halves, so the judged
     So a defect found here is written down one **command** later, and the report must carry enough for that **update** to be written without re-observing anything.
 - Do not repair the app, restart another server, or edit anything in the **app dir**.
 
-- Save YAML checkpoint under `step_4` with: `tests` (append one entry per invocation carrying the **server origin**, the port and host bound, the process id, the Node and Python versions, the `/healthz` response, the unit-test counts and each failure, the browser the page was driven in, every **visibility state** reached, the wireframe reconciliation, the defects found, the overall verdict and the recommended next **command**), `testCount`, and timing.
+- Save `step_4.yaml`, with: `tests` (append one entry per invocation carrying the `unit-tests-{K}.json` the **test runner** wrote, the **server origin**, the port and host bound, the process id, the Node and Python versions, the `/healthz` response, the unit-test counts and each failure, the browser the page was driven in, every **visibility state** reached, the wireframe reconciliation, the defects found, the overall verdict and the recommended next **command**) and `testCount`.
+  Add this step to the run record, and write `result: completed`, because it is the last step of this **command**.
 
 - Save MD report file.
   Append to (or create) a **Test** section:
@@ -664,7 +711,7 @@ Step 4 carries both halves of that split and names them as halves, so the judged
 
 - **Runs for the `start` command only.**
 
-- Read the **app dir** and the port back from the `step_0` group of the YAML checkpoint.
+- Read the **app dir** and the port back from `step_0.yaml`.
 
 - **No script for this step** — it is one command and one request, and wrapping those in a program would only hide which of them failed.
 
@@ -677,7 +724,8 @@ Step 4 carries both halves of that split and names them as halves, so the judged
   This **command** does not open the page, does not compare it to anything, and reaches no verdict.
   If `/healthz` does not answer, say what it said or that it said nothing, and stop there — diagnosing it is a **test**.
 
-- Save YAML checkpoint under `step_5` with: `starts` (append one entry carrying the **server origin**, the port and host bound, the process id, the Node and Python versions and the `/healthz` response), `startCount`, and timing.
+- Save `step_5.yaml`, with: `starts` (append one entry carrying the **server origin**, the port and host bound, the process id, the Node and Python versions and the `/healthz` response) and `startCount`.
+  Add this step to the run record, and write `result: completed`, because it is the last step of this **command**.
 
 - Save MD report file.
   Append to (or create) a **Start** section: **one summary line and nothing else** — the **server origin** and what `/healthz` reported.
@@ -689,7 +737,7 @@ Step 4 carries both halves of that split and names them as halves, so the judged
 
 - **Runs for the `deploy` command only.**
 
-- Read the **app dir**, the **target** and what it resolved to back from the `step_0` group of the YAML checkpoint.
+- Read the **app dir**, the **target** and what it resolved to back from `step_0.yaml`.
 
 - **If the phase is `vibe`, say so before delivering**: what is going out has no **app documents**, so nobody on the other end can check it against anything.
   That is a warning and not a refusal — whether to ship it is the user's call, not this skill's.
@@ -699,9 +747,11 @@ Step 4 carries both halves of that split and names them as halves, so the judged
   Shipping an app that does not start locally sends the same failure somewhere with less to debug it.
 
 - **Run the deploy tool**, which owns the copying so that the same files reach every **target** the same way.
-  - Example: `python {skillGroups.common}/skills/imp-app/scripts/deploy_app.py --app-dir artifacts/InvCov --target ftp-server --out "checkpoints/imp-app/InvCov-260924-1130"` — `--target` repeats, and `--all` is every registered one.
+  - Example: `python {skillGroups.common}/skills/imp-app/scripts/deploy_app.py --app-dir artifacts/InvCov --target ftp-server --out "checkpoints/imp-app/{yymmdd}.{N}"` — `--target` repeats, and `--all` is every registered one.
   - It resolves each **target** through the **target list**, copies the code to that entry's `appDir`, writes that destination's own **app config** from that target's values over the **app dir**'s, and prints one JSON manifest of what it wrote, what was already current and what it left alone.
-    It saves one `deploy-{target}.json` per target in the output directory.
+    It saves one `deploy-{target}-{K}.json` per target in the output directory, with `{K}` one more than the largest one of that target already there, so the manifest of an earlier **deploy** stays.
+    A relative `--app-dir` or `--out` is resolved against the workspace root, not the current directory.
+    It finds that root as the **session resolver** does, and takes the same `--workspace`.
   - **It sends the code, and only the code**: `server.js`, `app.js`, `start.cmd`, `README.txt`, `public\` and `scripts\`, plus the **app config** it writes.
     The **app dir**'s `docs\`, `tests\` and **lifecycle record** stay in the **app dir** — that is the app's history and its source of record, so a fault found on a **target** is reproduced in the **app dir** rather than there, which is the right place for it since that is where a fix would be written anyway.
     A **target**'s own `data\`, `logs\` and `temp\` are **that machine's** — what it downloaded, what its own runs printed — and overwriting them would take away work it did for itself.
@@ -724,7 +774,8 @@ Step 4 carries both halves of that split and names them as halves, so the judged
 - **Append to the lifecycle record**: a `deploy` entry with its timestamp and the **target** it went to.
   The **phase** does not change: a **deploy** changes nothing about what the app is.
 
-- Save YAML checkpoint under `step_6` with: `deploys` (append one entry per **target** carrying its `name` and destination `appDir`, whether it was reachable, the **target origin**, the files written with sizes, the files already current, what was left alone there, the **app config** values written for that destination and which of the **app dir**'s they replaced, the local proof, and how the arrival was confirmed), `deployCount`, `phaseAtDeploy`, the **lifecycle record** appended, and timing.
+- Save `step_6.yaml`, with: `deploys` (append one entry per **target** carrying its `name` and destination `appDir`, the `deploy-{target}-{K}.json` the **deploy tool** wrote, whether it was reachable, the **target origin**, the files written with sizes, the files already current, what was left alone there, the **app config** values written for that destination and which of the **app dir**'s they replaced, the local proof, and how the arrival was confirmed), `deployCount`, `phaseAtDeploy`, and the **lifecycle record** appended.
+  Add this step to the run record, and write `result: completed`, because it is the last step of this **command**.
 
 - Save MD report file.
   Append to (or create) a **Deploy** section:

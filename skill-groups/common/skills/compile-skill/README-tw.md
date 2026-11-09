@@ -3,10 +3,10 @@
 > [DFD.md](../../references/DFD.md)  `2026-11-02`  `4030d6783acf`
 > [md-style.md](../../rules/md-style.md)  `2026-11-02`  `639a95083dd2`
 > [skill-writing.md](../../rules/skill-writing.md)  `2026-11-02`  `4884a31a0b2c`
-> [scratch-rules.md](../../rules/scratch-rules.md)  `2026-11-02`  `bb2f5aaaf581`
-> [SKILL-tmp.md](../../templates/SKILL-tmp.md)  `2026-11-02`  `4c84755e0122`
-> [README-tmp.md](../../templates/README-tmp.md)  `2026-10-20`  `43ace64a88a6`
-> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-02`  `f4a7161de90a`
+> [run-data-rules.md](../../rules/run-data-rules.md)  `2026-11-07`  `cb4e585a6fbc`
+> [SKILL-tmp.md](../../templates/SKILL-tmp.md)  `2026-11-06`  `0a1b73b86b05`
+> [README-tmp.md](../../templates/README-tmp.md)  `2026-11-06`  `549f2d3ba535`
+> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-06`  `96933f295048`
 > [[SkillCompiler-RSDC]]  `cited`  `2026-10-20`  `0ac8fa44bb74`
 
 這份 README.md 說明 compile-skill skill 由哪些部分組成，以及它的 [SKILL.md](SKILL.md) 依賴哪些檔案。
@@ -91,6 +91,7 @@ flowchart TB
 - 平行四邊形是 external input，旗形是 one-run data，圓柱是 record。
   external input 是 `config.yaml`、Skill Source 與 compile SOP，沒有任何 step 寫入它們。
   record 是 Compiled Script，以及 Step 4 的執行所寫出的 target skill 輸出。
+  每個 step 也把它的時間與模型加進 run record，圖中不畫這個 record；本 skill 不寫 step file。
   圓角方框是 step。
 - 六角形是 skill 外部的 role：使用者，提供 prompt 與 Answers，並閱讀 Classification table、check results 與 Result table。
   Answers 是使用者在 Step 2 的回答：每個沒有執行程式的 Deterministic step 是 chore、core work 還是 cognitive，以及是否覆寫既有的 Compiled Script。
@@ -147,7 +148,7 @@ Step 2 - Classify and Compile the Step Actions
 Step 3 - Check the Script Contracts
   runs    compile-skill/scripts/check_compiled.py
           ├─ reads <target>/SKILL.md and <target>/skill.py
-          └─ runs <target>/skill.py only in temporary places outside the workspace
+          └─ runs <target>/skill.py only in the system's temporary directory, outside the workspace, and removes it
   reads   compile-skill/references/SKILL-Compile.md: its Step 3, when a check fails
   writes  <target>/skill.py again, when a check fails
 
@@ -179,7 +180,7 @@ compile-skill/SKILL.md
  ├─⇄ compile-skill/scripts/scan_source.py and check_compiled.py
  │     what Steps 1 and 3 say each program takes and exits with
  ├─▶ common/rules/skill-writing.md: how the steps are written
- ├─▶ common/rules/scratch-rules.md: where a run's throwaway files go and how they are cleaned up
+ ├─▶ common/rules/run-data-rules.md: the Run Number, the run record and the Working Dir of a run
  └─▶ common/rules/md-style.md: one sentence on each line
        └─ checked by reformat_md.py and check_reformat.py (--twin: the twin's sentences one for one)
 
@@ -234,7 +235,7 @@ compile-skill/README.md (and README-tw.md, which copies its header quote)
   ─▶ common/references/DFD.md
   ─▶ common/rules/md-style.md
   ─▶ common/rules/skill-writing.md
-  ─▶ common/rules/scratch-rules.md
+  ─▶ common/rules/run-data-rules.md
   ─▶ common/templates/SKILL-tmp.md
   ─▶ common/templates/README-tmp.md
   ─▶ common/skills/chinese/SKILL.md

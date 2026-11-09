@@ -1,6 +1,12 @@
 """Verify the imp-{app} owner skill, its design and wireframe pairs and the app dir that gen-imp-app Step 3 produced.
 
 Exits non-zero if any check fails: a failing check is a defect in what was just written.
+
+A relative --out is relative to the workspace root, not the current directory. The root is the
+directory --workspace names, or else the nearest one, from the current directory up, whose
+config.yaml has skillGroups: the session resolver's workspace_root finds it, so it is the root of
+the Checkpoint Dir that resolver printed. It is never found from this file, which can be in a
+different workspace.
 """
 import argparse
 import json
@@ -9,6 +15,9 @@ import re
 import sys
 
 import yaml
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from resolve_session import WORKSPACE_HELP, workspace_root  # noqa: E402  the root the session resolver prints its paths under
 
 CANONICAL_SECTIONS = [
     "TERMINOLOGY",
@@ -223,7 +232,9 @@ def main():
     ap = argparse.ArgumentParser(description="Verify an imp-{app} owner skill and its app dir.")
     ap.add_argument("--skill-dir", required=True, help="the imp-{app} skill directory")
     ap.add_argument("--app-dir", required=True, help="the app dir under artifacts")
-    ap.add_argument("--out", required=True, help="checkpoint directory for owner-skill-check.json")
+    ap.add_argument("--out", required=True,
+                    help="the Checkpoint Dir for owner-skill-check.json; a relative path is relative to the workspace root")
+    ap.add_argument("--workspace", help=WORKSPACE_HELP)
     args = ap.parse_args()
 
     skill_md = os.path.join(args.skill_dir, "SKILL.md")
@@ -244,8 +255,9 @@ def main():
     failed = [name for name, ok, _ in results if not ok]
     print(f"\n{len(results) - len(failed)}/{len(results)} passed")
 
-    os.makedirs(args.out, exist_ok=True)
-    out_file = os.path.join(args.out, "owner-skill-check.json")
+    out_dir = args.out if os.path.isabs(args.out) else os.path.join(workspace_root(args.workspace), args.out)
+    os.makedirs(out_dir, exist_ok=True)
+    out_file = os.path.join(out_dir, "owner-skill-check.json")
     with open(out_file, "w", encoding="utf-8") as fh:
         json.dump({
             "skillDir": args.skill_dir,

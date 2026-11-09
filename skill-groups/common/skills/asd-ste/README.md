@@ -4,11 +4,11 @@
 > [us-spelling.json](../../references/us-spelling.json)  `2026-10-13`  `8871984ff0d8`
 > [md-style.md](../../rules/md-style.md)  `2026-11-02`  `639a95083dd2`
 > [skill-writing.md](../../rules/skill-writing.md)  `2026-11-02`  `4884a31a0b2c`
-> [report-yaml-rules.md](../../rules/report-yaml-rules.md)  `2026-11-02`  `4fd98f4d5d9b`
-> [SKILL-tmp.md](../../templates/SKILL-tmp.md)  `2026-11-02`  `4c84755e0122`
-> [README-tmp.md](../../templates/README-tmp.md)  `2026-10-19`  `43ace64a88a6`
+> [run-data-rules.md](../../rules/run-data-rules.md)  `2026-11-09`  `cb4e585a6fbc`
+> [SKILL-tmp.md](../../templates/SKILL-tmp.md)  `2026-11-06`  `0a1b73b86b05`
+> [README-tmp.md](../../templates/README-tmp.md)  `2026-11-06`  `549f2d3ba535`
 > [depends_on.py](../../scripts/depends_on.py)  `2026-10-16`  `53b1d3e60eca`
-> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-02`  `f4a7161de90a`
+> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-06`  `96933f295048`
 
 What the asd-ste skill is made of, and what its [SKILL.md](SKILL.md) depends on.
 A skill loads its whole SKILL.md each time it runs, so the parts a run does not need are kept here: SKILL.md does not link to this file, and no run loads it.
@@ -17,7 +17,8 @@ How the steps of a skill are written is in [skill-writing.md](../../rules/skill-
 
 The paths in the diagrams are short: `asd-ste/` is `skill-groups/common/skills/asd-ste/`, `common/` is `skill-groups/common/`, and `external/` is at the workspace root.
 `<name>.md` is the file a run rewrites, and the draft is its rewrite, at the path the draft tool gives beside it.
-`checkpoints/asd-ste/{parent}-{name}/`, also at the workspace root, is the Checkpoint Dir: it holds the YAML checkpoint, `process.yaml`, and the files Steps 1, 3 and 6 write.
+`checkpoints/asd-ste/{yymmdd}.{N}/`, also at the workspace root, is the Working Dir of one run, its Checkpoint Dir, named by its Run Number: it holds the step files, `step_0.yaml` to `step_7.yaml`, the files Steps 1, 3 and 6 write, and the `recheck/` of the draft tool.
+The run record of the run, `database/skill-runs/asd-ste/{yymmdd}.{N}.yaml`, is not drawn: each step adds its title, model and time to it.
 
 # When the Skill Runs
 
@@ -45,14 +46,14 @@ flowchart TB
     RESULT>"Check result"]
     RES7>"Replacement result"]
     RSTAT>"Review statuses"]
-    CK0[("YAML checkpoint: step_0")]
-    CK1[("YAML checkpoint: step_1")]
-    CK2[("YAML checkpoint: step_2")]
-    CK3[("YAML checkpoint: step_3")]
-    CK4[("YAML checkpoint: step_4")]
-    CK5[("YAML checkpoint: step_5")]
-    CK6[("YAML checkpoint: step_6")]
-    CK7[("YAML checkpoint: step_7")]
+    CK0[("Step file: step_0.yaml")]
+    CK1[("Step file: step_1.yaml")]
+    CK2[("Step file: step_2.yaml")]
+    CK3[("Step file: step_3.yaml")]
+    CK4[("Step file: step_4.yaml")]
+    CK5[("Step file: step_5.yaml")]
+    CK6[("Step file: step_6.yaml")]
+    CK7[("Step file: step_7.yaml")]
     INVT[("step_1-inventory.txt")]
     F1[("step_1-findings.json")]
     CHKT[("step_3-check.txt")]
@@ -156,26 +157,28 @@ How to read the diagram:
 
 - A parallelogram is an external input: `config.yaml`, the STE rules digest, the STE dictionary, the project-approved words and the project rules, the US spelling list, the keep-English list and the STE specification — none of which any step writes.
   A flag is one-run data: the prompt and the Answers, the check result Step 3 prints, the review statuses the user sets on the review page, and the replacement result Step 7 prints.
-  A cylinder is a record: the source file and its TW twin, which only Step 7 writes; the draft and its TW twin; each step's group of the YAML checkpoint; the seven files Steps 1, 3 and 6 write in the Checkpoint Dir; the git history; and the header quotes of the dependents.
+  A cylinder is a record: the source file and its TW twin, which only Step 7 writes; the draft and its TW twin; each step's step file; the seven files Steps 1, 3 and 6 write in the Working Dir; the git history; and the header quotes of the dependents.
   A rounded box is a step.
 - A hexagon is a role outside the skill: the user, who supplies the prompt, the Answers and the review statuses, and reads the check result, the draft, the review page and the replacement result.
 - A solid arrow moves data, the way the data moves; a two-headed arrow is data one step both reads and writes.
 - A blue arrow carries data that is itself written into a record, or turned into a record's content; every other arrow is black.
-  The prompt and the Answers go into the YAML checkpoint, and so do the source file's skeleton, the dictionary's replacements, the project-approved words a file uses and the American spelling of each British one, which the findings files list, so their arrows are blue.
+  The prompt goes into the run record, and the Answers into the step files; the source file's skeleton, the dictionary's replacements, the project-approved words a file uses and the American spelling of each British one go into the findings files; so their arrows are blue.
   The source file reaches the draft through Step 2, which says it again in STE, and the STE specification reaches it through Step 3, which records its fingerprint in the header quote — as it records that of ste-custom.md.
-  Step 6 builds the review page from the source file, the draft, their TW twins, the statements kept in source wording in `step_2`, the warnings left in `step_3` and the review notes it writes, so each of those arrows is blue.
+  Step 6 builds the review page from the source file, the draft, their TW twins, the statements kept in source wording in `step_2.yaml`, the warnings left in `step_3.yaml` and the review notes it writes, so each of those arrows is blue.
   The review statuses go into `step_6-status.json` through the review server Step 6 starts, and the review builder puts them on the page it builds next, so their arrows are blue as well.
-  Step 7 puts the draft and its TW twin in the place of the source file and its TW twin, records the source file again in the header quotes of the dependents, and saves the user's answer in `step_7`, so those arrows are blue too.
-  Data that only steers how a step works, such as `config.yaml`, the paths in `step_0`, the inventory in `step_1`, the verdict in `step_3`, the review page that `step_6` names, the change that Step 7 reads from the git history, the STE rules digest, or the source file that Step 3 only compares against, stays black even when that step writes a record.
-- The YAML checkpoint is one file, but each step owns its group, so the diagram draws one record for each group, each with one writer.
-  Step 0 starts the file afresh, so a run never mixes its groups with an earlier run's.
-  Under `run step N`, Step N reads `step_0`, and the groups of the steps before it, from the YAML checkpoint: the arrows from the checkpoint into Steps 1 to 7.
+  Step 7 puts the draft and its TW twin in the place of the source file and its TW twin, records the source file again in the header quotes of the dependents, and saves the user's answer in `step_7.yaml`, so those arrows are blue too.
+  Data that only steers how a step works, such as `config.yaml`, the paths in `step_0.yaml`, the inventory, the verdict in `step_3.yaml`, the review page that `step_6.yaml` names, the change that Step 7 reads from the git history, the STE rules digest, or the source file that Step 3 only compares against, stays black even when that step writes a record.
+- Each step writes its own step file, so the diagram draws one record for each, each with one writer.
+  Each run has its own Working Dir, so a run never mixes its step files with an earlier run's.
+  Under `run step N`, Step N reads `step_0.yaml`, and the step files of the steps before it, from the newest run of the source file, which the draft tool's `runs` finds: the arrows from the step files into Steps 1 to 7.
 - Some records are edited in turn.
   Step 2 writes the draft whole and Step 3 corrects it, reading what it corrects; re-running Step 2 overwrites Step 3's corrections, so Step 2 asks before it overwrites a file that exists.
-  Steps 1 and 3 each write a findings file through `check_ste.py`, and read it back to save their group.
+  Steps 1 and 3 each write a findings file through `check_ste.py`, and read it back to save its name and its verdict in their step file.
   Step 4 and Step 5 each add a commit to the git history as earlier runs and the user left it.
   Step 6 writes the review notes, and its review builder reads them back to build the review page.
   The review server that Step 6 starts writes `step_6-status.json` at each review status the user sets, after the run has ended, and the review builder reads it back when Step 6 runs again.
+  A run that has no `step_6-status.json` of its own starts from that of the newest earlier run of the same source file, read from that run's Working Dir: the diagram draws the two as one record.
+  Outside any run, `draft.py recheck` writes Step 3's files and `step_3.yaml` again in the newest run of a draft's source file, as Step 3 does.
   Step 7 reads the draft and its TW twin as Steps 2, 3 and 5 left them, writes them into the place of the source file and its TW twin, and deletes them.
 - The source file and its TW twin were there before the run: every step before Step 7 reads them as it found them, and Step 7, their one writer, reads what it wrote to check it.
   Step 7 also reads each dependent's header quote, as the run found it, before it records the source file there again.
@@ -208,7 +211,8 @@ The scripted-versus-not rule of skill-writing.md, answered once for this skill:
 **Steps 1, 3, 6 and 7 run a script for their work, Step 0 runs one for its paths, and Steps 2, 4 and 5 do not**, because the inventory and the check are exact comparisons that a program makes faster and without missing one, the review page lays out four files and links every line reference the same way each time, and the replacement cuts the header note, points the TW twin's pairing line back at the source file and finds the dependents the same way each time, whereas Step 0 has to decide which file the user meant, Step 2 is the rewrite itself — a judgement about meaning that no program can make — and Steps 4 and 5 turn on the user's answers.
 Step 6 writes its review notes itself, because what a reviewer should compare is a reading of the rewrite, and leaves the layout and the check of every line reference to its script.
 Step 7 reads each dependent itself, because whether it still holds after the change is a reading, and leaves the replacement and the search to the draft tool.
-Every step also runs the step saver, `save_step.py`, to save its group of the YAML checkpoint: copying a long list into YAML is work a program does without missing an entry.
+Every step also runs the step saver, `save_step.py`, to write its step file and to add itself to the run record: copying a long list into YAML is work a program does without missing an entry.
+Under `run step N`, the draft tool's `runs` reads the `step_0.yaml` of each run, to find the newest run of the source file.
 
 ```
 Step 0 - Warmup
@@ -227,12 +231,16 @@ Step 0 - Warmup
           common/scripts/depends_on.py
   runs    draft.py paths
           ├─ reads the header quote of <name>.md
-          └─ prints the paths of <name>-tw.md, the draft, the draft's TW twin and the Checkpoint Dir
-  runs    save_step.py --new
-          └─ writes the YAML checkpoint afresh: step_0
+          └─ prints the paths of <name>-tw.md, the draft and the draft's TW twin
+  runs    save_step.py --new-run
+          ├─ reads database/skill-runs/asd-ste/: the largest Run Number of today
+          ├─ writes the run record
+          └─ makes the Working Dir
+  runs    save_step.py
+          └─ writes the step file: step_0.yaml
 
 Step 1 - Inventory the Source
-  reads   the YAML checkpoint: step_0 (under run step 1)
+  reads   the step file: step_0.yaml (under run step 1)
   runs    check_ste.py
           ├─ reads ste-dictionary.json
           ├─ reads ste-custom.md
@@ -241,19 +249,19 @@ Step 1 - Inventory the Source
           ├─ writes step_1-inventory.txt
           └─ writes step_1-findings.json
   runs    save_step.py
-          ├─ reads step_1-findings.json
-          └─ writes the YAML checkpoint: step_1
+          ├─ reads step_1-findings.json: its verdict
+          └─ writes the step file: step_1.yaml
 
 Step 2 - Rewrite in STE
-  reads   the YAML checkpoint: step_0, and step_1 with step_1-inventory.txt (under run step 2)
+  reads   the step files: step_0.yaml, and step_1.yaml with step_1-inventory.txt (under run step 2)
   reads   ste-rules.md (whole)
   reads   <name>.md
   writes  the draft
   runs    save_step.py
-          └─ writes the YAML checkpoint: step_2
+          └─ writes the step file: step_2.yaml
 
 Step 3 - STE Check
-  reads   the YAML checkpoint: step_0 (under run step 3)
+  reads   the step file: step_0.yaml (under run step 3)
   runs    check_ste.py
           ├─ reads ste-dictionary.json, ste-custom.md, us-spelling.json, <name>.md, the draft
           ├─ writes step_3-check.txt
@@ -264,42 +272,44 @@ Step 3 - STE Check
           ├─ reads ste-custom.md (its bytes)
           └─ writes the header quote of the draft
   runs    save_step.py
-          ├─ reads step_3-findings.json
-          └─ writes the YAML checkpoint: step_3
+          ├─ reads step_3-findings.json: its verdict
+          └─ writes the step file: step_3.yaml
 
 Step 4 - Offer to Commit
-  reads   the YAML checkpoint: step_0 and step_3 (under run step 4)
+  reads   the step files: step_0.yaml and step_3.yaml (under run step 4)
   writes  git (on the user's yes)
   runs    save_step.py
-          └─ writes the YAML checkpoint: step_4
+          └─ writes the step file: step_4.yaml
 
 Step 5 - Offer the TW Twin
-  reads   the YAML checkpoint: step_0 and step_3 (under run step 5)
+  reads   the step files: step_0.yaml and step_3.yaml (under run step 5)
   runs    the chinese skill (on the user's yes)
           ├─ reads common/references/tw-keep-english.md
           ├─ runs scan_md.py, diff_md.py, check_parity.py
           └─ writes the draft's TW twin, and offers its own commit
   runs    save_step.py
-          └─ writes the YAML checkpoint: step_5
+          └─ writes the step file: step_5.yaml
 
 Step 6 - Build the Review Page
-  reads   the YAML checkpoint: step_0 (under run step 6), step_2 when it is there, and step_3
+  reads   the step files: step_0.yaml (under run step 6), step_2.yaml when it is there, and step_3.yaml
   reads   <name>.md, <name>-tw.md, the draft, the draft's TW twin
   writes  step_6-notes.html
+  runs    draft.py runs (when this run has no step_6-status.json)
+          └─ reads the step_0.yaml of each run: the newest earlier run of <name>.md with a step_6-status.json
   runs    make_review.py
           ├─ reads <name>.md, <name>-tw.md, the draft, the draft's TW twin
-          ├─ reads the YAML checkpoint: step_2 when it is there, and step_3
+          ├─ reads the step files: step_2.yaml when it is there, and step_3.yaml
           ├─ reads step_6-notes.html
-          ├─ reads step_6-status.json (when it is there)
+          ├─ reads step_6-status.json (this run's, or else the newest earlier run's, when there is one)
           └─ writes step_6-review.html
   runs    review_server.js --probe, and starts review_server.js in the background when none answers
-          ├─ serves every step_6-review.html under checkpoints/asd-ste/
+          ├─ serves every step_6-review.html under checkpoints/asd-ste/, with the source file of its step_0.yaml
           └─ writes step_6-status.json, at each review status the user sets
   runs    save_step.py
-          └─ writes the YAML checkpoint: step_6
+          └─ writes the step file: step_6.yaml
 
 Step 7 - Replace the Source
-  reads   the YAML checkpoint: step_0, step_3 and step_6 (under run step 7)
+  reads   the step files: step_0.yaml, step_3.yaml and step_6.yaml (under run step 7)
   reads   config.yaml (optional): the skillGroups roots
   runs    draft.py replace (on the user's approval)
           ├─ reads the draft and the draft's TW twin
@@ -317,8 +327,9 @@ Step 7 - Replace the Source
           └─ reads <name>.md, <name>-tw.md, common/references/tw-keep-english.md
   runs    depends_on.py check
           └─ reads each dependent recorded again, and <name>.md
-  runs    save_step.py
-          └─ writes the YAML checkpoint: step_7
+  runs    save_step.py --last
+          ├─ writes the step file: step_7.yaml
+          └─ writes result: completed in the run record
 ```
 
 No run reads SKILL-tw.md, this file, README-tw.md, ste-custom-tw.md or `convert_spec.py`.
@@ -343,18 +354,22 @@ asd-ste/SKILL.md
  ├─⇄ asd-ste/scripts/draft.py
  │     what Steps 0 and 7 say the script takes, prints and exits with, and the keys its paths command prints;
  │     the script alone knows the name of a draft, and no document gives it;
- │     its recheck command, which ste-custom.md says to run once a day, saves step_3 as Step 3 does
+ │     its runs command, which reads source_file in the step_0.yaml of each run;
+ │     its recheck command, which ste-custom.md says to run once a day: it writes Step 3's files and step_3.yaml
+ │     in the newest run of a draft's source file, as Step 3 does, and adds the step to its run record
  │     └─▶ common/skills/chinese/scripts/check_parity.py: replace finds the TW twin's pairing line
  │           as the parity check does, and points it back at the source file
  ├─⇄ asd-ste/scripts/save_step.py
- │     its options, and the keys each step saves with it
+ │     its options, the keys each step saves with it, the Run Number and the fields of the run record
  ├─⇄ asd-ste/scripts/make_review.py
  │     what Step 6 says the script takes, prints and exits with, the line references of the review notes,
- │     and the keys of step_2 and step_3 it lists on the review page
+ │     and the keys of step_2.yaml and step_3.yaml it lists on the review page
  │     └─⇄ asd-ste/scripts/review_server.js: the status box of an item and its key, the status
- │           and healthz paths the page asks, and the shape of step_6-status.json
+ │           and healthz paths the page asks, the shape of step_6-status.json,
+ │           and the review statuses a page keeps while its run has none
  ├─⇄ asd-ste/scripts/review_server.js (Node.js)
- │     the port, the probe's exit codes and the start commands that Step 6 gives
+ │     the port, the probe's exit codes and the start commands that Step 6 gives;
+ │     the review root under the root of the workspace it is started in, and the source_file of step_0.yaml its index lists
  ├─⇄ asd-ste/references/ste-rules.md (declared in SKILL.md's header quote)
  │     Step 2 builds the draft by its House Rules
  ├─⇄ asd-ste/scripts/convert_spec.py
@@ -362,7 +377,7 @@ asd-ste/SKILL.md
  ├─▶ common/scripts/depends_on.py: the record commands of Steps 3 and 7, and the header quote format
  ├─▶ common/skills/chinese/scripts/check_parity.py: Step 7's parity check
  ├─▶ common/rules/skill-writing.md: how the steps are written
- ├─▶ common/rules/report-yaml-rules.md: the shape of the YAML checkpoint and the fields it requires
+ ├─▶ common/rules/run-data-rules.md: the Run Number, the step files, the run record and the Working Dir of a run
  └─▶ common/rules/md-style.md: one sentence on each line
        └─ checked by reformat_md.py and check_reformat.py (--twin: the twin's sentences one for one)
 
@@ -435,8 +450,11 @@ outputs already written (after a rule, the dictionary, or the project-approved w
  │    it shows, changed: build it again with run step 6
  ├─ checkpoints/asd-ste/*/step_6-status.json: an item whose text changes is pending again;
  │    a change to how make_review.py makes an item's key makes every item pending
- └─ checkpoints/asd-ste/*/process.yaml: a change to the keys a step saves leaves older checkpoints
-    in the old shape, until the next run of their source file starts them afresh
+ ├─ checkpoints/asd-ste/*/step_*.yaml: a change to the keys a step saves leaves the step files of older runs
+ │    in the old shape; a new run starts a new Working Dir, and run step N on an older run reads the old shape
+ ├─ database/skill-runs/asd-ste/*.yaml: the run records stay; a change to their fields leaves older ones as they are
+ └─ checkpoints/asd-ste/{parent}-{name}/: the Checkpoint Dirs from before run-data-rules.md, one for each source file;
+    no step reads them, and the user removes them when they want
 ```
 
 After a change, run the checks that cover it:
@@ -446,13 +464,16 @@ After a change, run the checks that cover it:
 - `check_ste.py --ste` on `skill-groups/common/references/DFD.md`, which Step 7 replaced: it passes.
 - `draft.py`: `paths` on `skill-groups/common/references/DFD.md` says that `ste` is true; `replace`, on copies of DFD.md, DFD-tw.md and their drafts as commit `1710643` holds them, writes each draft over its copy with a header note of two lines and deletes the drafts, and a second run exits `1`; `dependents` of `skill-groups/common/references/DFD.md`, with this workspace and InvestForge as the roots, lists the documents whose header quote records it.
   `replace`, on copies of SKILL-tmp.md, SKILL-tmp-tw.md and their drafts as commit `9722c0f` holds them, points the pairing line of the TW twin back at SKILL-tmp.md, and `check_parity.py` on the two finds no failure; with that line taken out of the draft's TW twin, it exits `1` and writes nothing.
-- `draft.py recheck`, on a copy of `.github` and `checkpoints/asd-ste` in a directory outside the workspace, with a `.git` directory of its own and one more row in the copy's ste-custom.md: `--dry-run` lists every file that records ste-custom.md, with the check each one would get; a draft given a semicolon keeps its old record, and so does its TW twin, and `recheck` exits `1`; a word outside the dictionary added to another draft is listed as a new warning, and that draft is recorded; once the semicolon is gone, `recheck` exits `0`, and `--dry-run` lists none.
+- `draft.py recheck`, on a copy of `skill-groups`, `config.yaml`, `checkpoints/asd-ste` and `database/skill-runs/asd-ste` in a directory outside the workspace, with a `.git` directory of its own and one more row in the copy's ste-custom.md: `--dry-run` lists every file that records ste-custom.md, with the check each one would get; a draft given a semicolon keeps its old record, and so does its TW twin, and `recheck` exits `1`; a word outside the dictionary added to another draft is listed as a new warning, and that draft is recorded, with `step_3-check.txt`, `step_3-findings.json` and `step_3.yaml` written again in the newest run of its source file and one more step in that run's run record; once the semicolon is gone, `recheck` exits `0`, and `--dry-run` lists none; the check of each draft writes its two files in `checkpoints/asd-ste/{yymmdd}.{N}/recheck/` of the copy, in the Working Dir of the newest run of its source file, and moves them from there into that Working Dir.
+- `save_step.py`: `--new-run` twice on one day gives `{yymmdd}.{N}` and `{yymmdd}.{N+1}`, each with its run record and its Working Dir; a save of Step 0 and of Step 1, with `--summary`, writes `step_0.yaml` and `step_1.yaml` with only their outputs — the findings file's name and verdict, not its findings — and adds two items, each with its `title`, `model` and `time`, to the run record; `--stopped` writes `result: stopped` and `stopped_at`, and `--last` writes `result: completed`; a save to a Run Number with no run record exits `2`.
+  Remove each file and directory the check made, by its full name.
+- `draft.py runs`, with a path and with a bare name: it lists the runs whose `step_0.yaml` names the source file, newest first, with the `step_6-status.json` of each.
 - `check_parity.py` for SKILL.md with SKILL-tw.md, for README.md with README-tw.md, and for ste-custom.md with ste-custom-tw.md: no failure.
 - `depends_on.py check` on SKILL.md and on this file: every declared file is UNCHANGED, or read and recorded again.
 - `/check-skill asd-ste`: every check passes, or each finding is settled.
-- A run of Steps 0, 1, 3, 4 and 6 on DFD.md as commit `1710643` holds it, written out with `git show`, with its TW twin and the two drafts, to a directory named `test` outside the workspace — a second DFD.md under the workspace makes `[[DFD]]` name two files, and `depends_on.py` refuses to record it — and run from the workspace root: its YAML checkpoint, `checkpoints/asd-ste/test-DFD/process.yaml`, holds `step_0`, `step_1`, `step_3`, `step_4` and `step_6`, each with its `title` and `time`, and `step_6-review.html` opens on the review notes, with every line reference a link.
+- A run of Steps 0, 1, 3, 4 and 6 on DFD.md as commit `1710643` holds it, written out with `git show`, with its TW twin and the two drafts, to a directory named `test` outside the workspace — a second DFD.md under the workspace makes `[[DFD]]` name two files, and `depends_on.py` refuses to record it — and run from the workspace root: its Working Dir, `checkpoints/asd-ste/{yymmdd}.{N}/`, holds `step_0.yaml`, `step_1.yaml`, `step_3.yaml`, `step_4.yaml` and `step_6.yaml`, its run record holds the five steps, each with its `title`, `model` and `time`, and `step_6-review.html` opens on the review notes, with every line reference a link.
 - `make_review.py` with review notes that name a line past the end of the draft: it exits `1` and writes no page.
-- `review_server.js` on a free port, with the page of that run: `--probe` exits `0` there and `1` on a port nothing uses; `/` lists `test-DFD`; a `PUT /test-DFD/status` with one key of the page is written to `step_6-status.json` and read back, and one with a key the page does not hold is refused with `400`.
+- `review_server.js` on a free port, started from a directory below the workspace root, with the page of that run: `--probe` exits `0` there and `1` on a port nothing uses; `/` lists the run, `{yymmdd}.{N}`, with its source file; a `PUT /{yymmdd}.{N}/status` with one key of the page is written to `step_6-status.json` and read back, and one with a key the page does not hold is refused with `400`; a page built with the `step_6-status.json` of an earlier run, served while its own run has none, keeps those review statuses.
 - `check_rsdc.py --rsdc references/ReviewPage-RSDC.md --tw references/ReviewPage-RSDC-tw.md`: no failure.
 
 # Tracked Dependencies
@@ -470,7 +491,7 @@ asd-ste/README.md (and README-tw.md, which copies its header quote)
   ─▶ common/references/us-spelling.json
   ─▶ common/rules/md-style.md
   ─▶ common/rules/skill-writing.md
-  ─▶ common/rules/report-yaml-rules.md
+  ─▶ common/rules/run-data-rules.md
   ─▶ common/templates/SKILL-tmp.md
   ─▶ common/templates/README-tmp.md
   ─▶ common/scripts/depends_on.py

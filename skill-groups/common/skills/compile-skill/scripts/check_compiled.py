@@ -5,10 +5,12 @@ contract is section 2.7 (CLI), and the order of its checks section 3.2
 (Execution Flow).
 
 Every run of the script happens in a fresh, empty temporary directory outside the workspace - so
-no workspace config.yaml can be found from it - with nothing on stdin, and no deterministic step
+no workspace config.yaml can be found from it, the isolated test that run-data-rules.md allows in
+the system's temporary directory - with nothing on stdin, and no deterministic step
 is asked to do its real work: only --help, --export-schema, an unknown step identifier, each
 cognitive step's handoff, and each deterministic interactive step with its required arguments
-left out. The script's own directory must be unchanged afterwards.
+left out. The script's own directory must be unchanged afterwards. Each temporary directory this
+checker makes is removed by its full path when the check ends, also when it fails.
 
 Before anything runs, the source fingerprint the script records (SOURCE_SHA256) is compared with
 the Skill Source as it is now, read by parsing the file rather than importing it (section 2.4,
@@ -31,6 +33,8 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from collections.abc import Iterator
+from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 
@@ -77,6 +81,16 @@ def said(proc: subprocess.CompletedProcess[str] | None) -> str:
         return "timed out - did it wait for input?"
     text = (proc.stdout + proc.stderr).strip().splitlines()
     return f"exit {proc.returncode}" + (f", said {text[-1][:120]!r}" if text else ", said nothing")
+
+
+@contextmanager
+def isolated_dir(prefix: str) -> Iterator[Path]:
+    """Make an empty directory in the system's temporary directory, outside the workspace, and remove it by its full path."""
+    path = Path(tempfile.mkdtemp(prefix=prefix))
+    try:
+        yield path
+    finally:
+        shutil.rmtree(path, ignore_errors=True)
 
 
 def snapshot(root: Path) -> dict[str, tuple[int, int]]:
@@ -263,8 +277,7 @@ def main() -> int:
     c.check("every function is type-hinted", not bare, "; ".join(bare))
 
     before = snapshot(script.parent)
-    with tempfile.TemporaryDirectory(prefix="compile-skill-check-") as tmp:
-        cwd = Path(tmp)
+    with isolated_dir("compile-skill-check-") as cwd:
 
         helped = run(script, ["--help"], cwd, args.timeout)
         ok = helped is not None and helped.returncode == 0
@@ -347,8 +360,8 @@ def main() -> int:
         # design document 2.7: a stale script refuses every invocation itself, with the stale code
         steps_ = schema.get("steps") if isinstance(schema, dict) else None
         first_id = steps_[0].get("id", "0") if isinstance(steps_, list) and steps_ and isinstance(steps_[0], dict) else "0"
-        with tempfile.TemporaryDirectory(prefix="compile-skill-stale-") as stale_tmp:
-            copy = Path(stale_tmp) / script.parent.name
+        with isolated_dir("compile-skill-stale-") as stale_tmp:
+            copy = stale_tmp / script.parent.name
             shutil.copytree(script.parent, copy, ignore=shutil.ignore_patterns("__pycache__"))
             src_copy = copy / "SKILL.md"
             src_copy.write_text(src_copy.read_text(encoding="utf-8-sig") + "\n<!-- changed after compiling -->\n", encoding="utf-8")

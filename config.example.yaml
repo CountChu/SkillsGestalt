@@ -4,7 +4,7 @@
 wikiDir: /path/to/your/ObsidianVault   # the Obsidian vault for the MD reports, and the Skills Dashboard in dashboard/skills.md; vaultName is its last path segment
 skillGroups:
   common: skill-groups/common       # the shared skills, rules, templates and scripts that every workspace uses
-  external: skill-groups/external   # skills that come from outside, such as eli5
+  external: skill-groups/external   # skills that come from outside
 keepEnglishChore: keep-english   # the chore that audits the 繁體中文 twins when tw-keep-english.md changes its version; AGENTS.md links it
 # identity:                 # the author and committer of each snapshot that publish-gestalt makes; without it, IDENTITY in publish_snapshot.py
 #   name: Your Name

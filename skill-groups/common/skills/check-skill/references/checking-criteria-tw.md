@@ -1,6 +1,6 @@
 # Checking Criteria
 
-> [[README-tmp]]  `2026-10-30`  `43ace64a88a6`
+> [[README-tmp]]  `2026-11-06`  `549f2d3ba535`
 > [[skill-writing]]  `2026-11-02`  `4884a31a0b2c`
 
 `check-skill` 這個 skill 所套用的判準。
@@ -44,13 +44,15 @@ skill 可以正當地省略它不需要的 template 區段——不呼叫任何 
    那些是兩份 template 自己的標題，因此以它們為準判斷，絕不以記憶中的清單為準。
    請讀 `missing_headings`，以及 `readme_shape.missing_headings`、`heading_order_ok` 與 `title_is_skill_name`。
    只要各 step 倚賴了該 skill 從未定義的名詞——這幾乎總是如此——缺少 `# TERMINOLOGY` 或 `# DEDICATED TERMINOLOGY` 就是 issue；只有完全沒有自身領域詞彙的 skill 才可以省略 dedicated 那一節。
-   對任何會寫出 MD report 或 YAML checkpoint 的 skill 而言，缺少 `# CONFIGURATION` 是 issue，因為它們的路徑沒有別的地方可放。
+   對任何會寫出 MD report 或 step 檔的 skill 而言，缺少 `# CONFIGURATION` 是 issue，因為它們的路徑沒有別的地方可放。
    **沒有 `README.md` 的 skill（`readme_shape.has_readme: false`）在這裡只算一項 issue，而不是缺幾節就算幾項**：它的 Dataflow、Step Purposes 與哪些檔案要隨它一起改，都沒有別的地方可放，check 6 也沒有東西可判定。
    對每一個 skill 而言，`README.md` 缺少 `## Dataflow` 都是 issue，理由見 check 6。
 3. **Glossary placement** — `terms_defined_in_configuration` 是否指出某個由 `# CONFIGURATION` 加以定義、而非僅僅給出路徑的 term？
    `# CONFIGURATION` 承載具體值；字彙表擁有定義。
    `- **X** — <path>` 這樣的行放在那裡是正確的；`- **X** — <what X means>` 這樣的行則屬於 `# TERMINOLOGY` 或 `# DEDICATED TERMINOLOGY`。
-4. **MUST FOLLOW contract** — 它是否宣告了逐步執行規則、它的 `run step N` 規則——選擇子的行為，或明確聲明本 skill 沒有這個選擇子——以及它的輸出契約（MD report / YAML checkpoint，或明確聲明兩者皆不產出）？
+   `# CONFIGURATION` 最多有三組，順序照範本：執行時讀取或執行的輸入與工具、一次執行的 working data、最後的輸出；放錯組的行，例如輸出那一組裡的範本，是 recommendation。
+   working data 那一組中的 Working Dir 行，由判準 15 判斷。
+4. **MUST FOLLOW contract** — 它是否宣告了逐步執行規則、它的 `run step N` 規則——選擇子的行為，或明確聲明本 skill 沒有這個選擇子——以及它的輸出契約（MD report / step 檔，或明確聲明兩者皆不產出）？
    no-forward-reference 規則與腳本與判斷之分的規則不在這裡宣告：[skill-writing.md](skill-groups/common/rules/skill-writing.md) 為每一個 skill 收錄它們，判準 7 在各個 step 本身判定前者，判準 12 判定後者的回答。
 5. **Step 0 - Warmup** — 它是否存在、是否命名為 `Warmup`，以及是否解析了後續 step 實際會用到的所有東西？
 6. **Step numbering** — `## Step N` 標題是否從 0 開始連續，沒有重複或跳號？
@@ -80,6 +82,13 @@ skill 可以正當地省略它不需要的 template 區段——不呼叫任何 
     絕不以肉眼判斷指紋；狀態由腳本決定。
 14. **README 的 twin** — 當 `SKILL.md` 有繁體中文 twin 時（`readme_shape.skill_has_twin`），`README.md` 是否也有一份（`readme_shape.has_twin`）？
     缺少 `README-tw.md` 是 recommendation：[skill-writing.md](skill-groups/common/rules/skill-writing.md) 要求它，但少了它，skill 照樣能執行。
+15. **One Working Dir** — `# CONFIGURATION` 是否最多只給一個 Working Dir，而 skill 在 `# CONFIGURATION` 之後是否把它稱為 Working Dir？
+    請讀 `template_shape.working_dir`：`configuration_lines`、`kinds` 與 `names_after_configuration`。
+    兩行 Working Dir，或兩種——一個 Temp Dir 加一個 Checkpoint Dir——是 issue：[run-data-rules.md](../../../rules/run-data-rules.md) 給一次執行一個 Working Dir，由 skill 的作者從兩者中選一個。
+    以 `Temp Dir` 或 `Checkpoint Dir` 而非 `Working Dir` 命名的行是 recommendation；修正方式是 ``- **Working Dir** — the Temp Dir, `temp\<skill>\{yymmdd}.{N}\` `` 或 ``- **Working Dir** — the Checkpoint Dir, `checkpoints\<skill>\{yymmdd}.{N}\` ``，後面接該行原本就說的、這個目錄存放什麼。
+    body 在 `# CONFIGURATION` 之後的通稱 `Temp Dir` 或 `Checkpoint Dir` 是 recommendation：修正方式是 `Working Dir`，而其中某個檔案的完整路徑，例如 `checkpoints\<skill>\{yymmdd}.{N}\step_3.yaml`，改成 Working Dir 中的 `step_3.yaml`。
+    skill 只是*展示*的名稱（`backticked` 或 `fenced`），或兩種本身就是主題時點名兩者的名稱，例如 skill 請作者選一個時，都不是 finding；指令範例可以保留 script 需要的具體路徑。
+    不寫 working data 的 skill 沒有 Working Dir 行，這不是 finding。
 
 ## 2. Config conformance
 
@@ -87,7 +96,7 @@ skill 可以正當地省略它不需要的 template 區段——不呼叫任何 
 
 `config.yaml` 是 `wikiDir` 與 `skillGroups` 的唯一事實來源。
 需要其中任一者的 skill 必須在 Step 0 解析它，而不是寫死。
-**並非每一個字面路徑都是缺陷**——`checkpoints\`、`database\` 與 `packages\` 位於 workspace 內，以字面書寫是正確的；而像 `](skill-groups/common/rules/report-md-rules.md)` 這樣的 Markdown 連結目標，是本專案自己的連結慣例：連結必須在磁碟上解析得到，因此它是刻意寫成字面的，永遠不是 finding。
+**並非每一個字面路徑都是缺陷**——`checkpoints\`、`temp\`、`database\` 與 `packages\` 位於 workspace 內，以字面書寫是正確的；而像 `](skill-groups/common/rules/report-md-rules.md)` 這樣的 Markdown 連結目標，是本專案自己的連結慣例：連結必須在磁碟上解析得到，因此它是刻意寫成字面的，永遠不是 finding。
 
 本項 check 的主體是**整個 skill 目錄**，而不只是 `SKILL.md`。
 判準 1-6 判定 `SKILL.md` 的 `config_shape` 事實；判準 7-8 则判定該目錄下每一份其他文字檔的 `dir_config_shape` 事實——各個腳本、各份 reference、繁體中文 twin，以及該 skill 自己的 `config.yaml`。
@@ -131,7 +140,7 @@ skill 可以正當地省略它不需要的 template 區段——不呼叫任何 
 1. **Overstated** — description 是否主張了某項沒有任何 step 執行的輸入、動作或輸出？
    這是 issue：它會讓這個 skill 被選來做它做不到的工作。
 2. **Unstated output** — 該 skill 是否總是寫出某個 description 從未提及的東西？
-   請比對 MUST FOLLOW 契約所宣告的每一項輸出——MD report、YAML checkpoint、資料儲存、HTML 頁面。
+   請比對 MUST FOLLOW 契約所宣告的每一項輸出——MD report、step 檔、run record、資料儲存、HTML 頁面。
 3. **Unstated action** — 是否有某個 step 做了 description 省略的實質行為，例如寫入 ADO、連線到某台主機、觸發 pipeline、寄送郵件，或變更共用檔案？
 4. **Stale** — description 是否仍在描述某個 step 早已改掉的行為，例如更名的輸出目錄或已移除的引數？
 5. **Trigger coverage** — 一個用日常語言詢問這個 skill 所做之事的使用者，真的會匹配到這段 description 嗎？
@@ -146,7 +155,7 @@ skill 可以正當地省略它不需要的 template 區段——不呼叫任何 
 - 只有當變體所指與該 term **意義相同**時才算缺陷。
   先確認所指對象——同樣的字詞可能指的是不同的東西，那時把它們改成大寫反而會顛倒意思。
 
-1. **Literal instead of term** — 某一節是否在已為某物定義 term 之處，仍直接指名原始產物（例如已定義 **YAML checkpoint** 卻寫 `process.yaml`）？
+1. **Literal instead of term** — 某一節是否在已為某物定義 term 之處，仍直接指名原始產物（例如已定義 **Step file** 卻寫 `step_1.yaml`）？
    引入該字面名稱的那一條字彙表條目保留它；其他每一處行文用法都應改用 term。
 2. **Wrong term** — 某一節是否在應指甲 term 處用了乙 term（例如所指之物住在檔案*內部*，卻指名了目錄）？
    這是 issue，不是風格問題：它誤述了所指對象。
@@ -182,6 +191,16 @@ skill 本身、以及它與它的 Python 腳本所叫用的工具或指令，必
 6. **Agent-specific tool names** — 某個 step 是否寫了只有某個 agent 才有的工具，例如 Copilot 的 `vscode_askQuestions` 或 Claude Code 的 `AskUserQuestion`，而它應該寫的是動作，例如問使用者一題多選題？
    這是 issue：其他 agent 都找不到這個工具，因此這個 step 會失敗或被略過。
    被當作「不要這麼做」的範例而引用的工具名稱不算 finding；只是前綴相同的函式或 URL scheme 也不算，例如腳本的 `vscode_url`。
+7. **Working data outside the Working Dir** — step 或 skill 所寫明的 script，是否把暫存檔、step 檔或資料檔寫在 `# CONFIGURATION` 所給、本次執行唯一的 Working Dir 之外，而 [run-data-rules.md](../../../rules/run-data-rules.md) 規定一次執行的所有 working data 都放在那裡？
+   寫在另一種 Working Dir 中的檔案——Working Dir 是 Checkpoint Dir 的 skill 寫在 `temp\` 的暫存檔，或 Working Dir 是 Temp Dir 的 skill 寫在 `checkpoints\` 的 step 檔——是 issue：一次執行只用一個 Working Dir。
+   請讀 `template_shape.working_dir`：`kinds` 與 `paths_after_configuration`，再看各 script 寫入的路徑。
+   透過 `tempfile`、`os.tmpdir()`、`mkdtemp` 或 `/tmp` 寫出的檔案是 issue：另一次執行、另一個 agent 與使用者都找不到這些檔案，失敗時也沒有人看得出這次執行做了多少工作。
+   recommendation 是：放在 `temp\` 或 `checkpoints\` 但不在一次執行之 Working Dir 中的暫存檔，例如 `temp\{skill}-{what}.py`；執行會寫暫存檔的 script、卻沒有把 Run Number 傳給它的 step；以及移除 Working Dir 或其中檔案的 step 或 script，因為使用者會手動移除它。
+   唯一的例外是不可找到 workspace 檔案（例如它的 `config.yaml`）的測試，且它在停止時移除自己的目錄，出錯後也一樣：這不是 finding。
+8. **Paths that follow the current directory or the script's location** — step 執行的 script 是否以目前的目錄為準取得 workspace 根目錄、Working Dir 或 `--out` 路徑，或從它自己的位置找出 workspace 根目錄，而它應該使用 skill 執行時所在 workspace 的根目錄：指令的某個選項指定的目錄，否則是從目前的目錄往上，最近一個 `config.yaml` 含有 `skillGroups` 的目錄？
+   從另一個目錄執行時，若資料寫到錯的地方，例如在目前的目錄旁邊多出一個 `checkpoints\`，這是 issue。
+   script 從它自己的檔案往上——Python 的 `__file__`、Node 的 `__dirname`——走到某個 `config.yaml` 來找根目錄時，也是 issue：這時，從另一個 workspace 就地讀取 skill group 的 workspace，會讀到另一個 workspace 的 `skillGroups` 與 `wikiDir`，並把它的 run record 與 Working Dir 寫到那裡。
+   script 從它自己的位置找到的 skill 或其 skill group 的檔案，例如 skill 自己的設定檔，不是 finding：它屬於 skill group，不屬於 workspace。
 
 ## 6. Dataflow
 
@@ -209,7 +228,7 @@ Dataflow 是該 skill 之 `README.md` 的 `## Dataflow`，finding 引用的每�
 3. **Agreement with the steps** — 圖上說每個 step 讀寫的東西，是否與該 step 自己那一節在執行時讀寫的相符？
    逐一拿每個 step 的那一節，去比對它的箭頭。
    不論哪一邊有缺口都是 issue：圖上漏掉的讀取，是沒人畫出來源的資料；漏掉的寫入，是沒人看得見寫入者的 record。
-4. **One writer per record** — 每個 record 是否都恰好只有一個寫入者：Checkpoint Dir 中的每一份資料檔、YAML checkpoint 的每一個 `step_{N}` 群組、MD report 的每一節？
+4. **One writer per record** — 每個 record 是否都恰好只有一個寫入者：Working Dir 中的每一份資料檔、每一個 step 檔、MD report 的每一節？
    請讀 `multi_writer_records` 與 `records_edited_in_turn`。
    較後的 step 不讀取就直接寫入的 record 是 issue，不論是圖上這樣畫、還是 step 真的這樣做：重跑其中一個，就會悄悄抹掉另一個的結果。
    較後的每個寫入者也讀取它的 record——雙向箭頭——是依序編輯，不算缺陷（DFD.md）；只需判斷重跑第一個寫入者，對它之後的編輯會怎樣，各 step 沒有說明就是 recommendation，例如第一個寫入者不先問就覆寫，而較後的 step 又沒有重新執行。

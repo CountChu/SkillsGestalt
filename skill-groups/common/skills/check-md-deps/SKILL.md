@@ -3,7 +3,7 @@ name: check-md-deps
 description: Checks the dependencies a Markdown file declares in its header quote - the > lines at its head, one link to each document it depends on, then the date and the fingerprint it was last confirmed against - and whether the TW twin beside it, <name>-tw.md, has kept up with it, and reports what has gone stale and what is malformed, each with a numbered suggestion in check-wiki-doc's report format. It changes no file until the user names the suggestions to apply. Use it on a SKILL.md, an RSDC, a template or a wiki note, or on a directory of them, and when asked whether a document's dependencies are still current.
 ---
 
-> [check-wiki-doc](../check-wiki-doc/SKILL.md)  `2026-10-10`  `12fef3478fea`
+> [check-wiki-doc](../check-wiki-doc/SKILL.md)  `2026-11-06`  `cb3534f8d3ad`
 
 # TERMINOLOGY
 
@@ -11,6 +11,10 @@ Terms that mean the same thing in every skill.
 
 - **no forward-reference** — the rule that a step must never depend on a step that comes after it.
   Naming a later step to route control flow does not break it; borrowing that step's output does.
+- **Run Number** — the number of one run, `{yymmdd}.{N}`.
+  `{N}` is the sequence number of the run of this skill on that date, and it starts at 1.
+- **Run record** — the file that records the time and the model of each step of one run.
+  The analysis of the efficiency of a skill uses it.
 
 # DEDICATED TERMINOLOGY
 
@@ -44,10 +48,21 @@ Define every noun the steps rely on, then **use the term** below instead of rest
 
 Concrete values this skill runs with.
 
+The inputs and tools, which the run reads or runs:
+
+- **Workspace configuration** — the [config.yaml](config.yaml) at the root of the workspace.
 - **Dependency Checker** — `{skillGroups.common}/scripts/depends_on.py`.
 - **Dependency Scanner** — `{skillGroups.common}/skills/check-md-deps/scripts/scan_md_deps.py`.
 - **Twin Differ** — `{skillGroups.common}/skills/chinese/scripts/diff_md.py`.
 - **report format** — 「4. 回報」 of [check-wiki-doc](../check-wiki-doc/SKILL.md).
+- **documents depended on** — each file that a dependency in a target file's header quote names.
+- **run data rules** — `{skillGroups.common}/rules/run-data-rules.md`.
+- **chinese skill** — `{skillGroups.common}/skills/chinese/SKILL.md`.
+
+The last outputs, which a person, a different skill or a subsequent analysis reads:
+
+- **Run record** — `database\skill-runs\check-md-deps\{yymmdd}.{N}.yaml`.
+- **Target files** — the target file and its TW twin; Step 3 changes them only for the suggestions that the user names.
 
 # MUST FOLLOW
 
@@ -57,14 +72,16 @@ Concrete values this skill runs with.
 - A step that a program can do deterministically must be run as a script.
   A step that needs reading, judgement, or summarization **must not** be scripted — write it as natural-language instructions for the agent to perform directly.
 - **This skill has no `run step N` selector — every run is a whole run.**
-  It keeps no YAML checkpoint for a step to read back, and a whole run costs one scan.
-- **This skill produces neither an MD report nor a YAML checkpoint.**
-  Its product is the report in the conversation; the only files it changes are target files, in Step 3 alone — and a TW twin, only through the `chinese` skill, which Step 3 runs for a twin suggestion the user names.
-- **Change no file before the user names the suggestions to apply.**
+  It keeps no step file for a step to read back, and a whole run costs one scan.
+- **This skill produces neither an MD report nor a step file.**
+  Its product is the report in the conversation; besides its **run record**, the only files it changes are target files, in Step 3 alone — and a TW twin, only through the `chinese` skill, which Step 3 runs for a twin suggestion the user names.
+- **Change no file but the run record before the user names the suggestions to apply.**
   The report is what a run is for; a fix made unasked hides the finding it fixes.
 - **Never suggest a record the run has not earned.**
   A `record` is suggested only for a dependency whose document has been read where it changed, and the target file found to still hold; a record made to silence a verdict vouches for a file nobody checked.
-- Follow [scratch-rules.md](skill-groups/common/rules/scratch-rules.md) for where a run's throwaway files go and how they are cleaned up.
+- Follow [run-data-rules.md](skill-groups/common/rules/run-data-rules.md) for the Run Number, the run record and the Working Dir of a run.
+- **Before the skill stops, show the path of the run record** — at the end of Step 2, and again at the end of Step 3 when it runs.
+  Show only the path, as a Markdown link whose target starts at the workspace and uses the forward slash — not as inline code or plain text: `[{yymmdd}.{N}.yaml](database/skill-runs/check-md-deps/{yymmdd}.{N}.yaml)`.
 
 # Prompt Examples
 
@@ -147,13 +164,14 @@ How to read the diagram:
   A dotted arrow carries no data: it is an order, or a change made by hand.
 - A blue arrow carries data that is itself written into a record, or turned into a record's content: the suggestions applied, the fingerprints of the documents depended on, recorded in the target files, and a target file translated into its TW twin.
   Every other arrow is black; the suggestions named only choose which of them Step 3 applies.
+- Each step also adds its time and model to the run record, and the diagram does not draw this record.
 
 # Steps at a Glance
 
 Each step at a glance, one row per step, named exactly as its heading: the script it runs, or a dash when it runs none.
-This skill writes no YAML checkpoint, so every YAML cell is a dash.
+This skill writes no step file, so every Step file cell is a dash.
 
-| Step | Script | YAML |
+| Step | Script | Step file |
 |---|---|---|
 | Step 0 - Warmup | — | — |
 | Step 1 - Scan the Dependencies | `scan_md_deps.py`, which runs `diff_md.py` | — |
@@ -190,6 +208,9 @@ It is not a summary of what the step does; the bullets below it already say that
 
 - Display the target paths.
 
+- Get the Run Number, as run-data-rules.md tells, and write the run record of the run, with the canonical skill invocation as its `prompt`.
+  Add this step to the run record.
+
 
 ## Step 1 - Scan the Dependencies
 
@@ -212,6 +233,8 @@ It is not a summary of what the step does; the bullets below it already say that
 
 - Display, for each target file, its dependencies with their verdicts, its count of format problems, and its twin verdict when it has a TW twin.
 
+- Add this step to the run record.
+
 
 ## Step 2 - Write the Suggestions
 
@@ -223,7 +246,7 @@ It is not a summary of what the step does; the bullets below it already say that
 
 - Rules that apply to every instruction below:
   - Write the report in the **report format**, in the language of the prompt.
-    Leave out check-wiki-doc's write-back to its architecture document: this step writes nothing.
+    Leave out check-wiki-doc's write-back to its architecture document: this step writes nothing but the run record.
   - Base every finding on the JSON and on what was read above — invent no change and no line.
     When it cannot be decided from them whether the target file still holds, make it a decision for the user, and say what is unknown.
   - Quote every line in full, as check-wiki-doc does, never cut short.
@@ -236,6 +259,8 @@ It is not a summary of what the step does; the bullets below it already say that
   4. **Twin**: for each TW twin whose twin verdict is `INCREMENTAL`, its change set, then the suggestion to run the `chinese` skill on the target file, which translates only the change set; for `FULL`, the reason, then the suggestion to run the `chinese` skill, which translates the whole file — or, when the twin has uncommitted changes of its own, a decision between committing them first, by hand, so that the `chinese` skill keeps them and translates only what changed, and letting it translate the whole file over them; for `UNCHECKED`, what stopped the comparison.
 
 - End the report by saying that no file has been changed, and that the user names the suggestions to apply by their numbers.
+
+- Add this step to the run record, and write `result: completed`: the report is what a run is for, and a run whose user names no suggestion ends here.
 
 
 ## Step 3 - Apply the Named Suggestions
@@ -258,3 +283,5 @@ It is not a summary of what the step does; the bullets below it already say that
   - Example: `python {skillGroups.common}\skills\check-md-deps\scripts\scan_md_deps.py "skill-groups\common\skills\compile-skill\SKILL.md"`
 
 - Report each named suggestion as done, with the verdicts the scan now gives, and say which suggestions remain unapplied.
+
+- Add this step to the run record, and write `result: completed` again, because it is the last step.

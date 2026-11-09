@@ -3,10 +3,11 @@
 > [DFD.md](../../references/DFD.md)  `2026-11-02`  `4030d6783acf`
 > [md-style.md](../../rules/md-style.md)  `2026-11-02`  `639a95083dd2`
 > [skill-writing.md](../../rules/skill-writing.md)  `2026-11-02`  `4884a31a0b2c`
-> [SKILL-tmp.md](../../templates/SKILL-tmp.md)  `2026-11-02`  `4c84755e0122`
-> [README-tmp.md](../../templates/README-tmp.md)  `2026-10-19`  `43ace64a88a6`
+> [run-data-rules.md](../../rules/run-data-rules.md)  `2026-11-07`  `cb4e585a6fbc`
+> [SKILL-tmp.md](../../templates/SKILL-tmp.md)  `2026-11-06`  `0a1b73b86b05`
+> [README-tmp.md](../../templates/README-tmp.md)  `2026-11-06`  `549f2d3ba535`
 > [depends_on.py](../../scripts/depends_on.py)  `2026-10-16`  `53b1d3e60eca`
-> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-02`  `f4a7161de90a`
+> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-06`  `96933f295048`
 
 What the gen-skill skill is made of, and what its [SKILL.md](SKILL.md) depends on.
 A skill loads its whole SKILL.md each time it runs, so the parts a run does not need are kept here: SKILL.md does not link to this file, and no run loads it.
@@ -88,6 +89,7 @@ How to read the diagram:
 - A parallelogram is an external input: `config.yaml`, the skills already written under the `skillGroups` roots, the two templates, and the rules and references the new skill's header quote declares, `skill-writing.md` and `DFD.md` among them — none of which any step writes.
   A flag is one-run data: the prompt, the conversation above it and the Answers, the inputs Step 0 parsed, and the output choices Step 1 asked for.
   A cylinder is a record: the new skill's `SKILL.md`, its script and reference placeholders, its `README.md`, its TW twins, and the git history.
+  Each step also adds its time and model to the run record, and the diagram does not show this record; the skill writes no step file.
   A rounded box is a step.
 - A hexagon is a role outside the skill: the user, who supplies the prompt, the conversation and the Answers, and reads the new `SKILL.md` and `README.md`.
 - A solid arrow moves data, the way the data moves; a two-headed arrow is data one step both reads and writes.
@@ -106,7 +108,7 @@ Each step, named exactly as its heading in SKILL.md, with its Purpose: why it ex
 - Step 0 - Warmup
   Settle the name, the description, the group and the steps of the new skill before any file is written — a skill written under a guessed name or group lands where nobody looks for it, or over a skill that already exists.
 - Step 1 - Ask which output files the skill produces
-  Settle up front the choices that shape both documents — an MD report, a YAML checkpoint and a pair of twins each decide sections of SKILL.md and README.md alike, and an answer asked for later would rewrite what was already written.
+  Settle up front the choices that shape both documents — an MD report, step files, the Working Dir and a pair of twins each decide sections of SKILL.md and README.md alike, and an answer asked for later would rewrite what was already written.
 - Step 2 - Copy Template
   Start SKILL.md as an exact copy of the template, so that every section the template carries is there before any is filled — a SKILL.md written from memory drops the sections nobody remembered.
 - Step 3 - Build SKILL.md
@@ -134,9 +136,10 @@ Step 0 - Warmup
           common/rules/skill-writing.md
           common/scripts/depends_on.py
   checks  whether a skill of the same name exists under any skillGroups root
+  writes  database/skill-runs/gen-skill/{yymmdd}.{N}.yaml: the run record
 
 Step 1 - Ask which output files the skill produces
-  asks    the user: an MD report, a YAML checkpoint, and the TW twins
+  asks    the user: an MD report, step files, the Working Dir, and the TW twins
 
 Step 2 - Copy Template
   reads   common/templates/SKILL-tmp.md
@@ -166,6 +169,7 @@ Step 6 - Create the TW twins
           └─ writes <skill>/SKILL-tw.md and <skill>/README-tw.md, and offers its own commit
 ```
 
+Steps 1 to 6 each add themselves to the run record that Step 0 writes, and Step 6 writes `result: completed` in it.
 No run reads SKILL-tw.md, this file or README-tw.md.
 
 # When the Skill Is Changed
@@ -189,6 +193,7 @@ gen-skill/SKILL.md
  │     Step 5 names the template's placeholders, its header quote lines and its sections
  │     a template in STE: MUST FOLLOW drops its STE header-quote lines and its header note from the copy
  ├─▶ common/rules/skill-writing.md: how the steps are written, here and in every skill this one writes
+ ├─▶ common/rules/run-data-rules.md: the Run Number, the run record and the Working Dir of a run
  ├─▶ common/references/DFD.md: how Step 5 draws a Dataflow
  ├─▶ common/scripts/depends_on.py: Step 5's record command and the header quote format
  ├─▶ common/skills/chinese/SKILL.md: what Step 6 hands it, and the twins it writes
@@ -227,6 +232,7 @@ gen-skill/README.md (and README-tw.md, which copies its header quote)
   ─▶ common/references/DFD.md
   ─▶ common/rules/md-style.md
   ─▶ common/rules/skill-writing.md
+  ─▶ common/rules/run-data-rules.md
   ─▶ common/templates/SKILL-tmp.md
   ─▶ common/templates/README-tmp.md
   ─▶ common/scripts/depends_on.py

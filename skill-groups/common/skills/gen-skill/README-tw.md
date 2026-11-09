@@ -3,10 +3,11 @@
 > [DFD.md](../../references/DFD.md)  `2026-11-02`  `4030d6783acf`
 > [md-style.md](../../rules/md-style.md)  `2026-11-02`  `639a95083dd2`
 > [skill-writing.md](../../rules/skill-writing.md)  `2026-11-02`  `4884a31a0b2c`
-> [SKILL-tmp.md](../../templates/SKILL-tmp.md)  `2026-11-02`  `4c84755e0122`
-> [README-tmp.md](../../templates/README-tmp.md)  `2026-10-19`  `43ace64a88a6`
+> [run-data-rules.md](../../rules/run-data-rules.md)  `2026-11-07`  `cb4e585a6fbc`
+> [SKILL-tmp.md](../../templates/SKILL-tmp.md)  `2026-11-06`  `0a1b73b86b05`
+> [README-tmp.md](../../templates/README-tmp.md)  `2026-11-06`  `549f2d3ba535`
 > [depends_on.py](../../scripts/depends_on.py)  `2026-10-16`  `53b1d3e60eca`
-> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-02`  `f4a7161de90a`
+> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-06`  `96933f295048`
 
 gen-skill skill 由哪些部分組成，以及它的 [SKILL.md](SKILL.md) 依賴哪些檔案。
 skill 每次執行都會載入整份 SKILL.md，所以執行時用不到的部分放在這裡：SKILL.md 不連到本檔，也沒有任何一次執行會載入它。
@@ -88,6 +89,7 @@ flowchart TB
 - 平行四邊形是 external input：`config.yaml`、`skillGroups` 各根目錄下已經寫好的 skill、兩份 template，以及新 skill 的 header quote 宣告的規則與參考文件——`skill-writing.md` 與 `DFD.md` 也在其中——沒有任何 step 會寫入它們。
   旗形是 one-run data：prompt、它上方的對話與 Answers、Step 0 解析出的輸入，以及 Step 1 詢問到的輸出選擇。
   圓柱是 record：新 skill 的 `SKILL.md`、它的腳本與參考檔佔位檔、它的 `README.md`、它的 TW twins，以及 git history。
+  每個 step 也把自己的時間與模型加進 run record，而圖中不畫這份 record；本 skill 不寫 step 檔。
   圓角方框是 step。
 - 六角形是 skill 之外的 role：使用者，提供 prompt、對話與 Answers，並閱讀新的 `SKILL.md` 與 `README.md`。
 - 實線箭頭沿著資料移動的方向搬移資料；雙頭箭頭表示某個 step 對同一份資料既讀又寫。
@@ -106,7 +108,7 @@ flowchart TB
 - Step 0 - Warmup
   在寫入任何檔案之前，先確定新 skill 的名稱、描述、群組與各個 step——以猜測的名稱或群組寫出的 skill，會落在沒有人會去找的地方，或蓋掉一個已經存在的 skill。
 - Step 1 - Ask which output files the skill produces
-  一開始就把決定兩份文件形狀的選擇問清楚——MD report、YAML checkpoint 與一組 twin，各自決定 SKILL.md 與 README.md 兩邊的章節，晚一點才問到的答案，會改寫已經寫好的內容。
+  一開始就把決定兩份文件形狀的選擇問清楚——MD report、step 檔、Working Dir 與一組 twin，各自決定 SKILL.md 與 README.md 兩邊的章節，晚一點才問到的答案，會改寫已經寫好的內容。
 - Step 2 - Copy Template
   讓 SKILL.md 從 template 的完整複本開始，使 template 帶有的每一節在填寫之前都已就位——憑記憶寫出的 SKILL.md，會漏掉沒有人記得的那幾節。
 - Step 3 - Build SKILL.md
@@ -134,9 +136,10 @@ Step 0 - Warmup
           common/rules/skill-writing.md
           common/scripts/depends_on.py
   checks  whether a skill of the same name exists under any skillGroups root
+  writes  database/skill-runs/gen-skill/{yymmdd}.{N}.yaml: the run record
 
 Step 1 - Ask which output files the skill produces
-  asks    the user: an MD report, a YAML checkpoint, and the TW twins
+  asks    the user: an MD report, step files, the Working Dir, and the TW twins
 
 Step 2 - Copy Template
   reads   common/templates/SKILL-tmp.md
@@ -166,6 +169,7 @@ Step 6 - Create the TW twins
           └─ writes <skill>/SKILL-tw.md and <skill>/README-tw.md, and offers its own commit
 ```
 
+Step 1 到 Step 6 都把自己加進 Step 0 寫出的 run record，Step 6 並在其中寫入 `result: completed`。
 沒有任何一次執行會讀 SKILL-tw.md、README.md 或本檔。
 
 # When the Skill Is Changed
@@ -189,6 +193,7 @@ gen-skill/SKILL.md
  │     Step 5 names the template's placeholders, its header quote lines and its sections
  │     a template in STE: MUST FOLLOW drops its STE header-quote lines and its header note from the copy
  ├─▶ common/rules/skill-writing.md: how the steps are written, here and in every skill this one writes
+ ├─▶ common/rules/run-data-rules.md: the Run Number, the run record and the Working Dir of a run
  ├─▶ common/references/DFD.md: how Step 5 draws a Dataflow
  ├─▶ common/scripts/depends_on.py: Step 5's record command and the header quote format
  ├─▶ common/skills/chinese/SKILL.md: what Step 6 hands it, and the twins it writes
@@ -227,6 +232,7 @@ gen-skill/README.md (and README-tw.md, which copies its header quote)
   ─▶ common/references/DFD.md
   ─▶ common/rules/md-style.md
   ─▶ common/rules/skill-writing.md
+  ─▶ common/rules/run-data-rules.md
   ─▶ common/templates/SKILL-tmp.md
   ─▶ common/templates/README-tmp.md
   ─▶ common/scripts/depends_on.py

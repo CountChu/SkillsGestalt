@@ -1,7 +1,7 @@
 ---
 name: imp-home
 description: >-
-  在 prompt 指名的 target 目錄裡，帶著一個 hub app 走完五個 command 的 lifecycle。一個 hub 是一個 Node 伺服器（`node server.js`），提供單一一頁按鈕，它的 `app.config.json` 裡的 link list 每有一筆就是一顆。它的 command：`setup` 一次性地建立 target frame 與它的 `app.config.json`，並以 prompt 指名的 hub 為它播種；`gen` 依據這個 skill 的 references 裡的設計寫出這個 app——一份 RSDC 文件與一份 wireframe，各有英文與繁體中文——並把那些文件複製進 target；`update` 先改那份設計、後改程式碼；`test` 提供這個 hub 並像讀者那樣讀它；`run` 啟動它，並在它有回應時停下。`gen` 與 `update` 都不會提供它們寫出來的東西，`test` 與 `run` 都不改變任何事物。第一次 `update` 會為那個 target 永久關閉 `setup` 與 `gen`。一筆項目可以被 MOUNTED：hub 在自己的某個路徑下親自提供那個 app，由一筆 registry 條目指名。每次執行都寫一份 MD report 與一份 YAML checkpoint。
+  在 prompt 指名的 target 目錄裡，帶著一個 hub app 走完五個 command 的 lifecycle。一個 hub 是一個 Node 伺服器（`node server.js`），提供單一一頁按鈕，它的 `app.config.json` 裡的 link list 每有一筆就是一顆。它的 command：`setup` 一次性地建立 target frame 與它的 `app.config.json`，並以 prompt 指名的 hub 為它播種；`gen` 依據這個 skill 的 references 裡的設計寫出這個 app——一份 RSDC 文件與一份 wireframe，各有英文與繁體中文——並把那些文件複製進 target；`update` 先改那份設計、後改程式碼；`test` 提供這個 hub 並像讀者那樣讀它；`run` 啟動它，並在它有回應時停下。`gen` 與 `update` 都不會提供它們寫出來的東西，`test` 與 `run` 都不改變任何事物。第一次 `update` 會為那個 target 永久關閉 `setup` 與 `gen`。一筆項目可以被 MOUNTED：hub 在自己的某個路徑下親自提供那個 app，由一筆 registry 條目指名。每次執行都寫一份 MD report、它的 step file 與一份 run record。
 ---
 
 本文件為 [SKILL.md](skill-groups/common/skills/imp-home/SKILL.md) 的繁體中文版；真正會執行的是 SKILL.md，任一份改了某節，另一份必須在同一次執行中、以相同編號一起改。
@@ -11,12 +11,18 @@ description: >-
 每一個 skill 裡都指同一件事的 term。
 
 - **`run step N`** — 一個放在 prompt 結尾、指名某一個步驟的選擇子。
-  它**只**執行那一個步驟，並從 YAML checkpoint 把先前每一個步驟的輸出讀回來。
-- **Checkpoint Dir** — 存放某個 skill 的 YAML checkpoint 的每次執行專屬目錄。
-  每個 skill 都有自己的；這個 skill 的寫在 **CONFIGURATION** 底下。
-- **YAML checkpoint** — Checkpoint Dir 裡的 `process.yaml`。
-  每個步驟都把自己的輸出寫在 `step_{N}` 群組底下，於是後面的步驟是把它們讀回來，而不是重算一次。
-- **MD report** — 這個 skill 寫進 wiki vault 的 Markdown 報告，放在一個以該 skill 命名的資料夾裡，在結果各節之上帶著標準表頭（Skill、Checkpoint、Created、Updated、Prompt）。
+  它**只**執行那一個步驟，並從各自的 step file 把先前每一個步驟的輸出讀回來。
+- **Run Number** — 一次執行的編號 `{yymmdd}.{N}`。
+  `{N}` 是這個 skill 在那一天的執行序號，從 1 開始。
+- **Working Dir** — 一次執行所用的目錄，存放這次執行所有的 working data：它的 step file、資料檔與暫存檔。
+  這個 skill 的 Working Dir 是 Checkpoint Dir，**CONFIGURATION** 列出它。
+  skill 不移除它。
+- **Checkpoint Dir** — 位於 workspace 根目錄 `checkpoints\` 的 Working Dir。
+- **Step file** — Working Dir 裡的 `step_{N}.yaml`。
+  每個步驟都把自己的輸出寫在那裡，於是後面的步驟是把它們讀回來，而不是重算一次。
+- **Run record** — 記下一次執行每個步驟的時間與模型的檔案。
+  分析一個 skill 的效率時會用到它。
+- **MD report** — 這個 skill 寫進 wiki vault 的 Markdown 報告，放在一個以該 skill 命名的資料夾裡，在結果各節之上帶著標準表頭（Skill、Run record、Created、Updated、Prompt）。
 - **no forward-reference** — 一個步驟絕不得依賴排在它後面的步驟的規則。
   指名某個較後面的步驟來安排流程走向並不違反它；借用那個步驟的輸出才違反。
 
@@ -32,7 +38,7 @@ description: >-
 - **lifecycle** — 單向的順序 `setup` → `gen` → `update`，而 **test** 與 **run** 在有程式碼之後的任何時點都可用。
   **update** 是那道只朝一個方向開的門：它一旦跑過，**setup** 與 **gen** 就對那個 target 永遠關閉。
 - **lifecycle record** — `{target}\.imp-home.json`，承載 **phase**，以及一份針對這個 **target** 執行過的每一個 **command** 及其時間戳的 `history`。
-  它住在 **target** 裡而不是某個 checkpoint 裡，因為 **lifecycle** 橫跨多次工作階段，而一個每次執行專屬的檔案會把它忘掉。
+  它住在 **target** 裡而不是某個 step file 裡，因為 **lifecycle** 橫跨多次工作階段，而一個每次執行專屬的檔案會把它忘掉。
   app 從不讀它。
 - **phase** — **lifecycle record** 所承載的、最後一個改變狀態的 **command**：`setup`、`gen` 或 `update`。
   **run** 什麼都不改，所以從不改變它。
@@ -98,19 +104,31 @@ description: >-
 這個 skill 執行時所用的具體值。
 底下每一條路徑都是這個 skill 的常數；關於正在處理的那個 hub 的一切，都是從 prompt 指名的那個 **target** 讀出來的。
 
-- **Checkpoint Dir** — `checkpoints\imp-home\{hub}-{command}-{yymmdd-hhmm}\`。
-- **YAML checkpoint** — Checkpoint Dir 裡的 `process.yaml`。
-- **MD report** — `{wikiDir}\imp-home\imp-home-{hub}-{command}-{yymmdd-hhmm}.md`，帶著與 Checkpoint Dir 相同的 `{hub}`、`{command}` 與時間戳，其中 `wikiDir` 來自工作區的 [config.yaml](config.yaml)（在 Step 0 解析）——絕不把 wiki 根目錄寫死。
+執行時讀取或執行的輸入與工具：
+
+- **Workspace configuration** — workspace 根目錄的 [config.yaml](config.yaml)。
 - **seed** — `{skillGroups.common}\skills\imp-home\server\` 與 `{skillGroups.common}\skills\imp-home\references\`。
 - **seed documents** — [Home-RSDC.md](skill-groups/common/skills/imp-home/references/Home-RSDC.md)、`Home-RSDC-tw.md`、[Wireframe.md](skill-groups/common/skills/imp-home/references/Wireframe.md) 與 `Wireframe-tw.md`。
 - **setup tool** — `{skillGroups.common}\skills\imp-home\setup_target.py`。
 - **skill config** — `{skillGroups.common}\skills\imp-home\config.yaml`。
+- **RSDC standard** — `{skillGroups.common}\references\RSDC-Standard.md`，其圖的記法在 `{skillGroups.common}\references\DFD.md`。
+- **run-data rules** — `{skillGroups.common}\rules\run-data-rules.md`。
+- **configs of other skills** — `skillGroups` 各根目錄底下每個 skill 的 config，**setup** 會搜尋其中是否有對 **target** 的宣告。
+- **Node** — `PATH` 上的 `node`，用來啟動 hub。
+- **server origin** — `http://127.0.0.1:{port}`，其中 port 是 **app config** 的 `port`。
+
+一次執行的 working data，執行結束後沒有人、也沒有 skill 讀它：
+
+- **Working Dir** — Checkpoint Dir，`checkpoints\imp-home\{yymmdd}.{N}\`：step file、探測、Step 3 在其中 `target-copy\` 的拋棄式 **target** 副本，以及 `test_hub.js` 在其中 `test-hub\` 的 hub 複本。
+
+最後的輸出，人、另一個 skill 或之後的分析會讀它：
+
+- **Run record** — `database\skill-runs\imp-home\{yymmdd}.{N}.yaml`。
+- **MD report** — `{wikiDir}\imp-home\imp-home-{hub}-{command}-{yymmdd}.{N}.md`，帶著 **hub name**、**command** 與 Run Number，其中 `wikiDir` 來自工作區的 [config.yaml](config.yaml)（在 Step 0 解析）——絕不把 wiki 根目錄寫死。
 - **target** — 來自 prompt 第二行，相對於工作區根目錄。
   它位於 wiki vault 之外。
 - **lifecycle record** — `{target}\.imp-home.json`。
 - **target documents** — `{target}\docs\`。
-- **RSDC standard** — `{skillGroups.common}\references\RSDC-Standard.md`，其圖的記法在 `{skillGroups.common}\references\DFD.md`。
-- **server origin** — `http://127.0.0.1:{port}`，其中 port 是 **app config** 的 `port`。
 
 # MUST FOLLOW
 
@@ -194,11 +212,11 @@ description: >-
 - **遵守 `run step N` 選擇子**：執行 Step N，然後停下；絕不執行更後面的步驟。
   它與 **run** 這個 command 不同——第三行上單獨的 `run` 是 command，而只有 `run step` 後面接一個數字才是選擇子，一個 prompt 可以同時帶有兩者。
 - MD report 的表頭與形狀，遵循 [report-md-rules.md](skill-groups/common/rules/report-md-rules.md)。
-- YAML checkpoint 的形狀與必填欄位，遵循 [report-yaml-rules.md](skill-groups/common/rules/report-yaml-rules.md)。
-- 一次執行的拋棄式檔案該放哪裡、以及如何清掉，遵循 [scratch-rules.md](skill-groups/common/rules/scratch-rules.md)——那些跳脫探測與掛載探測正是這一類。
-- **在這個 skill 結束之前，顯示 server origin、target、MD report 與 YAML checkpoint**——只顯示這四個，並各自渲染成可點擊的 Markdown 連結。
+- 一次執行的 Run Number、step file、run record 與 Working Dir，遵守 [run-data-rules.md](skill-groups/common/rules/run-data-rules.md)——那些跳脫探測與掛載探測，以及 Step 3 那份拋棄式的 **target** 副本，都放進 Working Dir。
+  一次在最後一個步驟之前就停下的執行，依它所說，在 run record 裡寫 `result: stopped` 與 `stopped_at`；被閘門拒絕的執行停在 `step_0`。
+- **在這個 skill 結束之前，顯示 server origin、target、MD report 與 run record**——只顯示這四個，並各自渲染成可點擊的 Markdown 連結。
   **server origin** 是一個 `http://` 網址，就以它自己連結，而且只由 **test** 與 **run** 這兩個會啟動伺服器的 **command** 顯示；**setup**、**gen** 與 **update** 則省略它，因為它們沒有留下任何正在執行的東西。
-  MD report 位於 vault 裡、在這個工作區之外，所以用 `obsidian://open?vault={vaultName}&file=<vault-relative-path>` URI 連結它（例如 `[imp-home-{hub}-{command}-{yymmdd-hhmm}.md](obsidian://open?vault={vaultName}&file=imp-home/imp-home-{hub}-{command}-{yymmdd-hhmm}.md)`）；**target** 與 YAML checkpoint 則維持工作區相對、使用正斜線的目標（例如 `[process.yaml](checkpoints/imp-home/{hub}-{command}-{yymmdd-hhmm}/process.yaml)`）。
+  MD report 位於 vault 裡、在這個工作區之外，所以用 `obsidian://open?vault={vaultName}&file=<vault-relative-path>` URI 連結它（例如 `[imp-home-{hub}-{command}-{yymmdd}.{N}.md](obsidian://open?vault={vaultName}&file=imp-home/imp-home-{hub}-{command}-{yymmdd}.{N}.md)`）；**target** 與 run record 則維持工作區相對、使用正斜線的目標（例如 `[{yymmdd}.{N}.yaml](database/skill-runs/imp-home/{yymmdd}.{N}.yaml)`）。
   - 每一次執行都要這樣做，包含像 `run step 0` 這種只跑一部分的執行。
 
 # Prompt Examples
@@ -292,6 +310,9 @@ Step 4 同時承載兩半，是因為它們是關於同一個執行中頁面的�
   - 在底下的步驟裡，凡是出現 `{wikiDir}`、`{vaultName}` 或 `{skillGroups.common}` 的地方都代入解析出來的值，包含出現在指令裡的。
   - 如果 `config.yaml` 不存在、或缺了某個需要的鍵，就停下來問使用者。
 
+- 依 run-data-rules.md 所說取得 Run Number，並寫出這次執行的 run record。
+  它排在底下的閘門之前，所以被閘門拒絕的執行也會留下它的 run record。
+
 - 這個 skill 不呼叫任何 API，也不需要任何一種憑證。
 
 - prompt 會是上面 **Prompt Examples** 所示形式的其中一種。
@@ -344,9 +365,10 @@ Step 4 同時承載兩半，是因為它們是關於同一個執行中頁面的�
 - 檢查 port 是否已經被佔用。
   有回應通常表示先前某次執行的伺服器還活著，這沒問題——說出來，然後要嘛沿用它、要嘛把它停掉，而不是再啟動一個根本綁不上去的。
 
-- 讀時鐘**一次**，並推導出這次執行的 `{yymmdd-hhmm}` 時間戳，再連同 **hub name** 與 **command** 推導出那兩條輸出路徑。
+- 從 **hub name**、**command** 與 Run Number 推導出 MD report 的路徑。
 
-- 儲存 YAML checkpoint `step_0`，內容包含解析出來的 `wikiDir`、**target**、**hub name** 及它從哪裡來、**command**、從 **lifecycle record** 讀到的 **phase** 與 `history`、閘門的判定、port 以及它是否被佔用、**link list** 與它的數量、每一個 **mount source** 與它解析成了什麼、哪些 mount 帶有 `app.js`、任何 **change requests**、Node 版本、時間戳、輸出路徑、步驟選擇子，以及時間。
+- 儲存 `step_0.yaml`，內容包含：解析出來的 `wikiDir`、**target**、**hub name** 及它從哪裡來、**command**、從 **lifecycle record** 讀到的 **phase** 與 `history`、閘門的判定、port 以及它是否被佔用、**link list** 與它的數量、每一個 **mount source** 與它解析成了什麼、哪些 mount 帶有 `app.js`、任何 **change requests**、Node 版本、Run Number、輸出路徑，以及步驟選擇子。
+  把這個步驟加進 run record。
 
 - 顯示 **target**、**command**、**phase**，以及閘門判定了什麼。
   這個步驟裡建立 MD report 檔案是選擇性的。
@@ -358,7 +380,7 @@ Step 4 同時承載兩半，是因為它們是關於同一個執行中頁面的�
 - **只在 `setup` 這個 command 時執行。**
   對其他任何 **command**，直接跳到那個 command 所導向的步驟。
 
-- 從 YAML checkpoint 的 `step_0` 群組，把 **target**、**hub name**、**seed entry** 與已解析的 **link list** 讀回來。
+- 從 `step_0.yaml`，把 **target**、**hub name**、**seed entry** 與已解析的 **link list** 讀回來。
 
 - **執行 setup tool** 來寫出 **target frame**：
   - 例如：`python {skillGroups.common}\skills\imp-home\setup_target.py --hub {hub name} --target {target}`
@@ -372,7 +394,8 @@ Step 4 同時承載兩半，是因為它們是關於同一個執行中頁面的�
 - **說出接下來是什麼**：**target** 現在有了一個框架，而且沒有任何東西可以執行。
   下一個 **command** 是 **gen**。
 
-- 儲存 YAML checkpoint `step_1`，內容包含寫出的檔案與它們的大小、帶過去的 **link list**、每一個 **mount** 的就緒狀態、寫出的 **lifecycle record**，以及時間。
+- 儲存 `step_1.yaml`，內容包含：寫出的檔案與它們的大小、帶過去的 **link list**、每一個 **mount** 的就緒狀態，以及寫出的 **lifecycle record**。
+  把這個步驟加進 run record，並寫 `result: completed`，因為它是 **setup** 的最後一個步驟。
 
 - 儲存 MD report 檔案。
   附加並顯示一個 **Setup** 區段：寫出的框架與大小、帶過去的按鈕、任何被回報為尚未就緒的 mount，以及現在被記錄下來的 **phase**。
@@ -384,7 +407,7 @@ Step 4 同時承載兩半，是因為它們是關於同一個執行中頁面的�
 - **只在 `gen` 這個 command 時執行。**
   對其他任何 **command**，直接跳到那個 command 所導向的步驟。
 
-- 從 YAML checkpoint 的 `step_0` 群組，把 **target**、**change requests** 與 **link list** 讀回來。
+- 從 `step_0.yaml`，把 **target**、**change requests** 與 **link list** 讀回來。
 
 - **這個步驟沒有腳本。**
   從一份寫好的設計產生出一份實作是判斷；一個被要求去做這件事的程式，只不過是在宣稱它做完了。
@@ -410,7 +433,8 @@ Step 4 同時承載兩半，是因為它們是關於同一個執行中頁面的�
   這個 **command** 寫出了一個 `server.js`，並沒有啟動它，所以這裡沒有任何東西是在執行狀態下被觀察過的。
   下一個 **command** 是 **test**，或者用 **run** 單純把它開起來。
 
-- 儲存 YAML checkpoint `step_2`，內容包含每一項 **change request**、據以產生的那些 seed 文件章節、寫出的程式碼檔案、複製過去的文件、記錄下來的每一項偏離、追加的 **lifecycle record**，以及時間。
+- 儲存 `step_2.yaml`，內容包含：每一項 **change request**、據以產生的那些 seed 文件章節、寫出的程式碼檔案、複製過去的文件、記錄下來的每一項偏離，以及追加的 **lifecycle record**。
+  把這個步驟加進 run record，並寫 `result: completed`，因為它是 **gen** 的最後一個步驟。
 
 - 儲存 MD report 檔案。
   附加並顯示一個 **Gen** 區段：
@@ -427,7 +451,7 @@ Step 4 同時承載兩半，是因為它們是關於同一個執行中頁面的�
 - **只在 `update` 這個 command 時執行。**
   對其他任何 **command**，直接跳到那個 command 所導向的步驟。
 
-- 從 YAML checkpoint 的 `step_0` 群組，把 **target**、**change requests** 與 **link list** 讀回來。
+- 從 `step_0.yaml`，把 **target**、**change requests** 與 **link list** 讀回來。
 
 - **這個步驟沒有腳本。**
   判斷一項改動要求是什麼意思、它該落在設計的哪裡、以及它蘊含什麼程式碼，這是判斷。
@@ -454,9 +478,11 @@ Step 4 同時承載兩半，是因為它們是關於同一個執行中頁面的�
   - 一項 `mounts:` 改動要求會被套用到 **app config** 的 `links` 上，透過 **app registry** 解析，每一個解析出來的 `appDir` 以絕對路徑寫入，並在它旁邊寫上該條目的 **owner skill**——hub 會在一個 mount 準備失敗時所提供的頁面上顯示那個擁有者，而少了它，一個備不起來的 mount 就說不出該去跑誰。
 
 - **把這次改動可能弄壞的東西重新證明一次**，在一個備用 port 上、針對一份拋棄式的 **target** 複本——絕不用真正的 port、也絕不用 **target** 本身。
+  把這份複本放在 Working Dir 裡的 `target-copy\`；探測結束時它仍留在那裡。
   **target documents** 的 Verification Obligations 列出了那些義務；重跑這次改動可能碰到的那幾項：
   - 如果有任何東西碰到了 label、href 或 note 抵達 markup 的方式，就重測跳脫。
   - 如果有任何東西碰到了路由，就重測掛載——包含一條**巢狀**路徑、一個裸前綴、一次 throw、一次 rejection、一個**漏網的**非同步失敗，以及一個沒有 `app.js` 的 mount。
+  - 指名 `test_hub.js` 的義務，以 `node {skillGroups.common}\skills\imp-home\scripts\test_hub.js --run {yymmdd}.{N} {Working Dir}\target-copy` 重跑，帶入這次執行的 Run Number；它把 hub 複本放在 Working Dir 裡的 `test-hub\`。
 
 - **往 lifecycle record 追加一筆**：一筆帶時間戳的 `update`，並把 **phase** 設為 `update`。
   如果這是第一筆，就明白說出 **setup** 與 **gen** 現在對這個 **target** 已經關閉。
@@ -465,7 +491,8 @@ Step 4 同時承載兩半，是因為它們是關於同一個執行中頁面的�
   它們是對著一份拋棄式副本跑的，所以它們證明的是這項改動沒有弄壞它們所涵蓋的那些東西——不是證明了 **target** 能提供服務。
   下一個 **command** 是 **test**，或者用 **run** 單純把它開起來。
 
-- 儲存 YAML checkpoint `step_3`，內容包含每一項 **change request**、它改動的文件章節、它改動的程式碼檔案、重跑的探測與它們的結果、追加的 **lifecycle record**，以及時間。
+- 儲存 `step_3.yaml`，內容包含：每一項 **change request**、它改動的文件章節、它改動的程式碼檔案、重跑的探測與它們的結果，以及追加的 **lifecycle record**。
+  把這個步驟加進 run record，並寫 `result: completed`，因為它是 **update** 的最後一個步驟。
 
 - 儲存 MD report 檔案。
   附加並顯示一個 **Update** 區段：
@@ -493,7 +520,7 @@ Step 4 同時承載兩半，是因為它們是關於同一個執行中頁面的�
   **被檢查的那一半通過，不等於這個步驟通過**——在一個沒有人會想用的頁面上，那一半裡的每一項檢查都會通過，而這正是被判斷的那一半存在的全部理由。
   一次只回報前半就停下的 **test**，並沒有完成這個步驟。
 
-- 從 YAML checkpoint 的 `step_0` 群組，把 **target** 與 port 讀回來。
+- 從 `step_0.yaml`，把 **target** 與 port 讀回來。
 
 ### The checked half
 
@@ -545,9 +572,10 @@ Step 4 同時承載兩半，是因為它們是關於同一個執行中頁面的�
 
 - 不要修好一個目標、不要重啟另一個伺服器，也不要修改另一個 skill 的產出。
 
-- 儲存 YAML checkpoint `step_4`。
-  **一次 `test` 記下** **server origin**、綁定的 port 與 host、行程 id、Node 版本、`/healthz` 的回應、anchor 比對結果、每一個 **mount** 的狀態、被審視過的按鈕、**dead link** 的數量、看了什麼以及它顯示了什麼、wireframe 對帳結果、整體狀態、建議的下一個 **command**，以及時間。
-  **一次 `run` 只記下其中前六項**——origin、port 與 host、行程 id、Node 版本、`/healthz`、時間——因為它別的什麼都沒看到。
+- 儲存 `step_4.yaml`。
+  **一次 `test` 記下** **server origin**、綁定的 port 與 host、行程 id、Node 版本、`/healthz` 的回應、anchor 比對結果、每一個 **mount** 的狀態、被審視過的按鈕、**dead link** 的數量、看了什麼以及它顯示了什麼、wireframe 對帳結果、整體狀態，以及建議的下一個 **command**。
+  **一次 `run` 只記下其中前五項**——origin、port 與 host、行程 id、Node 版本、`/healthz`——因為它別的什麼都沒看到。
+  把這個步驟加進 run record，並寫 `result: completed`，因為它是 **test** 或 **run** 的最後一個步驟。
 
 - 儲存 MD report 檔案。
   對一次 **test** 附加並顯示一個 **Serve and Review** 區段，對一次 **run** 則是 **Serve** 區段。

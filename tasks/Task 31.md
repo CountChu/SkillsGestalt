@@ -28,8 +28,8 @@
 | references | [tw-keep-english.md](../skill-groups/common/references/tw-keep-english.md)（108） | [tw-keep-english-tw.md](../skill-groups/common/references/tw-keep-english-tw.md)（108） | `tw-keep-english-ste.md`（129，2026-10-18 已取代原檔） | `tw-keep-english-ste-tw.md`（129，2026-10-18 已取代中文版） |
 | rules | [md-style.md](../skill-groups/common/rules/md-style.md)（76） | [md-style-tw.md](../skill-groups/common/rules/md-style-tw.md)（76） | `md-style-ste.md`（153，2026-10-14 已取代原檔） | `md-style-ste-tw.md`（153，2026-10-14 已取代中文版） |
 | rules | [report-md-rules.md](../skill-groups/common/rules/report-md-rules.md)（61） | [report-md-rules-tw.md](../skill-groups/common/rules/report-md-rules-tw.md)（61） | `report-md-rules-ste.md`（88，2026-10-18 已取代原檔） | `report-md-rules-ste-tw.md`（88，2026-10-18 已取代中文版） |
-| rules | [report-yaml-rules.md](../skill-groups/common/rules/report-yaml-rules.md)（17） | [report-yaml-rules-tw.md](../skill-groups/common/rules/report-yaml-rules-tw.md)（17） | `report-yaml-rules-ste.md`（45，2026-10-18 已取代原檔） | `report-yaml-rules-ste-tw.md`（45，2026-10-18 已取代中文版） |
-| rules | [scratch-rules.md](../skill-groups/common/rules/scratch-rules.md)（27） | [scratch-rules-tw.md](../skill-groups/common/rules/scratch-rules-tw.md)（27） | `scratch-rules-ste.md`（52，2026-10-18 已取代原檔） | `scratch-rules-ste-tw.md`（52，2026-10-18 已取代中文版） |
+| rules | `report-yaml-rules.md`（17） | `report-yaml-rules-tw.md`（17） | `report-yaml-rules-ste.md`（45，2026-10-18 已取代原檔） | `report-yaml-rules-ste-tw.md`（45，2026-10-18 已取代中文版） |
+| rules | `scratch-rules.md`（27） | `scratch-rules-tw.md`（27） | `scratch-rules-ste.md`（52，2026-10-18 已取代原檔） | `scratch-rules-ste-tw.md`（52，2026-10-18 已取代中文版） |
 | rules | [skill-writing.md](../skill-groups/common/rules/skill-writing.md)（28） | [skill-writing-tw.md](../skill-groups/common/rules/skill-writing-tw.md)（28） | `skill-writing-ste.md`（48，2026-10-18 已取代原檔） | `skill-writing-ste-tw.md`（48，2026-10-18 已取代中文版） |
 | rules | [tools.md](../skill-groups/common/rules/tools.md)（54） | [tools-tw.md](../skill-groups/common/rules/tools-tw.md)（54） | `tools-ste.md`（97，2026-10-18 已取代原檔） | `tools-ste-tw.md`（97，2026-10-18 已取代中文版） |
 | templates | [README-tmp.md](../skill-groups/common/templates/README-tmp.md)（172） | [README-tmp-tw.md](../skill-groups/common/templates/README-tmp-tw.md)（172） | `README-tmp-ste.md`（196，2026-10-19 已取代原檔） | `README-tmp-ste-tw.md`（196，2026-10-19 已取代中文版） |
@@ -365,6 +365,10 @@ flag 原本也要加，但它在 DFD-ste、RSDC-Standard-ste 是 DFD 的旗形�
 —
 
 ## 8. 日誌
+
+### 2026-11-06
+
+- [[Task 100.4]] 刪掉 scratch-rules.md 與 report-yaml-rules.md，本檔連到它們的連結改成純文字的檔名。
 
 ### 2026-11-02
 

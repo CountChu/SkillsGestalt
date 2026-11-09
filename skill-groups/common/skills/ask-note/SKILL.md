@@ -7,7 +7,7 @@ description: >-
   hit, and answering from those sections alone - then closing with an Evidence Table naming the note,
   section, line range and date behind every claim, plus the sections it looked at and rejected. The
   notes directory is an optional first line and defaults to write-note. It reads the vault and
-  nothing else: it calls no API, writes no MD report, no YAML checkpoint and no file of any kind, and
+  nothing else: it calls no API, writes no MD report and no file other than its run record, and
   it never edits a note. Triggers "ask my notes", "what do my notes say about", "/ask-note".
 ---
 
@@ -17,6 +17,10 @@ Terms that mean the same thing in every skill.
 
 - **no forward-reference** - the rule that a step must never depend on a step that comes after it.
   Naming a later step to route control flow does not break it; borrowing that step's output does.
+- **Run Number** - the number of one run, `{yymmdd}.{N}`.
+  `{N}` is the sequence number of the run of this skill on that date, and it starts at 1.
+- **Run record** - the file that records the time and the model of each step of one run.
+  The analysis of the efficiency of a skill uses it.
 
 # DEDICATED TERMINOLOGY
 
@@ -42,8 +46,16 @@ Terms specific to this skill's domain.
 
 Concrete values this skill runs with.
 
+The inputs and tools, which the run reads or runs:
+
+- **Workspace configuration** - the [config.yaml](config.yaml) at the root of the workspace.
 - **Notes Dir** - `{wikiDir}\{notesDir}\`, where `wikiDir` comes from the workspace [config.yaml](config.yaml) (resolved in Step 0) and `notesDir` is the prompt's optional first line, defaulting to `write-note`.
   Never hardcode the vault root.
+- **Scripts** - `{skillGroups.common}\skills\ask-note\scripts\search_notes.py`.
+
+The last outputs, which a person, a different skill or a subsequent analysis reads:
+
+- **Run record** - `database\skill-runs\ask-note\{yymmdd}.{N}.yaml`.
 
 # MUST FOLLOW
 
@@ -55,16 +67,22 @@ Concrete values this skill runs with.
 - **This skill has no `run step N` selector - every run is a whole run.**
   Every step feeds the next, and with nothing persisted between runs there is no earlier output to resume from.
   Never invent a step selector for it.
-- **This skill produces no MD report, no YAML checkpoint, and no file of any kind.**
-  Everything it produces is displayed in the conversation.
+- **This skill produces no MD report and no step file; the only file it writes is its run record.**
+  Everything else it produces is displayed in the conversation.
   It never writes into the vault and never edits a note.
 - **Answer from the Notes Dir and nothing else.**
   Never call an API, read a share, or fill a gap from earlier conversation or from memory.
   If the **Surviving Hits** do not answer the **Question**, say which part they leave open rather than completing it from elsewhere.
 - **Every claim in the answer must be traceable to a row of the Evidence Table.**
   A statement no row supports must be cut or rewritten until a row supports it.
-- **The Evidence Table is the last thing the run displays.**
-  Nothing follows it.
+- **The Evidence Table is the last thing the run displays, except the link to the run record.**
+  Nothing else follows it.
+- Obey [run-data-rules.md](skill-groups/common/rules/run-data-rules.md) for the Run Number, the run record and the Working Dir of a run.
+- A run that stops before Step 4 writes `result: stopped` and `stopped_at` - the step that did not complete, for example `step_2` - into its run record.
+- **Before the skill stops, show the path of the run record.**
+  Show the path only, never its contents, as a clickable Markdown link - never as inline code or plain text.
+  Its link target starts at the workspace and uses the forward slash: `[{yymmdd}.{N}.yaml](database/skill-runs/ask-note/{yymmdd}.{N}.yaml)`.
+  Do this for every run, also one that stops early.
 
 # Prompt Examples
 
@@ -110,6 +128,10 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
   - Substitute the resolved values wherever `{wikiDir}`, `{vaultName}` or `{skillGroups.common}` appears in the steps below (including in commands).
   - If `config.yaml` is missing or a needed key is absent, stop and ask the user.
 
+- Save the canonical skill invocation, for the `prompt` field of the run record.
+
+- Get the Run Number, as run-data-rules.md tells, and write the run record of the run.
+
 - Check the below script exists before running the workflow.
   - `{skillGroups.common}\skills\ask-note\scripts\search_notes.py`
 
@@ -126,6 +148,8 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 - If the **Question** is empty, ask the user for it.
 
 - Display the resolved **Notes Dir**, its `.md` count, and the **Question**.
+
+- Add this step to the run record.
 
 
 ## Step 1 - Derive the Search Terms
@@ -146,6 +170,8 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
   Stop short only of terms so common they would mark nearly every **Section** as a **Hit** (`the`, `run`, `test` on their own).
 
 - Display the **Search Terms**, grouped by what each is standing in for, so the user can add one before the scan.
+
+- Add this step to the run record.
 
 
 ## Step 2 - Scan the notes for the Search Terms
@@ -171,6 +197,8 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - If there are no **Hits** at all, return to Step 1 once with broader **Search Terms** and scan again before concluding the notes do not answer the **Question**.
 
+- Add this step to the run record.
+
 
 ## Step 3 - Read the Hits and answer the Question
 
@@ -194,6 +222,8 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - Display the answer and the **Coverage** line.
 
+- Add this step to the run record.
+
 
 ## Step 4 - Display the Evidence Table
 
@@ -213,5 +243,7 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - If any **Search Term** matched nothing in Step 2, restate that here in one line - it bounds what this answer could have found.
 
-- This table is the last thing the run displays.
-  Nothing follows it.
+- Add this step to the run record, and write `result: completed`, because it is the last step.
+
+- This table is the last thing the run displays, except the link to the run record.
+  Nothing else follows it.

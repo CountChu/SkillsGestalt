@@ -9,6 +9,15 @@ It runs the app's OWN tests with the app's own runners - `unittest` for the Pyth
 with nothing installed.
 
 Zero is zero, never green: a target with no tests exits non-zero.
+
+Each run writes `unit-tests-{K}.json` into the Checkpoint Dir, where `{K}` is one more than the
+largest `{K}` already there, so a later `test` of the same session does not overwrite the result of
+an earlier one. A relative `--app-dir` or `--out` resolves against the workspace root, not the
+current directory. The root is the directory `--workspace` names, or else the nearest one, from the
+current directory up, whose `config.yaml` has `skillGroups`: the session resolver's `workspace_root`
+finds it, so it is the root that resolver prints the Checkpoint Dir relative to. It is never found
+from this file, which can be in a different workspace. That finder reads `config.yaml` with PyYAML,
+which the workspace has.
 """
 from __future__ import annotations
 
@@ -18,6 +27,10 @@ import os
 import re
 import subprocess
 import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from resolve_session import WORKSPACE_HELP, workspace_root  # noqa: E402  the root the session resolver prints its paths relative to
 
 UNITTEST_LINE = re.compile(r"^(?P<name>\S+ \([^)]+\)(?: \S+)?) \.\.\. (?P<outcome>ok|FAIL|ERROR|skipped.*)$")
 # A case carrying a docstring is printed over TWO lines - the name, then the docstring's first line
@@ -31,6 +44,17 @@ TAP_SUMMARY = re.compile(r"^# (?P<key>pass|fail|skipped|todo|tests) (?P<n>\d+)$"
 # rather than ignored: a file nobody runs is the failure this script exists to make visible.
 PY_TEST = re.compile(r"^test_.+\.py$")
 JS_TEST = re.compile(r"^.+\.test\.(js|mjs|cjs)$")
+# Node 21 and later read each `--test` argument as a glob pattern, not as a path. A path holding a
+# class `[1]`, a brace list `{a,b}` or range `{1..3}`, an extglob such as `@(a)`, or a backslash (a
+# separator there) then names other files or none, and Node skips the file without a word: exit 0,
+# the other files green. Node 20 reads the same argument as a path and runs it.
+GLOB_CONSTRUCT = re.compile(r"\[[^/]*\]|\{.*(?:,|\.\.).*\}|[?*+@!]\([^/]*\)|\\")
+RESULT_RE = re.compile(r"^unit-tests-(?P<k>[1-9]\d*)\.json$")
+
+
+def from_root(path: str, workspace: str | None) -> str:
+    """An absolute path as given; a relative one against the workspace root, not the current directory."""
+    return path if os.path.isabs(path) else str(workspace_root(workspace) / path)
 
 
 def run(cmd: list[str], cwd: str) -> tuple[int, str]:
@@ -154,12 +178,14 @@ def parse_tap(text: str) -> list[dict]:
 def main() -> None:
     ap = argparse.ArgumentParser(description="Run one imp-app target's unit tests.")
     ap.add_argument("--app-dir", required=True, help="the app directory, e.g. artifacts\\InvCov")
-    ap.add_argument("--out", required=True, help="the run's Checkpoint Dir; unit-tests.json is written there")
+    ap.add_argument("--out", required=True, help="the run's Checkpoint Dir; unit-tests-{K}.json is written there")
     ap.add_argument("--python", default=sys.executable, help="the Python the kernel's tests run under")
     ap.add_argument("--node", default="node", help="the Node the server's tests run under")
+    ap.add_argument("--workspace", help=WORKSPACE_HELP)
     args = ap.parse_args()
 
-    target = os.path.abspath(args.app_dir)
+    target = os.path.abspath(from_root(args.app_dir, args.workspace))
+    args.out = from_root(args.out, args.workspace)
     if not os.path.isdir(target):
         sys.exit(f"no such app dir: {target}")
     tests_dir = os.path.join(target, "tests")
@@ -193,10 +219,27 @@ def main() -> None:
         result["runners"].append({"runner": "unittest", "exit": code, "cases": len(cases), "output": text[-4000:]})
         result["cases"] += cases
     if js_tests:
-        code, text = run([args.node, "--test", "tests"], target)
-        cases = parse_tap(text)
-        result["runners"].append({"runner": "node:test", "exit": code, "cases": len(cases), "output": text[-4000:]})
-        result["cases"] += cases
+        # Each file by its path from the app dir, so that Node runs nodeTestFiles and nothing else.
+        # Naming the directory is not portable: Node 20 searches `tests`, but Node 21 and later take
+        # `tests` for a pattern that matches only the directory, load it as a module, and report one
+        # failed case named `tests` with no test run. No argument lets Node discover by its own
+        # naming across the whole app dir, which also runs `*-test.js`, `test-*.js` and more.
+        named = ["tests/" + rel.replace(os.sep, "/") for rel in js_tests]
+        refused = [n for n in named if GLOB_CONSTRUCT.search(n)]
+        runnable = [n for n in named if n not in refused]
+        if runnable:
+            code, text = run([args.node, "--test", *runnable], target)
+            cases = parse_tap(text)
+            result["runners"].append({"runner": "node:test", "exit": code, "cases": len(cases), "output": text[-4000:]})
+            result["cases"] += cases
+        # A file that Node would skip without a word is counted as a failed case, not left out: only
+        # a rename lets every Node run it.
+        result["cases"] += [{
+            "runner": "node:test",
+            "name": n,
+            "result": "fail",
+            "detail": "not run: Node 21 and later read this path as a glob pattern that does not match the file, and skip the file without a word; rename it so that its path holds no [..], {..,..}, @(..) or backslash",
+        } for n in refused]
 
     for c in result["cases"]:
         result["counts"][c["result"]] += 1
@@ -215,8 +258,9 @@ def main() -> None:
 
 def write_out(out_dir: str, result: dict) -> None:
     os.makedirs(out_dir, exist_ok=True)
-    path = os.path.join(out_dir, "unit-tests.json")
-    with open(path, "w", encoding="utf-8") as fh:
+    taken = [int(m.group("k")) for m in map(RESULT_RE.match, os.listdir(out_dir)) if m]
+    path = os.path.join(out_dir, f"unit-tests-{max(taken, default=0) + 1}.json")
+    with open(path, "x", encoding="utf-8") as fh:
         json.dump(result, fh, indent=2, ensure_ascii=False)
     result_for_print = dict(result)
     result_for_print["runners"] = [{k: v for k, v in r.items() if k != "output"} for r in result.get("runners", [])]

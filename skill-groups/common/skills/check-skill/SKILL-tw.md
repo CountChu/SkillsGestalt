@@ -1,7 +1,7 @@
 ---
 name: check-skill
 description: >-
-  檢查被指名之 skill 的 SKILL.md 與 README.md：比對 SKILL 與 README 兩份 template、在該 skill 目錄下的每一份文字檔上比對 workspace 的 `config.yaml` 慣例、檢查它的 description 是否與其 workflow 實際所做的相符、它的行文是否使用自己定義的 term、它的指令與腳本能否在 Windows、macOS 與 Linux 上執行，以及它的 README.md 中的 Dataflow 是否畫出各個 step 實際讀寫的東西。prompt 以編號選取這六項 check（`1` 指整項 check，`1.3` 指單一條判準），否則由 picker 詢問。它在對話中逐項 check 回報：先給 verdict，再把每個問題編號為 `<check>.<n>`，附上可以直接改的修正，或在需要使用者做選擇時，引述原文各行並列出以字母標示的選項。它不寫 MD report，也不寫 YAML checkpoint；它唯一保留的檔案是 Skills Dashboard（vault 中的 `dashboard\skills.md`），每個 skill 一列，帶著每一項 check 最新的 verdict。只有在使用者指名項目之後，它才會編輯 checked skill，並把每一處變更同步到該 skill 的繁體中文 twin，再把它標為需要重新檢查。
+  檢查被指名之 skill 的 SKILL.md 與 README.md：比對 SKILL 與 README 兩份 template、在該 skill 目錄下的每一份文字檔上比對 workspace 的 `config.yaml` 慣例、檢查它的 description 是否與其 workflow 實際所做的相符、它的行文是否使用自己定義的 term、它的指令與腳本能否在 Windows、macOS 與 Linux 上執行，以及它的 README.md 中的 Dataflow 是否畫出各個 step 實際讀寫的東西。prompt 以編號選取這六項 check（`1` 指整項 check，`1.3` 指單一條判準），否則由 picker 詢問。它在對話中逐項 check 回報：先給 verdict，再把每個問題編號為 `<check>.<n>`，附上可以直接改的修正，或在需要使用者做選擇時，引述原文各行並列出以字母標示的選項。它不寫 MD report，也不寫 step 檔；它保留每次執行的 run record 與 Skills Dashboard（vault 中的 `dashboard\skills.md`），每個 skill 一列，帶著每一項 check 最新的 verdict。只有在使用者指名項目之後，它才會編輯 checked skill，並把每一處變更同步到該 skill 的繁體中文 twin，再把它標為需要重新檢查。
 ---
 
 本文件為 [SKILL.md](skill-groups/common/skills/check-skill/SKILL.md) 的繁體中文版。
@@ -11,18 +11,23 @@ description: >-
 
 在每個 skill 中意義都相同的 term。
 
-- **Checkpoint Dir** — 存放某個 skill 之 YAML checkpoint 的每次執行目錄。
-  每個會寫出 YAML checkpoint 的 skill 都有自己的。
-- **YAML checkpoint** — Checkpoint Dir 內的 `process.yaml`。
-  每個 step 都把輸出寫在其中的 `step_{N}` 群組下，讓後續 step 讀回而不必重算。
-- **MD report** — skill 寫進 wiki vault 的 Markdown 報告，放在以該 skill 命名的資料夾中，於結果各節之上帶有標準表頭（Skill、Checkpoint、Created、Updated、Prompt）。
+- **Run Number** — 一次執行的編號 `{yymmdd}.{N}`。
+  `{N}` 是本 skill 在那一天的執行序號，從 1 開始。
+- **Working Dir** — 每次執行的目錄，存放一次執行的所有 working data：它的 step 檔、資料檔與暫存檔。
+  它是某個 skill 的 Temp Dir 或 Checkpoint Dir，由該 skill 的 CONFIGURATION 指明是哪一個。
+  skill 不移除它。
+- **Temp Dir** — 位於 `temp\<skill>\{yymmdd}.{N}\` 的 Working Dir，在 workspace 根目錄之下。
+- **Step file** — Working Dir 內的 `step_{N}.yaml`。
+  每個 step 都把輸出寫進自己的 step 檔，讓後續 step 讀回而不必重算。
+- **Run record** — `database\skill-runs\<skill>\{yymmdd}.{N}.yaml`，一次執行每個 step 的時間與模型。
+- **MD report** — skill 寫進 wiki vault 的 Markdown 報告，放在以該 skill 命名的資料夾中，於結果各節之上帶有標準表頭（Skill、Run record、Created、Updated、Prompt）。
 
 # DEDICATED TERMINOLOGY
 
 本 skill 領域專屬的 term。
 
 - **`{yymmdd-hh}`** — 執行戳記：執行開始的日期與小時，在 Step 0 讀取一次（例如 `260806-11`）。
-  它命名 **facts file**，而它的日期（寫成 `yyyy-mm-dd`）就是每個 checked skill 在 **Skills Dashboard** 上那一列所記錄的日期，因此一次執行不會落在兩個戳記底下。
+  它的日期（寫成 `yyyy-mm-dd`）就是每個 checked skill 在 **Skills Dashboard** 上那一列所記錄的日期，因此一次執行不會落在兩個戳記底下。
 - **checked skill** — 本次執行所檢視的 skill。
   Step 0-5 對它只會讀取；Step 6 會編輯它，而且只針對使用者指名的那些 **items**。
 - **skill directory** — checked skill 自己的資料夾：它的 `SKILL.md` 與 `README.md`、它們的繁體中文 twin、它的 `scripts\`、它的 `references\`，以及它自己的 `config.yaml`。
@@ -31,8 +36,8 @@ description: >-
   一次執行套用其任意組合，並可以 `<check>.<n>` 編號把某一項縮到單一條判準。
 - **checking criteria** — 六項 check 所套用的判準：每一項 check 都遵循的規則，以及每一項各自的編號判準。
   **判準歸它所有**；執行它們的 workflow 歸本文件所有，因此新增或修改一條判準，改的是那份檔案，絕不是改某個 step。
-- **facts file** — 掃描所寫出的暫存 YAML：每個 checked skill 一份 YAML 文件，只記事實、絕不記 verdict。
-  它是每項 check 讀取的輸入，並在 **Skills Dashboard** 更新之後刪除。
+- **facts file** — 掃描寫在本次執行 **Working Dir** 中的 YAML：每個 checked skill 一份 YAML 文件，只記事實、絕不記 verdict。
+  它是每項 check 讀取的輸入。
 - **fact group** — 某個 checked skill 之 facts-file 文件的一個頂層鍵：`template_shape`、`config_shape`、`dir_config_shape`、`leftovers`、`readme_shape`、`terminology`、`dataflow`。
 - **region** — 某項事實被找到的 `SKILL.md` 區域：`frontmatter`、`prompt_examples` 或 `body`。
   只有 `body` 會被判定。
@@ -60,9 +65,28 @@ description: >-
 
 本 skill 執行時所使用的具體值。
 
-- **facts file** — `temp\check-skill-facts-{yymmdd-hh}.yaml`，位於 workspace 根目錄之下。
+執行時讀取或執行的輸入與工具：
+
+- **Workspace configuration** — workspace 根目錄的 [config.yaml](config.yaml)。
 - **checking criteria** — [checking-criteria.md](skill-groups/common/skills/check-skill/references/checking-criteria.md)，位於 `{skillGroups.common}\skills\check-skill\references\` 之下。
+- **Skill Scanner** — `{skillGroups.common}\skills\check-skill\scripts\scan_skill.py`。
+- **Dashboard Updater** — `{skillGroups.common}\skills\check-skill\scripts\update_dashboard.py`。
+- **SKILL template** — `{skillGroups.common}\templates\SKILL-tmp.md`。
+- **README template** — `{skillGroups.common}\templates\README-tmp.md`。
+- **DFD notation** — `{skillGroups.common}\references\DFD.md`。
+- **Dependency Checker** — `{skillGroups.common}\scripts\depends_on.py`，由 **Skill Scanner** 載入。
+- **run data rules** — `{skillGroups.common}\rules\run-data-rules.md`。
+
+一次執行的 working data，執行結束後沒有人、也沒有 skill 讀它：
+
+- **Working Dir** — Temp Dir，`temp\check-skill\{yymmdd}.{N}\`，位於 workspace 根目錄之下，存放 **facts file**。
+- **facts file** — **Working Dir** 中的 `facts.yaml`。
+
+最後的輸出，人、另一個 skill 或之後的分析會讀它：
+
+- **Run record** — `database\skill-runs\check-skill\{yymmdd}.{N}.yaml`，位於 workspace 根目錄之下。
 - **Skills Dashboard** — `{wikiDir}\dashboard\skills.md`，其中 `wikiDir` 來自 workspace 的 [config.yaml](config.yaml)（於 Step 0 解析）——絕不寫死 wiki 根目錄。
+- **Checked skill** — 被檢查的 skill 的 SKILL.md、README.md、twin 與 script；Step 6 只依使用者指名的項目修改它們。
 
 # MUST FOLLOW
 
@@ -75,17 +99,19 @@ description: >-
   Step 0-5 絕不修改 checked skill——不編輯、不改名、不重新排版、不自動修正，連空白字元的更動都不行。
   Step 6 只為使用者以編號指名的那些 **items** 修改它，其餘一概不動，而且只在他們指名之後才動手。
   修正再明顯，也仍是一個交給使用者選擇的 item，絕不在沒被要求時自行套用。
-- **本 skill 既不產出 MD report，也不產出 YAML checkpoint**，也沒有 Checkpoint Dir。
-  它在對話中回報，而它唯一保留的檔案是 **Skills Dashboard**。
-  **facts file** 是暫存檔，在 Step 5 結束時刪除。
+- **本 skill 既不產出 MD report，也不產出 step 檔。**
+  它在對話中回報，而它保留的檔案是 **Skills Dashboard** 與每次執行的 **Run record**。
+  **facts file** 位於本次執行的 **Working Dir**，skill 不移除它。
   它開啟的其他每個檔案——每個 checked **skill directory** 中的每一份文字檔、SKILL 與 README 兩份 template、某份 `README.md` 在其 header quote 中宣告的檔案、`DFD.md`、`config.yaml`——都只讀不寫，唯一的例外是 Step 6 為被指名的 item 所編輯的檔案。
 - **Skills Dashboard 只合併寫入，絕不由單次執行整份重寫。**
   其形狀歸 `update_dashboard.py` 所有：本次執行沒有檢查的 skill 保留原樣的那一列，本次執行沒有套用的 check 保留它那一格，並標上最後一次套用它的那次執行的日期。
   絕不手動編輯 dashboard——不是由腳本寫出的列，就是下一次執行讀不懂的列。
-- 依照 [scratch-rules.md](skill-groups/common/rules/scratch-rules.md) 決定 facts file 放在哪裡，以及如何清理。
-- **在 skill 結束前，顯示 Skills Dashboard 的路徑**——只顯示路徑，絕不顯示其內容，並呈現為可點擊的 Markdown 連結，絕不用 inline code 或純文字。
-  vault 位於本 workspace 之外，因此要用 `obsidian://open?vault={vaultName}&file=dashboard/skills.md` URI 連結它（例如 `[skills.md](obsidian://open?vault={vaultName}&file=dashboard/skills.md)`）。
-  每次執行都要這麼做，包含因為沒有 skill 可解析或沒有選取任何 check 而提前停下的執行——並在那時說明 dashboard 沒有被更新。
+- 依照 [run-data-rules.md](skill-groups/common/rules/run-data-rules.md) 處理一次執行的 **Run Number**、**Run record** 與 **Working Dir**。
+  在 Step 5 結束前就停下的執行，要在它的 run record 中寫入 `result: stopped` 與 `stopped_at`。
+- **在 skill 結束前，顯示 Skills Dashboard 與 run record 的路徑**——只顯示路徑，絕不顯示其內容，並呈現為可點擊的 Markdown 連結，絕不用 inline code 或純文字。
+  - vault 位於本 workspace 之外，因此要用 `obsidian://open?vault={vaultName}&file=dashboard/skills.md` URI 連結 dashboard（例如 `[skills.md](obsidian://open?vault={vaultName}&file=dashboard/skills.md)`）。
+  - run record 則用從 workspace 起算、以正斜線分隔的目標連結（例如 `[{yymmdd}.{N}.yaml](database/skill-runs/check-skill/{yymmdd}.{N}.yaml)`）。
+  - 每次執行都要這麼做，包含因為沒有 skill 可解析或沒有選取任何 check 而提前停下的執行——並在那時說明 dashboard 沒有被更新。
 - **報告所引用的每一個檔案與行號都必須是可點擊的連結。**
   報告是在對話中閱讀的，而 checked skill 通常位於本 workspace 之外，因此只有絕對路徑的目標才能指向它。
   - 格式：`[<file>:<n>](<absolute-path>:<n>)`——例如 `[SKILL.md:44](C:/Users/.../skill-groups/dedi-boot-times/skills/report-boot-times-html/SKILL.md:44)`。
@@ -162,10 +188,14 @@ report-pipeline
 
 - 若缺少必要輸入，向使用者索取。
 
-- 在此**只讀一次**時鐘，並在整次執行中沿用該 `{yymmdd-hh}` 戳記，讓同一次執行的 **facts file** 與 dashboard 各列不會因跨小時或跨午夜而落在兩個戳記底下。
-  在同一小時內重跑會沿用同一個戳記，並覆寫該小時的 facts file；dashboard 只保留日期，因此同一天的每一次執行都記錄同一個日期。
+- 在此**只讀一次**時鐘，並在整次執行中沿用該 `{yymmdd-hh}` 戳記，讓同一次執行的 dashboard 各列不會因跨小時或跨午夜而落在兩個戳記底下。
+  dashboard 只保留日期，因此同一天的每一次執行都記錄同一個日期。
 
-- 顯示解析後的 `wikiDir`、解析出的 skill 名稱與 check 編號，以及 `{yymmdd-hh}` 戳記。
+- 依 run-data-rules.md 所述取得 **Run Number**，並寫出本次執行的 run record。
+
+- 顯示解析後的 `wikiDir`、解析出的 skill 名稱與 check 編號、`{yymmdd-hh}` 戳記，以及 **Run Number**。
+
+- 把本 step 加入 run record。
 
 
 ## Step 1 - Resolve Skills and Select Checks
@@ -194,21 +224,26 @@ report-pipeline
   - **Skills table**，欄位為 **Skill**、**Group**、**Path**。
   - **Notes**：每一個被捨棄的名稱；明確指名每一項**未**被選取的 check，因為沒跑過的 check 不等於一張健康證明；被縮小的 check 中所排除的每一條判準，同理也要指名。
 
+- 把本 step 加入 run record。
+
 
 ## Step 2 - Scan the Selected Skills
 
 - 針對整批選擇執行一次 `scan_skill.py` 腳本，把每個被選取的 skill 都傳進去。
   - `--skill`：一個被選取的 skill 名稱；每個 skill 重複一次此旗標。
-  - `--out`：**CONFIGURATION** 之下所給的 **facts file** 路徑。
+  - `--run-number`：Step 0 取得的 **Run Number**。
+    腳本把 **facts file** 寫在該次執行的 **Working Dir**，位於 `config.yaml` 所給的 workspace 根目錄之下。
   - `--template`：Step 0 已確認的 SKILL template 路徑。
     腳本會從中讀出必要的標題，因此參考基準絕不是寫死在程式碼裡、記憶中的形狀。
   - `--readme-template`：Step 0 已確認的 README template 路徑，以同樣的方式讀出 `README.md` 的標題。
   - `--depends-on`：`{skillGroups.common}\scripts\depends_on.py`，腳本載入它，以 `depends_on.py check` 讀取的方式讀取每一份 `README.md` 的 header quote。
-  - 範例：`python {skillGroups.common}\skills\check-skill\scripts\scan_skill.py --skill report-pipeline --skill triage-test-case --out "temp\check-skill-facts-{yymmdd-hh}.yaml" --template "{skillGroups.common}\templates\SKILL-tmp.md" --readme-template "{skillGroups.common}\templates\README-tmp.md" --depends-on "{skillGroups.common}\scripts\depends_on.py"`
+  - 範例：`python {skillGroups.common}/skills/check-skill/scripts/scan_skill.py --skill report-pipeline --skill triage-test-case --run-number {yymmdd}.{N} --template "{skillGroups.common}/templates/SKILL-tmp.md" --readme-template "{skillGroups.common}/templates/README-tmp.md" --depends-on "{skillGroups.common}/scripts/depends_on.py"`
+  - 腳本把相對路徑視為從 workspace 根目錄起算，絕不從目前目錄起算，並把 `\` 與 `/` 同樣當作分隔字元。
+    它不移除 **Working Dir**。
 
 - 該腳本**只蒐集事實、絕不下判定**——它記錄每個檔案含有什麼，把每一項判斷留給各項 check：
   1. 在 `skillGroups` 根目錄下解析每個 skill 並讀取其 `SKILL.md`。
-  2. 記錄 **template-shape** 事實：YAML frontmatter 是否可解析且帶有 `name` / `description`、`name` 是否等於目錄名稱、`name` 與 `description` 的字元數（`name_chars`、`description_chars`）以及 `name` 是否只含小寫字母、數字與連字號（`name_charset_ok`）、SKILL template 自身所定義的頂層標題（`required_headings`，從 `--template` 檔案讀取，因此 template 一改參考基準就跟著改）、該 skill 具備其中哪些、缺少哪些（`missing_headings`）、既有的那些是否維持 template 的相對順序、找到的 `## Step N` 標題、是否從 0 開始連續、Step 0 是否命名為 `Warmup`，以及每一處指向後方的 step 參照。
+  2. 記錄 **template-shape** 事實：YAML frontmatter 是否可解析且帶有 `name` / `description`、`name` 是否等於目錄名稱、`name` 與 `description` 的字元數（`name_chars`、`description_chars`）以及 `name` 是否只含小寫字母、數字與連字號（`name_charset_ok`）、SKILL template 自身所定義的頂層標題（`required_headings`，從 `--template` 檔案讀取，因此 template 一改參考基準就跟著改）、該 skill 具備其中哪些、缺少哪些（`missing_headings`）、既有的那些是否維持 template 的相對順序、找到的 `## Step N` 標題、是否從 0 開始連續、Step 0 是否命名為 `Warmup`、每一處指向後方的 step 參照，以及 **Working Dir** 事實（`working_dir`）：`# CONFIGURATION` 中每一行 Working Dir、Temp Dir 或 Checkpoint Dir，連同其路徑所示的種類（`configuration_lines`、`kinds`），以及 body 在它之後的每一處 `Temp Dir` 或 `Checkpoint Dir` 名稱與每一個 `temp\` 或 `checkpoints\` 路徑（`names_after_configuration`、`paths_after_configuration`）。
   3. 記錄該 `SKILL.md` 的 **config-shape** 事實：每一個字面上的 `wiki\` / `wiki/` 路徑、每一個 `{wikiDir}` / `{vaultName}` / `{skillGroups...}` placeholder 及 Step 0 是否解析它、每一個機器專屬的絕對路徑、每一個 UNC 分享路徑，以及每一個直接寫死而非透過 `skillGroups` 的 `skill-groups\...` 路徑。
   4. 記錄 **dir-config-shape** 事實：對 **skill directory 下的每一份其他文字檔**——各個腳本、各份 reference、繁體中文 twin、它自己的 `config.yaml`——蒐集同樣那組寫死路徑的事實，每一筆帶有所在檔案、該檔案的 `kind`（`script`、`reference`、`twin`、`skill config`、`doc`、`other`）、行號、該行是否為註解或 Python docstring（`commented`），以及該 skill 是否有自己的 `config.yaml`（`has_own_config`）。
      它也會列出被略過的檔案與原因——二進位檔，或超過掃描大小上限者——讓沒人檢查過的檔案永遠不會被誤認為乾淨的檔案。
@@ -229,12 +264,14 @@ report-pipeline
      沒有字彙表的 skill 會得到 `has_glossary: false`，而其 `CONFIGURATION` 中的定義仍會被記錄。
   8. 記錄該 skill 之 `README.md` 的 **readme-shape** 事實：它是否有 `README.md`（`has_readme`），以及它與 `SKILL.md` 是否有繁體中文 twin；它的標題，以及 README template 定義的 `#` 與 `##` 標題（`required_headings`，從 `--readme-template` 檔案讀出）中缺少哪些（`missing_headings`）、現有的是否保持 template 的順序；它的 header quote 宣告的每一項依賴，以及 `depends_on.py check` 給它的狀態——`UNCHANGED`、`CHANGED`、`NO_RECORD`、`NOTHING_CITED` 或 `MISSING`；對照 Workflow，它的 Step Purposes 漏掉、名稱不符或沒給 Purpose 的每一個 step，它的 Files Each Step Uses 之樹漏掉或名稱不符的每一個 step，以及那一節是否以一句粗體句回答「哪些 step 執行腳本」那條規則；其中的每一個 `{PLACEHOLDER}` token 與每一個已停用寫法的 placeholder（另列於 `old_placeholder_tokens`）；以及 `SKILL.md` 中放著應屬於 `README.md` 之內容——`# Dataflow` 或 `# Steps at a Glance` 標題、`- **Purpose**:` 行、介紹 Purpose 的那一段——或連到它的每一行。
   9. 記錄該 skill 之 `README.md` 中 `## Dataflow` 的 **dataflow** 事實，每一個行號都是那份檔案的行：它是否有 Dataflow（`has_dataflow`），以及其中有幾張 mermaid 圖；第一張圖中的每個節點及其所用的形狀、每一支箭頭及其是否為虛線、雙頭或藍色，以及圖後跟著幾行圖例；對照 Workflow，圖上漏掉或名稱不符的每一個 step；還有每一個被較後 step 覆寫的 record、每一個由好幾個 step 依序編輯的 record、每一份沒有任何東西提供的資料、每一支連接兩份資料的實線箭頭、每一次對較後 step 所寫之物的讀取，以及每一個在第一個寫入者之前的 step 讀到它原本樣子的 record。
-  10. 把 facts file 寫到 `--out` 路徑——每個 skill 一份 YAML 文件——並將其路徑與每個 skill 一列摘要印到 **stdout**。
+  10. 把 facts file 寫在 `--run-number` 那次執行的 **Working Dir**——每個 skill 一份 YAML 文件——並將其絕對路徑與每個 skill 一列摘要印到 **stdout**。
 
-- 讀取位於 `temp\check-skill-facts-{yymmdd-hh}.yaml` 的 facts file。
+- 讀取 **Working Dir** 中的 **facts file**，路徑就是腳本印出的那一個。
   每一項事實都帶有行號，因此針對它回報 finding 時要引述那一行。
 
 - 每個 skill 顯示一行：其群組、行數與 step 數量、缺少的標題、它是否有 `README.md` 以及其中缺少的標題，以及其 **skill directory** 中被掃描讀取與略過的檔案數量——並連同原因指名每一份被略過的檔案，因為沒被讀過的檔案並不算合規。
+
+- 把本 step 加入 run record。
 
 
 ## Step 3 - Apply the Selected Checks
@@ -246,7 +283,7 @@ report-pipeline
   未被選取的 check 要明講，並且不為它產生任何判定。
 
 - **Inputs**，逐項 check。
-  此處指名的每一個 fact group 都來自 Step 2 寫在 `temp\check-skill-facts-{yymmdd-hh}.yaml` 的 facts file：
+  此處指名的每一個 fact group 都來自 Step 2 寫在 **Working Dir** 的 **facts file**：
 
   | # | Check | Input |
   |---|-------|-------|
@@ -274,6 +311,8 @@ report-pipeline
   - Check 6 — 通過的判準、比對了多少個 step、多少份資料與多少支箭頭，以及每一個因為沒有 Dataflow 而被略過的 skill，明確指名，因為被略過的 skill 並不等於合規的 skill。
 
 - 在每一項 finding 之外，另行記錄判定過程中暴露出的每一個 **checker defect**——`scan_skill.py` 弄錯的事實，或誤導判定的判準——連同誤導它的那一行。
+
+- 把本 step 加入 run record。
 
 
 ## Step 4 - Report the Findings
@@ -361,6 +400,8 @@ report-pipeline
   3. **Not selected** — 本次執行沒有套用的 check，以一行指名，因為沒跑過的 check 不等於乾淨的 check。
   4. **How to apply** — 使用者以指名編號來套用 item（例如 `fix 1.1 3.2`、`fix 1.2(a)`、`fix all of check 1`），在他們指名之前什麼都不會改。
 
+- 把本 step 加入 run record。
+
 
 ## Step 5 - Update the Skills Dashboard
 
@@ -374,7 +415,7 @@ report-pipeline
   - `--skill`、`--group`、`--path`：該 skill、它的群組與它的絕對 `SKILL.md` 路徑，皆依 Step 1 所解析。
     群組決定那一列歸在哪個 section 底下。
   - `--result`：每一項跑過的 check 各一次，依 Step 3 的計數寫成 `<check>:<issues>:<recommendations>`；縮到部分判準的 check 則寫成 `<check>:<issues>:<recommendations>:<criteria>`，判準之間以 `+` 相連（例如 `1:0:1:1.3+1.5`）；沒有字彙表的 skill 則寫成 `4:na`，沒有 Dataflow 的 skill 則寫成 `6:na`。
-  - 範例：`python {skillGroups.common}\skills\check-skill\scripts\update_dashboard.py --dashboard "{wikiDir}\dashboard\skills.md" --run {yymmdd-hh} --skill report-pipeline --group dedi-triage-pipeline --path "<absolute SKILL.md path>" --result 1:1:5 --result 2:0:0 --result 3:0:2 --result 4:na`
+  - 範例：`python {skillGroups.common}/skills/check-skill/scripts/update_dashboard.py --dashboard "{wikiDir}/dashboard/skills.md" --run {yymmdd-hh} --skill report-pipeline --group dedi-triage-pipeline --path "<absolute SKILL.md path>" --result 1:1:5 --result 2:0:0 --result 3:0:2 --result 4:na`
 
 - 該腳本：
   1. dashboard 還不存在時連同表頭一起建立它，否則讀回它的表格。
@@ -387,8 +428,7 @@ report-pipeline
 - 逐個 skill 顯示其呼叫所變更的各格，寫成 `old -> new`，讓使用者看到 dashboard 動了、以及怎麼動的。
   只有當某一格從先前某次執行留下的值降下來時，才說某項 finding 已經不在了——那個下降才是證據，單憑本次執行則不是。
 
-- 以確切的檔名刪除 **facts file**——`temp\check-skill-facts-{yymmdd-hh}.yaml`，絕不使用萬用字元。
-  本 step 之後沒有任何東西會讀它。
+- 把本 step 加入 run record，並在其中寫入 `result: completed`。
 
 
 ## Step 6 - Apply the Named Items
@@ -417,7 +457,10 @@ report-pipeline
     **checker defect** 只有在使用者另外要求時，才在本 skill 中修正。
 
 - **套用完最後一個 item 之後，在 dashboard 上把該 skill 標為需要重新檢查**，讓它那一列不會被誤認為是對已編輯之 skill 的檢查結果：
-  - 範例：`python {skillGroups.common}\skills\check-skill\scripts\update_dashboard.py --dashboard "{wikiDir}\dashboard\skills.md" --skill imp-app --mark-modified`
+  - 範例：`python {skillGroups.common}/skills/check-skill/scripts/update_dashboard.py --dashboard "{wikiDir}/dashboard/skills.md" --skill imp-app --mark-modified`
   - 各格維持最後一次檢查所留下的樣子——它們描述的是這些編輯之前的 skill——而下一次重新套用每一項 check 的執行會清除 **needs check** 標記。
+
+- 把本 step 加入使用者所回覆之報告的那次執行的 run record。
+  它的 `result` 維持 `completed`。
 
 - 最後列出已套用的 item、任何被略過的 item 及原因，並說明對該 skill 重跑 `/check-skill` 才能確認這些修正。

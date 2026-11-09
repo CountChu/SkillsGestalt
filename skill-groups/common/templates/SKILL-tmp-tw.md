@@ -10,7 +10,7 @@ description: {SKILL_DESCRIPTION}
 > [[ste-custom]]  `2026-11-02`  `c612bdfa1ea7`
 
 > 本檔案以 ASD-STE100 Simplified Technical English（STE）第 9 版寫成。
-> 技術用字：API、argument、bearer token、call、canonical skill invocation、checkpoint、column、command、configuration、configuration file、credential、data file、definition、development、directory、field、file、folder、forward slash、glossary、header、inline code、key、line、link、link target、list、map、MD report、output directory、parse、parser、PAT、path、plain text、process、project、raw data、registry、root、save、scope、scratch file、script、section、selector、separator、session、shell、skill、table、term、terminal、user、vault、wiki、workflow、workspace、writer step。
+> 技術用字：analysis、API、argument、bearer token、call、canonical skill invocation、column、command、configuration、configuration file、credential、data file、definition、development、directory、efficiency、file、folder、forward slash、glossary、header、inline code、key、line、link、link target、list、map、MD report、model、output directory、parse、parser、PAT、path、plain text、process、run record、project、raw data、registry、root、run、run number、save、scope、script、section、selector、separator、session、shell、skill、step file、table、temp dir、term、terminal、user、vault、wiki、workflow、working data、working dir、workspace、writer step。
 
 # TERMINOLOGY
 
@@ -19,14 +19,21 @@ description: {SKILL_DESCRIPTION}
 如果 glossary 列出了 skill 沒用到的 term，skill 改變時，這個 term 的定義就可能變得不正確。
 
 - **`run step N`** — 放在 prompt 結尾、用來識別某一個 step 的選擇子。
-- **Checkpoint Dir** — 一次執行所用的目錄，存放某個 skill 的 YAML checkpoint。
-  每個 skill 都有自己的 Checkpoint Dir。
-  **CONFIGURATION** 列出本 skill 的 Checkpoint Dir。
-- **YAML checkpoint** — Checkpoint Dir 中的 `process.yaml`。
-  每個 step 都把它的輸出寫在那裡的一個 `step_{N}` 群組中。
+- **Run Number** — 一次執行的編號 `{yymmdd}.{N}`。
+  `{N}` 是這個 skill 在那一天的執行序號，從 1 開始。
+- **Working Dir** — 一次執行所用的目錄，存放這次執行所有的 working data：它的 step 檔、資料檔與暫存檔。
+  它是 Temp Dir 或 Checkpoint Dir，**CONFIGURATION** 列出是哪一個。
+  skill 不移除它。
+- **Temp Dir** — 位於 workspace 根目錄 `temp\` 的 Working Dir。
+- **Checkpoint Dir** — 位於 workspace 根目錄 `checkpoints\` 的 Working Dir。
+- **Step file** — Working Dir 中的 `step_{N}.yaml`。
+  每個 step 都把它的輸出寫在那裡。
   因此，後續的 step 讀取這些輸出，而不必再算一次。
+- **Run record** — 記下一次執行每個 step 的時間與模型的檔案。
+  分析一個 skill 的效率時使用它。
+- **Handoff file** — 一次執行為另一個 skill 產生的檔案，放在 `handoff\`。
 - **MD report** — skill 寫進 wiki vault 的 Markdown 報告，放在以該 skill 命名的資料夾中。
-  它在各節結果之上帶有標準表頭（Skill、Checkpoint、Created、Updated、Prompt）。
+  它在各節結果之上帶有標準表頭（Skill、Run record、Created、Updated、Prompt）。
 
 # DEDICATED TERMINOLOGY
 
@@ -38,9 +45,23 @@ description: {SKILL_DESCRIPTION}
 # CONFIGURATION
 
 本 skill 在一次執行中所使用的值。
-本 skill 不產出的輸出，就刪掉它那一行。
+本 skill 不讀取、不執行或不產出的項目，就刪掉它那一行。
+兩行 Working Dir 只留一行。
 
-- **Checkpoint Dir** — `checkpoints\{SKILL_NAME}\{CHECKPOINT_DIR_NAME}\`。
+執行時讀取或執行的輸入與工具：
+
+- **Workspace configuration** — workspace 根目錄的 [config.yaml](config.yaml)。
+- **Scripts** — `{skillGroups.{SKILL_GROUP}}\skills\{SKILL_NAME}\scripts\{SCRIPT_PATH_1}`。
+
+一次執行的 working data，執行結束後沒有人、也沒有 skill 讀它：
+
+- **Working Dir** — Temp Dir，`temp\{SKILL_NAME}\{yymmdd}.{N}\`。
+- **Working Dir** — Checkpoint Dir，`checkpoints\{SKILL_NAME}\{yymmdd}.{N}\`。
+
+最後的輸出，人、另一個 skill 或之後的分析會讀它：
+
+- **Run record** — `database\skill-runs\{SKILL_NAME}\{yymmdd}.{N}.yaml`。
+- **Handoff file** — `handoff\{SKILL_NAME}\{yymmdd}.{N}.md`。
 - **MD report** — `{wikiDir}\{SKILL_NAME}\{REPORT_FILENAME}.md`。
   `wikiDir` 來自 workspace 的 [config.yaml](config.yaml)，由 Step 0 找出它的值。
   不要把 wiki 的根目錄寫死。
@@ -49,30 +70,28 @@ description: {SKILL_DESCRIPTION}
 
 - 逐一執行 workflow 的每個 step，並顯示每個 step 的編號。
 - **遵守 `run step N` 選擇子**：執行 Step N，然後停止。
-  從 YAML checkpoint 讀取每一個先前 step 的輸出。
+  從每一個先前 step 的 step 檔讀取它的輸出。
   不要執行後續的 step。
 - MD report 的表頭與形狀，遵守 [report-md-rules.md](skill-groups/common/rules/report-md-rules.md)。
-- YAML checkpoint 的形狀與必要欄位，遵守 [report-yaml-rules.md](skill-groups/common/rules/report-yaml-rules.md)。
-- 一次執行的每一份暫存檔放在哪裡、如何移除，遵守 [scratch-rules.md](skill-groups/common/rules/scratch-rules.md)。
-- **Checkpoint Dir 中的每一份 JSON 檔都只有一個寫入它的 step。**
+- 一次執行的 Run Number、step 檔、run record 與 Working Dir，遵守 [run-data-rules.md](skill-groups/common/rules/run-data-rules.md)。
+- **Working Dir 中的每一份檔案都只有一個寫入它的 step。**
   產生資料檔的 step 會寫出整份檔案，而且只有那個 step 會改動它。
-  後續做出決定的 step，把決定寫進它自己的 `step_{N}.json`，放在那份檔案旁邊。
+  後續做出決定的 step，把決定寫進它自己的 step 檔。
   它不在另一個 step 寫的檔案中新增、修改或刪除任何鍵。
   即使後續 step 的決定取代了那份檔案中的資料，這條規則也同樣適用。
-  YAML checkpoint 是唯一的例外：每個 step 把它的 `step_{N}` 群組加在末尾，而不是把整份檔案重寫一次。
 - 如果不只一個 step 寫進同一份資料檔，第一個 step 再執行一次時，就會抹掉其他 step 的資料。
   例如，一次 parser 修正或一次 `run step 1`，都會把整份檔案重寫一次。
   這會抹掉所有後續 step 的結果，而且沒有任何訊息告訴你。
-- **在 skill 停止之前，顯示 MD report 與 YAML checkpoint 的路徑。**
+- **在 skill 停止之前，顯示 MD report 與 run record 的路徑。**
   只顯示這兩個路徑，不要顯示它們的內容。
   把這兩個路徑寫成點一下就能開啟的 Markdown 連結。
   不要寫成 inline code 或純文字。
   - **MD report** 要用帶有 `obsidian://open?vault={vaultName}&file=<vault-relative-path>` URI 的連結。
     vault 不在本 workspace 中，因此從 workspace 起算的連結目標找不到它。
     例如：`[{REPORT_FILENAME}.md](obsidian://open?vault={vaultName}&file={SKILL_NAME}/{REPORT_FILENAME}.md)`。
-  - **YAML checkpoint** 要用從 workspace 起算的連結目標。
+  - **run record** 要用從 workspace 起算的連結目標。
     以正斜線作為其中的分隔符號。
-    例如：`[process.yaml](checkpoints/{SKILL_NAME}/{CHECKPOINT_DIR_NAME}/process.yaml)`。
+    例如：`[{yymmdd}.{N}.yaml](database/skill-runs/{SKILL_NAME}/{yymmdd}.{N}.yaml)`。
   - 每一次執行都要這樣做，只有一個 step 的執行也一樣，例如 `run step 0`。
 
 # Prompt Examples
@@ -152,23 +171,27 @@ run step 0
 
 - 保存 canonical skill invocation，讓後續的 step 可以參照它。
 
-- 以解析出的輸入，保存 YAML checkpoint 的 `step_0`。
+- 照 run-data-rules.md 取得 Run Number，並寫出這次執行的 run record。
+
+- 以解析出的輸入，保存 `step_0.yaml`。
+  把這個 step 加進 run record。
   在這個 step 中，不必建立 MD report 檔，因為這次執行此時可能還沒有重要的結果。
 
 
 ## Step 1 - {STEP_1_TITLE}
 
 - 以 `{STEP_1_ARG_1}` 與 `{STEP_1_ARG_2}` 引數執行 script `{SCRIPT_PATH_1}`。
-  - `{STEP_1_ARG_3}`：這次執行的 checkpoint 目錄。
-  - 範例：`{python} {skillGroups.{SKILL_GROUP}}\skills\{SKILL_NAME}\scripts\{SCRIPT_PATH_1} {STEP_1_ARG_1} {STEP_1_ARG_1_VALUE} {STEP_1_ARG_3} "checkpoints\{SKILL_NAME}\{CHECKPOINT_DIR_NAME}"`
+  - `{STEP_1_ARG_3}`：這次執行的 Working Dir。
+  - 範例：`{python} {skillGroups.{SKILL_GROUP}}\skills\{SKILL_NAME}\scripts\{SCRIPT_PATH_1} {STEP_1_ARG_1} {STEP_1_ARG_1_VALUE} {STEP_1_ARG_3} "{WORKING_DIR}"`
 
 - 該 script：
   1. {SCRIPT_1_ACTION_1}
   2. {SCRIPT_1_ACTION_2}
   3. 把結果以 `{STEP_1_OUTPUT}` 存進輸出目錄。
-     這次執行的所有 step 都使用這份原始資料檔，它和 `process.yaml` 不是同一份檔案。
+     這次執行的所有 step 都使用這份原始資料檔，它不是 step 檔。
 
-- 保存 YAML checkpoint 的 `step_1`，內容為：{STEP_1_CHECKPOINT_FIELDS}。
+- 保存 `step_1.yaml`，內容為：{STEP_1_CHECKPOINT_FIELDS}。
+  把這個 step 加進 run record。
 
 - 保存 MD report 檔。
   在檔案末尾加上一個 **{STEP_1_SECTION}** 區段，並顯示它：
@@ -179,7 +202,7 @@ run step 0
 
 ## Step 2 - {STEP_2_TITLE}
 
-- 讀取 Step 1 存在 `checkpoints\{SKILL_NAME}\{CHECKPOINT_DIR_NAME}\{STEP_1_OUTPUT}` 的 `{STEP_1_OUTPUT}` 資料檔。
+- 讀取 Step 1 存在 Working Dir 的 `{STEP_1_OUTPUT}` 資料檔。
   以 {STEP_2_INPUT_KEY} 作為輸入。
 
 - 這些規則適用於下列每一項指示：
@@ -195,10 +218,11 @@ run step 0
   2. {STEP_2_INSTRUCTION_2}
   3. {STEP_2_INSTRUCTION_3}
 
-- 把結果寫進 Checkpoint Dir 中的 `step_2.json`，作為 `{STEP_2_OUTPUT_KEY}`。
+- 把結果寫進 `step_2.yaml`，作為 `{STEP_2_OUTPUT_KEY}`。
   不要寫進 `{STEP_1_OUTPUT}`，因為那份檔案是 Step 1 的。
 
-- 保存 YAML checkpoint 的 `step_2`，內容為：{STEP_2_CHECKPOINT_FIELDS}。
+- 保存 `step_2.yaml`，內容為：{STEP_2_CHECKPOINT_FIELDS}。
+  把這個 step 加進 run record，並寫出 `result: completed`，因為它是最後一個 step。
 
 - 保存 MD report 檔。
   在檔案末尾加上一個 **{STEP_2_SECTION}** 區段，並顯示它：

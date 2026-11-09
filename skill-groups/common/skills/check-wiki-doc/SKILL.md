@@ -9,6 +9,37 @@ description: 依 skill 內建的系統規範條文，搭配一份「架構文件
 整組文件都要遵守的**規範條文寫在 `references/checking-criteria.md`**，那是條文的唯一出處。
 此 skill 依其中的某幾條，檢查指定文件。
 
+## TERMINOLOGY
+
+- **Run Number**——一次執行的編號 `{yymmdd}.{N}`。
+  `{N}` 是這個 skill 在那一天的執行序號，從 1 開始。
+- **Run record**——記下一次執行每個步驟的時間與模型的檔案。
+  分析一個 skill 的效率時使用它。
+
+## CONFIGURATION
+
+執行時讀取或執行的輸入與工具：
+
+- **Workspace configuration**——workspace 根目錄的 [config.yaml](config.yaml)。
+- **Scripts**——`{skillGroups.common}\skills\check-md-deps\scripts\scan_md_deps.py`、`{skillGroups.common}\scripts\depends_on.py` 與 `{skillGroups.common}\skills\check-wiki-doc\scripts\build_dependency_graph.py`。
+- **檢查判準**——`{skillGroups.common}\skills\check-wiki-doc\references\checking-criteria.md`，步驟 3 讀它。
+- **依賴圖規則**——`{skillGroups.common}\skills\check-wiki-doc\references\dependency-graph.md`，步驟 4 讀它。
+
+最後的輸出，人、另一個 skill 或之後的分析會讀它：
+
+- **Run record**——`database\skill-runs\check-wiki-doc\{yymmdd}.{N}.yaml`。
+- **HTML 依賴圖**——`{架構文件名}-文件依賴圖.html`，在架構文件同目錄。
+- **架構文件與待查文件**——步驟 4 寫回的檢查結果與檔頭紀錄，以及步驟 5 經使用者同意後的修改。
+
+## MUST FOLLOW
+
+- 一次執行的 Run Number、run record 與暫存檔，遵守 [run-data-rules.md](skill-groups/common/rules/run-data-rules.md)。
+- 在步驟 4 之前停下的執行，在 run record 寫 `result: stopped` 與 `stopped_at`（沒有完成的那個步驟，例如 `step_2`）。
+- **在 skill 停止之前，顯示 run record 的路徑。**
+  只顯示路徑，不要顯示內容；寫成點一下就能開啟的 Markdown 連結，不要寫成 inline code 或純文字。
+  連結目標從 workspace 起算，以正斜線作為分隔符號，例如：`[{yymmdd}.{N}.yaml](database/skill-runs/check-wiki-doc/{yymmdd}.{N}.yaml)`。
+  每一次執行都要這樣做，提早停下的執行也一樣。
+
 ## 參數
 
 使用者輸入是三行：
@@ -39,12 +70,16 @@ description: 依 skill 內建的系統規範條文，搭配一份「架構文件
 
 這兩個範圍不同，混用會產生假陽性或漏檢：
 
-- **文件庫**＝workspace 根目錄 `config.yaml` 的 **`wikiRootDir`**。
-  架構文件**一定在它底下**的某個資料夾裡（例如 `{wikiRootDir}/InvLlmWiki/config/`），但**那個資料夾不是邊界**——巢狀知識庫很常見，`A/` 與 `A/B/` 可能各自都是一個庫，中間那層看起來像邊界，其實不是。
-  第 1 條的「連結目標是否存在」要掃**整個 `wikiRootDir`**——只掃架構文件所在的那一層，會把明明存在的筆記報成失效連結。
+- **文件庫**＝workspace 根目錄 `config.yaml` 的 **`wikiDir`**。
+  架構文件**一定在它底下**的某個資料夾裡（例如 `{wikiDir}/InvLlmWiki/config/`），但**那個資料夾不是邊界**——巢狀知識庫很常見，`A/` 與 `A/B/` 可能各自都是一個庫，中間那層看起來像邊界，其實不是。
+  第 1 條的「連結目標是否存在」要掃**整個 `wikiDir`**——只掃架構文件所在的那一層，會把明明存在的筆記報成失效連結。
 - **納管文件**＝架構文件〈文件依賴關係表〉**〈名稱〉欄**列出的那幾份，通常集中在同一個目錄（例如 `plan/`）。
   第 3 條的術語索引、撞名檢查、第 1 節／第 2 節的形式要求，**一律只及於納管文件**，不擴及文件庫裡的其他筆記。
   〈依賴〉欄可以指向未納管的外部概念（如 `DBR`），那些不在此列。
+
+保存標準化的 skill 叫用方式，作為 run record 的 `prompt` 欄。
+照 run-data-rules.md 取得 Run Number，並寫出這次執行的 run record。
+把這個步驟加進 run record。
 
 ### 1. 讀取架構文件（不要憑記憶）
 
@@ -52,7 +87,7 @@ description: 依 skill 內建的系統規範條文，搭配一份「架構文件
 
 1. 依第一行的名稱找出檔案。
    架構文件常獨立存放，不一定和待查文件同目錄，依序找：待查文件所在目錄 → 其上層目錄 → 上層目錄底下的設定／索引類子目錄（如 `config/`、`meta/`、`_index/`）。
-   仍找不到就用 `find` 掃整個 `wikiRootDir`，而不是放棄——架構文件一定在裡面。
+   仍找不到就用 `find` 掃整個 `wikiDir`，而不是放棄——架構文件一定在裡面。
 2. 名稱即檔名，不帶版號。
 3. 取出四樣東西，**以表格為主**：
    - **文件依賴關係表**：一列一份納管文件。
@@ -74,19 +109,21 @@ description: 依 skill 內建的系統規範條文，搭配一份「架構文件
      - **架構文件的檔頭**依〈名稱〉欄的順序逐一列出每份納管文件，記的是那份文件**上次檢查時自己**的指紋。
        它是本 skill 的檢查紀錄，不是依賴宣告。
      - **納管文件的檔頭**一行是一條邊，記的是第 6 條上次比對這個下層時**下層**的指紋。
-   - 執行 check-md-deps 的掃描器：`python3 {skillGroups.common}/skills/check-md-deps/scripts/scan_md_deps.py "<架構文件>" <每份納管文件> --root "{wikiRootDir}"`。
-     它只讀不寫，重算每個連結目標現在的指紋，逐行給出判定：`UNCHANGED` 是記錄之後沒改過；`CHANGED` 是改過；`NO_RECORD` 是還沒記錄過（新納管的文件，或採用紀錄之前就檢查過的），無從判斷；`MISSING`／`UNRESOLVED` 是連結找不到檔案，或名稱在 `wikiRootDir` 底下不只一份。
+   - 執行 check-md-deps 的掃描器：`python3 {skillGroups.common}/skills/check-md-deps/scripts/scan_md_deps.py "<架構文件>" <每份納管文件> --root "{wikiDir}"`。
+     它只讀不寫，重算每個連結目標現在的指紋，逐行給出判定：`UNCHANGED` 是記錄之後沒改過；`CHANGED` 是改過；`NO_RECORD` 是還沒記錄過（新納管的文件，或採用紀錄之前就檢查過的），無從判斷；`MISSING`／`UNRESOLVED` 是連結找不到檔案，或名稱在 `wikiDir` 底下不只一份。
    - 除了 `UNCHANGED`，其餘判定都表示那份文件的檢查結果不可採信，步驟 4 會在它的 `待檢查` 打 `✓`：
      - 架構文件裡它那一行不是 `UNCHANGED`：它自己在上次檢查之後改過，或還沒檢查過。
      - 它自己的某條邊不是 `UNCHANGED`：它的下層改過。
    - 判為 `CHANGED` 的檔案在 git 裡時，掃描器附上記錄日期之後的 commit 與差異：架構文件那一行附的，是那份文件自上次檢查以來改了什麼；邊附的，第 6 條可以先讀改過的地方。
-   - `--root` 一定給 `wikiRootDir`，理由同步驟 0：沒給時只在最近的 `.obsidian` 底下找，連到巢狀庫以外的筆記會被報成 `MISSING`。
+   - `--root` 一定給 `wikiDir`，理由同步驟 0：沒給時只在最近的 `.obsidian` 底下找，連到巢狀庫以外的筆記會被報成 `MISSING`。
    - 〈依賴〉欄空白的文件（依賴鏈最底端）沒有自己的檔頭引用區，它的改動由架構文件那一行判出。
    - 架構文件的檔頭與〈名稱〉欄對不上時（缺了一份，或列了已不納管的），由步驟 4 補上或刪掉。
    - 掃描器對納管文件報出的格式問題（`malformed`、`misplaced`、`duplicate`）屬於第 1 條；對架構文件報出的，步驟 4 一併改正。
 
 架構文件裡不該有規範條文。
 若看到某一份仍留著規範那一節，以 `references/checking-criteria.md` 為準，並提醒使用者那一節是殘留、該刪掉。
+
+把這個步驟加進 run record。
 
 ### 2. 定位待查文件
 
@@ -97,6 +134,7 @@ description: 依 skill 內建的系統規範條文，搭配一份「架構文件
   - **上層／依賴方**：誰依賴此文件（含間接依賴）。
 - 只查第 2 條或第 5 條時可跳過這一步——那兩條純看待查文件本身。
   第 3 條只需要**下層**清單（比對術語一致性），第 1、4、6 條上下層都要。
+- 把這個步驟加進 run record。
 
 ### 3. 逐條檢查
 
@@ -105,6 +143,8 @@ description: 依 skill 內建的系統規範條文，搭配一份「架構文件
 
 只執行使用者指定的那幾條，其餘不主動查（可在最後一句附帶提醒）。
 要新增或修改規範，改 `references/checking-criteria.md`，不是改架構文件。
+
+把這個步驟加進 run record。
 
 ### 4. 回報
 
@@ -138,11 +178,11 @@ description: 依 skill 內建的系統規範條文，搭配一份「架構文件
 回報完，把結果寫回架構文件的〈文件狀態〉與〈文件依賴狀態表〉、在架構文件與待查文件的檔頭寫下紀錄，並重新產生依賴圖（mermaid 與 HTML 兩種）——**這一步不必等使用者同意**，它記錄的是「檢查跑過了、數到了什麼」，不是對文件內容的修改：
 
 - 先讓架構文件的檔頭與〈名稱〉欄一致：缺的依欄的順序補一行 `> [[名稱]]`，不帶紀錄；已不納管的那一行刪掉。
-- 在架構文件的檔頭記下待查文件這一版：`python3 {skillGroups.common}/scripts/depends_on.py record "<架構文件>" --target "[[<待查文件>]]" --root "{wikiRootDir}"`。
+- 在架構文件的檔頭記下待查文件這一版：`python3 {skillGroups.common}/scripts/depends_on.py record "<架構文件>" --target "[[<待查文件>]]" --root "{wikiDir}"`。
 	- 不論查了哪幾條都記：紀錄說的是「這一版查過了」，查了哪幾條寫在總評。
 	- 之後這份文件一改——不論是在 Obsidian 裡、步驟 5 還是別的對話——步驟 1 的依賴掃描都會判為 `CHANGED`。
 	- 待查文件未納管時，架構文件沒有它那一行，不記。
-- 查了第 6 條時，再在待查文件的檔頭記下比對過的下層：對每個比對過的下層執行 `python3 {skillGroups.common}/scripts/depends_on.py record "<待查文件>" --target "[[<下層>]]" --root "{wikiRootDir}"`，它把下層現在的指紋與今天的日期寫在那一行的連結後面：
+- 查了第 6 條時，再在待查文件的檔頭記下比對過的下層：對每個比對過的下層執行 `python3 {skillGroups.common}/scripts/depends_on.py record "<待查文件>" --target "[[<下層>]]" --root "{wikiDir}"`，它把下層現在的指紋與今天的日期寫在那一行的連結後面：
 	- 下層全部比對過、且檔頭與〈依賴〉欄一致時，省略 `--target`，一次記完。
 	- 比對出矛盾也照記。
    紀錄說的是「這份文件的檢查結果是對著這一版的下層做的」，矛盾本身寫在 `檢查結果`；之後下層一改，步驟 1 的依賴掃描就判為 `CHANGED`。
@@ -167,6 +207,7 @@ description: 依 skill 內建的系統規範條文，搭配一份「架構文件
   指令、資料來源與版面見 `references/dependency-graph.md` 第 6 節；腳本印出的警告要列進回報。
   〈文件依賴圖〉的圖旁說明沒有連到這個 HTML、或連結路徑不對時，照腳本印出的 `link:` 補上。
 - 除了架構文件與待查文件檔頭的紀錄，其餘內容（關係表、各文件本文）這一步都不動。
+- 把這個步驟加進 run record，並寫出 `result: completed`，因為它是這次執行的最後一個步驟。
 
 ### 5. 修改（僅在使用者同意後）
 
@@ -186,3 +227,4 @@ description: 依 skill 內建的系統規範條文，搭配一份「架構文件
 - 修改時若引入或改寫了術語，同步更新第 1 節〈術語 (Terminology)〉；若用到的是**下層**已定義的術語，改為登記在第 2 節〈使用術語〉並註明出處，不要在第 1 節重寫定義。
   兩種情況都要確保該術語在全文以反引號標識，否則第 3 條會立刻失敗。
 - 若修改後某個第一層條列項目後面接了兩句以上，順手拆成第二層子項目；帶子項目的項目以 `：` 收尾、不必加粗，否則第 2 條會立刻失敗。
+- 做完後，把這個步驟加進同一次執行的 run record；`result` 維持 `completed`。

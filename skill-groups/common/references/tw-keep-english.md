@@ -1,11 +1,11 @@
 # Terms Kept in English in 繁體中文 Twins
 
-> Version: 261108
+> Version: 261110
 > [[ASD-STE100_ISSUE9.pdf]]  `2026-10-18`  `d1f4ea9e7cd6`
 > [[ste-custom]]  `2026-11-02`  `c612bdfa1ea7`
 
 > This file is in ASD-STE100 Simplified Technical English (STE), Issue 9.
-> Technical words: agency, agent, alias, app, argument, automated, baseline, bug, build, caller, canonical skill invocation, cell, character, checkpoint, class, clean mode, clock, cognitive, column, command, command line, commit, context, contract, data structure, delimiter, design document, diff, docstring, document, epoch, exit status, external input, feature, fence, fenced block, file, fingerprint, flag, folded block scalar, Forge, frontmatter, Gestalt, glossary, handler, handoff, hard break, hash, heading, here-string, hexagon, hook, hunk, idempotent-only mode, identifier, import, inline code, inline-code span, interactive, interpolation, introspection, line, line break, link, link target, list, match, math, MD report, metadata, no-op, non-breaking space, null, one-run data, operating system, pairing line, parse, path, pattern, pipe, pipeline, placeholder, plain scalar, prose, pull request, raw mode, record, regular expression, rendering, repository, scalar, schema, script, second, section, section partial, sentence, separator, server, session, shell, skill, span, spelling, stale, statement, step, string, string literal, style, table, template, term, test case, text, token, traceback, twin, verdict, version, wiki, wireframe, word, word character, work item, workflow, workspace.
+> Technical words: agency, agent, alias, app, argument, automated, baseline, bug, build, caller, canonical skill invocation, cell, character, checkpoint, class, clean mode, clock, cognitive, column, command, command line, commit, context, contract, data structure, delimiter, design document, diff, docstring, document, epoch, exit status, external input, feature, fence, fenced block, file, fingerprint, flag, folded block scalar, Forge, frontmatter, Gestalt, glossary, handler, handoff, hard break, hash, heading, here-string, hexagon, hook, hunk, idempotent-only mode, identifier, import, inline code, inline-code span, interactive, interpolation, introspection, line, line break, link, link target, list, match, math, MD report, metadata, no-op, non-breaking space, null, one-run data, operating system, pairing line, parse, path, pattern, pipe, pipeline, placeholder, plain scalar, prose, pull request, raw mode, record, regular expression, rendering, repository, scalar, schema, script, second, section, section partial, sentence, separator, server, session, shell, skill, span, spelling, stale, statement, step, string, string literal, style, table, template, term, test case, text, token, traceback, twin, verdict, version, wiki, wireframe, word, word character, work item, workflow, working data, workspace.
 
 Each `-tw` twin keeps the terms of the list that follows in English in its prose.
 Examples of a twin are the `SKILL-tw.md` of a skill, the `-RSDC-tw.md` of a design document and the `-tw.md` of a wireframe.
@@ -151,6 +151,7 @@ Thus, a person reads each warning, and then makes a decision.
 | word character | 文字字元, 單字字元 | 文字字元, 單字字元 | It is the name of a class of characters in a regular expression, and twins use two renderings for it. |
 | work item | 工作項目 | 工作項目 | It is the name of a type of item in Azure DevOps. |
 | workflow | 工作流程, 流程 | 工作流程 | Twins use two renderings for it, and it is the name of a section of a skill. |
+| working data | 工作資料, 執行時的工作資料 | 工作資料 | It is the name of one of the two types of data that a run writes, and the template of a skill gives it. |
 | workspace | 工作區, 工作空間 | — | Twins use two renderings for it, and it is the name of a location that a system reads from. |
 
 ## Adding a term

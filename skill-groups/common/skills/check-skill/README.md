@@ -3,11 +3,11 @@
 > [DFD.md](../../references/DFD.md)  `2026-11-02`  `4030d6783acf`
 > [md-style.md](../../rules/md-style.md)  `2026-11-02`  `639a95083dd2`
 > [skill-writing.md](../../rules/skill-writing.md)  `2026-11-02`  `4884a31a0b2c`
-> [scratch-rules.md](../../rules/scratch-rules.md)  `2026-11-02`  `bb2f5aaaf581`
-> [SKILL-tmp.md](../../templates/SKILL-tmp.md)  `2026-11-02`  `4c84755e0122`
-> [README-tmp.md](../../templates/README-tmp.md)  `2026-10-19`  `43ace64a88a6`
+> [run-data-rules.md](../../rules/run-data-rules.md)  `2026-11-07`  `cb4e585a6fbc`
+> [SKILL-tmp.md](../../templates/SKILL-tmp.md)  `2026-11-06`  `0a1b73b86b05`
+> [README-tmp.md](../../templates/README-tmp.md)  `2026-11-06`  `549f2d3ba535`
 > [depends_on.py](../../scripts/depends_on.py)  `2026-10-16`  `53b1d3e60eca`
-> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-02`  `f4a7161de90a`
+> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-06`  `96933f295048`
 
 What the check-skill skill is made of, and what its [SKILL.md](SKILL.md) depends on.
 A skill loads its whole SKILL.md each time it runs, so the parts a run does not need are kept here: SKILL.md does not link to this file, and no run loads it.
@@ -15,7 +15,7 @@ Read it before changing the skill: make every change that When the Skill Is Chan
 How the steps of a skill are written is in [skill-writing.md](../../rules/skill-writing.md).
 
 The paths in the diagrams are short: `check-skill/` is `skill-groups/common/skills/check-skill/`, and `common/` is `skill-groups/common/`.
-`<skill>/` is the directory of a checked skill, `{wikiDir}` is the wiki root that `config.yaml` gives, and `temp/` is at the workspace root.
+`<skill>/` is the directory of a checked skill, `{wikiDir}` is the wiki root that `config.yaml` gives, and `temp/` and `database/` are at the workspace root.
 
 # When the Skill Runs
 
@@ -90,8 +90,9 @@ How to read the diagram:
 
 - A parallelogram is an external input: `config.yaml`, the two templates, the files a checked skill's README.md declares, the checking criteria and DFD.md — none of which any step writes.
   A flag is one-run data: the prompt and the Answers, the run settings Step 0 resolves, the selection Step 1 makes, the facts file Step 2 writes, the findings Step 3 records and the report Step 4 prints.
-  The facts file is a file, but it lives only within the run: Step 5 deletes it, so it is drawn as one-run data.
+  The facts file is a file in the Working Dir of the run, but no step and no person reads it after the run, so it is drawn as one-run data.
   A cylinder is a record: the checked skill — its SKILL.md and README.md, their twins, its scripts and references — and the Skills Dashboard.
+  Each step also adds its time and model to the run record, and the diagram does not show this record.
   A rounded box is a step.
 - A hexagon is a role outside the skill: the user, who supplies the prompt and the Answers — the checks chosen in the picker and the items named after the report — and reads the report.
 - A solid arrow moves data, the way the data moves; a two-headed arrow is data one step both reads and writes.
@@ -107,7 +108,7 @@ How to read the diagram:
 Each step, named exactly as its heading in SKILL.md, with its Purpose: why it exists as a step.
 
 - Step 0 - Warmup
-  Fix the config, the two templates and the clock for the whole run in one place, so every later step argues from the same resolved values and no run can split across two `{yymmdd-hh}` stamps.
+  Fix the config, the two templates, the clock and the Run Number for the whole run in one place, so every later step argues from the same resolved values and no run can split across two `{yymmdd-hh}` stamps.
 - Step 1 - Resolve Skills and Select Checks
   Settle both what is checked and what it is checked for before a single file is read, so no later step has to guess whether a silent check passed or was never selected.
 - Step 2 - Scan the Selected Skills
@@ -138,6 +139,7 @@ Step 0 - Warmup
           common/scripts/depends_on.py
           common/templates/SKILL-tmp.md
           common/templates/README-tmp.md
+  writes  the run record: database/skill-runs/check-skill/{yymmdd}.{N}.yaml
 
 Step 1 - Resolve Skills and Select Checks
   checks  that each skill named resolves to <skill>/SKILL.md under a skillGroups root
@@ -149,7 +151,7 @@ Step 2 - Scan the Selected Skills
           ├─ reads common/templates/SKILL-tmp.md and README-tmp.md: their headings
           ├─ reads every text file in <skill>/, SKILL.md and README.md among them
           ├─ loads common/scripts/depends_on.py: reads every file README.md's header quote declares
-          └─ writes temp/check-skill-facts-{yymmdd-hh}.yaml
+          └─ writes the facts file: temp/check-skill/{yymmdd}.{N}/facts.yaml
   reads   the facts file
 
 Step 3 - Apply the Selected Checks
@@ -166,7 +168,6 @@ Step 4 - Report the Findings
 Step 5 - Update the Skills Dashboard
   runs    update_dashboard.py, once for each checked skill
           └─ edits {wikiDir}/dashboard/skills.md
-  deletes temp/check-skill-facts-{yymmdd-hh}.yaml
 
 Step 6 - Apply the Named Items
   edits   the files of <skill>/ that the named items change, and their 繁體中文 twins
@@ -174,6 +175,7 @@ Step 6 - Apply the Named Items
           └─ edits {wikiDir}/dashboard/skills.md
 ```
 
+Each step also adds itself to the run record, and Step 5 writes `result: completed` in it.
 No run reads SKILL-tw.md, this file, README-tw.md or checking-criteria-tw.md.
 
 # When the Skill Is Changed
@@ -200,7 +202,8 @@ check-skill/SKILL.md
  ├─▶ common/rules/skill-writing.md: what criteria 1.4, 1.7, 1.10 to 1.14 and 5.6 hold a skill to
  ├─▶ common/references/DFD.md: what check 6 holds a Dataflow to
  ├─▶ common/scripts/depends_on.py: the header quote format, and the statuses criterion 1.13 reads
- ├─▶ common/rules/scratch-rules.md: where the facts file goes and how it is cleaned up
+ ├─▶ common/rules/run-data-rules.md: the Run Number, the run record and the Working Dir that holds the facts file,
+ │     and what criteria 1.15, 5.7 and 5.8 hold a skill to
  └─▶ common/rules/md-style.md: one sentence on each line
        └─ checked by reformat_md.py and check_reformat.py (--twin: the twin's sentences one for one)
 
@@ -239,7 +242,7 @@ check-skill/README.md (and README-tw.md, which copies its header quote)
   ─▶ common/references/DFD.md
   ─▶ common/rules/md-style.md
   ─▶ common/rules/skill-writing.md
-  ─▶ common/rules/scratch-rules.md
+  ─▶ common/rules/run-data-rules.md
   ─▶ common/templates/SKILL-tmp.md
   ─▶ common/templates/README-tmp.md
   ─▶ common/scripts/depends_on.py

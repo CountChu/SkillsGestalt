@@ -3,11 +3,11 @@
 > [DFD.md](../../references/DFD.md)  `2026-11-02`  `4030d6783acf`
 > [md-style.md](../../rules/md-style.md)  `2026-11-02`  `639a95083dd2`
 > [skill-writing.md](../../rules/skill-writing.md)  `2026-11-02`  `4884a31a0b2c`
-> [scratch-rules.md](../../rules/scratch-rules.md)  `2026-11-02`  `bb2f5aaaf581`
-> [SKILL-tmp.md](../../templates/SKILL-tmp.md)  `2026-11-02`  `4c84755e0122`
-> [README-tmp.md](../../templates/README-tmp.md)  `2026-10-19`  `43ace64a88a6`
+> [run-data-rules.md](../../rules/run-data-rules.md)  `2026-11-07`  `cb4e585a6fbc`
+> [SKILL-tmp.md](../../templates/SKILL-tmp.md)  `2026-11-06`  `0a1b73b86b05`
+> [README-tmp.md](../../templates/README-tmp.md)  `2026-11-06`  `549f2d3ba535`
 > [depends_on.py](../../scripts/depends_on.py)  `2026-10-16`  `53b1d3e60eca`
-> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-02`  `f4a7161de90a`
+> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-06`  `96933f295048`
 
 check-skill skill 由哪些部分組成，以及它的 [SKILL.md](SKILL.md) 依賴哪些檔案。
 skill 每次執行都會載入整份 SKILL.md，所以執行時用不到的部分放在這裡：SKILL.md 不連到本檔，也沒有任何一次執行會載入它。
@@ -15,7 +15,7 @@ skill 每次執行都會載入整份 SKILL.md，所以執行時用不到的部�
 skill 的各個 step 怎麼寫，見 [skill-writing.md](../../rules/skill-writing.md)。
 
 圖中的路徑都用簡寫：`check-skill/` 指 `skill-groups/common/skills/check-skill/`，`common/` 指 `skill-groups/common/`。
-`<skill>/` 是某個 checked skill 的目錄，`{wikiDir}` 是 `config.yaml` 所給的 wiki 根目錄，`temp/` 位於 workspace 根目錄。
+`<skill>/` 是某個 checked skill 的目錄，`{wikiDir}` 是 `config.yaml` 所給的 wiki 根目錄，`temp/` 與 `database/` 位於 workspace 根目錄。
 
 # When the Skill Runs
 
@@ -90,8 +90,9 @@ flowchart TB
 
 - 平行四邊形是 external input：`config.yaml`、兩份 template、checked skill 的 README.md 所宣告的檔案、checking criteria 與 DFD.md——沒有任何 step 會寫入它們。
   旗形是 one-run data：prompt 與 Answers、Step 0 解析出的執行設定、Step 1 做出的選取、Step 2 寫出的 facts file、Step 3 記下的 finding，以及 Step 4 印出的報告。
-  facts file 雖然是一個檔案，卻只存在於一次執行之中：Step 5 會刪除它，所以把它畫成 one-run data。
+  facts file 雖然是本次執行 Working Dir 中的一個檔案，但執行結束後沒有 step、也沒有人讀它，所以把它畫成 one-run data。
   圓柱是 record：checked skill——它的 SKILL.md 與 README.md、它們的 twin、它的腳本與參考檔——以及 Skills Dashboard。
+  每個 step 也會把它的時間與模型加入 run record，而圖中不畫這個 record。
   圓角方框是 step。
 - 六角形是 skill 之外的 role：使用者，提供 prompt 與 Answers——在選單中選的 check，以及看完報告後指名的 item——並閱讀報告。
 - 實線箭頭沿著資料移動的方向搬移資料；雙頭箭頭表示某個 step 對同一份資料既讀又寫。
@@ -107,7 +108,7 @@ flowchart TB
 每個 step 都以它在 SKILL.md 中的標題命名，並附上它的 Purpose：它為何要獨立存在。
 
 - Step 0 - Warmup
-  在同一處把 config、兩份 template 與時鐘一次固定下來，讓後續每個 step 都以相同的解析值為依據，也讓一次執行不可能裂成兩個 `{yymmdd-hh}` 戳記。
+  在同一處把 config、兩份 template、時鐘與 Run Number 一次固定下來，讓後續每個 step 都以相同的解析值為依據，也讓一次執行不可能裂成兩個 `{yymmdd-hh}` 戳記。
 - Step 1 - Resolve Skills and Select Checks
   在讀進任何一個檔案之前，就把「檢查什麼」與「檢查哪些項目」兩件事一併定案，讓後續沒有任何 step 需要去猜一項沒有發話的 check 是通過了、還是從未被選取。
 - Step 2 - Scan the Selected Skills
@@ -138,6 +139,7 @@ Step 0 - Warmup
           common/scripts/depends_on.py
           common/templates/SKILL-tmp.md
           common/templates/README-tmp.md
+  writes  the run record: database/skill-runs/check-skill/{yymmdd}.{N}.yaml
 
 Step 1 - Resolve Skills and Select Checks
   checks  that each skill named resolves to <skill>/SKILL.md under a skillGroups root
@@ -149,7 +151,7 @@ Step 2 - Scan the Selected Skills
           ├─ reads common/templates/SKILL-tmp.md and README-tmp.md: their headings
           ├─ reads every text file in <skill>/, SKILL.md and README.md among them
           ├─ loads common/scripts/depends_on.py: reads every file README.md's header quote declares
-          └─ writes temp/check-skill-facts-{yymmdd-hh}.yaml
+          └─ writes the facts file: temp/check-skill/{yymmdd}.{N}/facts.yaml
   reads   the facts file
 
 Step 3 - Apply the Selected Checks
@@ -166,7 +168,6 @@ Step 4 - Report the Findings
 Step 5 - Update the Skills Dashboard
   runs    update_dashboard.py, once for each checked skill
           └─ edits {wikiDir}/dashboard/skills.md
-  deletes temp/check-skill-facts-{yymmdd-hh}.yaml
 
 Step 6 - Apply the Named Items
   edits   the files of <skill>/ that the named items change, and their 繁體中文 twins
@@ -174,6 +175,7 @@ Step 6 - Apply the Named Items
           └─ edits {wikiDir}/dashboard/skills.md
 ```
 
+每個 step 也會把自己加入 run record，而 Step 5 在其中寫入 `result: completed`。
 沒有任何一次執行會讀 SKILL-tw.md、README.md、本檔或 checking-criteria-tw.md。
 
 # When the Skill Is Changed
@@ -200,7 +202,8 @@ check-skill/SKILL.md
  ├─▶ common/rules/skill-writing.md: what criteria 1.4, 1.7, 1.10 to 1.14 and 5.6 hold a skill to
  ├─▶ common/references/DFD.md: what check 6 holds a Dataflow to
  ├─▶ common/scripts/depends_on.py: the header quote format, and the statuses criterion 1.13 reads
- ├─▶ common/rules/scratch-rules.md: where the facts file goes and how it is cleaned up
+ ├─▶ common/rules/run-data-rules.md: the Run Number, the run record and the Working Dir that holds the facts file,
+ │     and what criteria 1.15, 5.7 and 5.8 hold a skill to
  └─▶ common/rules/md-style.md: one sentence on each line
        └─ checked by reformat_md.py and check_reformat.py (--twin: the twin's sentences one for one)
 
@@ -239,7 +242,7 @@ check-skill/README.md (and README-tw.md, which copies its header quote)
   ─▶ common/references/DFD.md
   ─▶ common/rules/md-style.md
   ─▶ common/rules/skill-writing.md
-  ─▶ common/rules/scratch-rules.md
+  ─▶ common/rules/run-data-rules.md
   ─▶ common/templates/SKILL-tmp.md
   ─▶ common/templates/README-tmp.md
   ─▶ common/scripts/depends_on.py

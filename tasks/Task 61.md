@@ -19,7 +19,7 @@
 ### 已決定（2026-10-18）
 
 - 範圍：`.github/common` 裡定規則的 18 份英文檔，中文版跟著它的英文檔改，不另外檢查。
-  - rules 的 6 份：[md-style.md](../skill-groups/common/rules/md-style.md)、[report-md-rules.md](../skill-groups/common/rules/report-md-rules.md)、[report-yaml-rules.md](../skill-groups/common/rules/report-yaml-rules.md)、[scratch-rules.md](../skill-groups/common/rules/scratch-rules.md)、[skill-writing.md](../skill-groups/common/rules/skill-writing.md)、[tools.md](../skill-groups/common/rules/tools.md)。
+  - rules 的 6 份：[md-style.md](../skill-groups/common/rules/md-style.md)、[report-md-rules.md](../skill-groups/common/rules/report-md-rules.md)、`report-yaml-rules.md`、`scratch-rules.md`、[skill-writing.md](../skill-groups/common/rules/skill-writing.md)、[tools.md](../skill-groups/common/rules/tools.md)。
   - references 的 3 份：[DFD.md](../skill-groups/common/references/DFD.md)、[RSDC-Standard.md](../skill-groups/common/references/RSDC-Standard.md)、[tw-keep-english.md](../skill-groups/common/references/tw-keep-english.md)。
   - skill 裡的 3 份：asd-ste 的 [ste-rules.md](../skill-groups/common/skills/asd-ste/references/ste-rules.md) 與 [ste-custom.md](../skill-groups/common/skills/asd-ste/references/ste-custom.md)，check-skill 的 [checking-criteria.md](../skill-groups/common/skills/check-skill/references/checking-criteria.md)。
   - 範本 2 份：[SKILL-tmp.md](../skill-groups/common/templates/SKILL-tmp.md)、[README-tmp.md](../skill-groups/common/templates/README-tmp.md)。
@@ -141,6 +141,10 @@
 —
 
 ## 8. 日誌
+
+### 2026-11-06
+
+- [[Task 100.4]] 刪掉 scratch-rules.md 與 report-yaml-rules.md，本檔連到它們的連結改成純文字的檔名。
 
 ### 2026-11-02
 

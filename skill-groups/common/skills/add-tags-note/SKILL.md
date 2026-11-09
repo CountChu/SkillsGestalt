@@ -7,9 +7,43 @@ description: >-
   of every note it references.
 ---
 
+# TERMINOLOGY
+
+Each skill uses these terms with the same definition.
+
+- **Run Number** — the number of one run, `{yymmdd}.{N}`.
+  `{N}` is the sequence number of the run of this skill on that date, and it starts at 1.
+- **Run record** — the file that records the time and the model of each step of one run.
+  The analysis of the efficiency of a skill uses it.
+
+# CONFIGURATION
+
+The values that this skill uses in a run.
+
+The inputs and tools, which the run reads or runs:
+
+- **Workspace configuration** — the [config.yaml](config.yaml) at the root of the workspace.
+- **Tag database** — `database\tags.yaml` at the root of the workspace, which gives the approved tags.
+- **Daily note** — `{wikiDir}\write-note\<note-name>.md`, that the prompt gives.
+  Step 0 finds it, and Step 1 reads its sections.
+
+The last outputs, which a person, a different skill or a subsequent analysis reads:
+
+- **Run record** — `database\skill-runs\add-tags-note\{yymmdd}.{N}.yaml`.
+- **Referenced notes** — the wiki Markdown files that the sections of the daily note refer to, in `{wikiDir}\`.
+  Step 2 merges the tags of the sections into their Tags field.
+
 # MUST FOLLOW
 
 - Must run workflow step by step, and display each step number.
+- Obey [run-data-rules.md](skill-groups/common/rules/run-data-rules.md) for the Run Number and the run record of a run.
+- If the skill stops before Step 2, write `result: stopped` and `stopped_at` (the step that did not complete, for example `step_1`) into the run record.
+- **Before the skill stops, show the path of the run record.**
+  Show only the path, and do not show the contents.
+  Write the path as a Markdown link that opens with a click, with a link target that starts at the workspace and the forward slash as the separator.
+  For example: `[{yymmdd}.{N}.yaml](database/skill-runs/add-tags-note/{yymmdd}.{N}.yaml)`.
+  Do not write it as inline code or as plain text.
+  Do this for each run that has a run record, also when the skill stops early.
 - This skill only edits local Markdown files.
   It must not call any ADO write API.
 - Every tag value MUST be validated against `database/tags.yaml` before being written.
@@ -55,6 +89,12 @@ Propagate each section's tags into the notes referenced by note-260709-Th.
 
 - Save the resolved note path for use in later steps.
 
+- Save the canonical skill invocation, thus the run record can give it in its `prompt` field.
+
+- Get the Run Number, as run-data-rules.md tells, and write the run record of the run.
+
+- Add this step to the run record.
+
 
 ## Step 1 - Scan Sections
 
@@ -70,7 +110,10 @@ Propagate each section's tags into the notes referenced by note-260709-Th.
 
 - Build and display a table: `Section #` | `Referenced note(s)` | `Section tags`.
 
+- Add this step to the run record.
+
 - If no section has both a referenced note and at least one tag, report "Nothing to propagate" and exit the skill.
+  Before you exit, write `result: stopped` and `stopped_at: step_2` into the run record.
 
 
 ## Step 2 - Propagate Tags to Referenced Notes
@@ -90,3 +133,5 @@ Propagate each section's tags into the notes referenced by note-260709-Th.
 - Skip sections that have no referenced notes or no tags.
 
 - Display, per referenced note: the file path and the new value of its `Tags` header.
+
+- Add this step to the run record, and write `result: completed`, because it is the last step.

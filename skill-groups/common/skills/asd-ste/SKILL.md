@@ -1,6 +1,6 @@
 ---
 name: asd-ste
-description: Rewrites one English Markdown file in ASD-STE100 Simplified Technical English (STE, Issue 9) as a draft beside it, and puts the draft in the file's place once the user approves it. Headings, fenced blocks, inline code, link targets, placeholders and the source's own header quote stay unchanged, and every statement is kept; the prose follows the STE rules and dictionary, one sentence per line. A script checks the kept spans, the sentence limits and each word; the run offers to commit the draft and to have the chinese skill write its 繁體中文 twin, and builds an HTML review page that a local Node.js review server serves. On approval it replaces the source file and its twin, records the source file again in each document that declares it, and checks the result. A YAML checkpoint keeps each step for run step N. It refuses a -tw.md twin, an STE file or a source that is not English. Triggers "rewrite in STE", "Simplified Technical English", "ASD-STE100".
+description: Rewrites one English Markdown file in ASD-STE100 Simplified Technical English (STE, Issue 9) as a draft beside it, and puts the draft in the file's place once the user approves it. Headings, fenced blocks, inline code, link targets, placeholders and the source's own header quote stay unchanged, and every statement is kept; the prose follows the STE rules and dictionary, one sentence per line. A script checks the kept spans, the sentence limits and each word; the run offers to commit the draft and to have the chinese skill write its 繁體中文 twin, and builds an HTML review page that a local Node.js review server serves. On approval it replaces the source file and its twin, records the source file again in each document that declares it, and checks the result. Each step saves its outputs in a step file of the run, for run step N, and a run record keeps the model and the time of each step. It refuses a -tw.md twin, an STE file or a source that is not English. Triggers "rewrite in STE", "Simplified Technical English", "ASD-STE100".
 ---
 
 > [ste-rules.md](references/ste-rules.md)  `2026-10-30`  `8014dc37df5f`
@@ -10,11 +10,17 @@ description: Rewrites one English Markdown file in ASD-STE100 Simplified Technic
 Terms that mean the same thing in every skill.
 
 - **`run step N`** — a trailing prompt selector naming one step.
-  It runs **only** that step, reading every earlier step's output back from the YAML checkpoint.
-- **Checkpoint Dir** — the directory holding a skill's YAML checkpoint and the data files its steps write.
-  Every skill has its own; this skill's is given under **CONFIGURATION**.
-- **YAML checkpoint** — the `process.yaml` inside the Checkpoint Dir.
-  Every step writes its outputs there under a `step_{N}` group, so a later step reads them back instead of recomputing them.
+  It runs **only** that step, reading every earlier step's output back from its step file.
+- **Run Number** — the number of one run, `{yymmdd}.{N}`.
+  `{N}` is the sequence number of this skill's run on that date, starting at 1.
+- **Working Dir** — the directory of one run, holding all the working data of the run: its step files, the data files its steps write and its temporary files.
+  It is the Checkpoint Dir, and **CONFIGURATION** gives it.
+  The skill does not remove it.
+- **Checkpoint Dir** — a Working Dir in `checkpoints\` at the root of the workspace.
+- **Step file** — the `step_{N}.yaml` in the Working Dir.
+  Every step writes its outputs there, and only its own, so a later step reads them back instead of recomputing them.
+- **Run record** — the file that records the model and the time of each step of one run, and how the run ended.
+  The analysis of a skill's efficiency uses it.
 
 # DEDICATED TERMINOLOGY
 
@@ -56,8 +62,9 @@ Terms specific to this skill's domain.
   Step 7 records the source file again in each one that still holds after the replacement.
 - **draft tool** — this skill's `draft.py`: it gives the paths a run uses for a source file and says whether the source file is a TW twin or an STE file, puts the approved draft and its TW twin in the place of the source file and its TW twin, and lists the dependents.
 - **findings file** — the JSON file `check_ste.py` writes with `--findings`: every finding it reports, in full, where the printed report shortens a list.
-  Step 1 writes `step_1-findings.json` and Step 3 writes `step_3-findings.json`, in the Checkpoint Dir.
-- **step saver** — this skill's `save_step.py`: it writes one step's group into the YAML checkpoint — the title, the time, the values the step gives and a findings file whole — and leaves every other group as it is.
+  Step 1 writes `step_1-findings.json` and Step 3 writes `step_3-findings.json`, in the Working Dir.
+  The step's step file names it and gives its verdict, but does not copy it.
+- **step saver** — this skill's `save_step.py`: in Step 0 it gets the Run Number and writes the run record; for each step it writes the step file — the values the step gives, and the path and verdict of a findings file — and adds the step, with its title, model and time, to the run record.
 - **TW twin** — a file's 繁體中文 version, which the `chinese` skill writes beside it.
 - **pairing line** — the line of a TW twin, above its first heading, that links back to its English file; the `chinese` skill adds one under a frontmatter.
 - **review page** — the HTML page Step 6 builds for the user who reviews the draft: the source file and the draft side by side, each in a column that scrolls on its own; the two **TW twins** side by side the same way; and the draft and its TW twin line by line.
@@ -66,26 +73,24 @@ Terms specific to this skill's domain.
 - **review notes** — the part of the review page that Step 6 writes itself: each place a reviewer should compare, and why.
 - **line reference** — how the review notes give a line: `{{en-o:N}}` is line N of the source file, `{{en-d:N}}` of the draft, `{{tw-o:N}}` of the source file's TW twin and `{{tw-d:N}}` of the draft's TW twin; `N-M` is a range, and `N,M` a list.
   The **review builder** turns each one into a link that opens its line.
-- **review builder** — this skill's `make_review.py`: it builds the review page from the four files, the YAML checkpoint and the review notes, and writes no page while a line reference names no line.
+- **review builder** — this skill's `make_review.py`: it builds the review page from the four files, the step files of the run and the review notes, and writes no page while a line reference names no line.
 - **review status** — the mark a reviewer sets on an item of the review notes: `[ ]` pending, `[v]` approved, `[?]` to be explained or `[x]` rejected, each click moving it on to the next.
   `[?]` says that the reviewer does not follow how the item is handled: the agent explains each such item in the conversation, and leaves the review notes as they are.
   `[v]` says that the draft passes at that place as it stands, so a reviewer who agrees with a suggestion in an item marks it `[x]`, not `[v]`.
   On `[x]`, the agent changes the draft as the reviewer decides, then runs Steps 3 and 6 again.
   An item is known by its own text, so an item that changes between two builds of the review page is pending again.
-- **review server** — this skill's `review_server.js`, which runs on Node.js: it serves every review page under `checkpoints\asd-ste\`, lists them with how far each review is, and writes the review statuses that a page it serves sends into `step_6-status.json` in that page's Checkpoint Dir.
+  A new run of the same source file starts from the review statuses of the newest earlier run that has them.
+- **review server** — this skill's `review_server.js`, which runs on Node.js: it serves every review page under `checkpoints\asd-ste\` of the workspace it is started in, lists them with the source file of each run and how far each review is, and writes the review statuses that a page it serves sends into `step_6-status.json` in that page's Working Dir.
   It runs until the user stops it; a review page opened as a file shows the review statuses of its build, and saves none.
 
 # CONFIGURATION
 
 Concrete values this skill runs with.
 
+The inputs and tools, which the run reads or runs:
+
+- **Workspace configuration** — the [config.yaml](config.yaml) at the root of the workspace.
 - **source file** — the `.md` path the prompt gives, or the one file of the name it gives, found in Step 0.
-- **draft** — the path the draft tool gives, in the source file's own directory.
-- **TW twin** — the source file's, beside it, and the draft's, beside the draft, at the paths the draft tool gives.
-- **Checkpoint Dir** — `checkpoints\asd-ste\{parent}-{name}\`, where `{parent}` is the name of the source file's directory and `{name}` is the source file's name without `.md`: `skill-groups\common\references\DFD.md` gives `checkpoints\asd-ste\references-DFD\`.
-  The draft tool gives it as well.
-  There is one for each source file, and every run reuses it.
-  It holds the YAML checkpoint, `process.yaml`, and the files Steps 1, 3 and 6 write: `step_1-inventory.txt`, `step_1-findings.json`, `step_3-check.txt`, `step_3-findings.json`, `step_6-notes.html`, `step_6-review.html` and `step_6-status.json`.
 - **STE rules digest** — `{skillGroups.common}\skills\asd-ste\references\ste-rules.md`.
 - **STE dictionary** — `{skillGroups.common}\skills\asd-ste\references\ste-dictionary.json`.
 - **project-approved words** — `{skillGroups.common}\skills\asd-ste\references\ste-custom.md`, its Words table.
@@ -97,29 +102,54 @@ Concrete values this skill runs with.
 - **draft tool** — `{skillGroups.common}\skills\asd-ste\scripts\draft.py`.
 - **step saver** — `{skillGroups.common}\skills\asd-ste\scripts\save_step.py`.
 - **review builder** — `{skillGroups.common}\skills\asd-ste\scripts\make_review.py`.
-- **review server** — `{skillGroups.common}\skills\asd-ste\scripts\review_server.js`, at `http://127.0.0.1:8790/`, where the Checkpoint Dir `{parent}-{name}` has its review page at `http://127.0.0.1:8790/{parent}-{name}/`.
+- **review server** — `{skillGroups.common}\skills\asd-ste\scripts\review_server.js`, at `http://127.0.0.1:8790/`, where the run `{yymmdd}.{N}` has its review page at `http://127.0.0.1:8790/{yymmdd}.{N}/`.
 - **parity check** — the `chinese` skill's `{skillGroups.common}\skills\chinese\scripts\check_parity.py`, with the keep-English list `{skillGroups.common}\references\tw-keep-english.md`.
+- **STE checker** — `{skillGroups.common}\skills\asd-ste\scripts\check_ste.py`.
+- **run data rules** — `{skillGroups.common}\rules\run-data-rules.md`.
+- **Markdown style rules** — `{skillGroups.common}\rules\md-style.md`.
+- **chinese skill** — `{skillGroups.common}\skills\chinese\SKILL.md`.
+- **Node.js** — the `node` program, which runs the review server.
+- **ripgrep** — the `rg` program, which finds the source file by its name; without it, the agent's file-search tool.
+
+The working data of a run, which no person and no skill reads after the run:
+
+- **Working Dir** — the Checkpoint Dir, `checkpoints\asd-ste\{yymmdd}.{N}\`, one for each run, named by its Run Number.
+  Its `step_0.yaml` names the source file of the run, so that `run step N` and a later run find it: the draft tool's `runs` lists the runs of a source file, newest first.
+  It holds the step files, `step_0.yaml` to `step_7.yaml`, and the files Steps 1, 3 and 6 write: `step_1-inventory.txt`, `step_1-findings.json`, `step_3-check.txt`, `step_3-findings.json`, `step_6-notes.html`, `step_6-review.html` and `step_6-status.json`.
+  It also holds `recheck\`, the directory where the draft tool's `recheck` checks a draft again, in the Working Dir of the newest run of the draft's source file, before it moves the two files of the check from there into that Working Dir.
+
+The last outputs, which a person, a different skill or a subsequent analysis reads:
+
+- **Run record** — `database\skill-runs\asd-ste\{yymmdd}.{N}.yaml`.
+- **draft** — the path the draft tool gives, in the source file's own directory.
+- **TW twin** — the source file's, beside it, and the draft's, beside the draft, at the paths the draft tool gives.
+- **Dependents** — each Markdown file whose header quote records the source file; Step 7 records the source again in it.
 
 # MUST FOLLOW
 
 - Must run workflow step by step, and display each step number.
 - **Honour a `run step N` selector**: run Step N, then stop; never a later step.
-  Find the Checkpoint Dir by the source file the prompt names: a path gives `{parent}-{name}` at once, and a bare name matches `checkpoints\asd-ste\*-{name}\`, where more than one match is listed for the user to choose from.
-  Read the paths Step 0 resolved, and every earlier step's output, from the YAML checkpoint.
-  When a group that Step N needs is missing, name the step to run first, and stop.
-- **This skill produces no MD report; it writes a YAML checkpoint.**
-  The draft is its output, and the Checkpoint Dir records how each run made it and holds the review page Step 6 builds for the user.
+  Step N runs in the newest run of the source file the prompt names, and adds itself to that run's run record; `run step 0` starts a new run.
+  Find that run with the draft tool: `{python} {skillGroups.common}/skills/asd-ste/scripts/draft.py runs "<source file>"`, with a path, a file name or a name without `.md`, lists the runs whose `step_0.yaml` names a matching source file, newest first; when they name more than one source file, list them for the user to choose from.
+  Read the paths Step 0 resolved, and every earlier step's output, from the step files of that run.
+  When a step file that Step N needs is missing, name the step to run first, and stop.
+- **This skill produces no MD report; it writes a run record.**
+  The draft is its output, and the Working Dir records how each run made it and holds the review page Step 6 builds for the user.
   Its other writes are the commit Step 4 makes and the TW twin Step 5 has the `chinese` skill write, each only on the user's yes, and the replacement and the records Step 7 makes, only on the user's approval.
-- Follow [report-yaml-rules.md](skill-groups/common/rules/report-yaml-rules.md) for the YAML checkpoint's shape and required fields.
-- **Save each step's group with the step saver, never by hand.**
-  Read each step's begin time from the system clock as the step begins, with `date '+%Y-%m-%d %H:%M:%S'` on macOS/Linux or `Get-Date -Format "yyyy-MM-dd HH:mm:ss"` in PowerShell, and give it to the step saver as the step ends: the step saver reads the end time and works out the time taken, so no time is estimated.
+- Follow [run-data-rules.md](skill-groups/common/rules/run-data-rules.md) for the Run Number, the step files, the run record and the Working Dir of a run.
+- **Save each step's step file, and add the step to the run record, with the step saver, never by hand.**
+  Read each step's begin time from the system clock as the step begins, with `date '+%Y-%m-%d %H:%M:%S'` on macOS/Linux or `Get-Date -Format "yyyy-MM-dd HH:mm:ss"` in PowerShell, and give it to the step saver as the step ends, with the model that operated the step: the step saver reads the end time and works out the time taken, so no time is estimated.
   A list copied into the YAML by hand loses entries without a word.
-- **Every data file in the Checkpoint Dir has exactly one writer step.**
-  Step 1 writes `step_1-inventory.txt` and `step_1-findings.json`, Step 3 writes `step_3-check.txt` and `step_3-findings.json`, and Step 6 writes `step_6-notes.html` and, through the review builder, `step_6-review.html`; the review server that Step 6 starts writes `step_6-status.json`; no other step changes them.
-  The YAML checkpoint is the one exception: each step replaces its own group in it, and Step 0 starts it afresh, so that a run never mixes its groups with an earlier run's.
-  Only the files the YAML checkpoint names belong to its run: a file an earlier run left is replaced when its step runs again.
-- **A run that stops early still saves the group of the step it stops in**, with `--stopped` and the reason: a refused source, a `NOT-ENGLISH` or `SOURCE-FIRST` verdict, a no to the overwrite, a check that cannot pass, a TW twin that is missing, a replacement the draft tool refuses.
-  The YAML checkpoint then says why a run left no draft, no review page, or the source file as it was.
+  Step 7, the last step, saves with `--last`, which writes `result: completed` into the run record.
+- **Every data file in the Working Dir has exactly one writer step.**
+  Step 1 writes `step_1-inventory.txt` and `step_1-findings.json`, Step 3 writes `step_3-check.txt` and `step_3-findings.json`, and Step 6 writes `step_6-notes.html` and, through the review builder, `step_6-review.html`; the review server that Step 6 starts writes `step_6-status.json`; each step writes its own step file; no other step changes them.
+  The one exception is `draft.py recheck`, which ste-custom.md says to run once a day: it checks a draft again as Step 3 does, and writes Step 3's files — `step_3-check.txt`, `step_3-findings.json` and `step_3.yaml` — in the newest run of the draft's source file, as Step 3 run again under `run step 3` would, and adds the step to the run record of that run.
+  Each run has its own Working Dir, so a run never mixes its files with an earlier run's; the skill deletes none of them.
+- **The review statuses carry over from one run to the next of the same source file.**
+  They are the user's review, which the review server writes after the run has ended; no other skill reads them, so they are not a handoff file.
+  Step 6 of a run that has no `step_6-status.json` of its own builds the review page from the one in the Working Dir of the newest earlier run of the same source file that has one, and says which run; the first status the reviewer then sets saves them all into this run's own `step_6-status.json`.
+- **A run that stops early still saves the step file of the step it stops in**, with `--stopped` and the reason: a refused source, a `NOT-ENGLISH` or `SOURCE-FIRST` verdict, a no to the overwrite, a check that cannot pass, a TW twin that is missing, a replacement the draft tool refuses.
+  The step file then says why a run left no draft, no review page, or the source file as it was, and the run record gets `result: stopped` and the step it stopped at.
 - **The source file is read-only until the user approves the draft.**
   Never edit, reformat or "fix" it — not even when the rewrite exposes a real defect in it.
   Report the defect and leave it for the user.
@@ -140,8 +170,8 @@ Concrete values this skill runs with.
 - **Commit only on the user's yes, and only the draft.**
   A commit made without asking puts the user's unfinished edits into history, and a file staged by someone else does not belong in it.
   Step 7 commits nothing: the replacement and the records span files that the user commits, in each workspace.
-- **Before the skill ends, display the draft path, the review page's link on the review server — or its path, when no review server runs — once Step 6 has built it, and the YAML checkpoint path** — after Step 7, the source file path in place of the draft's — the paths only, never their contents, rendered as clickable Markdown links and never as inline code or plain text.
-  Link the YAML checkpoint with a workspace-relative, forward-slash target, such as `[process.yaml](checkpoints/asd-ste/references-DFD/process.yaml)`.
+- **Before the skill ends, display the draft path, the review page's link on the review server — or its path, when no review server runs — once Step 6 has built it, and the run record path** — after Step 7, the source file path in place of the draft's — the paths only, never their contents, rendered as clickable Markdown links and never as inline code or plain text.
+  Link the run record with a workspace-relative, forward-slash target, such as `[{yymmdd}.{N}.yaml](database/skill-runs/asd-ste/{yymmdd}.{N}.yaml)`.
   Do this for every run, including a partial one such as `run step 0`.
 
 # Prompt Examples
@@ -205,7 +235,7 @@ run step 7
 
 - Find `{python}`, the Python of the `.venv` at the workspace root: `.venv/bin/python` on macOS and Linux, `.venv\Scripts\python.exe` on Windows.
   Run every script of the steps below with it: each command runs in a new shell, which does not keep a `.venv` that another command activated.
-  The Dependency Checker and the step saver import `PyYAML`, which `{skillGroups.common}\requirements.txt` lists; `check_ste.py` and the draft tool need only the Python standard library.
+  The Dependency Checker and the step saver import `PyYAML`, which `{skillGroups.common}\requirements.txt` lists; `check_ste.py` and the draft tool need only the Python standard library, but the draft tool's `runs` and `recheck` read step files with `PyYAML` as well.
   If the workspace has no `.venv`, stop, and tell the user to make one as step 3 of [forge-setup.md](skill-groups/common/references/forge-setup.md) tells.
 
 - Read the workspace config [config.yaml](config.yaml) at the workspace root, when there is one, and resolve:
@@ -241,11 +271,14 @@ run step 7
     With several, list them and ask which one — never pick the first.
 
 - Run the draft tool on the source file, from the workspace root: `{python} {skillGroups.common}/skills/asd-ste/scripts/draft.py paths "<source file>"`.
-  It prints, as JSON, the source file's TW twin, its draft, the draft's TW twin and the Checkpoint Dir, whether each file exists, and whether the source file is a TW twin (`twin`) or an STE file (`ste`).
+  It prints, as JSON, the source file's TW twin, its draft and the draft's TW twin, whether each file exists, and whether the source file is a TW twin (`twin`) or an STE file (`ste`).
   It exits `2` when the source file cannot be read.
 
-- Take the Checkpoint Dir from the draft tool, and create it when it is missing.
-  A source file that cannot be found names no Checkpoint Dir, and its run leaves no YAML checkpoint.
+- Save the canonical skill invocation for reference in later steps.
+
+- Get the Run Number, as run-data-rules.md tells, and write the run record of the run, with the step saver: `{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --new-run --prompt "<canonical skill invocation>"`.
+  It prints, as JSON, the Run Number, the Working Dir it made and the run record.
+  A source file that cannot be found has no run yet: the run starts once the user names the file.
 
 - Stop, and say which check failed, rather than rewrite the file, when the source file:
   - does not end in `.md` — this skill rewrites Markdown only;
@@ -253,16 +286,15 @@ run step 7
   - is an STE file — `ste` is true: a draft, or a source file that a draft has replaced;
   - opens with a frontmatter that does not parse — the draft's frontmatter could not be checked against it.
 
-  Before the skill stops, save the group of Step 0, as the last bullet of this step says, with `--stopped` and the check that failed.
+  Before the skill stops, save `step_0.yaml`, as the last bullet of this step says, with `--stopped` and the check that failed.
 
 - Say whether the draft already exists; whether to overwrite it is Step 2's to ask.
 
-- Save the canonical skill invocation for reference in later steps.
+- Display the resolved source file path, the draft path and the Run Number.
 
-- Display the resolved source file path and the draft path.
-
-- Save the YAML checkpoint under `step_0` with the step saver, and `--new`, which starts it afresh: `skill`, `model`, `prompt` (the canonical skill invocation), `source_file`, `source_twin`, `draft`, `draft_exists`, `draft_twin` and `checkpoint_dir`, each as the draft tool printed it.
-  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --checkpoint "checkpoints/asd-ste/references-DFD/process.yaml" --step 0 --title "Warmup" --begin "<begin>" --new --set skill=asd-ste --set model="<model>" --set prompt="<canonical invocation>" --set source_file="skill-groups/common/references/DFD.md" --set source_twin="skill-groups/common/references/DFD-tw.md" --set draft="<draft>" --json draft_exists=true --set draft_twin="<draft's TW twin>" --set checkpoint_dir="checkpoints/asd-ste/references-DFD"`
+- Save `step_0.yaml` with the step saver: `source_file`, `source_twin`, `draft`, `draft_exists` and `draft_twin`, each as the draft tool printed it.
+  The step saver adds this step to the run record as well.
+  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --run "{yymmdd}.{N}" --step 0 --title "Warmup" --model "<model>" --begin "<begin>" --set source_file="skill-groups/common/references/DFD.md" --set source_twin="skill-groups/common/references/DFD-tw.md" --set draft="<draft>" --json draft_exists=true --set draft_twin="<draft's TW twin>"`
 
 
 ## Step 1 - Inventory the Source
@@ -272,9 +304,9 @@ run step 7
   - `--dict`: the **STE dictionary**.
   - `--custom`: the **project-approved words**.
   - `--spelling`: the **US spelling list**.
-  - `--report`: `step_1-inventory.txt` in the Checkpoint Dir.
-  - `--findings`: `step_1-findings.json` in the Checkpoint Dir, this step's **findings file**.
-  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/check_ste.py --src "skill-groups/common/references/DFD.md" --dict "{skillGroups.common}/skills/asd-ste/references/ste-dictionary.json" --custom "{skillGroups.common}/skills/asd-ste/references/ste-custom.md" --spelling "{skillGroups.common}/references/us-spelling.json" --report "checkpoints/asd-ste/references-DFD/step_1-inventory.txt" --findings "checkpoints/asd-ste/references-DFD/step_1-findings.json"`
+  - `--report`: `step_1-inventory.txt` in the Working Dir.
+  - `--findings`: `step_1-findings.json` in the Working Dir, this step's **findings file**.
+  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/check_ste.py --src "skill-groups/common/references/DFD.md" --dict "{skillGroups.common}/skills/asd-ste/references/ste-dictionary.json" --custom "{skillGroups.common}/skills/asd-ste/references/ste-custom.md" --spelling "{skillGroups.common}/references/us-spelling.json" --report "checkpoints/asd-ste/{yymmdd}.{N}/step_1-inventory.txt" --findings "checkpoints/asd-ste/{yymmdd}.{N}/step_1-findings.json"`
 
 - The script prints its inventory to **stdout**, and writes it to the two files as well:
   1. The frontmatter's keys, or that there is none.
@@ -292,18 +324,19 @@ run step 7
 
 - **If the script exits `2` with the verdict `NOT-ENGLISH`, stop the skill here.**
   Report the share it printed, say that STE is written in English, and do not write a draft.
-  Save the group of Step 1 first, as the last bullet of this step says, with `--stopped` and the share.
+  Save `step_1.yaml` first, as the last bullet of this step says, with `--stopped` and the share.
 
 - **If the script exits `3` with the verdict `SOURCE-FIRST`, stop the skill here.**
   The draft copies each kept span unchanged, so the source file has to change first: report each British spelling in a kept span, with its American spelling and its line, and say that the run starts again once the source file has changed.
-  Save the group of Step 1 first, as the last bullet of this step says, with `--stopped` and the spellings.
+  Save `step_1.yaml` first, as the last bullet of this step says, with `--stopped` and the spellings.
 
 - Exit `0` means `rewritable`, and the run continues.
 
 - Display a short summary of the inventory: the heading, fence, link and table counts, how many sentences are over the limit, how many unapproved words, words outside the dictionary and British spellings the prose uses, and each British spelling in a kept span.
 
-- Save the YAML checkpoint under `step_1` with the step saver: the findings file whole, with `--data`; and `report_file` and `findings_file`, the names of the two files.
-  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --checkpoint "checkpoints/asd-ste/references-DFD/process.yaml" --step 1 --title "Inventory the Source" --begin "<begin>" --data "checkpoints/asd-ste/references-DFD/step_1-findings.json" --set report_file=step_1-inventory.txt --set findings_file=step_1-findings.json`
+- Save `step_1.yaml` with the step saver: with `--summary`, the findings file's name and its verdict — not its findings, which stay in the findings file; and `report_file`, the name of the inventory file.
+  The step saver adds this step to the run record as well.
+  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --run "{yymmdd}.{N}" --step 1 --title "Inventory the Source" --model "<model>" --begin "<begin>" --summary "checkpoints/asd-ste/{yymmdd}.{N}/step_1-findings.json" --set report_file=step_1-inventory.txt`
 
 
 ## Step 2 - Rewrite in STE
@@ -311,9 +344,9 @@ run step 7
 - **No script for this step** — saying the same thing in fewer and simpler words without losing any of it is reading and writing that no program can do, so follow the instructions below yourself.
 
 - If the draft exists, say so, and ask the user whether to overwrite it with a full rewrite.
-  A no ends the run with no draft written, and the group of Step 2 saved, as the last bullet of this step says, with `--stopped`.
+  A no ends the run with no draft written, and `step_2.yaml` saved, as the last bullet of this step says, with `--stopped`.
 
-- Read the **STE rules digest** whole, the source file whole, and the Step 1 inventory — under `run step 2`, the `step_1` group of the YAML checkpoint, with `step_1-inventory.txt` beside it.
+- Read the **STE rules digest** whole, the source file whole, and the Step 1 inventory — under `run step 2`, `step_1.yaml`, with `step_1-inventory.txt` and `step_1-findings.json` beside it.
 
 - Rules that apply to every instruction below:
   - **Copy every kept span byte for byte**, as the inventory lists them.
@@ -338,8 +371,9 @@ run step 7
 
 - Display the draft path, the number of technical words, and every statement kept in its source wording, with why.
 
-- Save the YAML checkpoint under `step_2` with the step saver: `overwrite`, whether a draft that existed was overwritten; `technical_words`, the list the header note gives; and `kept_wording`, each statement kept in its source wording, with its line in the draft, its text and why — the lists given with `--json`.
-  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --checkpoint "checkpoints/asd-ste/references-DFD/process.yaml" --step 2 --title "Rewrite in STE" --begin "<begin>" --json overwrite=true --json technical_words='["caller", "query"]' --json kept_wording='[]'`
+- Save `step_2.yaml` with the step saver: `overwrite`, whether a draft that existed was overwritten; `technical_words`, the list the header note gives; and `kept_wording`, each statement kept in its source wording, with its line in the draft, its text and why — the lists given with `--json`.
+  The step saver adds this step to the run record as well.
+  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --run "{yymmdd}.{N}" --step 2 --title "Rewrite in STE" --model "<model>" --begin "<begin>" --json overwrite=true --json technical_words='["caller", "query"]' --json kept_wording='[]'`
 
 
 ## Step 3 - STE Check
@@ -350,9 +384,9 @@ run step 7
   - `--dict`: the **STE dictionary**.
   - `--custom`: the **project-approved words**.
   - `--spelling`: the **US spelling list**.
-  - `--report`: `step_3-check.txt` in the Checkpoint Dir.
-  - `--findings`: `step_3-findings.json` in the Checkpoint Dir, this step's **findings file**.
-  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/check_ste.py --src "skill-groups/common/references/DFD.md" --ste "<draft>" --dict "{skillGroups.common}/skills/asd-ste/references/ste-dictionary.json" --custom "{skillGroups.common}/skills/asd-ste/references/ste-custom.md" --spelling "{skillGroups.common}/references/us-spelling.json" --report "checkpoints/asd-ste/references-DFD/step_3-check.txt" --findings "checkpoints/asd-ste/references-DFD/step_3-findings.json"`
+  - `--report`: `step_3-check.txt` in the Working Dir.
+  - `--findings`: `step_3-findings.json` in the Working Dir, this step's **findings file**.
+  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/check_ste.py --src "skill-groups/common/references/DFD.md" --ste "<draft>" --dict "{skillGroups.common}/skills/asd-ste/references/ste-dictionary.json" --custom "{skillGroups.common}/skills/asd-ste/references/ste-custom.md" --spelling "{skillGroups.common}/references/us-spelling.json" --report "checkpoints/asd-ste/{yymmdd}.{N}/step_3-check.txt" --findings "checkpoints/asd-ste/{yymmdd}.{N}/step_3-findings.json"`
 
 - The script prints one line per check to **stdout**, writes it to the two files as well, and exits `1` if any of them fails:
   1. The draft is UTF-8 without a BOM.
@@ -391,7 +425,7 @@ run step 7
   - a passive sentence is made active, unless nobody knows who or what does the action.
 
 - If a `[FAIL]` is the source file's own defect — an unclosed fence, a table row with the wrong column count, a placeholder in a retired form, a British spelling in a kept span — say so plainly, leave the source file alone, and report it as something for the user to fix.
-  The check cannot pass, so save the group of Step 3, as the last bullet of this step says, with `--stopped` and the defect.
+  The check cannot pass, so save `step_3.yaml`, as the last bullet of this step says, with `--stopped` and the defect.
 
 - Once the script exits `0`, record the STE specification in the header quote:
   - Run `{python} {skillGroups.common}/scripts/depends_on.py record "<draft>" --target "[[ASD-STE100_ISSUE9.pdf]]"`, with `--config config.yaml` when the workspace has one.
@@ -401,8 +435,10 @@ run step 7
 
 - Display the check result: each check's pass or fail, and every warning left, with why it stays.
 
-- Save the YAML checkpoint under `step_3` with the step saver: the findings file of the last check whole, with `--data`; `report_file` and `findings_file`, the names of the two files; `check_runs`, how many times the check ran; `warnings_left`, each warning left with why it stays; and `fingerprint`, the date and the fingerprint the Dependency Checker recorded, or `fingerprint_not_recorded` with why; and `custom_fingerprint`, the same for ste-custom.md.
-  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --checkpoint "checkpoints/asd-ste/references-DFD/process.yaml" --step 3 --title "STE Check" --begin "<begin>" --data "checkpoints/asd-ste/references-DFD/step_3-findings.json" --set report_file=step_3-check.txt --set findings_file=step_3-findings.json --json check_runs=2 --json warnings_left='[]' --json fingerprint='{"date": "2026-10-11", "fingerprint": "d1f4ea9e7cd6"}' --json custom_fingerprint='{"date": "2026-10-11", "fingerprint": "<fingerprint>"}'`
+- Save `step_3.yaml` with the step saver: with `--summary`, the name and the verdict of the findings file of the last check; `report_file`, the name of the check report; `check_runs`, how many times the check ran; `warnings_left`, each warning left with why it stays; and `fingerprint`, the date and the fingerprint the Dependency Checker recorded, or `fingerprint_not_recorded` with why; and `custom_fingerprint`, the same for ste-custom.md.
+  The step saver adds this step to the run record as well.
+  `draft.py recheck` saves this step the same way, in the newest run of the draft's source file.
+  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --run "{yymmdd}.{N}" --step 3 --title "STE Check" --model "<model>" --begin "<begin>" --summary "checkpoints/asd-ste/{yymmdd}.{N}/step_3-findings.json" --set report_file=step_3-check.txt --json check_runs=2 --json warnings_left='[]' --json fingerprint='{"date": "2026-10-11", "fingerprint": "d1f4ea9e7cd6"}' --json custom_fingerprint='{"date": "2026-10-11", "fingerprint": "<fingerprint>"}'`
 
 
 ## Step 4 - Offer to Commit
@@ -411,7 +447,7 @@ run step 7
   Skip the step, saying why, when:
   - the draft is not in a git repository;
   - git shows no change to it;
-  - it fails the STE check — the `verdict` of the `step_3` group in the YAML checkpoint.
+  - it fails the STE check — the `verdict` in `step_3.yaml`.
 
 - Ask the user whether to commit the draft, showing its branch, the commit subject, and anything else already staged, which the commit leaves out.
   - The subject follows the repository's recent subjects, read with `git log -5 --format=%s`: where they name the document changed, it names the draft's file name.
@@ -425,13 +461,14 @@ run step 7
 
 - Display the commit's hash and subject, or that nothing was committed.
 
-- Save the YAML checkpoint under `step_4` with the step saver: `skipped` with why, when the step was skipped; otherwise `answer`, yes or no, and `commit`, the commit's hash and subject, when there is one.
-  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --checkpoint "checkpoints/asd-ste/references-DFD/process.yaml" --step 4 --title "Offer to Commit" --begin "<begin>" --set answer=yes --json commit='{"hash": "5c98468", "subject": "<subject>"}'`
+- Save `step_4.yaml` with the step saver: `skipped` with why, when the step was skipped; otherwise `answer`, yes or no, and `commit`, the commit's hash and subject, when there is one.
+  The step saver adds this step to the run record as well.
+  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --run "{yymmdd}.{N}" --step 4 --title "Offer to Commit" --model "<model>" --begin "<begin>" --set answer=yes --json commit='{"hash": "5c98468", "subject": "<subject>"}'`
 
 
 ## Step 5 - Offer the TW Twin
 
-- Skip the step, saying why, when the draft fails the STE check — the `verdict` of the `step_3` group in the YAML checkpoint.
+- Skip the step, saying why, when the draft fails the STE check — the `verdict` in `step_3.yaml`.
 
 - Ask the user whether the `chinese` skill should write the draft's TW twin, at the path the draft tool gave in Step 0.
 
@@ -441,25 +478,31 @@ run step 7
 
 - On a no, say that no twin was written.
 
-- Save the YAML checkpoint under `step_5` with the step saver: `skipped` with why, when the step was skipped; otherwise `answer`, yes or no, and `twin_file`, the TW twin's path, when one was written.
-  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --checkpoint "checkpoints/asd-ste/references-DFD/process.yaml" --step 5 --title "Offer the TW Twin" --begin "<begin>" --set answer=no`
+- Save `step_5.yaml` with the step saver: `skipped` with why, when the step was skipped; otherwise `answer`, yes or no, and `twin_file`, the TW twin's path, when one was written.
+  The step saver adds this step to the run record as well.
+  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --run "{yymmdd}.{N}" --step 5 --title "Offer the TW Twin" --model "<model>" --begin "<begin>" --set answer=no`
 
 
 ## Step 6 - Build the Review Page
 
-- Skip the step, saying why, when the draft fails the STE check — the `verdict` of the `step_3` group in the YAML checkpoint.
+- Skip the step, saying why, when the draft fails the STE check — the `verdict` in `step_3.yaml`.
 
-- Compare the `custom_fingerprint` of the `step_3` group with the fingerprint that ste-custom.md has now: `{python} {skillGroups.common}/scripts/depends_on.py hash "{skillGroups.common}/skills/asd-ste/references/ste-custom.md"`.
-  When they differ, or the group has none, the **project-approved words** or the **project rules** changed after the last STE check: run Step 3 again first, then go on with this step.
+- Compare the `custom_fingerprint` in `step_3.yaml` with the fingerprint that ste-custom.md has now: `{python} {skillGroups.common}/scripts/depends_on.py hash "{skillGroups.common}/skills/asd-ste/references/ste-custom.md"`.
+  When they differ, or `step_3.yaml` has none, the **project-approved words** or the **project rules** changed after the last STE check: run Step 3 again first, then go on with this step.
 
 - Find the two **TW twins** that CONFIGURATION names.
   When one is missing, stop, and say which one and what writes it: Step 5 writes the draft's, also under `run step 5`, and the `chinese` skill writes the source file's.
-  Save the group of Step 6 first, as the last bullet of this step says, with `--stopped` and the TW twin that is missing.
+  Save `step_6.yaml` first, as the last bullet of this step says, with `--stopped` and the TW twin that is missing.
 
-- Read the source file, the draft and the two TW twins whole, and the `step_2` and `step_3` groups of the YAML checkpoint.
-  `step_2` is missing when Step 2 did not run after the last Step 0; the review page then lists no statement kept in source wording, and says why.
+- Read the source file, the draft and the two TW twins whole, and `step_2.yaml` and `step_3.yaml`.
+  `step_2.yaml` is missing when Step 2 did not run in this run; the review page then lists no statement kept in source wording, and says why.
 
-- Write the **review notes** to `step_6-notes.html` in the Checkpoint Dir, in 繁體中文, using the file-creation tool:
+- Find the review statuses the review page starts with.
+  This run's `step_6-status.json` is the one, when it exists.
+  Otherwise, take the `status_file` of the newest earlier run that has one, as `{python} {skillGroups.common}/skills/asd-ste/scripts/draft.py runs "<source file>"` lists it, and say which run it comes from.
+  When no run has one, give this run's path: it is missing until the reviewer sets the first status.
+
+- Write the **review notes** to `step_6-notes.html` in the Working Dir, in 繁體中文, using the file-creation tool:
   - An HTML fragment of two parts, each an `<h3>` heading followed by an `<ol>` list: what to look at in the draft, then what to look at in its TW twin.
   - Each item names one place to compare and why a reviewer should look at it.
     Such a place is a sentence whose claim may have moved in the rewrite, set beside the source sentence; one thing with two names, or two things with one name; a term that the draft's TW twin renders other than the source file's TW twin does; a list or a paragraph whose shape changed; or the header quote and the header note.
@@ -469,36 +512,40 @@ run step 7
 - Run the review builder with the `--src`, `--ste`, `--src-tw`, `--ste-tw`, `--checkpoint`, `--notes`, `--out` and `--status` arguments.
   - `--src` and `--ste`: the source file and the draft.
   - `--src-tw` and `--ste-tw`: their TW twins.
-  - `--checkpoint`: the YAML checkpoint.
-  - `--notes`: `step_6-notes.html` in the Checkpoint Dir, the review notes.
-  - `--out`: `step_6-review.html` in the Checkpoint Dir, the **review page**.
-  - `--status`: `step_6-status.json` in the Checkpoint Dir, the review statuses the review page starts with; it is missing until the reviewer sets the first one.
-  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/make_review.py --src "skill-groups/common/references/DFD.md" --ste "<draft>" --src-tw "skill-groups/common/references/DFD-tw.md" --ste-tw "<draft's TW twin>" --checkpoint "checkpoints/asd-ste/references-DFD/process.yaml" --notes "checkpoints/asd-ste/references-DFD/step_6-notes.html" --out "checkpoints/asd-ste/references-DFD/step_6-review.html" --status "checkpoints/asd-ste/references-DFD/step_6-status.json"`
+  - `--checkpoint`: the Working Dir of this run, whose `step_2.yaml` and `step_3.yaml` the review builder reads.
+  - `--notes`: `step_6-notes.html` in the Working Dir, the review notes.
+  - `--out`: `step_6-review.html` in the Working Dir, the **review page**.
+  - `--status`: the review statuses the review page starts with, found above.
+  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/make_review.py --src "skill-groups/common/references/DFD.md" --ste "<draft>" --src-tw "skill-groups/common/references/DFD-tw.md" --ste-tw "<draft's TW twin>" --checkpoint "checkpoints/asd-ste/{yymmdd}.{N}" --notes "checkpoints/asd-ste/{yymmdd}.{N}/step_6-notes.html" --out "checkpoints/asd-ste/{yymmdd}.{N}/step_6-review.html" --status "checkpoints/asd-ste/{yymmdd}.{N}/step_6-status.json"`
 
 - The review builder prints to **stdout** the review page path, the section and line counts, how many line references the review notes hold, and how many items each review status has, and exits `0` once it has written the page.
   It exits `1`, and writes no page, when a line reference names no line of its file, with a `[FAIL]` line for each one: correct the review notes, never the four files, and run the command again until it exits `0`.
-  It exits `2` when a file cannot be read, or when the YAML checkpoint has no `step_3` group.
+  It exits `2` when a file cannot be read, or when the Working Dir has no `step_3.yaml`.
 
-- Make sure that the **review server** runs, from the workspace root.
+- Make sure that the **review server** runs.
+  It serves `checkpoints/asd-ste` under the root of the workspace it is started in: the nearest directory, from the current directory up, whose `config.yaml` has `skillGroups`.
+  It never finds the root from its own location, because a workspace can read this skill in place from a different workspace.
+  One review server serves one workspace: a review server that a different workspace started can hold port 8790, and the probe prints the review root it serves.
   It needs Node.js: when `node --version` fails, say so, and give the review page's path in place of its link.
   - Ask whether one answers: `node {skillGroups.common}/skills/asd-ste/scripts/review_server.js --probe`.
   - Exit `0`: a review server answers, and serves the review page already.
   - Exit `1`: nothing answers, so start one in the background, where it keeps serving after the run ends, then ask again.
-    On macOS and Linux, run `nohup node {skillGroups.common}/skills/asd-ste/scripts/review_server.js --root checkpoints/asd-ste > /dev/null 2>&1 &`; in PowerShell, run `Start-Process node -ArgumentList '{skillGroups.common}/skills/asd-ste/scripts/review_server.js','--root','checkpoints/asd-ste' -WindowStyle Hidden`.
+    On macOS and Linux, run `nohup node {skillGroups.common}/skills/asd-ste/scripts/review_server.js > /dev/null 2>&1 &`; in PowerShell, run `Start-Process node -ArgumentList '{skillGroups.common}/skills/asd-ste/scripts/review_server.js' -WindowStyle Hidden`.
   - Exit `2`: another program holds port 8790; say so, and give the review page's path in place of its link.
 
-- Display the review page's link, `http://127.0.0.1:8790/{parent}-{name}/`, as a clickable Markdown link — or its path, when no review server runs — and the number of items in the review notes.
+- Display the review page's link, `http://127.0.0.1:8790/{yymmdd}.{N}/`, as a clickable Markdown link — or its path, when no review server runs — and the number of items in the review notes.
   When the agent has a browser panel, open the link there as well.
 
-- Save the YAML checkpoint under `step_6` with the step saver: `notes_file` and `review_file`, the names of the two files; `notes`, the number of items in the review notes; `line_references`, the number the review builder printed; and `review_url`, the review page's link, or `review_server` with why no review server runs.
-  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --checkpoint "checkpoints/asd-ste/references-DFD/process.yaml" --step 6 --title "Build the Review Page" --begin "<begin>" --set notes_file=step_6-notes.html --set review_file=step_6-review.html --json notes=12 --json line_references=42 --set review_url=http://127.0.0.1:8790/references-DFD/`
+- Save `step_6.yaml` with the step saver: `notes_file` and `review_file`, the names of the two files; `notes`, the number of items in the review notes; `line_references`, the number the review builder printed; `status_from`, the path of the review statuses the page started with, when it is another run's; and `review_url`, the review page's link, or `review_server` with why no review server runs.
+  The step saver adds this step to the run record as well.
+  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --run "{yymmdd}.{N}" --step 6 --title "Build the Review Page" --model "<model>" --begin "<begin>" --set notes_file=step_6-notes.html --set review_file=step_6-review.html --json notes=12 --json line_references=42 --set review_url=http://127.0.0.1:8790/{yymmdd}.{N}/`
 
-- Close with the draft path, the TW twin paths that exist, the review page's link — or its path — when the step built one, and the YAML checkpoint path, as clickable Markdown links.
+- Close with the draft path, the TW twin paths that exist, the review page's link — or its path — when the step built one, and the run record path, as clickable Markdown links.
 
 
 ## Step 7 - Replace the Source
 
-- Skip the step, saying why, when the draft fails the STE check — the `verdict` of the `step_3` group in the YAML checkpoint — or when no review page was built — no `review_file` in the `step_6` group.
+- Skip the step, saying why, when the draft fails the STE check — the `verdict` in `step_3.yaml` — or when no review page was built — no `review_file` in `step_6.yaml`.
 
 - Compare the two fingerprints as Step 6 does: when they differ, run Steps 3 and 6 again first, and then ask.
 
@@ -527,7 +574,8 @@ run step 7
 - Display the source file and its TW twin as replaced, the files deleted, each dependent with whether it was recorded again or why not, and each check's result.
   Say that nothing was committed: the user commits the changes in each workspace.
 
-- Save the YAML checkpoint under `step_7` with the step saver: `skipped` with why, when the step was skipped; otherwise `answer`, what the user answered; and, after a replacement, `replaced`, the lines the draft tool printed; `dependents`, each one with its link and whether it was recorded again; and `checks`, each check with its result.
-  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --checkpoint "checkpoints/asd-ste/references-DFD/process.yaml" --step 7 --title "Replace the Source" --begin "<begin>" --set answer=pass --json replaced='[]' --json dependents='[]' --json checks='[]'`
+- Save `step_7.yaml` with the step saver, and `--last`, because this is the last step: `skipped` with why, when the step was skipped; otherwise `answer`, what the user answered; and, after a replacement, `replaced`, the lines the draft tool printed; `dependents`, each one with its link and whether it was recorded again; and `checks`, each check with its result.
+  The step saver adds this step to the run record, and writes `result: completed`.
+  - Example: `{python} {skillGroups.common}/skills/asd-ste/scripts/save_step.py --run "{yymmdd}.{N}" --step 7 --title "Replace the Source" --model "<model>" --begin "<begin>" --last --set answer=pass --json replaced='[]' --json dependents='[]' --json checks='[]'`
 
-- Close with the source file path, its TW twin's path, and the YAML checkpoint path, as clickable Markdown links.
+- Close with the source file path, its TW twin's path, and the run record path, as clickable Markdown links.

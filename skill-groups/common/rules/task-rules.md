@@ -4,7 +4,7 @@
 > [[ste-custom]]  `2026-11-02`  `c612bdfa1ea7`
 
 > This file is in ASD-STE100 Simplified Technical English (STE), Issue 9.
-> Technical words: blob, bold, bug, build, chapter, chore, column, command, commit, content, day, directory, document, feature, file, format, hash, heading, hunk, icon, indent, index, legend, line, link, list, lowercase, note, paragraph, path, prefix, pull request, repository, root, section, sentence, server, session, shell, skill, stage, status, subject, summary, table, term, test case, text, title, topic, tree line, twin, URL, vault, wikilink, word, work item, workspace.
+> Technical words: blob, bold, bug, build, chapter, character, chore, column, command, commit, content, day, directory, document, feature, file, format, hash, heading, hunk, icon, indent, index, legend, line, link, list, lowercase, note, paragraph, path, prefix, pull request, repository, root, section, sentence, server, session, shell, skill, stage, status, subject, summary, table, term, test case, text, title, topic, tree line, twin, URI, URL, vault, wikilink, word, work item, workspace.
 
 These rules tell how to write the tasks of a workspace, and how to keep their summary table.
 A task is work that continues after one session, and that becomes complete.
@@ -105,8 +105,19 @@ A task file has this format:
   In `適合併進現有 topic`, give the topic and the information to add to it.
   In `不算知識`, give the facts that are only for this work, for example the path of one file.
   Also give there a problem of a tool, which a different task must repair.
-- **When you write an item of `7. 知識` into a topic, put ✅ before it and a wikilink to the topic.**
+- **Do not put `#`, `^`, `[`, `]` or `|` in the title of a new topic.**
+  The title is the name of the topic file.
+  In Obsidian, a link cannot find a file that has one of these characters in its name.
+- **When you write an item of `7. 知識` into a topic, put ✅ before it and a link to the topic.**
+  If the topic is in the vault of the task file, use a wikilink, for example `[[<Title>]]`.
+  If the topic is in a different vault, use a Markdown link to an Obsidian URI, for example `[<Title>](obsidian://open?vault=<vault>&file=<path>)`.
+  `<vault>` is the name of the vault directory, and `<path>` is the path of the topic file from that directory.
+  Write each space in the URI as `%20`.
   If you did not examine the task for this information, write only `—` in the chapter.
+- **The vault of a file is the nearest directory above the file that contains a `.obsidian` directory.**
+  For a topic of `write-topic`, the vault is the directory that `wikiDir` in `config.yaml` gives.
+  In Obsidian and in `check_tasks.py`, a wikilink finds a file only in the vault of the task file.
+  If Obsidian cannot find the file, a click on the wikilink makes an empty note in that vault.
 - **In `8. 日誌`, write one section `### yyyy-mm-dd` for each day, with the changes of that day.**
   Put the newest date first.
   If you change the task again on the same day, add to the section of that day.

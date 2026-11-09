@@ -13,7 +13,7 @@ Then, for every edge, collects the borrowed terms from the upper document's
 The rules this script implements live in references/dependency-graph.md.
 
 Usage:
-    python3 scripts/build_dependency_graph.py --arch <架構文件.md> --root <wikiRootDir> [--out <file.html>]
+    python3 scripts/build_dependency_graph.py --arch <架構文件.md> --root <wikiDir> [--out <file.html>]
 
 The default output is `{架構文件名}-文件依賴圖.html` next to the architecture document.
 """
@@ -231,7 +231,7 @@ def parse_terms(doc: pathlib.Path) -> list[dict]:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--arch", required=True, help="architecture document (.md)")
-    ap.add_argument("--root", required=True, help="wikiRootDir — where the managed documents are searched for")
+    ap.add_argument("--root", required=True, help="wikiDir — where the managed documents are searched for")
     ap.add_argument("--out", help="output HTML (default: {架構文件名}-文件依賴圖.html beside --arch)")
     args = ap.parse_args()
 

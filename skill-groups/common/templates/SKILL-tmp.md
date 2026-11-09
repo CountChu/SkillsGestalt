@@ -7,7 +7,7 @@ description: {SKILL_DESCRIPTION}
 > [[ste-custom]]  `2026-11-02`  `c612bdfa1ea7`
 
 > This file is in ASD-STE100 Simplified Technical English (STE), Issue 9.
-> Technical words: API, argument, bearer token, call, canonical skill invocation, checkpoint, column, command, configuration, configuration file, credential, data file, definition, development, directory, field, file, folder, forward slash, glossary, header, inline code, key, line, link, link target, list, macOS, map, MD report, output directory, parse, parser, PAT, path, plain text, process, project, raw data, registry, root, save, scope, scratch file, script, section, selector, separator, session, shell, skill, table, term, terminal, user, vault, wiki, workflow, workspace, writer step.
+> Technical words: analysis, API, argument, bearer token, call, canonical skill invocation, column, command, configuration, configuration file, credential, data file, definition, development, directory, efficiency, file, folder, forward slash, glossary, header, inline code, key, line, link, link target, list, macOS, map, MD report, model, output directory, parse, parser, PAT, path, plain text, process, run record, project, raw data, registry, root, run, run number, save, scope, script, section, selector, separator, session, shell, skill, step file, table, temp dir, term, terminal, user, vault, wiki, workflow, working data, working dir, workspace, writer step.
 
 # TERMINOLOGY
 
@@ -16,14 +16,21 @@ Remove each term that this skill does not use.
 If the glossary gives a term that the skill does not use, the definition of the term can become incorrect when the skill changes.
 
 - **`run step N`** — a selector at the end of a prompt, which identifies one step.
-- **Checkpoint Dir** — the directory for one run, which holds the YAML checkpoint of a skill.
-  Each skill has its own Checkpoint Dir.
-  **CONFIGURATION** gives the Checkpoint Dir of this skill.
-- **YAML checkpoint** — the `process.yaml` in the Checkpoint Dir.
-  Each step writes its outputs there, in a `step_{N}` group.
+- **Run Number** — the number of one run, `{yymmdd}.{N}`.
+  `{N}` is the sequence number of the run of this skill on that date, and it starts at 1.
+- **Working Dir** — the directory for one run, which holds all the working data of the run: its step files, its data files and its temporary files.
+  It is the Temp Dir or the Checkpoint Dir, and **CONFIGURATION** gives which one.
+  The skill does not remove it.
+- **Temp Dir** — a Working Dir in `temp\` at the root of the workspace.
+- **Checkpoint Dir** — a Working Dir in `checkpoints\` at the root of the workspace.
+- **Step file** — the `step_{N}.yaml` in the Working Dir.
+  Each step writes its outputs there.
   Thus, a subsequent step reads these outputs, and does not calculate them again.
+- **Run record** — the file that records the time and the model of each step of one run.
+  The analysis of the efficiency of a skill uses it.
+- **Handoff file** — a file that a run makes for a different skill, in `handoff\`.
 - **MD report** — the Markdown report that a skill writes into the wiki vault, in a folder that has the name of that skill.
-  It has the standard header (Skill, Checkpoint, Created, Updated, Prompt) above its sections of results.
+  It has the standard header (Skill, Run record, Created, Updated, Prompt) above its sections of results.
 
 # DEDICATED TERMINOLOGY
 
@@ -35,9 +42,23 @@ The terms that only this skill uses.
 # CONFIGURATION
 
 The values that this skill uses in a run.
-Remove the line for each output that this skill does not make.
+Remove the line for each item that this skill does not read, run or make.
+Keep only one of the two Working Dir lines.
 
-- **Checkpoint Dir** — `checkpoints\{SKILL_NAME}\{CHECKPOINT_DIR_NAME}\`.
+The inputs and tools, which the run reads or runs:
+
+- **Workspace configuration** — the [config.yaml](config.yaml) at the root of the workspace.
+- **Scripts** — `{skillGroups.{SKILL_GROUP}}\skills\{SKILL_NAME}\scripts\{SCRIPT_PATH_1}`.
+
+The working data of a run, which no person and no skill reads after the run:
+
+- **Working Dir** — the Temp Dir, `temp\{SKILL_NAME}\{yymmdd}.{N}\`.
+- **Working Dir** — the Checkpoint Dir, `checkpoints\{SKILL_NAME}\{yymmdd}.{N}\`.
+
+The last outputs, which a person, a different skill or a subsequent analysis reads:
+
+- **Run record** — `database\skill-runs\{SKILL_NAME}\{yymmdd}.{N}.yaml`.
+- **Handoff file** — `handoff\{SKILL_NAME}\{yymmdd}.{N}.md`.
 - **MD report** — `{wikiDir}\{SKILL_NAME}\{REPORT_FILENAME}.md`.
   `wikiDir` comes from the [config.yaml](config.yaml) of the workspace, and Step 0 finds its value.
   Do not hard-code the root of the wiki.
@@ -46,30 +67,28 @@ Remove the line for each output that this skill does not make.
 
 - Run the workflow one step at a time, and show the number of each step.
 - **Honor a `run step N` selector**: run Step N, and then stop.
-  Read the output of each previous step from the YAML checkpoint.
+  Read the output of each previous step from its step file.
   Do not run a subsequent step.
 - Obey [report-md-rules.md](skill-groups/common/rules/report-md-rules.md) for the header and the shape of the MD report.
-- Obey [report-yaml-rules.md](skill-groups/common/rules/report-yaml-rules.md) for the shape of the YAML checkpoint and for its necessary fields.
-- Obey [scratch-rules.md](skill-groups/common/rules/scratch-rules.md) for the location of each scratch file of a run, and for how to remove it.
-- **Each JSON file in the Checkpoint Dir has one writer step only.**
+- Obey [run-data-rules.md](skill-groups/common/rules/run-data-rules.md) for the Run Number, the step files, the run record and the Working Dir of a run.
+- **Each file in the Working Dir has one writer step only.**
   The step that makes a data file writes the full file, and only that step changes it.
-  A subsequent step that makes a decision writes it into its own `step_{N}.json`, adjacent to that file.
+  A subsequent step that makes a decision writes it into its own step file.
   It does not add, change or remove a key in a file that a different step wrote.
   This rule applies also when the decision of the subsequent step replaces the data in that file.
-  The YAML checkpoint is the one exception: each step adds its `step_{N}` group at the end, and does not write the full file again.
 - If more than one step writes into a data file, the first step erases the data of the other steps when it runs again.
   For example, a repair to the parser or a `run step 1` writes the full file again.
   This erases the results of all the subsequent steps, and no message tells you.
-- **Before the skill stops, show the paths of the MD report and of the YAML checkpoint.**
+- **Before the skill stops, show the paths of the MD report and of the run record.**
   Show only the two paths, and do not show their contents.
   Write the two paths as Markdown links that open with a click.
   Do not write them as inline code or as plain text.
   - For the **MD report**, use a link with an `obsidian://open?vault={vaultName}&file=<vault-relative-path>` URI.
     The vault is not in this workspace, thus a link target that starts at the workspace cannot find it.
     For example: `[{REPORT_FILENAME}.md](obsidian://open?vault={vaultName}&file={SKILL_NAME}/{REPORT_FILENAME}.md)`.
-  - For the **YAML checkpoint**, use a link target that starts at the workspace.
+  - For the **run record**, use a link target that starts at the workspace.
     Use the forward slash as the separator in it.
-    For example: `[process.yaml](checkpoints/{SKILL_NAME}/{CHECKPOINT_DIR_NAME}/process.yaml)`.
+    For example: `[{yymmdd}.{N}.yaml](database/skill-runs/{SKILL_NAME}/{yymmdd}.{N}.yaml)`.
   - Do this for each run, and also for a run of only one step, for example `run step 0`.
 
 # Prompt Examples
@@ -149,23 +168,27 @@ run step 0
 
 - Save the canonical skill invocation, thus the subsequent steps can refer to it.
 
-- Save `step_0` of the YAML checkpoint, with the parsed inputs.
+- Get the Run Number, as run-data-rules.md tells, and write the run record of the run.
+
+- Save `step_0.yaml`, with the parsed inputs.
+  Add this step to the run record.
   In this step, it is not necessary to create the MD report file, because the run possibly has no important results at this time.
 
 
 ## Step 1 - {STEP_1_TITLE}
 
 - Run the script `{SCRIPT_PATH_1}` with the `{STEP_1_ARG_1}` and `{STEP_1_ARG_2}` arguments.
-  - `{STEP_1_ARG_3}`: the checkpoint directory of this run.
-  - Example: `{python} {skillGroups.{SKILL_GROUP}}\skills\{SKILL_NAME}\scripts\{SCRIPT_PATH_1} {STEP_1_ARG_1} {STEP_1_ARG_1_VALUE} {STEP_1_ARG_3} "checkpoints\{SKILL_NAME}\{CHECKPOINT_DIR_NAME}"`
+  - `{STEP_1_ARG_3}`: the Working Dir of this run.
+  - Example: `{python} {skillGroups.{SKILL_GROUP}}\skills\{SKILL_NAME}\scripts\{SCRIPT_PATH_1} {STEP_1_ARG_1} {STEP_1_ARG_1_VALUE} {STEP_1_ARG_3} "{WORKING_DIR}"`
 
 - The script:
   1. {SCRIPT_1_ACTION_1}
   2. {SCRIPT_1_ACTION_2}
   3. Saves the results as `{STEP_1_OUTPUT}` in the output directory.
-     All the steps of the run use this file of raw data, and it is not the same file as `process.yaml`.
+     All the steps of the run use this file of raw data, and it is not a step file.
 
-- Save `step_1` of the YAML checkpoint, with: {STEP_1_CHECKPOINT_FIELDS}.
+- Save `step_1.yaml`, with: {STEP_1_CHECKPOINT_FIELDS}.
+  Add this step to the run record.
 
 - Save the MD report file.
   Add a **{STEP_1_SECTION}** section at the end of the file, and show it:
@@ -176,7 +199,7 @@ run step 0
 
 ## Step 2 - {STEP_2_TITLE}
 
-- Read the `{STEP_1_OUTPUT}` data file that Step 1 saved at `checkpoints\{SKILL_NAME}\{CHECKPOINT_DIR_NAME}\{STEP_1_OUTPUT}`.
+- Read the `{STEP_1_OUTPUT}` data file that Step 1 saved in the Working Dir.
   Use {STEP_2_INPUT_KEY} as the input.
 
 - These rules apply to each instruction that follows:
@@ -192,10 +215,11 @@ run step 0
   2. {STEP_2_INSTRUCTION_2}
   3. {STEP_2_INSTRUCTION_3}
 
-- Write the results into `step_2.json` in the Checkpoint Dir, as `{STEP_2_OUTPUT_KEY}`.
+- Write the results into `step_2.yaml`, as `{STEP_2_OUTPUT_KEY}`.
   Do not write them into `{STEP_1_OUTPUT}`, because that file is the file of Step 1.
 
-- Save `step_2` of the YAML checkpoint, with: {STEP_2_CHECKPOINT_FIELDS}.
+- Save `step_2.yaml`, with: {STEP_2_CHECKPOINT_FIELDS}.
+  Add this step to the run record, and write `result: completed`, because it is the last step.
 
 - Save the MD report file.
   Add a **{STEP_2_SECTION}** section at the end of the file, and show it:
