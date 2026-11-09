@@ -1,6 +1,6 @@
 # keep-english - keep-English 稽核
 
-**Status**：使用中——keep-English list 換版本之後，對本 workspace 的全部中英對照跑一次 `audit_keep_english.py`；2026-10-30 稽核了 261030 版，清單下一次換版本再跑。
+**Status**：使用中——keep-English list 換版本之後，對本 workspace 的全部中英對照跑一次 `audit_keep_english.py`；2026-11-09 稽核了 261108 版，清單下一次換版本再跑。
 **Started**：2026-10-18，chinese skill 只在中文版被改到時才拿 keep-English list 檢查它，清單後來加的詞不會回頭套用到沒改到的中文版；由 [[Task 53]] 建立。
 **When**：tw-keep-english.md 換了版本，和上次稽核的版本不同
 

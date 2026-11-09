@@ -9,8 +9,8 @@ chore 檔的格式與摘要表的維護方式，見 [chore-rules.md](../skill-gr
 | --- | --- | --- | --- | --- | --- |
 | [[follow-gestalt]] | 2026-10-31 | 跟上 Gestalt 的改動 | `{skillGroups.common}/CHANGES.md` 有比上次處理的那一筆新的條目 | — | 🔁 |
 | [[pull-gestalt]] | 2026-10-31 | 把 GitHub 上的新快照拿進工作分支 | 發佈之前、git fetch 看到新快照時，或使用者要求時 | 2026-11-02 | 🔁 |
-| [[publish-gestalt]] | 2026-10-30 | 發佈到 GitHub | 使用者要求發佈到 GitHub 時 | 2026-10-31 | 🔁 |
-| [[keep-english]] | 2026-10-18 | keep-English 稽核 | tw-keep-english.md 換了版本，和上次稽核的版本不同 | 2026-10-30 | 🔁 |
+| [[publish-gestalt]] | 2026-10-30 | 發佈到 GitHub | 使用者要求發佈到 GitHub 時 | 2026-11-09 | 🔁 |
+| [[keep-english]] | 2026-10-18 | keep-English 稽核 | tw-keep-english.md 換了版本，和上次稽核的版本不同 | 2026-11-09 | 🔁 |
 | [[rerecord-ste-custom]] | 2026-10-18 | 集中重記 ste-custom.md | 當天改過 ste-custom.md，而且當天的修改都做完了 | 2026-10-30 | 🔁 |
 
 Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
@@ -39,6 +39,13 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 
 ### publish-gestalt
 
+#### 2026-11-09
+
+- 以 `countdell` 的 `e7e9684` 做出快照 `bb7eca1`，接在 `1b41f68` 之後；變動 136 個檔，其中 127 個是 task 改成八章，來自 5 個 commit：task 的八章與 2. 結論、結論用表格、伺服器上的項目連到它的 URL，以及 tw-keep-english.md 261108。
+  先做 [[pull-gestalt]]：本機的 `main` 和 `origin/main` 都是 `1b41f68`，沒有東西要拿進來；`check` 與 `publish` 的掃描都是 `nothing found`，快照的作者與 committer 是 `publish_snapshot.py` 的 `IDENTITY`。
+  程式推送失敗：這個 clone 仍沒有 GitHub 的帳號資料，由使用者自己執行 `git push origin main:main`；之後用程式的 `restart_work` 讓 `countdell` 從 `bb7eca1` 重新開始（`4feaeaf`），舊的在 tag `archive/countdell-261109`。
+  GitHub 上確認：`main` 是 `bb7eca1`，只比 `1b41f68` 多 1 個 commit，沒有排除的路徑。
+
 #### 2026-10-31
 
 - 第二次發佈：以 `m1` 的 `3933273` 做出快照 `65c25e5`，接在 `4d2c5db` 之後，推到 `main`；變動 18 個檔，新增 4、改名 1、修改 13，來自 [[Task 89]]、[[Task 90]]、[[Task 91]]，以及早上那次發佈的執行紀錄。
@@ -64,6 +71,15 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 - 寫好程式之後試跑：`check` 對 master 的 `5c5094a` 是 `nothing found`；對清理之前的 `6cb068b` 找到 101 筆，以 `1` 結束。
 
 ### keep-english
+
+#### 2026-11-09
+
+- 清單 261108 版（加上 bug、build、feature、pipeline、pull request、server、test case、work item）：39 對中英對照，19 份中文版有 182 行警告。
+- 在 `countdell` 的 clone 稽核：這裡沒有 `checkpoints/`，程式印出 no earlier report to compare with，所以和 2026-10-30 那筆執行紀錄的數字比：多 1 份中文版，少 4 行警告；新加的 term 沒有找到任何一筆。
+- 最多的 3 種譯法：script 的「腳本」129 行（14 份），上次 133 行（15 份）；step 的「步驟」24 行（1 份），和上次相同；identifier 的「識別碼」9 行（7 份），上次 7 行（5 份）。
+- 「英文也寫中文」1 行，不算進警告：MermaidView-RSDC-tw.md 的「角色」，和上次相同。
+- 只列出，沒有改中文版；要改的仍記在 [[Task 73]]。
+- 報告：`checkpoints/chores/keep-english/2026-11-09-261108.txt`，只在 `countdell` 的 clone。
 
 #### 2026-10-30
 
