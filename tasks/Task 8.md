@@ -35,7 +35,11 @@
 - **為什麼值得做**：範本 ↔ 標準靠版本號，而 2026-10-09 同一天的修改都併入 261010（Task 3、Task 4 都是），標準的內容改了好幾次，版本號卻沒變；範本記著 261010，看不出它對齊的是哪一次。
   內容 hash 每一次都抓得到。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 **repo 裡已經有幾處各自做的類似機制**——它們說明需求是真的，也說明目前沒有共通的做法：
 
@@ -84,7 +88,7 @@
   - gen-rsdc-skill 的 Step 8 在 Skill Source 的 frontmatter 正下方宣告 `> [[<system name>-RSDC]]`，Step 9 在引用檢查通過後用 `record` 在它後面記下 RSDC；字彙表的 Skill Source 改寫為「Step 8 編輯它；Step 9 修正它的引用，並在它裡面記下它所引用的 RSDC」（Step 9 本來就會修正它，這只是讓定義說實話；多寫入者的問題仍是 Task 7）。
 - **驗證**：`depends_on.py` 在 scratch 樣本上測過檔頭引用區的位置判斷（在標題或 pairing line 之下才算，H2 之後或前面超過兩行不算）、`[[名稱]]`（含別名）與路徑連結、`.obsidian`／`.git` 作為 vault 根目錄、有沒有檔頭引用區指紋都一樣、只改未引用的節不觸發、改被引用的節觸發、BOM／CRLF、`{wikiDir}` 與 `--config`、名稱重複的筆記、各種格式錯誤；`check_rsdc.py --standard` 對兩份範本 PASS，標準內容改了而版本沒變時 FAIL，少了指紋時 exit 2；用範本填的樣本 single／pair 照舊 PASS；四份 SKILL 的 `check_parity.py` 0 failure（imp-app 的 11 個警告與改之前相同）；`scan_source.py` 都 valid；check-skill 的 frontmatter 檢查通過。
 
-## 3. 要做的
+## 4. 要做的
 
 **要決定的**：
 
@@ -113,19 +117,19 @@
 **還沒做的**：各 skill 的後續工作——chinese（含 twin ↔ 英文檔）、check-wiki-doc、compile-skill 的 `source_fingerprint()`、check-skill、gen-skill，以及 check-stop-price 的遷移——移到 [[Task 13]]。
 imp-app 的範本比對已改由它執行 `depends_on.py check`，不再是 agent 自己比。
 
-## 4. 驗證
+## 5. 驗證
 
 —
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 —
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

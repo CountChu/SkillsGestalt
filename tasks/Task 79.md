@@ -11,7 +11,11 @@
 改名之後，使用者覺得 `m1` 與 `main` 離太遠：兩邊的內容只差幾個檔，但沒有共同的祖先，`m1` 有 527 個 commit，`main` 只有 2 個。
 使用者要 `m1` 只留短短的新歷史，並保留只在 `m1` 的檔案。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 - 本機的 `main`（原本的 `public`）追蹤 `origin/main`，最新的是快照 `cba1032`。
 - 工作的分支是 `m1`（原本的 `master`），設了 `branch.m1.pushRemote no_push`，在 `m1` 上 `git push` 會失敗。
@@ -19,7 +23,7 @@
 - `m1` 的 527 個 commit 存成本機的 annotated tag `archive/master`（`c501a98`），不推。
 - 新的 `m1` 接在 `main` 的 `cba1032` 後面，有兩個 commit：`5608f7f` 放回 `external/` 與 `.github/external/`，`4d44a82` 是還沒發佈的變動；內容和 `archive/master` 完全相同，`main` 是它的祖先。
 
-## 3. 要做的
+## 4. 要做的
 
 ### 已決定（2026-10-30）
 
@@ -33,23 +37,23 @@
 - 每次發佈之後都重做 `m1`：`publish` 把舊的歷史存成 `archive/m1-<yymmdd>`，日期是發佈當天，同一天再發佈就蓋掉那天的 tag 並印出原本指的 commit；`m1` 變成快照上的一個 commit；`m1` 在發佈之間有了新的 commit，就不動它。
 - 文件裡引用的舊 hash 照舊，在 [[publish-gestalt]] 與根目錄的 [CLAUDE.md](../CLAUDE.md) 寫明到 tag 裡查。
 
-## 4. 驗證
+## 5. 驗證
 
 - `git branch -vv`：`m1` 與 `main`，`main` 追蹤 `origin/main`，沒有 `master` 與 `public`。
 - `python scripts/publish_snapshot.py check` 以 `m1` 為來源，掃描是 `nothing found`，列出和 `cba1032` 相比的變動。
 - `git diff archive/master m1` 在重做之後是空的；`git merge-base --is-ancestor main m1` 成立。
 - 在暫用的 clone 試跑 `publish --no-push`：建了快照，`m1` 變成快照上的一個 commit，`git diff main m1` 只有兩個不公開的路徑，內容和舊的 `m1` 相同，工作區沒有變動。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 78]]：建立 `public` 分支與發佈的做法；它的紀錄照舊名稱。
 - [[publish-gestalt]]：發佈的步驟，改用新名稱。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

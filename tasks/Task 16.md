@@ -12,7 +12,11 @@
 到那時 compile-skill 若還沒改，那個 skill 每次 `record`，它的 `skill.py` 都會被判為過期。
 2026-10-10 查的時候，唯一編譯過的 skill 是 InvestForge 的 report-inv-week，它的 `SKILL.md` 沒有檔頭引用區。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 狀態細節
 
@@ -33,26 +37,26 @@ gen-skill 那一列已由 Task 22 完成（2026-10-11）。
 - 2026-10-12 決定關閉本 task。
   真的發生時再開新 task，上表 compile-skill 那一列就是要做的事：先改 SkillCompiler-RSDC，再讓 `scan_source.py` 與 `check_compiled.py` 跳過檔頭引用區。
 
-## 3. 要做的
+## 4. 要做的
 
 | Skill | 現在 | 要做什麼 | 牽涉的檔案 |
 |---|---|---|---|
 | compile-skill | 編譯流程不讀依賴；`source_fingerprint()` 對整份檔案算 hash，檔頭那一行也算在內 | 讓它跳過檔頭引用區，否則已編譯的 skill 之後每次 `record`，它的 `skill.py` 都會被判為過期 | SkillCompiler-RSDC（先改）、`scan_source.py`、`check_compiled.py`、已編譯 `skill.py` 內嵌的那一份 |
 | gen-skill | 已完成（[[Task 22]]，2026-10-11）：Step 5 在新 skill 的 `README.md` 寫出檔頭引用區，並以 `depends_on.py record` 記錄 | 無：依賴宣告在 `README.md`；`SKILL.md` 自己要宣告的依賴，例如 RSDC，仍由寫它的 skill 加上 | `gen-skill/SKILL.md`、`templates/README-tmp.md` |
 
-## 4. 驗證
+## 5. 驗證
 
 —
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 —
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

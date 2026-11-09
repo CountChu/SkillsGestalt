@@ -9,7 +9,11 @@
 [[Task 41]] 讓 [check_ste.py](../skill-groups/common/skills/asd-ste/scripts/check_ste.py) 多報兩種 `[WARN]`：字典不核准當名詞或形容詞用的技術用字，以及標題裡字典沒收、也不是技術用字的字。
 asd-ste 的 README 說，規則改了之後，每個已取代 source 的 STE 檔都要以 `check_ste.py --ste` 再查一次，並手動修正。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-11-02 處理之後
 
@@ -54,7 +58,7 @@ asd-ste 的 README 說，規則改了之後，每個已取代 source 的 STE 檔
 | `CLAUDE-local.md` | — | Agency（3） |
 | `CLAUDE.md` | — | Markdown（20） |
 
-## 3. 要做的
+## 4. 要做的
 
 ### 已決定（2026-11-02）
 
@@ -70,7 +74,7 @@ asd-ste 的 README 說，規則改了之後，每個已取代 source 的 STE 檔
 8. **DFD.md 與 RSDC-Standard.md 的指紋改了**：照拿掉，引用它們的文件以 `depends_on.py record --target` 重記。
 9. **CHANGES.md 加一筆**。
 
-## 4. 驗證
+## 5. 驗證
 
 - `check_ste.py --ste`，加上 `--custom` 與 `--spelling`，查 18 個英文 STE 檔：判定都和處理之前相同，結果見「現況」。
 - asd-ste README 列的 DFD 測試：commit `1710643` 的清冊 exit 0、檢查 PASS；commit `ed0076e` 的清冊 exit 3、SOURCE-FIRST，不再問標題裡的 *Kinds*，檢查因 `Catalogue` FAIL。
@@ -79,11 +83,11 @@ asd-ste 的 README 說，規則改了之後，每個已取代 source 的 STE 檔
 - `depends_on.py check`，查每個有 header quote 的檔：只剩 check-md-deps 對 check-wiki-doc 的兩項 CHANGED，2026-10-10 就有，與本 task 無關。
 - 沒跑 `/check-skill asd-ste`；draft.py、make_review.py 與 review_server.js 沒改。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 41]]：它加的「標題裡字典沒收的字」警告，本 task 拿掉。
 
-## 6. 知識
+## 7. 知識
 
 ### 適合寫成新 topic
 
@@ -97,7 +101,7 @@ asd-ste 的 README 說，規則改了之後，每個已取代 source 的 STE 檔
 
 - **改了 STE 檔的 `Technical words:` 行，它的指紋就變**：引用它的每份文件都報 CHANGED，Forge 的也一樣；header quote 的紀錄則不算進指紋。
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

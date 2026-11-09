@@ -29,7 +29,11 @@
 - 真實的代價還在，所以規則沒有放寬成不設限：重跑第一個寫入者會讓其餘的編輯全部重做。
   這一點交給判斷（recommendation），不是掃描器能決定的。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 **編號**：這一節寫成之後，gen-rsdc-skill 新增了 Step 1 - Check the RSDC Template Against the Standard（2026-10-09），原 Step 1–10 改為 Step 2–11。
 下文的 step 編號是改號之前的；`scan_skill.py` 現在印出新編號，問題本身沒有變——新的 Step 1 只讀 RSDC standard 與 RSDC template。
@@ -74,7 +78,7 @@
 - **兩份 RSDC 範本**（Skill-System 與 App，EN 與 tw）：一份 record 有多個寫入者的缺陷段落，改為「第二個寫入者不先讀取它」才是缺陷；Skill-System 範本的指示行同步。
   四份檔案記下的 `[[RSDC-Standard]]` 與 `[[DFD]]` 指紋，讀完變動、確認範本仍然成立之後，用 `depends_on.py record` 重新記下。
 
-## 3. 要做的
+## 4. 要做的
 
 **選項**：
 
@@ -106,7 +110,7 @@ SkillCompiler-RSDC 還是舊格式；用現在的 RSDC 範本重寫後，Dataflo
 - **已寫好的 RSDC**：InvestForge 的 StopPriceChecker-RSDC 裡 Check Table 的「兩個寫入者」缺陷，現在要重新判斷——Back-solve 若讀取並修改 Judge 寫的表，就是依序編輯，不再是缺陷；但「重跑 Judge 會抹掉 Back-solve 的欄位」這個代價仍在，要留在 Exception Paths。
 - 下面「另一件相關的小事」（SkillCompiler-RSDC 的 §2.3 引用）沒有處理。
 
-## 4. 驗證
+## 5. 驗證
 
 驗證：
 
@@ -115,15 +119,15 @@ SkillCompiler-RSDC 還是舊格式；用現在的 RSDC 範本重寫後，Dataflo
 - 反向測試（合成的 skill）：兩個只寫不讀的寫入者仍被列為 `multi_writer_records`；先只寫的建立者加上雙向箭頭的編輯者，列為依序編輯；在建立者之前讀取的 step 仍被列為 `reads_of_later_writes`。
 - 用範本填的樣本：single PASS（29 項）、pair PASS（13 項）；所有改過的雙語檔，chinese parity 的結果與 HEAD 相同；`scan_source.py` 對 gen-rsdc-skill、chinese、check-skill 都 valid；`depends_on.py check` 四份範本全部 UNCHANGED。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 —
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

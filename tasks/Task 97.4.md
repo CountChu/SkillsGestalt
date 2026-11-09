@@ -12,7 +12,11 @@
 - 從本機路徑加入的 marketplace，相對路徑的 plugin 不複製，直接讀原檔；從 GitHub 安裝的會複製到 `~/.claude/plugins/cache/`，版本改了才更新。
 - 讀的官方說明：Claude Code 的 [plugins](https://code.claude.com/docs/en/plugins)、[plugins-reference](https://code.claude.com/docs/en/plugins-reference)、[plugin-marketplaces](https://code.claude.com/docs/en/plugin-marketplaces)，以及 VS Code 的 [Agent plugins](https://code.visualstudio.com/docs/copilot/customization/agent-plugins)。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-11-02 的規劃
 
@@ -27,7 +31,7 @@
 - Claude Code 裡的 skill 名稱會加上 plugin 的前綴，例如 `/gestalt:asd-ste`；VS Code 怎麼稱呼 plugin 的 skill，文件沒有寫。
 - plugin 不載入它根目錄的 CLAUDE.md，所以 `.github/common/skills/CLAUDE.md` 的提醒不隨 plugin 生效。
 
-## 3. 要做的
+## 4. 要做的
 
 1. 在 root 加 `.claude-plugin/marketplace.json`，列 gestalt 與 gestalt-ext；在 `.github/common/` 與 `.github/external/` 各加 `.claude-plugin/plugin.json`。
 2. 處理 skill 裡寫成 `{skillGroups.common}/...` 的路徑：從 GitHub 安裝時，它指向 config.yaml 設的路徑，不指向 plugin 的副本；決定是否改用 `${CLAUDE_PLUGIN_ROOT}`。
@@ -38,24 +42,24 @@
 6. 確認 publish-gestalt 發佈時帶上 marketplace.json 與兩個 plugin.json。
 7. 在 CHANGES.md 加一筆。
 
-## 4. 驗證
+## 5. 驗證
 
 - `claude plugin validate .` 通過。
 - 新的 Claude Code session 列出 `/gestalt:` 與 `/gestalt-ext:` 的每一個 skill。
 - 只開 SkillsGestalt 時，VS Code Chat 列出這些 skill。
 - 從 GitHub 的 `CountChu/SkillsGestalt` 加入 marketplace，也裝得起來。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 97.1]]：先實測 plugin 在兩邊能不能用，本 task 才做。
 - [[Task 97.5]]、[[Task 97.6]]：把 chore 的 skill 與 mermaid-view 加進本 task 建的 marketplace。
 - [[Task 97.2]]：plugin 不載入 CLAUDE.md，規則仍靠各 agency 的 AGENTS.md 或 CLAUDE.md。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

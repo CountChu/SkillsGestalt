@@ -4,7 +4,7 @@
 > [[ste-custom]]  `2026-11-02`  `c612bdfa1ea7`
 
 > 本檔案以 ASD-STE100 Simplified Technical English（STE）第 9 版寫成。
-> 技術用字：blob、bold、chapter、chore、column、command、commit、content、day、directory、document、file、format、heading、hunk、icon、indent、index、legend、line、link、list、lowercase、note、paragraph、path、prefix、repository、root、section、sentence、session、shell、skill、stage、status、subject、summary、table、term、text、title、topic、tree line、twin、vault、wikilink、word、workspace。
+> 技術用字：blob、bold、bug、build、chapter、chore、column、command、commit、content、day、directory、document、feature、file、format、hash、heading、hunk、icon、indent、index、legend、line、link、list、lowercase、note、paragraph、path、prefix、pull request、repository、root、section、sentence、server、session、shell、skill、stage、status、subject、summary、table、term、test case、text、title、topic、tree line、twin、URL、vault、wikilink、word、work item、workspace。
 
 這些規則說明怎麼寫一個 workspace 的 task，以及怎麼維護它們的摘要表。
 task 是一次 session 結束之後仍要繼續、而且會完成的工作。
@@ -43,6 +43,15 @@ task 是一次 session 結束之後仍要繼續、而且會完成的工作。
 - **連到 repository 裡的程式、skill、規則或文件時用 Markdown 連結。**
   路徑從 task 檔所在的目錄算起。
   這類檔案常常同名，例如 `SKILL.md` 與 `README.md`，wikilink 會指到錯的檔案。
+- **提到 commit、pull request、build 或 work item 時，用含完整網址的 Markdown 連結。**
+  這些項目在伺服器上，例如 Azure DevOps。
+  test case、bug 與 feature 也是 work item。
+  所以伺服器上每個項目的編號都要有連結。
+- **連結的文字是短的 hash 或編號。**
+  例如 `[a798480e68](https://<server>/<repository>/commit/<full hash>)`。
+  網址裡是 commit 完整的 hash。
+  commit 也可能只在本機的 repository 裡。
+  這時只寫它短的 hash，不加連結，並寫明它不在伺服器上。
 - **提到別的 workspace 的 task 時，寫成文字 `Task N @ <workspace>`，例如 `Task 62 @ SkillsGestalt`。**
   不要寫成連結。
   wikilink 只在它的 workspace 的 vault 裡找檔案。
@@ -62,41 +71,51 @@ task 檔的格式如下：
 **Depends on**：[[Task M]]、[[Task K]]，沒有就寫 —
 
 ## 1. 背景
-## 2. 現況
-## 3. 要做的
-## 4. 驗證
-## 5. 與其他 task 的關係
-## 6. 知識
+## 2. 結論
+## 3. 過程
+## 4. 要做的
+## 5. 驗證
+## 6. 與其他 task 的關係
+## 7. 知識
 ### 適合寫成新 topic
 ### 適合併進現有 topic
 ### 不算知識
-## 7. 日誌
+## 8. 日誌
 ### yyyy-mm-dd
 ```
 
-- **七個 `##` 章依序編號 1 到 7，章名就是這些。**
+- **八個 `##` 章依序編號 1 到 8，章名就是這些。**
   沒有內容的章，寫 `—`。
   不要拿掉這一章。
-- **在 `2. 現況` 裡，用 `###` 標題把內容分成小節。**
+- **在 `2. 結論` 裡，用簡短的項目寫出 task 的結果。**
+  寫出這個 task 做了哪些工作，以及每一部分的結果。
+  寫出這個 task 做了哪些改動，以及還留下哪些問題。
+  細節寫在 `3. 過程` 的哪一節，就指出那一節。
+  `3. 過程` 改了，`2. 結論` 也要跟著改，讓兩者一致。
+  task 還沒有結果時，寫 `—`。
+- **`2. 結論` 裡能用表格呈現的部分，都用表格。**
+  例如每一次執行、改動與問題，都用表格列出。
+- **在 `3. 過程` 裡，用 `###` 標題把內容分成小節。**
+  照發現的順序，寫下做過的工作與找到的事實。
   Status 行只寫一行簡短的結論。
-  其他內容寫在 `2. 現況` 與 `3. 要做的`。
-- **在 `6. 知識` 裡，寫這個 task 中可以寫進 `write-topic` 的 topic 的內容。**
+  其他內容寫在 `2. 結論`、`3. 過程` 與 `4. 要做的`。
+- **在 `7. 知識` 裡，寫這個 task 中可以寫進 `write-topic` 的 topic 的內容。**
   用格式裡的三個 `###` section。
   在 `適合寫成新 topic` 裡，寫新 topic 的標題、內容與來源。
   在 `適合併進現有 topic` 裡，寫要併進哪個 topic，以及要補的內容。
   在 `不算知識` 裡，寫只屬於這次工作的事實，例如某一個檔案的路徑。
   該由另一個 task 修的工具問題，也寫在那裡。
-- **`6. 知識` 的一個項目寫進 topic 之後，在它前面加上 ✅，並加一個連到那個 topic 的 wikilink。**
+- **`7. 知識` 的一個項目寫進 topic 之後，在它前面加上 ✅，並加一個連到那個 topic 的 wikilink。**
   還沒檢視過這個 task 的這類內容時，這一章只寫 `—`。
-- **在 `7. 日誌` 裡，每天寫一個 `### yyyy-mm-dd` section，記錄那一天的改動。**
+- **在 `8. 日誌` 裡，每天寫一個 `### yyyy-mm-dd` section，記錄那一天的改動。**
   新的日期放在前面。
   同一天再改這個 task，就補在那一天的 section。
   檔案裡最後一個日期 section 一定是 Raised 行的日期。
 - **Depends on 行只寫這個 task 之前必須先完成的 task。**
   它們完成之前，這個 task 不能做，或做了之後還得重做。
-  只是相關的 task，寫在 `5. 與其他 task 的關係`。
+  只是相關的 task，寫在 `6. 與其他 task 的關係`。
   Depends on 行只寫同一個 workspace 的 task。
-  別的 workspace 裡必須先完成的 task，寫在 `5. 與其他 task 的關係`。
+  別的 workspace 裡必須先完成的 task，寫在 `6. 與其他 task 的關係`。
 - **內容在比較幾個項目、把項目分類，或列出數量時，用表格。**
   表格放在它所屬的清單之後，不縮排。
   表格寫過的，清單裡不再寫一次。
@@ -127,7 +146,7 @@ task 檔的格式如下：
 - **只靠編號表示 sub task 屬於哪個 task。**
   不要為此另加一行。
   task 的 Depends on 行不列它的 sub task。
-- **sub task 的格式和 task 一樣**：Status、Raised、Depends on 三行，以及七章。
+- **sub task 的格式和 task 一樣**：Status、Raised、Depends on 三行，以及八章。
 - **sub task 的內容只寫在那個 sub task。**
   之後的紀錄也只寫在那裡。
   task 本身只留 sub task 清單，以及所有 sub task 共用的規則與決定。

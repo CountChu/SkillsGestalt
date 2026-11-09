@@ -12,7 +12,11 @@
 - [[Task 61]] 讓定規則的 md 裡重複的規則只寫一次；之後新加的重述，沒有定期檢查。
 - `reformat_md.py` 還有兩個已知的斷句問題（[[Task 36]]、[[Task 42]]）：修好之前，巡檢會漏掉那幾種一行多句，但不會誤報。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-10-18）
 
@@ -45,7 +49,7 @@
 - 拼法怎麼查：`check_ste.py` 的拼法檢查只用在 STE 檔，其他英文檔要用哪支工具，要不要另寫一支。
 - 結果怎麼記：完整清單存在 checkpoints、紀錄只寫總數，或像 [[keep-english]] 那樣和上一次比。
 
-## 3. 要做的
+## 4. 要做的
 
 1. 決定「要決定的」五項，照 [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 建立 chore 與摘要表的一列。
 2. 需要的話，寫巡檢腳本；重複規則的掃描要不要寫成工具，也在這時決定。
@@ -53,12 +57,12 @@
    第一次的對象包括 [[Task 61]] 讀規則檔時找到的英式拼法（2026-10-30）：[ste-rules.md](../skill-groups/common/skills/asd-ste/references/ste-rules.md) 的 judgement，[checking-criteria.md](../skill-groups/common/skills/check-skill/references/checking-criteria.md) 的 judgement、honours、behaviour、capitalising、artefact、colour。
    checking-criteria 把 skill-writing 的「scripted-versus-not」叫作 script-versus-judgement，改拼法時一起決定名稱。
 
-## 4. 驗證
+## 5. 驗證
 
 - `check_chores.py` 與 `check_tasks.py` 都 PASS。
 - 第一次巡檢列出的每一份，都照決定的方式處理了。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 19]]：定下一句一行的寫法與範圍。
 - [[Task 38]]：美式拼法的規則與檢查。
@@ -66,11 +70,11 @@
 - [[Task 53]]：建立 chore 制度。
 - [[Task 61]]：重複的規則只寫一次；之後的重複檢查併進本 task。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

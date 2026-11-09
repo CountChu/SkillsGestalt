@@ -11,7 +11,11 @@
 - 中文版有兩個工具檢查：chinese skill 的 `check_parity.py --keep`，以及 [[keep-english]] 跑的 `audit_keep_english.py`。
   `audit_keep_english.py` 只看旁邊有 `-tw.md` 的檔，task 檔沒有 TW twin，不在它的範圍；`check_tasks.py` 也不查。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 盤點（2026-10-19）
 
@@ -23,7 +27,7 @@
 - 2026-10-18 以後提出的 task 有 100 處，之前的有 849 處；在日誌裡的有 59 處。
 - 有些是在談譯法本身，不是寫錯，例如 [[Task 48]] 的「術語」、[[Task 9]] 的「確定性」與「工作流程」。
 
-## 3. 要做的
+## 4. 要做的
 
 1. 用和 `check_parity.py --keep` 相同的方式重新盤點：只看 prose，排除 fenced block、標題、inline code 與連結目標，談譯法本身的地方另外列出。
 2. 逐個譯法決定改不改，以及規則生效前寫的 task、日誌與摘要表的 Title 各怎麼處理。
@@ -31,23 +35,23 @@
    `check_tasks.py` 在 common 裡，改了它，用 common 的 InvestForge 也會跟著被檢查。
 4. 照決定改；改了 `check_tasks.py`，就一併改它的 docstring 與 task-rules 的中英兩份。
 
-## 4. 驗證
+## 5. 驗證
 
 - 重新盤點，留下的譯法都是決定不改的。
 - `check_tasks.py` PASS。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 68]]：本 task 的來源；它先改了 pairing line 的譯法。
 - [[Task 63]]：可能在清單加上 task、chore 等新詞；它先做完的話，本 task 的盤點要包括這些詞。
 - [[Task 62.1]]：把 keep-English 的要求寫進 task-rules。
 - [[keep-english]]：稽核中文版的 keep-English 譯法；task 檔不在它的範圍。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

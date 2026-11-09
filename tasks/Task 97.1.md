@@ -10,7 +10,11 @@
 - InvestForge 靠 `InvestForge.code-workspace` 的 `chat.agentSkillsLocations` 找到它們；SkillsGestalt 自己沒有這個設定。
 - 官方說明見 [[Task 97]] 的表 1。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-11-02）
 
@@ -125,30 +129,30 @@ reformat-md 沒有再跑：這一次已經足以判斷。
 5. **本 task 的「驗證」改成 Claude Code 與 Local**，「要做的」不動。
 6. **兩個 commit**：先本 task，再 [[Task 97]]。
 
-## 3. 要做的
+## 4. 要做的
 
 1. 在 Copilot harness、Local harness 與 Claude Code 各開一個新的 session，請它執行一個 skill，例如 reformat-md：看它是否照 AGENTS.md 找到並讀了 SKILL.md。
 2. 只給 skill 的名稱（例如「/check-skill asd-ste」）時，也試一次。
 3. 找不到時，調整 AGENTS.md 的寫法，再試。
 4. 把結果寫進本 task；InvestForge 的 `chat.agentSkillsLocations` 怎麼處理，交給 CHANGES.md 那一筆。
 
-## 4. 驗證
+## 5. 驗證
 
 - Claude Code 與 VS Code Local harness 的 session 都照 AGENTS.md 找到 `skill-groups/` 裡的 skill，並照 SKILL.md 做。
 - VS Code Copilot harness 不照 AGENTS.md 找 skill，是已知限制，不在驗證的範圍。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 97]]：本 task 的上層，決定與官方說明寫在那裡。
 - [[Task 97.2]]：建 AGENTS.md。
 - [[Task 97.7]]：把 `.github` 改名為 `skill-groups`，並在範本寫明 skill 的位置。
 - [[Task 93]]：description 超過 1024 字元的 skill 不會載入；實測前先確認都已縮短。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

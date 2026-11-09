@@ -11,7 +11,11 @@
 md-style.md 第 12 行（數學式的規則）與第 44 行（轉換 7）都在 inline code 裡寫了 `$$`，所以一行有好幾句，以 `--mode clean` 重新排版也不會變。
 md-style 的 STE 草稿已經把這兩行拆成一句一行，取代之後 md-style.md 本身不再有這個情形，但其他檔案仍可能有。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 2026-10-14 md-style.md 已由 STE 版取代，那兩行已拆成一句一行；腳本的問題仍在，其他檔案仍可能遇到。
 
@@ -31,7 +35,7 @@ md-style 的 STE 草稿已經把這兩行拆成一句一行，取代之後 md-st
 - InvestForge 的 report-cash-level `SKILL.md` 第 93 行只有一句，修好之後也不會拆開，所以不必重排。
   這份檔案的其他地方本來就不是一句一行，新舊兩版都會改，和本 task 無關。
 
-## 3. 要做的
+## 4. 要做的
 
 **已決定（2026-10-20）**
 
@@ -44,17 +48,17 @@ md-style 的 STE 草稿已經把這兩行拆成一句一行，取代之後 md-st
 **步驟**
 
 1. 改 `is_prose()`：判斷 `$$` 之前先拿掉 inline code。
-2. 照「4. 驗證」測過。
+2. 照「5. 驗證」測過。
 3. 重排 check-wiki-doc 的 `checking-criteria.md`，以及 InvestForge 的 report-cash-level `SKILL.md`。
 
-2026-10-30 三步都已做完；第 3 步只有 check-wiki-doc 那一份要重排，見「2. 現況」的「做了什麼」。
+2026-10-30 三步都已做完；第 3 步只有 check-wiki-doc 那一份要重排，見「3. 過程」的「做了什麼」。
 
 **改 reformat-md 時**
 
 reformat-md 沒有 README.md：先讀 [skill-writing.md](../skill-groups/common/rules/skill-writing.md)，改好之後以 `check_reformat.py` 確認重新排版只改了換行與換行周圍的空格。
 動手時 reformat-md 若已有 README.md（[[Task 24]]），就照它的 When the Skill Is Changed 做。
 
-## 4. 驗證
+## 5. 驗證
 
 - 一行的 `$$` 只在 inline code 裡：重新排版會把它拆成一句一行。
 - 獨立成行的 `$$…$$`，以及 inline code 外含 `$$` 的行：照舊不動。
@@ -63,18 +67,18 @@ reformat-md 沒有 README.md：先讀 [skill-writing.md](../skill-groups/common/
 
 結果（2026-10-30）：[[Task 36]] 的 `test_reformat.py` 有兩個 `$$` 的例子，都 PASS；check-wiki-doc 那一份的 `check_reformat.py` PASS，只改了空白；再跑一次沒有變化。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 36]]：也改 `reformat_md.py` 的斷句（直引號、⌘ 開頭的句子）。
   兩個問題各自獨立，不互相依賴；一起做可以只重排一次、只跑一次檢查。
 - [[Task 56]]：md-style 巡檢的 chore；本 task 修好之前，巡檢會漏掉這種一行多句，但不會誤報。
 - [[Task 24]]：替其餘 skill 加上 README.md；若它先做完，「改 reformat-md 時」改讀 reformat-md 的 README.md。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

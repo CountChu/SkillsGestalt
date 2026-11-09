@@ -10,7 +10,11 @@
 - 編號只在一個 agency 裡有意義：同一件 keep-English 稽核，在本 agency 是 Chore 2，在 InvestForge 是 Chore 1 @ InvestForge；名稱則到哪裡都一樣，也比編號好認。
 - [[Task 85]] 之後，chore 的編號出現在跨 agency 的引用 `Chore N @ <agency>`、checkpoints 的路徑 `checkpoints/chores/<agency>/chore-<N>`、`config.yaml` 的 `keepEnglishChore` 與 `gen_claude_md.py` 產生的連結裡。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-10-30 用到 chore 編號的地方
 
@@ -44,7 +48,7 @@
 - `check_chores.py` 把不存在的 `chores/` 當成沒有檔案，開頭那行印出它不存在；`--chores-dir` 指到一個檔案時照舊以 `2` 結束；有 `[[<name>]]` 的列卻沒有檔時照舊 FAIL。
 - [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 與中文版的 Files 加一句：只做別的 agency 的 chore 的 workspace，可以沒有 `chores/`。
 
-## 3. 要做的
+## 4. 要做的
 
 ### 已決定（2026-10-30）
 
@@ -75,7 +79,7 @@
 4. 摘要表、task 檔、CLAUDE-local.md、`config.example.yaml`、本機的 `config.yaml`、`gen_claude_md.py` 改成新名稱，重新產生 CLAUDE.md。
 5. 跑 `check_chores.py`、`check_tasks.py`、`gen_claude_md.py --check`。
 
-## 4. 驗證
+## 5. 驗證
 
 - `check_chores.py` 與 `check_tasks.py` 都是 PASS；`gen_claude_md.py --check` 是 PASS。
 - repo 裡找不到 `[[Chore N]]`、`chores/Chore N.md` 或 `chore-<N>` 的路徑，只剩 commit 訊息等歷史。
@@ -90,17 +94,17 @@
 - chore-rules.md `check_ste.py` 是 PASS，與中文版 `check_parity.py` 是 0 failure；`reformat_md.py --mode clean` 不改動 chore 檔、摘要表與任何 task 檔。
 - repo 裡沒有 `[[Chore N]]` 的連結；`chores/Chore N.md` 只出現在 task 檔的 inline code 裡，是當時的紀錄。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 85]]：讓別的 agency 以使用檔使用本 agency 的 chore，並定下 checkpoints 的路徑；本 task 把其中的編號都換成名稱。
 - [[Task 84]]：`keepEnglishChore` 與 `gen_claude_md.py` 的連結。
 - InvestForge 的 chore 改成用名稱，在它自己的 tasks 做：`check_chores.py` 已經改了，InvestForge 的 `Chore 1.md` 與 `[[Chore 1]]` 那一列在它改之前會 FAIL。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

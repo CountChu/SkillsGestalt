@@ -25,7 +25,11 @@
   RSDC Checker 寫死 `'Flowchart' in part_at`（現在是第 499 行）：只改名稱，圖的每一項檢查——圓角框、hexagon、節點形狀、藍線、圖例，以及 Task 3 之後從圖取得 stage 名稱的「每個 stage 都有元件執行」與 stage 清單比對——都會悄悄跳過，不報錯。
   不要只把字串換成 `'DFD'`：改成找 Dataflow 裡的第一張 mermaid 圖、找不到就 FAIL，日後再改名，檢查也不會靜默失效。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 做了什麼
 
@@ -37,7 +41,7 @@
 - **RSDC Checker**：圖改成「Dataflow 裡的第一張 mermaid 圖」，找不到就 FAIL（新的檢查 "the Dataflow holds its DFD"）；圖例在圖所在的那一部分裡找；訊息裡的 flowchart 改成 DFD，`check_skill` 的兩則也一樣。
   跳過 mermaid 關鍵字的兩處（那裡的 `flowchart` 是語法）不改。
 
-## 3. 要做的
+## 4. 要做的
 
 ### 要改的地方
 
@@ -81,7 +85,7 @@
 - **已寫好的文件**：StopPriceChecker-RSDC 與 tw 第 161 行、MermaidView-RSDC 與 tw 第 125 行的 `#### **Flowchart**`，下次對齊時改成 DFD；在那之前，Checker 會把 StopPriceChecker-RSDC 報成 Dataflow 的部分不符，但圖本身照樣被檢查。
 - **沒做的順手改**：check-skill 的 `checking-criteria.md` 第 108 行 "drawn as a mermaid flowchart"——屬於另一個 skill，說的也是 mermaid 的圖種，不算錯；留給 check-skill 自己的修改。
 
-## 4. 驗證
+## 5. 驗證
 
 驗證：
 
@@ -89,15 +93,15 @@
 - 用範本填的樣本：single PASS（29 項）、pair PASS（13 項），唯一的警告與之前相同。
 - 反向測試：只有文件改掉部分名稱 → 部分順序 FAIL，圖的檢查照跑；拿掉圖 → FAIL；範本與文件都改成別的名稱、Checker 不動 → 圖的檢查仍全部執行，原本的靜默跳過不會再發生。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 —
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

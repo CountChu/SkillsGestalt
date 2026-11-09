@@ -20,7 +20,11 @@
   那種 session 載入的是這裡的 CLAUDE.md 與 memory，看不到 InvestForge 的 CLAUDE.md，也看不到它自己的 19 條 memory。
 - [[Task 6]] 決定不建 tasks skill 時留下的條件「其他 workspace 要維護時再考慮」，現在成立了。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-10-18）
 
@@ -47,7 +51,7 @@
 - imp-home 的 `config.yaml` 有 InvestForge launcher 那一段，`scripts/skill_tokens.py` 列了 InvestForge 的路徑。
   它們不是 task 或 chore，要不要改另外決定。
 
-## 3. 要做的
+## 4. 要做的
 
 依編號順序做。
 這裡的 commit 前綴是 `task 62.N`；InvestForge 裡的 commit 用什麼前綴，在 [[Task 62.3]] 決定。
@@ -60,14 +64,14 @@
 - [[Task 62.6]] ✅ SkillsGestalt 自己的 config.yaml
 - [[Task 62.7]] ⬜ asd-ste 的 Step 7 只重記本 workspace 的依賴方
 
-## 4. 驗證
+## 5. 驗證
 
 - 這裡沒有一項還要做的工作會改 InvestForge 的檔：未完成的 task 的「要做的」與使用中的 chore 的「怎麼做」只動本 workspace；本 task 家族除外。
 - 已記下的紀錄照「已決定」保留，所以 grep 仍找得到 InvestForge；之後新寫的段落不再提。
 - 兩個 workspace 的 `check_tasks.py` 與 `check_chores.py` 都 PASS，在 InvestForge 幾秒內跑完。
 - cwd 在 InvestForge 的 session 只讀 InvestForge 的 CLAUDE.md，就找得到 task 與 chore 的規則與檢查指令。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 6]]：當初不建 tasks skill；本 task 改把規則放進 common，仍然不建 skill。
 - [[Task 53]]：建立 chore 制度；本 task 讓它也能用在別的 workspace。
@@ -75,11 +79,11 @@
 - [[Task 55]]：這裡的依賴巡檢 chore；InvestForge 的那一個是 [[Task 62.7]] 的前提。
 - [[Task 63]]：[[Task 62.1]] 另開，決定中文版留英文的新詞要不要加進 keep-English list。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

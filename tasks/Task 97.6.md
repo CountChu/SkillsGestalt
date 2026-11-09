@@ -10,7 +10,11 @@
 - 程式碼在 `~/.claude/dev-mods/438db5fa-5da6-456a-90db-c9e6ad1178b3/mermaid-view/`：`.claude-plugin/plugin.json`（name `mermaid-view`，version `0.1.0`）、`hooks/hooks.json`、`hooks/register.tsx`、`types/`、`tests/`。
 - 其他 session 要用 `--plugin-dir` 或 `CLAUDE_CODE_PLUGIN_DIRS` 才載入。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-11-02 的規劃
 
@@ -20,7 +24,7 @@
 - 頁面檔不放 `${CLAUDE_PLUGIN_ROOT}`：它每個版本都換路徑，已寫好的頁面會找不到它們。
 - 它的面板用 Claude 桌面版的介面，VS Code 不執行；marketplace 的說明要寫它只能在 Claude Code 用。
 
-## 3. 要做的
+## 4. 要做的
 
 1. 把 dev-mods 裡的程式碼與測試搬進 `mods/mermaid-view/`，和 RSDC 放在一起。
 2. 在 marketplace.json 加 mermaid-view，`source` 是 `./mods/mermaid-view`。
@@ -28,21 +32,21 @@
 4. RSDC 與中文版寫明程式碼的新位置，以及 Quick Action 與頁面檔要另外裝。
 5. 決定 publish-gestalt 是否發佈 mermaid-view。
 
-## 4. 驗證
+## 5. 驗證
 
 - `claude plugin validate` 與 `claude plugin test` 通過。
 - 從 marketplace 啟用後，任何新的 Claude Code session 都有 `/mermaid`，面板列出含 mermaid 圖的 Markdown 檔。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 97.4]]：建 marketplace；本 task 加進第三個 plugin。
 - [[Task 18.8]]：讓 MermaidView-RSDC 對齊範本。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

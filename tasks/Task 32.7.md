@@ -9,7 +9,11 @@
 審核 [[Task 31]] 為 [scratch-rules.md](../skill-groups/common/rules/scratch-rules.md) 產生的 STE 草稿與草稿中文版；通過就由 asd-ste 的 Step 7 取代原檔與它的中文版。
 分工、取代的方式與「每取代一份要一併做的」，見 [[Task 32]]。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 審核時決定的
 
@@ -42,26 +46,26 @@
   正文引用它的兩份範本、本 workspace 9 個 skill 與 InvestForge 4 個 skill 的 SKILL.md，都是整份檔案的引用，說的是一次執行的暫存檔放在哪裡、怎麼清掉，取代後都仍成立，照使用者的決定不動。
   [[Task 31]] 表格裡指向兩份草稿的連結改成行內程式碼，並註明已取代；審核伺服器照使用者的決定繼續開著。
 
-## 3. 要做的
+## 4. 要做的
 
 ✅ 2026-10-18 審核通過，由 Step 7 取代原檔，[[Task 32]] 的「每取代一份要一併做的」也做完。
 今天 ste-custom.md 加上 own、擴大 create 之後，其他宣告它的 STE 檔照使用者的決定交給 [[rerecord-ste-custom]]，在取代之後集中重記。
 
-## 4. 驗證
+## 5. 驗證
 
 - 取代後 `check_ste.py --ste` PASS，沒有警告；scratch-rules.md 與它的中文版 `check_parity.py` 0 failure、0 warning。
 - 取代後 check-skill 兩份 README 的 `depends_on.py check` 都是 UNCHANGED；兩份 README 的 `check_parity.py` 0 failure，唯一一則「腳本」的 WARN 在取代前就有；check-skill 的 `scan_skill.py` 沒有缺少的 README 標題，檔頭每一項都是 UNCHANGED。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 40]]：審本草稿時，使用者問同意某一項的建議該標 `[v]` 還是 `[x]`；它的第 9 項把答案寫進對照頁與 asd-ste 的 SKILL.md。
 - [[rerecord-ste-custom]]：ste-custom.md 有改動的日子集中重記一次；本 task 加上 own、擴大 create 的那兩次也由它重記。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

@@ -12,7 +12,11 @@
 - [CLAUDE-local.md](../AGENTS-local.md) 第 18、19 行卻說：發佈之前的 commit 在這些 tag 裡，文件引用的 hash 到這些 tag 裡找。
   兩者互相矛盾：較早的那段被清掉之後，文件引用的 hash 就找不到了。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-10-31 第二次發佈
 
@@ -31,7 +35,7 @@
 - 先列出只有那個 tag 指到的 commit：`git rev-list <tag> --not <其他所有的 ref>`。
 - 再找 git 追蹤的 md 檔裡，有沒有 7 到 12 位的 hash 是這些 commit 的開頭。
 
-## 3. 要做的
+## 4. 要做的
 
 ### 已決定（2026-10-31）
 
@@ -53,12 +57,12 @@
 2. 改 `publish_snapshot.py` 或 chore 的 step，以及 CLAUDE-local.md，再跑 `gen_claude_md.py`。
 3. 在暫用的 clone 試同一天發佈兩次：兩次發佈之前的歷史都有 tag 指到。
 
-## 4. 驗證
+## 5. 驗證
 
 - 同一天發佈兩次之後，兩次發佈之前的歷史都還有 tag 指到。
 - `check_chores.py`、`check_tasks.py` 與 `gen_claude_md.py --check` 都是 PASS。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 79]]：定下發佈之後重做 `m1`，以及一天一個 tag。
 - [[Task 88.3]]：CHANGES.md 的條目引用 `m1` 的 hash。
@@ -66,11 +70,11 @@
 - [[Task 91]]：改名之後的這次發佈，查到這個問題。
 - [[publish-gestalt]]：執行紀錄記下這次的手動另存。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

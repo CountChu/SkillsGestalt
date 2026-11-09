@@ -10,7 +10,11 @@
 這三處都是讀程式碼時看到的，還沒在執行中觀察到。
 本 task 改 [scan_source.py](../skill-groups/common/skills/compile-skill/scripts/scan_source.py) 與 [check_compiled.py](../skill-groups/common/skills/compile-skill/scripts/check_compiled.py)，改好之後把缺陷從 4.5 拿掉。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-10-20 讀程式碼看到的
 
@@ -21,27 +25,27 @@
 - **無法解析的 stale script 被回報成檢查失敗**：它先解析 script，才讀記錄的 fingerprint；script 無法解析時以 `1` 結束。
   照 2.7 CLI，stale 的 script 要以 `4` 結束、其他都不檢查，因為 stale 的 script 要重新編譯，而不是修正。
 
-## 3. 要做的
+## 4. 要做的
 
 1. 照 `skills/CLAUDE.md` 先讀 [skill-writing.md](../skill-groups/common/rules/skill-writing.md)；compile-skill 沒有 README.md。
 2. 每個缺陷先做出能重現它的執行，再改程式。
 3. 改好一個，就把它從 4.5 Defects 拿掉；4.4 那一列的 Proven by 跟著改，中文版照 [chinese](../skill-groups/common/skills/chinese/SKILL.md) skill 更新。
 
-## 4. 驗證
+## 5. 驗證
 
 - 三個缺陷改之前都能重現，改之後都不再發生。
 - `check_rsdc.py --rsdc` 單獨檢查與中英對照都 PASS；compile-skill 的 SKILL.md 與 gen-rsdc-skill 的 SKILL.md 記下的 `[[SkillCompiler-RSDC]]` 指紋若變了，讀過之後重記。
 - `scan_source.py` 與 `check_compiled.py` 對同一份 Skill Source 的 fingerprint 仍然一致。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 18.2]]：對齊 SkillCompiler-RSDC 時發現這三處，寫進 4.5 Defects。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

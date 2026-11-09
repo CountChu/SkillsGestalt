@@ -9,7 +9,11 @@
 讓 [MermaidView-RSDC.md](../mods/mermaid-view/MermaidView-RSDC.md)，也就是 mermaid-view 的 design of record，跟上 App 範本。
 共用的規則與決定，見 [[Task 18]]。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-10-31 對齊之後
 
@@ -46,7 +50,7 @@
 - 最後一節「How This Version Came About」寫的是這份文件的來歷；[[Task 58]] 的規則只讓 RSDC 文件的 Changes in This Version 一節記錄變更，而 App 範本沒有這一節。
 - 這個 repo 裡沒有檔案引用它；它的程式碼不在這個 repo。
 
-## 3. 要做的
+## 4. 要做的
 
 照 [[Task 18]] 2026-10-18 的決定對齊：照範本手動改，節號改了，引用處同一次一起改。
 
@@ -64,7 +68,7 @@
 8. **中文版照 chinese skill 整份重寫**：原句沒變的沿用舊譯法。
 9. **不讀已安裝的程式核對**：只搬移內容、改形狀，不加新發現。
 
-## 4. 驗證
+## 5. 驗證
 
 照 [[Task 18]] 的「驗證」，結果見「現況」一章的「2026-10-31 對齊之後」：
 
@@ -74,12 +78,12 @@
 - `depends_on.py check` 的每個指紋都 UNCHANGED。
 - 沒有 SKILL.md 引用 MermaidView-RSDC，所以沒有 `--skill` 檢查。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 58]]：不寫來歷的規則。
 - [[Task 60]]：記下單獨檢查的 6 項 FAIL。
 
-## 6. 知識
+## 7. 知識
 
 ### 適合寫成新 topic
 
@@ -95,7 +99,7 @@
   中文版只好把這兩條的標籤整段留英文；要修，就改它讀 glossary term 的 regex，或把英文拆成兩條，留給另一個 task。
 - **App 範本只為 server 型的 app 寫**：mermaid-view 這類不是 server 的 app，有三個必要節只能寫「沒有」。
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

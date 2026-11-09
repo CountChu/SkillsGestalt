@@ -11,7 +11,11 @@
 - 規則寫在根目錄的 CLAUDE.md，由 [gen_claude_md.py](../skill-groups/common/scripts/gen_agents_md.py) 從 [CLAUDE-tmp.md](../skill-groups/common/templates/AGENTS-tmp.md) 與 `CLAUDE-local.md` 產生；Claude Code 讀它，Copilot harness 不讀。
 - Claude Code 看不到 `.github/common/skills`，所以在這裡都照 SKILL.md 手動做；兩邊都只支援一半。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-11-02 查的官方說明
 
@@ -65,7 +69,7 @@
 - Session Target 裡沒有 Local 時，要打開實驗設定 `chat.editor.localAgent.enabled`。
 - 使用者設定裡沒有 `chat.agentSkillsLocations`，所以實測不受它影響。
 
-## 3. 要做的
+## 4. 要做的
 
 - [[Task 97.1]] ✅ 實測 agent 照 AGENTS.md 找到 skill-groups 的 skill
 - [[Task 97.2]] ✅ 規則改寫在 AGENTS.md，CLAUDE.md 只引用它
@@ -75,20 +79,20 @@
 - [[Task 97.6]] ⊘ mermaid-view 的 mod 搬進 repo，成為 marketplace 的 plugin
 - [[Task 97.7]] ✅ 把 .github 改名為 skill-groups
 
-## 4. 驗證
+## 5. 驗證
 
 - 沒有取消的 sub task，驗證都通過。
 - 只開 SkillsGestalt 資料夾時，VS Code 的 Local harness 照 AGENTS.md 找到 `skill-groups/` 的 skill。
 - VS Code 的 Copilot harness 不照 AGENTS.md 找 skill，是已知限制，見 [[Task 97.1]]；原本要它照 AGENTS.md 找到 skill 的這一條，改成上一條。
 - 在 Claude Code 裡，規則照舊載入。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 93]]：把超過 1024 字元的 description 縮短，Copilot 才載入得了這些 skill。
 - [[Task 88]]：寫了 forge-setup.md；skill 位置或規則檔改了，它要跟著改。
 - [[Task 62]]：common 是上游；InvestForge 的改動只經 CHANGES.md，不在本 task 改。
 
-## 6. 知識
+## 7. 知識
 
 ### 適合寫成新 topic
 
@@ -142,7 +146,7 @@
 
 - InvestForge 的 `chat.agentSkillsLocations` 寫在 `InvestForge.code-workspace`。
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

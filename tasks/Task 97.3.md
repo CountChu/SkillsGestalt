@@ -9,7 +9,11 @@
 - Copilot 與 Claude Code 讓使用者選擇的工具不同：Copilot 是 `vscode_askQuestions`，Claude Code 是 `AskUserQuestion`。
 - skill 寫了工具名稱，換一個 agent 就找不到這個工具。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-11-02 查的結果
 
@@ -38,28 +42,28 @@
 - 以上的中文版都跟著改；依賴 skill-writing.md 的 10 個檔重記指紋。
 - [CHANGES.md](../skill-groups/common/CHANGES.md) 加一筆。
 
-## 3. 要做的
+## 4. 要做的
 
 1. check-skill 第 176 行改成動作，例如「讓使用者從選項中選擇要套用的檢查」；中文版也是。
 2. [skill-writing.md](../skill-groups/common/rules/skill-writing.md) 加一條規則：skill 寫要做的動作，不寫某個 agent 才有的工具名稱；中文版也是。
 3. 照 check-skill 的 README，看是否要加一項檢查來找出工具名稱。
 4. 在 CHANGES.md 加一筆。
 
-## 4. 驗證
+## 5. 驗證
 
 - common 的檔裡找不到 `vscode_askQuestions`、`AskUserQuestion` 這類工具名稱。
 - skill-writing.md 與 check-skill 的 STE 檢查與 parity check 通過。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 97]]：本 task 的上層。
 - [[Task 76]]：也在 skill-writing.md 加規則；兩個 task 同時做的話，會改到同一個檔。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

@@ -10,7 +10,11 @@ phrase 不在 STE Issue 9 的字典裡。
 tw-keep-english 的草稿與 RSDC-Standard.md 把它列在 `Technical words:`，各在正文用了一次；但 tw-keep-english 草稿對 term 的定義卻避開它，寫成 a group of words。
 phrase 是一般語言裡的詞，不是某個主題的技術名詞（STE 規則 1.5），和 [[Task 44]] 的 rule 一樣，比較適合當專案核准詞：[ste-custom.md](../skill-groups/common/skills/asd-ste/references/ste-custom.md) 核准的字不列為技術用字（House Rule 11）。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-10-16）
 
@@ -30,7 +34,7 @@ phrase 是一般語言裡的詞，不是某個主題的技術名詞（STE 規則
 - 重記：宣告 `[[ste-custom]]` 的 20 份，以及記錄 RSDC-Standard.md 的 8 份（InvestForge 4 份）；DFD 與 md-style 的正文沒變，記錄它們的文件不用重記。
 - [[Task 32]] 的 2.3：第 8 項第 2 個子項更正 phrase 的說法，「定義的意思可能變了」那一項註明第六輪已改；對照頁重建，共 29 項、140 個行號，15 項維持通過。
 
-## 3. 要做的
+## 4. 要做的
 
 1. ste-custom.md 加上 phrase 一列，中文版照 chinese skill 跟著改。
 2. tw-keep-english 的草稿與中文版、RSDC-Standard 與中文版：`Technical words:` 拿掉 phrase；草稿第 24 行的定義改用 phrase。
@@ -38,22 +42,22 @@ phrase 是一般語言裡的詞，不是某個主題的技術名詞（STE 規則
 4. 記錄 RSDC-Standard.md 的 8 份讀過改動後重記，其中 InvestForge 4 份。
 5. 跑 asd-ste 的 README 為 ste-custom.md 列出的檢查；2.3 的對照頁重建。
 
-## 4. 驗證
+## 5. 驗證
 
 - ste-custom 與改到的每一對中英對照：`check_parity.py` 0 failure，`diff_md.py --verify` PASS。
 - 7 份草稿的 Step 3 與 3 份 STE 檔的 `check_ste.py --ste` 都 PASS，警告和之前相同。
 - 重記的文件 `depends_on.py check` 都是 UNCHANGED；兩份 RSDC 範本的 `check_rsdc.py --standard` PASS。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 32]]：審 2.3 時提出。
 - [[Task 44]]：把 rule 收進專案核准詞，本 task 照同樣的做法處理 phrase。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

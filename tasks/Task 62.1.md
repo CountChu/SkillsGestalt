@@ -15,7 +15,11 @@
   - 摘要表與父 task 的檔，用 HEAD 加上自己的行組成 blob 再 stage，不 `git add` 整個檔。
   - 確認 HEAD 的那一步用 `&&` 串到 staging、`git add` 與 `git commit`，不單獨一行。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-10-18）
 
@@ -44,7 +48,7 @@
 - 51 個連結：43 個 task 的 2026-10-16 日誌改成 inline code，各記一行日誌；兩張摘要表的開頭改連規則檔與根目錄的 CLAUDE.md；[[Task 54]]、[[Task 55]]、[[Task 56]] 改連 chore-rules.md；[[Task 61]] 與本 task 改成 inline code；根目錄 CLAUDE.md 改連規則檔。
 - memory 的兩條縮成指向規則檔。
 
-## 3. 要做的
+## 4. 要做的
 
 1. ✅ 在 `.github/common/rules/` 寫英文的規則檔：`tasks/CLAUDE.md` 與 `chores/CLAUDE.md` 中與 workspace 無關的部分，加上第 1 章只記在 memory 的做法。
    路徑一律從 workspace 的根目錄算起；common 的路徑寫成 `{skillGroups.common}`，不點名任何一個 workspace。
@@ -54,13 +58,13 @@
 5. ✅ 使用者看過兩份規則檔與中文版。
 6. ✅ commit：前綴 `task 62.1`；摘要表與父 task 的檔照規則用 blob stage。
 
-## 4. 驗證
+## 5. 驗證
 
 - 規則檔與中文版的 `check_parity.py` 都是 0 failure。
 - 這裡沒有 `tasks/CLAUDE.md` 與 `chores/CLAUDE.md`，也沒有連到它們的連結。
 - `check_tasks.py` 與 `check_chores.py` PASS。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 61]]：規則檔不重寫 md-style 已有的規則，改成 follow md-style；兩份規則共用的約 10 條規則是使用者選的寫法，[[Task 61]] 的日誌記了這一點。
 - [[Task 62.2]]：規則檔已經照改過之後的腳本寫編號規則，腳本要跟上。
@@ -68,11 +72,11 @@
 - [[Task 63]]：中文版留英文的新詞要不要加進 keep-English list。
 - [[rerecord-ste-custom]]：兩份規則檔也記錄 ste-custom.md，ste-custom.md 再改時一起重記。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

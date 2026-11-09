@@ -9,7 +9,11 @@
 背景：asd-ste 的 Step 6 以 review builder `make_review.py` 產生對照頁，寫在 Checkpoint Dir 的 `step_6-review.html`。
 [[Task 39]] 建立了它，同一天又加上上下兩區各自捲動，以及保留前一個連結的反白。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-11-01 結束
 
@@ -162,13 +166,13 @@
 - SKILL.md 的 review status 定義也寫明：`[v]` 是照現狀通過，認同建議的項目標 `[x]`；遇到 `[x]`，agent 照審核者的決定改 draft，再重跑 Step 3 與 Step 6；中文版照 chinese skill 跟著改。
 - 改好之後以 `run step 6` 重建還在審的 [[Task 32.7]] 與 [[Task 32.8]] 的對照頁，審核重點不動、狀態保留；已取代原檔的不重建。
 
-## 3. 要做的
+## 4. 要做的
 
 **改 asd-ste 時**
 
 先讀 asd-ste 的 [README.md](../skill-groups/common/skills/asd-ste/README.md) 的 When the Skill Is Changed，照它改，並跑它列出的檢查。
 
-## 4. 驗證
+## 5. 驗證
 
 ### 第 1 項
 
@@ -231,7 +235,7 @@ RSDC-Standard 的 `step_6-status.json` 和重建之前相同；README 的其他�
 skill-writing 的對照頁同樣重建，21 項都還是待審。
 指到草稿第 154 行時仍以 1 結束、不寫出頁面；SKILL、README、ste-custom 三對的 `check_parity.py` 都是 0 failure，警告和改之前相同；SKILL.md 與 README.md 的 `depends_on.py check` 都是 UNCHANGED；check-skill 的 `scan_skill.py` 沒有新的問題，description 仍是 1254 字元。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 **與其他 task 的關係**
 
@@ -240,11 +244,11 @@ skill-writing 的對照頁同樣重建，21 項都還是待審。
 - [[Task 93]]：第 1、3、9 項驗證時 check-skill 找到的 description 問題（1.1 太長、3.3 沒寫審核伺服器），移到那裡處理。
 - [[Task 94]]：為對照頁寫 RSDC；它完成時一併結束本 task，之後對照頁的修改直接改 RSDC。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

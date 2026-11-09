@@ -9,7 +9,11 @@
 讓 compile-skill 的 [SkillCompiler-RSDC.md](../skill-groups/common/skills/compile-skill/references/SkillCompiler-RSDC.md) 跟上 Skill-System 範本。
 共用的規則與決定，見 [[Task 18]]。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-10-10 查的結果
 
@@ -61,11 +65,11 @@
 - compile-skill 的 SKILL.md 沒有「# Dataflow」一節，`--skill` 檢查報 WARN；HEAD 就有，屬於 [[Task 24]] 要改的 skill 格式。
 - [[Task 71]] 的「與其他 task 的關係」預計 §2.4 *CLI* 會變成 §2.8 *CLI*，實際是 §2.7 *CLI*，因為 Config Schemas 沒寫。
 
-## 3. 要做的
+## 4. 要做的
 
 ✅ 2026-10-20 照 template 對齊，中文版、compile-skill 的 SKILL.md、[[Task 72]] 與兩支 script 的引用一起改。
 
-## 4. 驗證
+## 5. 驗證
 
 - 英文版單獨檢查 `check_rsdc.py --rsdc --skill-name compile-skill` PASS，30 項通過，0 個警告。
 - 中英對照 `check_rsdc.py --rsdc --tw --keep` PASS，13 項通過，2 個警告，見「順帶發現」。
@@ -76,7 +80,7 @@
 - 英文版與中文版以 `reformat_md.py --mode clean` 重排後都沒有差異；英文版的英式拼法只剩第 754 行 template 共用句的 behaviour。
 - 兩支 script 以 `py_compile` 編譯通過，`scan_source.py` 照常判定 compile-skill 的 SKILL.md 為 valid。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 60]]：記下單獨檢查的 6 項 FAIL。
 - [[Task 71]]、[[Task 72]]：compile-skill 的 Tasks.md 移到 [[Task 72]]，所以這次改的是 [[Task 72]] 的引用。
@@ -85,11 +89,11 @@
 - [[Task 24]]：compile-skill 的 SKILL.md 沒有 Dataflow 一節，屬於它要改的 skill 格式。
 - [[Task 58]]：寫新的內容時照它的規則，不寫文件自己的來歷。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

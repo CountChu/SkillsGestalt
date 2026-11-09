@@ -11,7 +11,11 @@ compile-skill 的 `Tasks.md` 是 2026-10-04 寫的，比這個 workspace 的第�
 摘要表看不到它，`check_tasks.py` 也不檢查它。
 本 task 把它的待辦移進 `tasks/`，之後 skill 的目錄下不再有 Tasks.md。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-10-20 查的結果
 
@@ -62,7 +66,7 @@ compile-skill 的 `Tasks.md` 是 2026-10-04 寫的，比這個 workspace 的第�
   SKILL.md 與中文版的 `check_parity.py --keep` 0 failure，`diff_md.py --verify` PASS。
   4 個 warning（「腳本」「識別碼」「術語表」「術語」）都在沒改的句子裡，HEAD 的版本就有。
 
-## 3. 要做的
+## 4. 要做的
 
 照「已決定」做，順序如下：
 
@@ -77,7 +81,7 @@ compile-skill 的 `Tasks.md` 是 2026-10-04 寫的，比這個 workspace 的第�
 4. **改 task 檔裡會斷的連結**：[[Task 9]] 第 27 行連到 Tasks-tw.md 的 Markdown link 改成 inline code，字句不改，並在它的日誌加一行，連到本 task。
 5. **[[Task 18.2]] 還沒完成時**：它列的引用處裡，把 Tasks.md 與中文版換成新的 task，並在它的日誌加一行，連到本 task。
 
-## 4. 驗證
+## 5. 驗證
 
 - `find .github -name "Tasks*.md"` 沒有輸出：skill 的目錄下不再有 Tasks.md。
 - 搜尋 `Tasks.md` 與 `Tasks-tw.md`，沒有 Markdown link 或 wikilink 還連到它們。
@@ -86,7 +90,7 @@ compile-skill 的 `Tasks.md` 是 2026-10-04 寫的，比這個 workspace 的第�
 - 新 task 包含 Tasks-tw.md 標題與 Status 行之外的每一句，keep-English 清單上的詞都是英文，「腳本」這類 Flagged 的譯法一個都沒有。
 - 新 task 與本 task 的副本以 `reformat_md.py --mode clean` 重排後，與原檔沒有差異。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - **[[Task 72]]**：本 task 從 compile-skill 的 Tasks.md 移出來的 Agentic Panel。
 - **[[Task 18.2]]**：對齊 SkillCompiler-RSDC 之後，panel 內容引用的節號會變。
@@ -96,11 +100,11 @@ compile-skill 的 `Tasks.md` 是 2026-10-04 寫的，比這個 workspace 的第�
 - **[[Task 70]]**：它把 SKILL.md 的共用句子換成 STE template 的寫法，也會改 compile-skill 的 SKILL.md 與中文版；兩個 task 不要同時改這兩份檔。
 - **[[Task 9]]**（2026-10-10 完成）：第 27 行的表格有連到 Tasks-tw.md 的 Markdown link，刪檔時照「要做的」第 4 點改。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

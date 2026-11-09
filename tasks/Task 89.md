@@ -10,7 +10,11 @@
 - 另一台電腦也有一份 SkillsGestalt，工作分支是 `countdell`，也照 [[publish-gestalt]] 發佈到同一個 GitHub repo 的 `main`。
 - 兩台都發佈時，GitHub 的 `main` 會有另一台的快照，本機的 `main` 與 `m1` 都還沒有它；目前沒有 chore 說明怎麼把它拿進來。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### GitHub 上的新快照（2026-10-31）
 
@@ -37,7 +41,7 @@
 - [[publish-gestalt]] 的「準備」加上「先做 pull-gestalt」。
 - 摘要表加上 pull-gestalt，執行紀錄記下這一次。
 
-## 3. 要做的
+## 4. 要做的
 
 ### 已決定（2026-10-31）
 
@@ -65,7 +69,7 @@
 3. [[publish-gestalt]] 的步驟加上「先做 pull-gestalt」。
 4. 照 pull-gestalt 把 `4765af0` 拿進本機的 `main` 與 `m1`，再做 [[follow-gestalt]]。
 
-## 4. 驗證
+## 5. 驗證
 
 - 本機的 `main` 等於 `origin/main`，`m1` 以它為祖先；`m1` 仍有不公開的路徑，自己的 commit 都在。
 - `check_tasks.py`、`check_chores.py` 與 `gen_claude_md.py --check` 都是 PASS。
@@ -79,7 +83,7 @@
 - `check`：作者或 committer 的 email 用工作網域時各報一個 `[FIND]`；平常是 nothing found。
 - `check_tasks.py`、`check_chores.py` 與 `gen_claude_md.py --check` 都是 PASS；`git diff --name-status main m1` 只有不公開的兩個路徑與 `m1` 自己的改動。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 78]]：公開到 GitHub，決定快照的作者用個人 email。
 - [[Task 79]]：`m1` 與 `main` 的分工，以及發佈之後 `m1` 從新的快照重新開始。
@@ -88,11 +92,11 @@
 - [[pull-gestalt]]：本 task 建立的 chore。
 - 另一台電腦的 SkillsGestalt 要照 [[pull-gestalt]] 重設 `main`，並把 `countdell` rebase 到 `4d2c5db`；它的 git `user.email` 也要改成個人 email，在那台電腦做。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

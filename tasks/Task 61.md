@@ -10,7 +10,11 @@
 - header quote 的指紋只在重述的檔記錄了來源時才會提醒；沒有記錄來源的重述，來源改了不會有人發現。
 - [[Task 32.8]] 在 skill-writing 找到三處原文本來就有的重複，使用者決定刪掉其中兩處（`f087677`）；「README 說明哪些檔案要一起改」是第一條要先讀 README 的理由，保留。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-10-18）
 
@@ -103,7 +107,7 @@
 - 兩句的詞集合重疊（交集除以聯集）至少 0.45，而且詞序列的相似度（Python `difflib.SequenceMatcher` 的 ratio）至少 0.55，就列為一組候選；同一份檔裡相鄰的兩行不比。
 - 這次的腳本沒有放進 repo；要重跑就照這兩條寫一支，做成 chore 時再決定要不要變成工具。
 
-## 3. 要做的
+## 4. 要做的
 
 1. ✅ 照處理原則，逐組請使用者決定：先處理值得看的四組，再看其他跨檔的候選，最後是同一份檔裡的候選（2026-10-30，見「決定與修改」）。
 2. ✅ 逐份讀範圍內的 18 份，找出掃描抓不到、換了說法的重複，同樣逐組決定（2026-10-30）。
@@ -118,13 +122,13 @@
    skill-writing 是 STE 檔：`check_ste.py --ste` 重查，中文版照 chinese skill 跟著改，記錄 skill-writing.md 的 6 份 README 讀過之後重記。
    這一項是 [[Task 32.10]] 審 README-tmp 時，使用者在 2026-10-18 交給本 task 的。
 
-## 4. 驗證
+## 5. 驗證
 
 - 值得看的四組與之後找到的每一組，都照使用者的決定處理，或寫明保留的理由。
 - 改過的每一份：STE 檔的 `check_ste.py --ste` PASS，中英對照的 `check_parity.py` 0 failure、`diff_md.py --verify` PASS，記錄它的文件 `depends_on.py check` 都是 UNCHANGED。
 - `check_tasks.py` PASS。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 32]]：審 skill-writing（[[Task 32.8]]）時提出；還在審的 4 份等取代原檔之後再處理。
 - [[Task 58]]：RSDC 文件的 Changes in This Version 一節是不寫來歷的例外，那裡重述改過的規則不算重複。
@@ -132,11 +136,11 @@
 - [[Task 56]]：md-style 巡檢的 chore；本 task 做完之後，決定重複檢查要不要併進去。
 - [[Task 32.10]]：審 README-tmp 時決定保留規則的名稱 scripted-versus-not，skill-writing 補上這個名稱交給本 task（要做的第 5 項）。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

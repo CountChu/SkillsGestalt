@@ -9,7 +9,11 @@
 - `.github/` 底下只有兩個 skill group：`common` 與 `external`；沒有 GitHub 自己用的檔，例如 workflows。
 - skill 引用其他檔時多半寫 `{skillGroups.common}`，由 `config.yaml` 的 `skillGroups` 代入；但也有直接寫 `.github/` 的地方。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-11-02 查的結果
 
@@ -50,7 +54,7 @@
 - asd-ste 的 README 與中文版第 449 行記的是當時的驗證「在副本放一份 `.github`」，是紀錄，沒改。
 - InvestForge 的 `config.yaml` 與 `InvestForge.code-workspace` 仍指向 `.github/common`，照 CHANGES.md 改之前，它找不到 common。
 
-## 3. 要做的
+## 4. 要做的
 
 1. 用 `git mv` 把 `.github` 改名為 `skill-groups`。
 2. 改 `config.yaml`、[config.example.yaml](../config.example.yaml) 與 `config-forge-tmp.yaml` 的 `skillGroups`；key 仍是 `skillGroups`。
@@ -59,24 +63,24 @@
 5. 在範本 [CLAUDE-tmp.md](../skill-groups/common/templates/AGENTS-tmp.md) 寫明 skill 在 `skill-groups/<group>/skills/<name>/SKILL.md`，要執行 skill 時讀它；[[Task 97.2]] 把它變成 AGENTS.md。
 6. 重新產生 CLAUDE.md；在 CHANGES.md 加一筆，讓 InvestForge 改 `skillGroups.common` 的路徑與 `chat.agentSkillsLocations`。
 
-## 4. 驗證
+## 5. 驗證
 
 - `git grep -F '.github/'` 只剩 `tasks/` 與 `dashboard-hist/` 的舊紀錄，以及上面「後續」列的兩支程式。
 - `check_tasks.py`、`check_chores.py` 與 `gen_claude_md.py --check` 通過。
 - 改過的 STE 檔通過 `check_ste.py`，twin 通過 parity check。
 - `publish_snapshot.py` 的預覽不含 `skill-groups/external/`。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 97.1]]：改名之後，實測 agent 是否照 AGENTS.md 找到 skill；它依賴本 task。
 - [[Task 97.2]]：範本變成 AGENTS.md；本 task 寫的 skill 位置跟著進去。
 - [[Task 97.4]]：plugin 的做法取消之後，改用本 task。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

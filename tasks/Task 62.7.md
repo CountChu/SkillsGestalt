@@ -13,11 +13,15 @@
 - [[Task 32]] 的「要做的」也寫著，重記時要找其他 workspace（例如 InvestForge）裡的文件。
 - 能判斷「讀過改動仍然成立」的，是依賴方的主人；InvestForge 的依賴方，改由 InvestForge 自己的依賴巡檢 chore 重記。
 
-## 2. 現況
+## 2. 結論
 
 —
 
-## 3. 要做的
+## 3. 過程
+
+—
+
+## 4. 要做的
 
 1. 確認 InvestForge 的依賴巡檢 chore 已建好，而且至少跑過一次；Task 11 @ InvestForge 建它。
 2. 先讀 asd-ste 的 [README.md](../skill-groups/common/skills/asd-ste/README.md) 的 When the Skill Is Changed，照它改。
@@ -30,24 +34,24 @@
 - 取代之後，Step 7 要不要告訴使用者：其他 workspace 的依賴方，會在它們下一次依賴巡檢時重記。
   這句話不點名任何一個 workspace。
 
-## 4. 驗證
+## 5. 驗證
 
 - asd-ste 的 README 列出的檢查都通過。
 - 照新的 Step 7 取代下一份共用檔時，`draft.py dependents` 只給本 workspace 的 `--root`，這裡的 task 日誌沒有寫到 InvestForge。
 - `check_chores.py` PASS。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 32]]：32.9–32.11 還會跑 Step 7；本 task 做完之前照舊。
 - [[Task 55]]：這裡的依賴巡檢 chore；本 workspace 的依賴方由它與 Step 7 重記。
 - Task 11 @ InvestForge：建立 InvestForge 的依賴巡檢 chore；建好、跑過一次之後，本 task 才能做。
 - [[rerecord-ste-custom]]：第 1 步跟著改。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

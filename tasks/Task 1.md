@@ -38,28 +38,32 @@
   它一直拿 `SKILL.md` 和程式碼對照，例如 "a rule the Skill Source states and the code does not keep"，"Skill Source" 容易被讀成「skill 的原始碼」。
   compile-skill 沒有這個問題。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 做了什麼：gen-rsdc-skill 的 `SKILL.md` 與 `SKILL-tw.md` 各改一行 **Skill Source** 的定義——寫明它是 target skill 的指示，不是它所執行之程式的程式碼；以及這個名稱沿用 compile-skill 的，為的是讓本 skill 與 Source Scanner 用同一個名稱稱呼這個檔案。
 
-## 3. 要做的
+## 4. 要做的
 
 若日後仍要改名：範圍是上面「漏掉的範圍」全部，名稱要依角色而不是格式來取。
 最好和 SkillCompiler-RSDC 對齊標準一起做——它的 §2.1 還叫 *Artifact Types and Flow*（標準 261009 已改名為 Artifact Types），compile-skill 對它的引用反正要改，一起做只動一次。
 
-## 4. 驗證
+## 5. 驗證
 
 `check_parity.py` 0 failure，`scan_source.py` valid。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 —
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

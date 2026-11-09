@@ -10,7 +10,11 @@
 兩個 block 的內容其實逐字相同：英文版用 CRLF 換行，中文版用 LF，script 讀檔時留下了 `\r`，所以每一行都差一個 `\r`。
 訊息只說 fenced blocks 不同，看不出原因是換行。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 決定
 
@@ -42,28 +46,28 @@
 - 不少 Markdown 仍用英式拼法，例如 checking-criteria.md、SkillCompiler-RSDC.md、兩份 RSDC 範本與幾個 skill 的 SKILL.md。
   md-style 的美式拼法規則目前只由 `check_ste.py` 檢查 STE 檔，其他檔案屬於 [[Task 56]] 要建立的 md-style 巡檢。
 
-## 3. 要做的
+## 4. 要做的
 
 ✅ 2026-10-18 兩份文件改成 LF 與美式拼法，`check_rsdc.py` 報出換行不同，Home-RSDC 的中英對照檢查 PASS。
 
-## 4. 驗證
+## 5. 驗證
 
 - Home-RSDC 中英對照的 `check_rsdc.py` PASS，15 項通過、0 警告；Home-RSDC.md 還是 CRLF 時，新的 WARN 指出換行不同，fenced blocks PASS。
 - 其他 8 種 `check_rsdc.py` 執行的輸出和改之前逐字相同。
 - Home-RSDC 與 Wireframe 兩對 `check_parity.py` 0 failure，`diff_md.py --verify` PASS。
 - `git diff --ignore-cr-at-eol` 只列出拼法的 9 行。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 59]]：改 imp-home 的中文版時發現這項 FAIL。
 - [[Task 56]]：其他 Markdown 的英式拼法，屬於它要建立的 md-style 巡檢。
 - [[Task 18]]：三份 RSDC 單獨檢查的 FAIL 歸它的 sub task。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-10-18
 

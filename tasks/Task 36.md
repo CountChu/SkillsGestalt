@@ -9,7 +9,11 @@
 [reformat_md.py](../skill-groups/common/skills/reformat-md/scripts/reformat_md.py) 的第 10 個轉換（每個句子一行）有兩處不符合 [md-style.md](../skill-groups/common/rules/md-style.md) 對句子的定義。
 Task 19 轉換時繞過了它們，沒有修工具。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 **兩處問題**
 
@@ -30,33 +34,33 @@ Task 19 轉換時繞過了它們，沒有修工具。
 - 新增 [test_reformat.py](../skill-groups/common/skills/reformat-md/scripts/test_reformat.py)，15 個例子：該斷的、不該斷的，以及 [[Task 42]] 的 `$$`；每個例子再跑一次，確認沒有變化。
 - [[Task 19]] 的兩處繞法不必還原：改成 inline code 的訊息不受影響；MermaidView-RSDC.md 手動加的 4 個換行，和工具現在的斷法一致。
 
-## 3. 要做的
+## 4. 要做的
 
 **要做的**
 
-2026-10-30 三項都已做完，見「2. 現況」的「做了什麼」。
+2026-10-30 三項都已做完，見「3. 過程」的「做了什麼」。
 
 - 修好這兩處斷句，並把這兩種例子加進 check_reformat.py 或測試。
 - 直引號不分開頭與結尾，要決定怎麼配對，並避開所有格與縮寫裡的單引號。
 - 修好之後，對所有已轉換的 md 重跑一次：沒有改變最好；有改變的，逐一確認是修正而不是新問題。
 
-## 4. 驗證
+## 5. 驗證
 
 - `test_reformat.py` 15 項 PASS。
   同樣的例子用修改前的版本跑，正好 7 項 FAIL（這兩處斷句與 [[Task 42]] 的 `$$`），其餘 8 項本來就 PASS。
 - 在 SkillsGestalt 與 InvestForge 的全部 md 上比較修改前後的輸出（排除 `.git`、`node_modules`、`checkpoints`、`.github/external` 等）：346 份中只有 1 份因為修改而改變，是 [[Task 42]] 那一份。
   這兩處斷句沒有讓任何檔案改變。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 42]]：同一次修改一起做（2026-10-30），只重排一次、跑一次檢查。
 - [[Task 56]]：md-style 巡檢不再漏掉這兩種一行多句。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

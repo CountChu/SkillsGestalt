@@ -11,7 +11,11 @@ STE 草稿要改寫正文，所以 asd-ste 的 House Rule 7 讓草稿把版本�
 header quote 是標題下第一段 `>` 依賴行：草稿與中文版都照抄它，`depends_on.py` 算指紋時也不含它。
 版本寫在那裡，就不必改寫、不必翻譯，工具也找得到。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-10-16）
 
@@ -48,7 +52,7 @@ header quote 是標題下第一段 `>` 依賴行：草稿與中文版都照抄�
 - `check_ste.py` 與 `draft.py`：各自找 header quote，檢查草稿照抄原文的 header quote。
 - `check_rsdc.py --standard`：讀 RSDC-Standard 的版本，和範本第 12 行記的版本比對。
 
-## 3. 要做的
+## 4. 要做的
 
 1. 工具：
    - `depends_on.py`：header quote 可以用 `> Version: yymmdd` 開頭；依賴只讀它後面的行；指紋不含整個 header quote；提供讀出版本的函式；docstring 跟著改。
@@ -62,7 +66,7 @@ header quote 是標題下第一段 `>` 依賴行：草稿與中文版都照抄�
 4. 重記：RSDC-Standard 的正文變了，記錄它的 8 份讀過改動後重記；改了的 skill 文件與腳本，記錄它們的文件也一樣。
 5. [[Task 32]] 的 2.3：對照頁的說明跟著改，重建。
 
-## 4. 驗證
+## 5. 驗證
 
 - asd-ste 的 README 在 When the Skill Is Changed 列出的檢查。
 - 兩份 RSDC 範本的 `check_rsdc.py --standard` PASS。
@@ -71,15 +75,15 @@ header quote 是標題下第一段 `>` 依賴行：草稿與中文版都照抄�
 - check-md-deps 的 `scan_md_deps.py` 對改到的檔案沒有 malformed 或 misplaced。
 - 重記的文件 `depends_on.py check` 都是 UNCHANGED。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 32]]：審 2.3 時提出；tw-keep-english 的草稿一起改，2.3 的對照頁跟著重建。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-10-16
 

@@ -9,7 +9,11 @@
 審核 [[Task 31]] 為 [SKILL-tmp.md](../skill-groups/common/templates/SKILL-tmp.md) 產生的 STE 草稿與草稿中文版；通過就由 asd-ste 的 Step 7 取代原檔與它的中文版。
 分工、取代的方式與「每取代一份要一併做的」，見 [[Task 32]]。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 開始時決定的（2026-10-19）
 
@@ -45,18 +49,18 @@
   記錄 SKILL-tmp.md 的 6 份 README（asd-ste、check-skill、gen-skill 與它們的中文版）只引用範本的標題與結構，讀過仍成立，已重記；InvestForge 沒有記錄它的檔案。
 - 2026-10-19 gen-skill 的 Step 3 照上面的決定改了，中文版照 chinese skill 跟著改。
 
-## 3. 要做的
+## 4. 要做的
 
 - ✅ 2.11 SKILL-tmp——2026-10-19 審核通過，由 Step 7 取代原檔。
 
 「範本的後續」中 SKILL.md 的部分交給 [[Task 70]]，README 的部分在 [[Task 66]]。
 
-## 4. 驗證
+## 5. 驗證
 
 - 取代之後：`check_ste.py --ste` PASS，沒有警告；SKILL-tmp 兩份的 `check_parity.py` 0 failure；6 份 README 的 `depends_on.py check` 中 SKILL-tmp.md 都是 UNCHANGED。
 - gen-skill：SKILL.md 與 README.md 兩對的 `check_parity.py` 0 failure，警告和改之前相同；`diff_md.py --verify` PASS；README 的 `depends_on.py check` 都是 UNCHANGED；check-skill 的 `scan_skill.py` 沒有缺少的標題，leftovers 都是 gen-skill 說明 placeholder 時原本就寫的。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 64]]：gen-skill 抄範本時不帶 STE 檔頭，本草稿取代原檔之前要先做完。
 - [[Task 67]]：draft.py replace 把中文版的 pairing line 指回原檔，本草稿取代原檔之前要先做完。
@@ -65,11 +69,11 @@
 - [[Task 66]]：README 的共用句子換成 STE 範本的寫法；SKILL.md 的部分由 [[Task 70]] 處理。
 - [[Task 38]]：定下美式拼法的規則，既有檔案的英式拼法留到以後處理；SKILL.md 裡的 Honour 標籤由 [[Task 70]] 改成 Honor。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

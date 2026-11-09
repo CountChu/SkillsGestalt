@@ -11,7 +11,11 @@ STE 檔的檔頭有兩部分：引用區宣告 `[[ASD-STE100_ISSUE9.pdf]]` 與 `
 Step 5 只留引用區裡適用的依賴行，所以 PDF 與 ste-custom 那兩行會被拿掉；header note 卻沒有規則處理，會留在新的檔案裡。
 新 skill 的 `SKILL.md` 與 `README.md` 不是 STE 檔：gen-skill 填進去的內容沒有經過 STE 檢查，標成 STE 檔就說錯了。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-10-19）
 
@@ -37,27 +41,27 @@ Step 5 只留引用區裡適用的依賴行，所以 PDF 與 ste-custom 那兩�
 - 跑完刪掉拋棄式 skill，InvestForge 的 git status 和跑之前相同。
 - SKILL-tmp 還不是 STE 版，所以 Step 2 複製來的 `SKILL.md` 本來就沒有 STE 標記；這條規則對 `SKILL.md` 的作用，要等 [[Task 32.11]] 取代 SKILL-tmp 之後才用得到。
 
-## 3. 要做的
+## 4. 要做的
 
 1. ✅ gen-skill 抄範本時，拿掉範本的 STE 檔頭：引用區的 `[[ASD-STE100_ISSUE9.pdf]]` 與 `[[ste-custom]]` 兩行，以及 header note 的兩行；SKILL 範本與 README 範本都適用。
 2. ✅ 先讀 gen-skill 的 [README.md](../skill-groups/common/skills/gen-skill/README.md) 的 When the Skill Is Changed 與 [skill-writing.md](../skill-groups/common/rules/skill-writing.md)，照它改，並跑它列出的檢查；中文版照 chinese skill 跟著改。
 3. ✅ 在 [[Task 32.10]] 與 [[Task 32.11]] 以 Step 7 取代範本之前做完。
 4. ✅ README-tmp 取代原檔之後，用 gen-skill 寫一個拋棄式 skill，確認新的 `README.md` 沒有 STE 檔頭，再跑 check-skill；跑完刪掉。
 
-## 4. 驗證
+## 5. 驗證
 
 - 用 STE 版的範本跑一次 gen-skill，例如在 workspace 以外的副本上：新的 `SKILL.md` 與 `README.md` 沒有 STE 的引用行與 header note。
 - gen-skill 的 README 列出的檢查都通過。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 32.10]]、[[Task 32.11]]：README-tmp 與 SKILL-tmp 的 STE 草稿；取代原檔之前，要先做完本 task。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

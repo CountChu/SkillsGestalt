@@ -9,7 +9,11 @@
 審核 [[Task 31]] 為 [report-md-rules.md](../skill-groups/common/rules/report-md-rules.md) 產生的 STE 草稿與草稿中文版；通過就由 asd-ste 的 Step 7 取代原檔與它的中文版。
 分工、取代的方式與「每取代一份要一併做的」，見 [[Task 32]]。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 審核時決定的
 
@@ -52,24 +56,24 @@
   改寫的 3 項回到待審，其餘 18 項維持通過。
   同日再審，21 項全部通過，由 Step 7 取代原檔。
 
-## 3. 要做的
+## 4. 要做的
 
 ✅ 2026-10-18 審核通過，由 Step 7 取代原檔，[[Task 32]] 的「每取代一份要一併做的」也做完。
 
-## 4. 驗證
+## 5. 驗證
 
 - 取代後 `check_ste.py --ste` PASS，沒有警告；report-md-rules.md 與它的中文版 `check_parity.py` 0 failure。
 - 取代後兩份檔案自己的 `depends_on.py check` 都是 UNCHANGED；沒有依賴方要重記。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 51]]：審 Update 一項時開出，把 update 收進專案核准詞。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

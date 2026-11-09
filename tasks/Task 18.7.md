@@ -9,7 +9,11 @@
 讓 imp-home 的 seed document [Home-RSDC.md](../skill-groups/common/skills/imp-home/references/Home-RSDC.md) 跟上 App 範本。
 共用的規則與決定，見 [[Task 18]]。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-10-18 查的結果
 
@@ -50,11 +54,11 @@
 - `--skill` 檢查的 WARN：imp-home 的 SKILL.md 沒有「# Dataflow」一節，HEAD 就有，屬於 [[Task 24]] 要改的 skill 格式。
 - 中文版的 5 則用詞 WARN 都在必須照抄的行上：範本共用句裡的「識別碼」與「讀者」，以及 change set 以外逐字保留的「被掛載的 app」「使用者」與「請求」。
 
-## 3. 要做的
+## 4. 要做的
 
 ✅ 2026-10-18 照 App 範本對齊，中文版與 imp-home 的引用一起改。
 
-## 4. 驗證
+## 5. 驗證
 
 - 英文版單獨檢查 `check_rsdc.py --rsdc` PASS，27 項通過，1 個警告：DFD 沒有藍線，因為 hub 不寫任何 record。
 - 中英對照 `check_rsdc.py --rsdc --tw` PASS，13 項通過，2 個警告，見「順帶發現」。
@@ -62,7 +66,7 @@
 - Home-RSDC 中英兩份 `check_parity.py` 0 failure，`diff_md.py --verify` PASS；imp-home 的 SKILL.md 中英兩份也一樣，警告和 HEAD 相同。
 - 英文版沒有英式拼法，也沒有引用編號在後面的節。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 60]]：記下單獨檢查的 6 項 FAIL，也先把換行與拼法整理好。
 - Task 18.6：InvestForge 的那一份，各自對齊。
@@ -70,11 +74,11 @@
 - [[Task 24]]：imp-home 的 SKILL.md 沒有 Dataflow 一節，屬於它要改的 skill 格式。
 - [[Task 98]]：修正 4.6 記下的三個缺陷。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

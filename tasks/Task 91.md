@@ -17,7 +17,11 @@
 - [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 的 Names 一節：chore 可以改名，做改名的 task 要改每個連結與執行紀錄；停用的 chore 名稱不再用，因為 commit 前綴會指到兩個 chore。
   改名之後的舊名稱也是同樣的道理：git 歷史裡有 `chore publish-github: ` 開頭的 commit。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-10-31 用到舊名稱的地方
 
@@ -55,7 +59,7 @@
 - 照舊的：inline code、commit 前綴與純文字的紀錄，[CHANGES.md](../skill-groups/common/CHANGES.md) 第 18 行，以及 git 歷史。
 - repo 之外：這台 Mac 上 Claude 的 memory `branches-m1-main-archive.md` 改成新名稱，也記下舊名稱與舊前綴。
 
-## 3. 要做的
+## 4. 要做的
 
 ### 已決定（2026-10-31）
 
@@ -92,7 +96,7 @@
 7. 更新這台 Mac 上 Claude 的 memory。
 8. 跑「驗證」一章的檢查。
 
-## 4. 驗證
+## 5. 驗證
 
 - `check_chores.py`、`check_tasks.py` 與 `gen_claude_md.py --check` 都是 PASS。
 - repo 裡沒有 `[[publish-github]]`，也沒有連到 `chores/publish-github.md` 的連結；舊名稱只在 inline code、純文字的紀錄、CHANGES.md 第 18 行與本 task 裡。
@@ -107,7 +111,7 @@
 - 以改過的程式跑 `publish_snapshot.py check`：以 0 結束，掃描是 nothing found，列出 `m1` 在上次發佈之後的 7 個 commit，其中沒有 `ce189f1`。
 - `reformat_md.py --mode clean` 不改動改過的 13 個 md 檔。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 78]]：建立這個 chore。
 - [[Task 86]]：chore 改用名稱，也定下改名時連結與紀錄的做法；本 task 照它的前例。
@@ -116,11 +120,11 @@
 - [[follow-gestalt]]：Forge 跟上 Gestalt 的 chore，名稱也以 gestalt 指 SkillsGestalt。
 - 另一台電腦的 SkillsGestalt：發佈之後，照 [[pull-gestalt]] 拿到改名；它若有還沒發佈的執行紀錄，摘要表可能衝突，pull-gestalt 的 step 7 寫了怎麼處理。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

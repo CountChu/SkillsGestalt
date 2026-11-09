@@ -10,7 +10,11 @@
 - Copilot harness 讀 repo 根目錄到工作目錄之間每一層的 AGENTS.md；Claude Code 讀 CLAUDE.md，可以用 `@AGENTS.md` 引用另一個檔。
 - 另外還有 `.github/common/skills/CLAUDE.md`，告訴 agent 改 skill 前先讀 README.md。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-11-02 查的結果
 
@@ -39,7 +43,7 @@
 - task 檔：11 個檔的連結目標改成改名後的檔；7 個檔連到已刪掉的 `skills/CLAUDE.md`，改成 inline code；日誌各加一行。
 - CHANGES.md 加一筆；舊條目裡連到 `CLAUDE-tmp.md` 的連結目標改成 `AGENTS-tmp.md`，字句不改。
 
-## 3. 要做的
+## 4. 要做的
 
 1. 問使用者幾個細節：範本與 local 檔是否改名（例如 `AGENTS-tmp.md`、`AGENTS-local.md`）、script 是否改名、CLAUDE.md 除了 `@AGENTS.md` 是否還寫別的、`.github/common/skills/CLAUDE.md` 是否也改成 AGENTS.md。
 2. 改 gen_claude_md.py：寫 AGENTS.md，CLAUDE.md 只有 `@AGENTS.md`；`--check` 也比對兩個檔。
@@ -47,23 +51,23 @@
 4. 重新產生 SkillsGestalt 的 AGENTS.md 與 CLAUDE.md。
 5. 在 CHANGES.md 加一筆，InvestForge 照 follow-gestalt 重新產生。
 
-## 4. 驗證
+## 5. 驗證
 
 - `gen_agents_md.py --check` 通過。
 - 新的 Claude Code session 載入的規則和改之前相同。
 - Copilot harness 的 Chat 照 task-rules 開 task。
 - AGENTS.md 的 STE 檢查通過。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 97]]：本 task 的上層。
 - [[Task 80]]：把根目錄的 CLAUDE.md 改寫成英文與 STE。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

@@ -11,7 +11,11 @@ report-md-rules.md 第二節的標題是「Update MD report file」，標題要�
 `check_ste.py` 只在內文找技術用字（見 [[Task 41]]），所以只在標題用到時會報「listed but never used」；2026-10-16 第二輪把第 14 行改成用 update 之後，這則 WARN 才消失。
 使用者決定照 create 的做法，把 update 收進 [ste-custom.md](../skill-groups/common/skills/asd-ste/references/ste-custom.md)：專案核准詞不列為技術用字（House Rule 11）。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-10-18）
 
@@ -30,7 +34,7 @@ report-md-rules.md 第二節的標題是「Update MD report file」，標題要�
 - 宣告 `[[ste-custom]]` 的 22 份都重記；只有檔頭引用區那一行變了，而指紋不算檔頭引用區，所以記錄這些檔案的文件不必重記。
 - 對照頁：[[Task 32.5]] 的 Update 一項與中英兩個「檔頭」項改寫成現況，回到待審；[[Task 32.6]] 以原本的註記重建，狀態保留。
 
-## 3. 要做的
+## 4. 要做的
 
 1. ste-custom.md 加上 update 一列，中文版照 chinese skill 跟著改。
 2. report-md-rules 的草稿與中文版：Technical words 拿掉 update，第 52 行改回 Update。
@@ -39,24 +43,24 @@ report-md-rules.md 第二節的標題是「Update MD report file」，標題要�
 5. 重建 Task 32.5 與 Task 32.6 的對照頁。
 6. 跑 asd-ste 的 README 為 ste-custom.md 列出的檢查。
 
-## 4. 驗證
+## 5. 驗證
 
 - ste-custom 與 report-md-rules 草稿兩對中英對照：`check_parity.py` 0 failure，`diff_md.py --verify` PASS。
 - 7 份草稿的 Step 3 與 4 份 STE 檔的 `check_ste.py --ste` 都 PASS，警告和之前相同；11 對中英對照的 `check_parity.py` 都是 0 failure，警告和改之前相同。
 - 22 份重記之後，`depends_on.py check` 都是 UNCHANGED；README-tmp 的兩份檔頭有 `{COMMON_PATH}`，要給 `--config` 才能檢查，所以直接核對那一行。
 - asd-ste 的 SKILL.md 與 README.md 的 `depends_on.py check` 都是 UNCHANGED；check-skill 的 `scan_skill.py` 沒有新的問題，改到的只有 ste-custom 兩份的行數。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 32.5]]：審 report-md-rules 時提出。
 - [[Task 41]]：標題裡用到的字不算進技術用字；它的第 2 項拿 update 當例子，補記了這次的改動。
 - [[Task 44]]、[[Task 47]]、[[Task 49]]：同樣把字收進專案核准詞的先例。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

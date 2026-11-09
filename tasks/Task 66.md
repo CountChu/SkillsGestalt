@@ -10,7 +10,11 @@ gen-skill 寫新 skill 的 `README.md` 時，整份抄 [README-tmp.md](../skill-
 2026-10-19 [[Task 32.10]] 把 README-tmp 換成 STE 版，範本的說法改了，已經寫好的 README 還是舊的說法。
 `check_parity.py` 只檢查和範本完全相同的行，所以這些舊句子不會被報出來，也不會再被檢查。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 受影響的行（2026-10-19）
 
@@ -23,29 +27,29 @@ gen-skill 寫新 skill 的 `README.md` 時，整份抄 [README-tmp.md](../skill-
 - 牽涉的範本句子有 22 句：舊範本第 13–16、25–28、68、70、75、86、110、114、115、147、149–151、156、157、172 行。
 - 第 18、63、66 行新舊範本相同，不必改。
 
-## 3. 要做的
+## 4. 要做的
 
 1. 三份 README 的這些行換成新範本對應的句子，placeholder 換成各 skill 自己的值；中文版照 chinese skill 跟著改。
 2. 每份改完，跑它自己 README 列的檢查，並重記記錄它的檔案。
 3. SKILL-tmp（[[Task 32.11]]）2026-10-19 已取代；SKILL.md 的共用句子由 [[Task 70]] 處理，不在本 task。
 
-## 4. 驗證
+## 5. 驗證
 
 - 三對中英對照 `check_parity.py` 0 failure，`diff_md.py --verify` PASS。
 - 三份 README 的 `depends_on.py check` 都是 UNCHANGED；check-skill 的 `scan_skill.py` 沒有新的問題。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 32.10]]：取代 README-tmp 之後提出。
 - [[Task 32]]：「範本的後續」的規定；Task 32 完成時，範本的後續中 README 的部分交給本 task。
 - [[Task 32.11]]：SKILL-tmp 取代之後，SKILL.md 的共用句子交給 [[Task 70]]。
 - [[Task 70]]：SKILL.md 的共用句子，和本 task 是同一件事的另一半。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

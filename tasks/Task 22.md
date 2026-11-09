@@ -9,7 +9,11 @@
 背景：[[Task 20]] 把 asd-ste 的 SKILL.md 中執行時用不到的內容移到 [README.md](../skill-groups/common/skills/asd-ste/README.md)，寫 skill 的共用規則則移到 [skill-writing.md](../skill-groups/common/rules/skill-writing.md)。
 產生與檢查 skill 的工具，原本仍以為這些內容在 SKILL.md 裡：check-skill 的 `scan_skill.py` 回報 asd-ste 缺少 Dataflow 與 Steps at a Glance，gen-skill 也不寫 README.md。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 **已決定（2026-10-11）**
 
@@ -49,11 +53,11 @@
 - 有 4 個 skill 的 description 超過 1024 字元，skill loader 會略過它們：asd-ste 1108、gen-imp-app 1148、imp-home 2263、report-my-chats 1225。
   check-skill 的判準 1.1 會把它們報為 issue；這次沒有改。
 
-## 3. 要做的
+## 4. 要做的
 
 —
 
-## 4. 驗證
+## 5. 驗證
 
 **驗證（2026-10-11）**
 
@@ -62,15 +66,15 @@
 - `depends_on.py check`：asd-ste、gen-skill、check-skill 的 README.md 與 asd-ste 的 SKILL.md 全部 UNCHANGED。
 - `scan_skill.py` 掃 `common` 的 30 個 skill 都沒有錯誤；asd-ste、gen-skill、check-skill 的 README.md 沒有缺少的標題，Step Purposes、Files Each Step Uses 與 Dataflow 都與 SKILL.md 的 step 標題一致，Dataflow 沒有 DFD 缺陷。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 —
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

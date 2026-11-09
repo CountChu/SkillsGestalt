@@ -16,7 +16,11 @@
 - Markdown 連結寫成佔位符也打不開。
 - 只有 agent 讀到的文字能用佔位符，由 agent 查 `config.yaml` 展開；但這樣規則不會自動載入。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 - 本 repo 的 CLAUDE.md 有四處由 `config.yaml` 決定、但寫成實際路徑：`@` import 那一行、agency-rules.md 的連結、`{skillGroups.common}` 的值、兩條檢查指令。
 - `check_claude_md.py` 檢查五項：config（`skillGroups.common` 有設、資料夾存在）、import、link、value、commands；路徑展開 `~`、解析相對路徑之後才比，`@` 與連結以 CLAUDE.md 的資料夾為準，值與指令以 `config.yaml` 的資料夾為準；`@` 指向的檔與指令的 script 也要存在；找不到某一處算 FAIL。
@@ -33,7 +37,7 @@
   - 連結目標以 `{skillGroups.X}` 開頭、而那個值是絕對路徑或 `~` 開頭時，改寫成從根目錄起算的相對路徑；算不出相對路徑（例如 Windows 上不同磁碟）就照 `config.yaml` 寫的值。
     指令與 inline code 照舊用 `config.yaml` 寫的值。
 
-## 3. 要做的
+## 4. 要做的
 
 ### 已決定（2026-10-30）
 
@@ -68,7 +72,7 @@
 2. 本 repo 的 CLAUDE.md：在 `@` 的上一句加上來源說明，Settings of This Agency 加上 `check_claude_md.py` 的指令。
 3. agency-rules.md 與中文版：加上「改 CLAUDE.md 或 `config.yaml` 之後，執行 CLAUDE.md 給的 `check_claude_md.py` 指令」。
 
-## 4. 驗證
+## 5. 驗證
 
 - 本 repo 跑 `check_claude_md.py` 是 PASS。
 - 把暫用副本的 `skillGroups.common` 改成別的值，四處都各報一個 FAIL。
@@ -89,17 +93,17 @@
 - 以 InvestForge 的真實位置計算連結的起點，得到 `../SkillsGestalt/.github/common`；SkillsGestalt 自己照舊是 `.github/common`。
 - 模板 `check_ste.py` 是 PASS，`reformat_md.py --mode clean` 不改動。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 84]]：取代本 task 的做法。
 - [[Task 82]]：建立 agency-rules.md 與 CLAUDE.md 的 `@` import；本 task 確保它的路徑對。
 - InvestForge 與 BookMaster 的 CLAUDE.md 接上 `check_claude_md.py`，在它們自己的 tasks 做。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

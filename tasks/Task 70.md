@@ -11,7 +11,11 @@ gen-skill 寫新 skill 的 `SKILL.md` 時，整份抄 [SKILL-tmp.md](../skill-gr
 MUST FOLLOW 的標籤也從「Honour a `run step N` selector」改成「Honor a `run step N` selector」，也就是原本名稱的美式拼法。
 check-skill 只拿範本的標題比對，所以這些舊句子不會被報出來。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 受影響的句子（2026-10-19）
 
@@ -54,30 +58,30 @@ check-skill 只拿範本的標題比對，所以這些舊句子不會被報出�
 
 InvestForge 的 SKILL.md 也照抄了舊範本，例如 Honour 標籤有 6 份、舊第 36 行有 15 份；那邊的修改由 InvestForge 自己的 task 處理。
 
-## 3. 要做的
+## 4. 要做的
 
 1. 由使用者決定一次改完或分批。
 2. 照新範本改這些 SKILL.md 的句子，placeholder 的位置換成各 skill 自己的值；Honour 標籤改成 Honor。
 3. 改每個 skill 之前，先讀它的 README.md（有的話）與 [skill-writing.md](../skill-groups/common/rules/skill-writing.md)，照 README 的 When the Skill Is Changed 改，並跑它列出的檢查；中文版照 chinese skill 跟著改。
 4. 開始做時再算各檔的行號。
 
-## 4. 驗證
+## 5. 驗證
 
 - 每對中英對照的 `check_parity.py` 0 failure，`diff_md.py --verify` PASS。
 - check-skill 掃描所有 skill，沒有新的 issue；這原本是 [[Task 32]]「範本的後續」的驗證。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 32.11]]：取代 SKILL-tmp 之後提出。
 - [[Task 32]]：「範本的後續」的規定；Task 32 完成時，SKILL.md 的部分交給本 task。
 - [[Task 66]]：README 的共用句子，和本 task 是同一件事的另一半。
 - [[Task 38]]：美式拼法的規則；SKILL.md 裡的 Honour 標籤在本 task 改成 Honor。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

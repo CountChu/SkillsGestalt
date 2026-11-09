@@ -10,7 +10,11 @@
 check-skill 現在要求每個 skill 都有一份以 [README-tmp.md](../skill-groups/common/templates/README-tmp.md) 寫成的 README.md（判準 1.2），而 SKILL.md 裡留著 Dataflow、Steps at a Glance 或 Purpose 的，也是 issue（判準 1.11）。
 規則見 [skill-writing.md](../skill-groups/common/rules/skill-writing.md)；拆分的範例是 asd-ste、gen-skill 與 check-skill 的 README.md。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 **目前的狀況（2026-10-11，以 `scan_skill.py` 掃 `common` 的 30 個 skill）**
 
@@ -18,7 +22,7 @@ check-skill 現在要求每個 skill 都有一份以 [README-tmp.md](../skill-gr
 - SKILL.md 仍有 Dataflow、Steps at a Glance、Purpose 行或介紹 Purpose 那一段的，共 8 個（括號內是行數）：ask-note（6）、check-md-deps（7）、chinese（8）、compile-skill（6）、gen-rsdc-app（5）、gen-rsdc-skill（14）、imp-app（8）、imp-home（6）。
 - 其他群組的 skill 還沒掃過。
 
-## 3. 要做的
+## 4. 要做的
 
 **要改的地方**
 
@@ -35,22 +39,22 @@ check-skill 現在要求每個 skill 都有一份以 [README-tmp.md](../skill-gr
 - 其他群組的 skill 是否一起做。
 - gen-rsdc-skill 與 gen-imp-app 的修改，是否與 [[Task 14]]、[[Task 17]] 一起做；那兩個 task 也在改這兩個 skill 周邊的檔案。
 
-## 4. 驗證
+## 5. 驗證
 
 —
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 **等 [[Task 32]]（2026-10-12 決定）**：[[Task 31]] 讓 asd-ste 為 README-tmp.md 與 SKILL-tmp.md 產生 STE 草稿；Task 32 審核通過後由 asd-ste 取代原檔，再更新所有 skill 照範本抄的共用句子。
 本 task 等 Task 32 完成再做，README.md 直接照 STE 範本寫，免得寫完再改一次。
 
 - [[Task 54]]：依賴本 task——其餘 skill 改成新格式之後，才建立 Chore 3，定期以 check-skill 檢查每個 skill。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

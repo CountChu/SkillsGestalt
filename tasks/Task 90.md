@@ -11,7 +11,11 @@
 - 但每台電腦都要記得設對 git，設錯就要靠檢查擋下來。
 - `publish_snapshot.py` 只服務 private chore [[publish-gestalt]]，SkillsGestalt 的值本來就寫在裡面；這個身分也已經公開在 GitHub 上的每個快照。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 - `publish` 以 `git commit-tree` 做出快照 commit，身分取自 git 的設定。
 - 作者檢查掃描 `git var GIT_AUTHOR_IDENT` 與 `GIT_COMMITTER_IDENT`，也就是那台電腦的 git 設定。
@@ -35,7 +39,7 @@
 - [config.example.yaml](../config.example.yaml) 加上註解掉的範例，用 `you@example.com`；[[publish-gestalt]] 第 4 步跟著改。
 - 暫用 clone 試過四種情況：有 `identity` 時快照用它、重新開始的 commit 仍用 git 設定；只有 `name` 時以 `2` 結束；工作網域的 email 報兩個 `[FIND]`；沒有 `identity` 時用程式的值。
 
-## 3. 要做的
+## 4. 要做的
 
 ### 已決定（2026-10-31）
 
@@ -60,7 +64,7 @@
 2. [[publish-gestalt]] 的步驟跟著改。
 3. 在暫用的 clone 以 `publish --no-push` 試：git 設定是別的身分時，快照的作者與 committer 仍是 `IDENTITY`；重新開始的 commit 用 git 的設定。
 
-## 4. 驗證
+## 5. 驗證
 
 - `check` 印出 `IDENTITY`，掃描是 nothing found。
 - 暫用的 clone 裡，`publish --no-push` 做出的快照，`git log --format='%an <%ae> / %cn <%ce>'` 是 `IDENTITY`，不受 git 設定影響。
@@ -74,17 +78,17 @@
 - 把 `IDENTITY` 改成工作網域的 email：`check` 報作者與 committer 兩個 `[FIND]`，提示改 `IDENTITY`。
 - 本機：`check` 印出 `IDENTITY`，nothing found。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 89]]：改寫 `4765af0`，加上作者檢查與 [[pull-gestalt]]。
 - [[Task 78]]：決定快照的作者用個人 email。
 - 另一台電腦拿到本 task 的改動之後，發佈就不再受它的 git 設定影響。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

@@ -10,7 +10,11 @@ skill 的指令寫 `python …`，但 macOS 內建的 Python 只有 `python3`，
 [[Task 95]] 讓 SkillsGestalt 有了自己的 `.venv`，但 SKILL.md 沒有要求 `.venv`，check-skill 仍報 5.1。
 另外，agent 的每個指令都在新的 shell 裡執行，前一個指令 activate 的 `.venv` 不會留下來；所以只寫「Run `.venv` first」，照字面跑 `python` 仍會失敗。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-11-02 改好之後
 
@@ -23,7 +27,7 @@ skill 的指令寫 `python …`，但 macOS 內建的 Python 只有 `python3`，
 - 引用 SKILL-tmp.md 的 asd-ste、check-skill、compile-skill 與 gen-skill 的 README 與中文版，讀過之後重記指紋；gen-skill 只替換大寫的 placeholder，`{python}` 是執行時代入的值，不受影響。
 - CHANGES.md 加一筆。
 
-## 3. 要做的
+## 4. 要做的
 
 ### 已決定（2026-11-02）
 
@@ -42,23 +46,23 @@ skill 的指令寫 `python …`，但 macOS 內建的 Python 只有 `python3`，
 - 其他 skill 的 Step 0 仍寫「Run `.venv` first」，指令仍寫 `python`；check-skill 只比對章節，不會報出這個差異。
 - CLAUDE-tmp.md 給的 `gen_claude_md.py`、`check_tasks.py` 與 `check_chores.py` 指令也寫 `python`。
 
-## 4. 驗證
+## 5. 驗證
 
 - `check_ste.py --ste`，加上 `--custom` 與 `--spelling`：forge-setup.md 與 SKILL-tmp.md 都 PASS。
 - `check_parity.py`：forge-setup、SKILL-tmp 與 asd-ste 的 SKILL.md 各和中文版比對，0 failure。
 - `depends_on.py check`：引用 SKILL-tmp.md 的 8 份 README 重記之後都 UNCHANGED；只剩 check-md-deps 兩項舊的 CHANGED。
 - `.venv/bin/python -m pip install -r .github/common/requirements.txt` 沒有要裝的新套件。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 95]]：建了 SkillsGestalt 的 `.venv` 與 requirements.txt；本 task 把 requirements.txt 搬到 `common`。
 - [[Task 88]]：forge-setup.md 是它寫的接上 SkillsGestalt 的指南。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

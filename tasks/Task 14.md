@@ -51,7 +51,11 @@
 6. **twin**：最終交給 `chinese`，和 gen-rsdc-skill 一致；但要先做 Task 10，否則 RSDC twin 逐行對齊之類的專用規則沒有人負責。
    在那之前，暫時維持同一次執行寫兩份。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 做了什麼
 
@@ -129,7 +133,7 @@ InvCov 已經 `update` 過，所以不經 imp-app，直接照 gen-rsdc-app 的 S
   - 兩份 twin 的已知缺陷已修正：InvDatabase 的 4 個 placeholder；InvFinSight 的 inline code、`date`、`holdings.suffixes` 與 41 處 §。
     兩份仍未通過的是逐行版面（兩份都不是與英文逐行對應），以及 InvFinSight 3 個被翻成中文的 fenced block，等這兩份 design pair 對齊時處理。
 
-## 3. 要做的
+## 4. 要做的
 
 **可能的分工**（待決定）：
 
@@ -197,21 +201,21 @@ scratch 裡的檔案是暫存，要保留得先複製出來。
   檔名本身點出了 caller，和「文件不提呼叫它的 skill」有衝突；兩次重跑都以中性的描述保留，Task 18 對齊後的 InvCov 也照樣保留。
 - **4 個 owner skill 的 design pair**：移到 Task 30。
 
-## 4. 驗證
+## 5. 驗證
 
 **還沒有驗證的**：imp-app 的 Step 2 實際呼叫 gen-rsdc-app 走完一次——InvestForge 的三個 app 都過了 `update`，reverse 會被閘門擋下，要等一個還在 vibe 階段的 app dir。
 **2026-10-11**：imp-app 的實際呼叫等 [[Task 17]] 之後再驗。
 **2026-10-12**：Task 17 已完成；gen-imp-app 新的 Step 3 同樣還沒實際走過，要等下一個以 gen-imp-app 建立的 app。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 —
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

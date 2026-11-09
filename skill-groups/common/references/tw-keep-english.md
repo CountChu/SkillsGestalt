@@ -1,11 +1,11 @@
 # Terms Kept in English in 繁體中文 Twins
 
-> Version: 261030
+> Version: 261108
 > [[ASD-STE100_ISSUE9.pdf]]  `2026-10-18`  `d1f4ea9e7cd6`
 > [[ste-custom]]  `2026-11-02`  `c612bdfa1ea7`
 
 > This file is in ASD-STE100 Simplified Technical English (STE), Issue 9.
-> Technical words: agency, agent, alias, app, argument, automated, baseline, caller, canonical skill invocation, cell, character, checkpoint, class, clean mode, clock, cognitive, column, command, command line, commit, context, contract, data structure, delimiter, design document, diff, docstring, document, epoch, exit status, external input, fence, fenced block, file, fingerprint, flag, folded block scalar, Forge, frontmatter, Gestalt, glossary, handler, handoff, hard break, hash, heading, here-string, hexagon, hook, hunk, idempotent-only mode, identifier, import, inline code, inline-code span, interactive, interpolation, introspection, line, line break, link, link target, list, match, math, MD report, metadata, no-op, non-breaking space, null, one-run data, operating system, pairing line, parse, path, pattern, pipe, placeholder, plain scalar, prose, raw mode, record, regular expression, rendering, repository, scalar, schema, script, second, section, section partial, sentence, separator, session, shell, skill, span, spelling, stale, statement, step, string, string literal, style, table, template, term, text, token, traceback, twin, verdict, version, wiki, wireframe, word, word character, workflow, workspace.
+> Technical words: agency, agent, alias, app, argument, automated, baseline, bug, build, caller, canonical skill invocation, cell, character, checkpoint, class, clean mode, clock, cognitive, column, command, command line, commit, context, contract, data structure, delimiter, design document, diff, docstring, document, epoch, exit status, external input, feature, fence, fenced block, file, fingerprint, flag, folded block scalar, Forge, frontmatter, Gestalt, glossary, handler, handoff, hard break, hash, heading, here-string, hexagon, hook, hunk, idempotent-only mode, identifier, import, inline code, inline-code span, interactive, interpolation, introspection, line, line break, link, link target, list, match, math, MD report, metadata, no-op, non-breaking space, null, one-run data, operating system, pairing line, parse, path, pattern, pipe, pipeline, placeholder, plain scalar, prose, pull request, raw mode, record, regular expression, rendering, repository, scalar, schema, script, second, section, section partial, sentence, separator, server, session, shell, skill, span, spelling, stale, statement, step, string, string literal, style, table, template, term, test case, text, token, traceback, twin, verdict, version, wiki, wireframe, word, word character, work item, workflow, workspace.
 
 Each `-tw` twin keeps the terms of the list that follows in English in its prose.
 Examples of a twin are the `SKILL-tw.md` of a skill, the `-RSDC-tw.md` of a design document and the `-tw.md` of a wireframe.
@@ -72,6 +72,8 @@ Thus, a person reads each warning, and then makes a decision.
 | app | 應用, 應用程式 | — | It is the name of a type in the system, and twins use two renderings for it: 應用, and the English word app. |
 | automated | 自動, 無頭自動 | 無頭自動 | It is the name of a type of step. |
 | baseline | 基準, 基線 | 基線 | It is the name of the commit that a diff starts from, and twins use more than one rendering for it. 基準 occurs too frequently to flag. |
+| bug | 錯誤, 缺陷, 臭蟲 | 臭蟲 | It is the name of a type of work item in Azure DevOps, and twins can use three renderings for it. 錯誤 and 缺陷 occur too frequently to flag. |
+| build | 建置, 組建 | 組建 | It is the name of a type of item in Azure DevOps, one run of a pipeline, and twins can use two renderings for it. 建置 occurs too frequently to flag. |
 | caller | 呼叫者, 呼叫端, 呼叫方 | 呼叫者, 呼叫端 | It is the name of the role external to the system that starts the system and supplies its request, and twins use three renderings for it. 呼叫方 occurs too frequently to flag, for example in 呼叫方式. |
 | canonical skill invocation | 標準形式的 skill 呼叫, 標準的 skill 呼叫, 標準化的 skill 叫用方式, 標準化的 skill 呼叫形式, 標準化的 skill 呼叫式, 正規化的 skill 呼叫形式 | 標準形式的 skill 呼叫, 標準的 skill 呼叫, 標準化的 skill 叫用方式, 標準化的 skill 呼叫形式, 標準化的 skill 呼叫式, 正規化的 skill 呼叫形式 | It is the name of the `/<skill-name>` command and its parsed arguments, as Step 0 keeps them, and twins use six renderings for it. |
 | checkpoint | 檢查點 | 檢查點 | It is the name of a record. |
@@ -86,6 +88,7 @@ Thus, a person reads each warning, and then makes a decision.
 | epoch | 紀元, 紀元時間 | 紀元 | It is the name of the time from which a clock counts its seconds, and it has no standard Chinese rendering. |
 | exit status | 結束狀態, 退出狀態 | 結束狀態 | It is the name of an outcome of a program, and twins use more than one rendering for it. |
 | external input | 外部輸入 | 外部輸入 | It is the name of a type of data in a DFD. |
+| feature | 功能, 特性, 特色 | — | It is the name of a type of work item in Azure DevOps, and twins can use three renderings for it. All of them occur too frequently to flag. |
 | fence | 圍欄, 柵欄 | 圍欄, 柵欄 | It is the name of the line that opens or closes a fenced block, and it has no standard Chinese rendering. |
 | fenced block | 程式碼區塊, 圍欄區塊 | 程式碼區塊, 圍欄區塊 | Twins use two renderings for it, and it is the name of a part of a Markdown file that a twin copies without a change. |
 | folded block scalar | 摺疊區塊純量, 折疊式區塊 | — | It is the name of a YAML scalar style, and it has no standard Chinese rendering. |
@@ -121,6 +124,7 @@ Thus, a person reads each warning, and then makes a decision.
 | plain scalar | 純量, 普通純量 | — | It is the name of a YAML scalar style, and it has no standard Chinese rendering. |
 | process | 程序, 行程, 進程 | — | It is the name of the unit of work that a DFD shows. It is not a process of an operating system, and twins use three renderings for it. All of them occur too frequently to flag, because 程序 is a procedure and 行程 is a process of an operating system. |
 | prompt | 提示詞, 提示 | 提示詞 | Twins use two renderings for it, and it is the name of an input of a skill. |
+| pull request | 拉取請求, 合併請求, 提取要求 | 拉取請求, 合併請求, 提取要求 | It is the name of a type of item on a server of `git`, for example Azure DevOps, and twins can use three renderings for it. |
 | raw mode | 原始模式 | 原始模式 | It is the name of a mode of `reformat-md`, which `--mode raw` selects. |
 | record | 紀錄, 記錄 | — | It is the name of a type of data in a DFD, and of the outcome when you record a fingerprint. The two renderings occur too frequently to flag. |
 | repository | 儲存庫, 版本庫, 倉庫 | 儲存庫, 版本庫 | It is the name of a type in the system, and twins use three renderings for it. |
@@ -137,6 +141,7 @@ Thus, a person reads each warning, and then makes a decision.
 | system | 系統 | — | It is the name of the item that a DFD or a design document shows. Its roles are external to it, and its processes and records are in it. 系統 occurs too frequently to flag, because 作業系統 is an operating system. |
 | template | 範本, 模板 | 範本, 模板 | Twins use two renderings for it: 範本, and the English word template. |
 | term | 術語, 技術詞 | 術語, 技術詞 | Twins use two renderings for it: 術語, and the English word term. |
+| test case | 測試案例, 測試用例 | 測試案例, 測試用例 | It is the name of a type of work item in Azure DevOps, and twins can use two renderings for it. |
 | token | 詞元, 權杖, 標記 | 詞元 | Twins use three renderings for it, when it is the unit that an LLM counts and when it is a part of a parsed string. |
 | traceback | 回溯, 追蹤訊息 | — | It is the name of the output of a program when an error stops it, and it has no standard Chinese rendering. |
 | twin | 孿生檔, 雙胞胎 | 孿生檔, 雙胞胎 | Twins use three renderings for it: 孿生檔, 雙胞胎, and the English word twin. |
@@ -144,6 +149,7 @@ Thus, a person reads each warning, and then makes a decision.
 | wiki | 維基 | — | It is the name of the location where a skill writes its MD report, as `wikiDir` sets it. 維基 occurs too frequently to flag, for example in 維基百科. |
 | wireframe | 線框圖, 線框稿 | 線框圖, 線框稿 | It is the name of a type of document in the system, and it has no standard Chinese rendering. |
 | word character | 文字字元, 單字字元 | 文字字元, 單字字元 | It is the name of a class of characters in a regular expression, and twins use two renderings for it. |
+| work item | 工作項目 | 工作項目 | It is the name of a type of item in Azure DevOps. |
 | workflow | 工作流程, 流程 | 工作流程 | Twins use two renderings for it, and it is the name of a section of a skill. |
 | workspace | 工作區, 工作空間 | — | Twins use two renderings for it, and it is the name of a location that a system reads from. |
 

@@ -10,7 +10,11 @@
 `~/.claude/settings.json` 在 `Stop` 與 `SessionEnd` 兩個 hook 都執行這支腳本。
 官方文件列出的 `SessionEnd` 觸發原因，不包含在桌面版刪除 session，所以不知道刪除時它會不會執行。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-10-31 測試的結果
 
@@ -38,7 +42,7 @@
   所以即使刪除時有觸發，只要紀錄檔已經刪掉，結果也看不出差別。
 - 資料不受影響：`Stop` hook 每次回話後都已記錄，紀錄檔消失時只會標記 `session_deleted: true`。
 
-## 3. 要做的
+## 4. 要做的
 
 **做法**
 
@@ -52,17 +56,17 @@
 - `~/.claude/settings.json` 的 `hooks`
 - `~/.claude/logs/skill-tokens-hook.log`
 
-## 4. 驗證
+## 5. 驗證
 
 —
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 **與其他 task 的關係**
 
 - [[Task 23]]：本項原是它的待辦第 4 項，但與 asd-ste 無關。
 
-## 6. 知識
+## 7. 知識
 
 ### 適合寫成新 topic
 
@@ -80,7 +84,7 @@
 
 - 測試用的 log 檔 `~/.claude/logs/skill-tokens-hook-events.log` 已刪除。
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-10-31
 

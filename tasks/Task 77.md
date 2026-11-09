@@ -14,7 +14,11 @@
   所以新文件不連到 RSDC，「它依 RSDC 寫成」這層關係寫在 README；SKILL.md 不連到 README，執行時不會讀它。
 - compile-skill 還沒有 README.md，而 [skill-writing.md](../skill-groups/common/rules/skill-writing.md) 要求每個 skill 都有一份照 README-tmp.md 寫的 README。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-10-20 查的結果
 
@@ -62,11 +66,11 @@
 - check-md-deps 的 SKILL.md 與中文版 Step 3 的 record 範例，原本對 compile-skill 的 SKILL.md 記錄 `[[SkillCompiler-RSDC]]`；這筆 record 現在在 compile-skill 的 README.md，範例已跟著改成 README.md。
 - compile-skill 的 SKILL.md 沒有「# Dataflow」一節，`--skill` 檢查照舊報 WARN，屬於 [[Task 24]]。
 
-## 3. 要做的
+## 4. 要做的
 
 ✅ 2026-10-20 寫好 SKILL-Compile.md、README 與兩份中文版；SOP 只寫 agent 的判斷，程式都由 SKILL.md 執行；RSDC 恢復成 [[Task 18.2]] 的樣子。
 
-## 4. 驗證
+## 5. 驗證
 
 - compile-skill 的 SKILL.md、SKILL-Compile.md 與兩份中文版，都沒有提到 RSDC 或 design document，也沒有 § 引用：一次編譯只讀 SKILL.md 與 SOP。
 - SOP 沒有提到 Source Scanner、Contract Checker 或它們的檔名；SOP 裡沒有 because、so that、otherwise 這類原由句。
@@ -80,7 +84,7 @@
 - check-skill 的 `scan_skill.py`：SKILL.md 與 README 的必要標題齊全，Step Purposes 與 Files Each Step Uses 對得上五個 step，Dataflow 沒有漏畫的 step，也沒有無來源的資料。
 - `scan_source.py` 照常判定 compile-skill 的 SKILL.md 為 valid。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 18.2]]：SkillCompiler-RSDC 剛照 template 對齊，Compiler 留在系統內；本 task 的 SOP 依它寫成，RSDC 不動。
 - [[Task 75]]：`check_rsdc.py --skill` 預設 skill 會連到並引用它的 RSDC；compile-skill 改成只讀 SKILL-Compile.md 之後，這個前提不再成立，那一項 FAIL 記在它的現況。
@@ -92,11 +96,11 @@
 - [[Task 73]]：SKILL-tw.md 改到的句子把「腳本」改成 script，該檔的稽核數字會比它記下的少。
 - [[Task 24]]：compile-skill 的 SKILL.md 沒有 Dataflow 一節，屬於它要改的 skill 格式。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

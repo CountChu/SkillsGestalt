@@ -5,6 +5,16 @@ SkillsGestalt 的 `common` skill group 裡，會影響 Forge 的改動。
 每一筆寫明改了什麼、commit，以及 Forge 要做什麼；新的日期在前。
 Forge 以 chore [follow-gestalt](../../chores/follow-gestalt.md) 處理這裡的條目：它的執行紀錄記下處理到哪一筆，比那一筆新的就該做了。
 
+### 2026-11-08
+
+- **task 改成八章：`1. 背景` 後面多了 `2. 結論`，`2. 現況` 改名為 `3. 過程`**：[task-rules.md](rules/task-rules.md) 的章依序是 `1. 背景`、`2. 結論`、`3. 過程`、`4. 要做的`、`5. 驗證`、`6. 與其他 task 的關係`、`7. 知識`、`8. 日誌`。
+  `2. 結論` 用簡短的項目寫 task 做了什麼、每一部分的結果、改了什麼、還留下哪些問題，並指出細節在 `3. 過程` 的哪一節；還沒有結果時寫 `—`；能用表格呈現的部分（例如每一次執行、改動與問題）都用表格。
+  `check_tasks.py` 對七章的 task 報 FAIL；[forge-setup.md](references/forge-setup.md) 的 Task 1 範本也改成八章。
+  Forge 要做：每個 task 檔在 `## 2. 現況` 前插入 `## 2. 結論`（內容 `—`），`## 2. 現況` 改成 `## 3. 過程`，後面各章的編號加 1；`3. 過程` 裡的 `### 2.N` 改成 `### 3.N`，其他章裡帶章號的 `###` 也一樣加 1。
+  日誌以外，指向這些節或章的引用（例如 `2.8`、`3. 要做的`）跟著改；日誌是當天的紀錄，不改；講 chore 的章（例如 chore 的 `4. 驗證`）與講舊格式歷史的句子也不改。
+  自己的 skill、chore 若寫了 task 的章名或章號（例如 `## 7. 日誌`），也要改。
+  SkillsGestalt 自己的 127 個 task 已改好。
+
 ### 2026-11-02
 
 - **AGENTS.md 寫明怎麼找 skill，並列出 skill group 的根目錄**（Task 97.1）：[AGENTS-tmp.md](templates/AGENTS-tmp.md) 的 Skills 一節說明 `/<name>` 的 `<name>` 是 skill、後面是參數；只在每個 skill group 的根目錄找 `skills/<name>/SKILL.md`，不搜尋 repository，找不到就告訴使用者。

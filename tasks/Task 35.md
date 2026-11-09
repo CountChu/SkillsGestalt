@@ -10,7 +10,11 @@
 Issue 9 不核准 current（字典裡沒有）與 now（字典給 AT THIS TIME），但 report-md-rules 的「current local date-time」用 STE 改寫，會比原文長，也不比原文清楚。
 本 task 讓 asd-ste 多讀一份由使用者決定的自訂核准字清單。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 **2026-10-12 做了什麼**（commit `a6e061f`）
 
@@ -37,7 +41,7 @@ Issue 9 不核准 current（字典裡沒有）與 now（字典給 AT THIS TIME�
 - **重跑 `/check-skill asd-ste`**：6 項都 ✅，沒有 issue 也沒有 recommendation；Dashboard 上 asd-ste 那一列從 ❌ 2 · 2 變成 ✅ 0 · 0，needs check 清掉了。
   兩個 checker defect 照舊出現，不算進項目。
 
-## 3. 要做的
+## 4. 要做的
 
 **已決定（2026-10-12）**
 
@@ -61,7 +65,7 @@ Issue 9 不核准 current（字典裡沒有）與 now（字典給 AT THIS TIME�
 5. ste-rules.md：House Rule 5 加上自訂清單那一行，再加一條 House Rule；SKILL.md 檔頭記的指紋重記。
 6. 檢查：README 列的 5 項，加上 6 份已寫好的草稿的重查。
 
-## 4. 驗證
+## 5. 驗證
 
 **驗證（2026-10-12）**
 
@@ -82,7 +86,7 @@ Issue 9 不核准 current（字典裡沒有）與 now（字典給 AT THIS TIME�
   - **5.1 MUST FOLLOW 第 77 行只寫 `date '+%Y-%m-%d %H:%M:%S'`**，沒有 PowerShell 的寫法：HEAD 就有。
   - **checker defect**：以 InvestForge 為 workspace 掃描，第 75、249 行的 `.github/common/rules/` 連結被當成斷掉的連結；`depends_on.py` 是共用的腳本，被當成 `scripts/` 裡缺少的檔案。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 **與其他 task 的關係**
 
@@ -90,11 +94,11 @@ Issue 9 不核准 current（字典裡沒有）與 now（字典給 AT THIS TIME�
 - [[Task 32]]：用草稿取代原檔時，用到自訂字的那幾份也要保留 `[[ste-custom]]` 那一行，和 PDF 那一行一樣。
 - [[Task 23]]：建立 asd-ste。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-10-18
 

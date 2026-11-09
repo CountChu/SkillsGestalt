@@ -16,7 +16,11 @@
 - **[RSDC-App-tmp.md](../skill-groups/common/skills/gen-rsdc-app/assets/RSDC-App-tmp.md)** 從第一版（2026-09-24）起就沒有這一節。
   app 的資料契約分散在 2.1 Artifact Types、2.3 HTTP API 的 Takes／Answers 欄與 2.5 Config Schemas；代碼標籤與精度只是 2.1 裡的一段，命名規範與解析規則沒有位置。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 做了什麼
 
@@ -41,7 +45,7 @@
    不改 `defined_terms()`，改名之後它會悄悄不再讀這一節定義的術語，pair 檢查跟著變弱，卻不會報錯。
 2. 原提議只要「確認」run directory 在 2.1 定義——它原本只在 Data Structures 定義，而 261010 要求 Dataflow 用到的名稱都在 Artifact Types 定義，所以要移過去。
 
-## 3. 要做的
+## 4. 要做的
 
 留下的：
 
@@ -58,7 +62,7 @@
 3. Artifact Types 的占位要涵蓋意義、目的與內容限制。
 4. CLI 的每支程式加上 **Reads and writes**（指向 Dataflow）與 **Refuses**。
 
-## 4. 驗證
+## 5. 驗證
 
 驗證：
 
@@ -66,15 +70,15 @@
 - 用新範本填了兩份樣本——保留與省略 Config Schemas——`check_rsdc.py` single 全部 PASS（30 項、0 警告），pair PASS（唯一的警告是樣本用英文填中文占位造成的英中相連）。
 - gen-rsdc-skill：`check_parity.py` 0 failure，`scan_source.py` valid。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 —
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

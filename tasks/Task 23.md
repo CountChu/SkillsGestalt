@@ -10,7 +10,11 @@
 `/asd-ste` 接受路徑、檔名或不含 `.md` 的名稱，在原檔旁寫出 `<name>-ste.md`。
 那個 session 在 Claude Code 中進行，無法直接呼叫 gen-skill，所以照 [gen-skill 的 SKILL.md](../skill-groups/common/skills/gen-skill/SKILL.md) 手動執行，並依使用者的要求，在建立過程中問了 12 個問題。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 **已決定（2026-10-11）**
 
@@ -79,7 +83,7 @@
   - `6b1ad3f`：各 step 的 Purpose 改列在 README.md。
   - `11ed3f1`：精簡術語表，並把寫 skill 的規則移到 skill-writing.md。
 
-## 3. 要做的
+## 4. 要做的
 
 **移出的待辦**
 
@@ -94,11 +98,11 @@
 - [external/ASD-STE100_ISSUE9.pdf](../external/ASD-STE100_ISSUE9.pdf)
 - `checkpoints/asd-ste/`：YAML checkpoint，不進 git。
 
-## 4. 驗證
+## 5. 驗證
 
 —
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 **與其他 task 的關係**
 
@@ -106,11 +110,11 @@
 - [[Task 22]]：讓 gen-skill、check-skill 與 SKILL 範本跟上這次拆分。
 - [[Task 26]]、[[Task 27]]：從本 task 的待辦移出。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

@@ -4,7 +4,7 @@
 > [[ste-custom]]  `2026-11-02`  `c612bdfa1ea7`
 
 > This file is in ASD-STE100 Simplified Technical English (STE), Issue 9.
-> Technical words: blob, bold, chapter, chore, column, command, commit, content, day, directory, document, file, format, heading, hunk, icon, indent, index, legend, line, link, list, lowercase, note, paragraph, path, prefix, repository, root, section, sentence, session, shell, skill, stage, status, subject, summary, table, term, text, title, topic, tree line, twin, vault, wikilink, word, workspace.
+> Technical words: blob, bold, bug, build, chapter, chore, column, command, commit, content, day, directory, document, feature, file, format, hash, heading, hunk, icon, indent, index, legend, line, link, list, lowercase, note, paragraph, path, prefix, pull request, repository, root, section, sentence, server, session, shell, skill, stage, status, subject, summary, table, term, test case, text, title, topic, tree line, twin, URL, vault, wikilink, word, work item, workspace.
 
 These rules tell how to write the tasks of a workspace, and how to keep their summary table.
 A task is work that continues after one session, and that becomes complete.
@@ -43,6 +43,15 @@ Work that you must do again each time that a condition occurs is a chore, not a 
 - **Use a Markdown link for a link to a program, a skill, a rule or a document in the repository.**
   Give the path from the directory of the task file.
   These files frequently have the same name, as `SKILL.md` and `README.md` do, and a wikilink can go to an incorrect file.
+- **Use a Markdown link with the full URL for a commit, a pull request, a build or a work item.**
+  These items are on a server, for example Azure DevOps.
+  A test case, a bug and a feature are also work items.
+  Thus, each number of an item on the server has a link.
+- **The text of the link is the short hash or the number.**
+  An example is `[a798480e68](https://<server>/<repository>/commit/<full hash>)`.
+  The URL contains the full hash of the commit.
+  A commit can be only in a local repository.
+  Then write its short hash without a link, and write that it is not on the server.
 - **To refer to a task of a different workspace, write `Task N @ <workspace>` as text, for example `Task 62 @ SkillsGestalt`.**
   Do not write a link to it.
   A wikilink finds a file only in the vault of its workspace.
@@ -62,41 +71,51 @@ A task file has this format:
 **Depends on**：[[Task M]]、[[Task K]]，沒有就寫 —
 
 ## 1. 背景
-## 2. 現況
-## 3. 要做的
-## 4. 驗證
-## 5. 與其他 task 的關係
-## 6. 知識
+## 2. 結論
+## 3. 過程
+## 4. 要做的
+## 5. 驗證
+## 6. 與其他 task 的關係
+## 7. 知識
 ### 適合寫成新 topic
 ### 適合併進現有 topic
 ### 不算知識
-## 7. 日誌
+## 8. 日誌
 ### yyyy-mm-dd
 ```
 
-- **The seven `##` chapters have the numbers 1 to 7 and these names, in this sequence.**
+- **The eight `##` chapters have the numbers 1 to 8 and these names, in this sequence.**
   If a chapter has no content, write `—` in it.
   Do not remove the chapter.
-- **In `2. 現況`, divide the information into sections with `###` headings.**
+- **In `2. 結論`, give the result of the task in short items.**
+  Tell which work the task did, and the result of each part.
+  Tell the changes that the task made, and the problems that stay.
+  For more information, give the section of `3. 過程` that has it.
+  When `3. 過程` changes, make `2. 結論` agree with it.
+  If the task has no result at this time, write `—`.
+- **In `2. 結論`, use a table for each part that a table can show.**
+  For example, give the runs, the changes and the problems in tables.
+- **In `3. 過程`, divide the information into sections with `###` headings.**
+  Write the work and the facts that you find, in the sequence that you find them.
   The Status line gives only a short result, in one line.
-  Put the other information in `2. 現況` and in `3. 要做的`.
-- **In `6. 知識`, write the information from this task that you can write into a topic of `write-topic`.**
+  Put the other information in `2. 結論`, in `3. 過程` and in `4. 要做的`.
+- **In `7. 知識`, write the information from this task that you can write into a topic of `write-topic`.**
   Use the three `###` sections of the format.
   In `適合寫成新 topic`, give the title, the content and the source of a new topic.
   In `適合併進現有 topic`, give the topic and the information to add to it.
   In `不算知識`, give the facts that are only for this work, for example the path of one file.
   Also give there a problem of a tool, which a different task must repair.
-- **When you write an item of `6. 知識` into a topic, put ✅ before it and a wikilink to the topic.**
+- **When you write an item of `7. 知識` into a topic, put ✅ before it and a wikilink to the topic.**
   If you did not examine the task for this information, write only `—` in the chapter.
-- **In `7. 日誌`, write one section `### yyyy-mm-dd` for each day, with the changes of that day.**
+- **In `8. 日誌`, write one section `### yyyy-mm-dd` for each day, with the changes of that day.**
   Put the newest date first.
   If you change the task again on the same day, add to the section of that day.
   The last day section in the file always has the date of the Raised line.
 - **In the Depends on line, write only the tasks that must be complete before this task.**
   Before they are complete, you cannot do this task, or you must do its work again.
-  Write a task that has only a relation to this task in `5. 與其他 task 的關係`.
+  Write a task that has only a relation to this task in `6. 與其他 task 的關係`.
   The Depends on line gives only the tasks of the same workspace.
-  Write a task of a different workspace that must be complete first in `5. 與其他 task 的關係`.
+  Write a task of a different workspace that must be complete first in `6. 與其他 task 的關係`.
 - **Use a table when the content compares items, puts items into groups, or gives quantities.**
   Put the table after the list that it is part of, and do not indent it.
   Do not write the information of the table in the list again.
@@ -127,7 +146,7 @@ A task file has this format:
 - **Only the number shows that a sub task is a part of its task.**
   Do not add a line for it.
   The Depends on line of a task does not give its sub tasks.
-- **A sub task has the same format as a task**: the Status, Raised and Depends on lines, and the seven chapters.
+- **A sub task has the same format as a task**: the Status, Raised and Depends on lines, and the eight chapters.
 - **Write the content of a sub task only in the sub task.**
   Also write its subsequent records only there.
   The task keeps only the list of its sub tasks, and the rules and decisions for all of them.

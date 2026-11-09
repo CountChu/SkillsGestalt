@@ -11,7 +11,11 @@
 2026-10-13 第三輪審核時，capability 就這樣列進 RSDC-Standard 的草稿，字典給的替代字 FUNCTION 與 CAN 沒有人看到；2026-10-14 改由 [ste-custom.md](../skill-groups/common/skills/asd-ste/references/ste-custom.md) 核准。
 program 也是這樣：RSDC-Standard、tw-keep-english 與 skill-writing 的草稿都把它列進 Technical words，字典給的替代字是 SEQUENCE；2026-10-18 [[Task 32.8]] 審 skill-writing 時改由 ste-custom.md 核准，programming 一起收進。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-11-01 改好之後
 
@@ -43,7 +47,7 @@ program 也是這樣：RSDC-Standard、tw-keep-english 與 skill-writing 的草�
    2026-10-18 update 收進專案核准詞（[[Task 51]]），不再是技術用字；落差仍在。
 3. **SKILL.md Step 1 的例子**：Step 1 拿「*create* 當動詞」當標題違反 STE 的例子，但 create 已在 2026-10-14 收進 ste-custom.md，核准的意思是建立新的檔案或資料；例子要改，SKILL-tw.md 照 chinese skill 跟著改。
 
-## 3. 要做的
+## 4. 要做的
 
 ### Sub task
 
@@ -65,7 +69,7 @@ program 也是這樣：RSDC-Standard、tw-keep-english 與 skill-writing 的草�
 
 先讀 asd-ste 的 [README.md](../skill-groups/common/skills/asd-ste/README.md) 的 When the Skill Is Changed，照它改，並跑它列出的檢查。
 
-## 4. 驗證
+## 5. 驗證
 
 照 asd-ste 的 README 的 When the Skill Is Changed：
 
@@ -76,11 +80,11 @@ program 也是這樣：RSDC-Standard、tw-keep-english 與 skill-writing 的草�
 - `depends_on.py check` 對 SKILL.md 與 README.md：都 UNCHANGED。
 - 沒有跑的：`/check-skill asd-ste`、`draft.py`、`make_review.py` 與 `review_server.js` 的檢查；這次沒動 draft.py、make_review.py、review_server.js，也沒改 SKILL.md 的章節結構。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 —
 
-## 6. 知識
+## 7. 知識
 
 ### 適合寫成新 topic
 
@@ -136,7 +140,7 @@ program 也是這樣：RSDC-Standard、tw-keep-english 與 skill-writing 的草�
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

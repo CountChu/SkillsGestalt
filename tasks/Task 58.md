@@ -11,7 +11,11 @@ scratch-rules.md 原文第 21 行有「since that is the habit this replaces」�
 事情怎麼演變到現在，git 歷史與 task 的日誌都記著。
 使用者決定把「文件不寫自己的來歷」訂成規則，放在 [md-style.md](../skill-groups/common/rules/md-style.md) 的 Rules checked elsewhere 一節。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 決定
 
@@ -53,29 +57,29 @@ scratch-rules.md 原文第 21 行有「since that is the habit this replaces」�
   chinese skill 規定，清單沒有的詞若保留英文，要在同一個 step 加進清單；這次沒有改清單，由 [[Task 59]] 加進清單，並改掉這 37 處。
   compile-skill 的 Tasks-tw.md 有 2 處「應用程式」，翻的是英文的 application，不是 app 的譯法。
 
-## 3. 要做的
+## 4. 要做的
 
 ✅ 2026-10-18 規則加進 md-style，兩處既有的來歷改掉，依賴方重記。
 
-## 4. 驗證
+## 5. 驗證
 
 - md-style.md 與 scratch-rules.md 的 `check_ste.py --ste` 都 PASS，警告和改之前相同。
 - md-style 與 scratch-rules 兩對的 `check_parity.py` 都是 0 failure，`diff_md.py --verify` 都 PASS。
 - 6 份 README 的 `depends_on.py check` 都是 UNCHANGED；三對 README 的 `check_parity.py` 都是 0 failure，警告和 HEAD 相同。
 - check-skill 的 `scan_skill.py` 掃 asd-ste、check-skill、gen-skill：沒有缺少的標題，README 檔頭的紀錄都是 UNCHANGED。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 32.7]]：審 scratch-rules 時提出；那一句在 scratch-rules 取代之後是第 36 行，由這個 task 刪掉。
 - [[Task 32.8]]：skill-writing 正在審，所以規則不放在 skill-writing.md。
 - [[Task 55]]：依賴巡檢的 chore 還沒建立，這次的依賴方在 task 裡直接重記。
 - [[Task 59]]：順帶發現的 app 由它加進 tw-keep-english。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

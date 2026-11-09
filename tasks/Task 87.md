@@ -12,7 +12,11 @@
 - 「至少用一個 skill」太嚴：現在三個 chore 只有 [[rerecord-ste-custom]] 呼叫 skill 的程式（asd-ste 的 `draft.py`）；[[keep-english]] 呼叫 common 的 `audit_keep_english.py`，[[publish-gestalt]] 呼叫本 repo 根目錄的 `scripts/publish_snapshot.py`。
   為了合規而把小程式包成 skill，只換來形式上的一致。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 | chore | 呼叫的程式 | 在 skill group 裡 |
 | --- | --- | --- |
@@ -36,7 +40,7 @@
 - `publish_snapshot.py` 用 `git mv` 搬到 [.github/common/scripts/](../skill-groups/common/scripts/publish_snapshot.py)，開頭註明它只服務 SkillsGestalt 的 private chore [[publish-gestalt]]，值照舊寫死；`.gitignore` 的註解、[[Task 78]] 與 [[Task 79]] 的連結跟著改，兩個 task 各加一行日誌。
 - [[publish-gestalt]] 加上 `**Private**` 行，三條指令改寫 `{skillGroups.common}/scripts/publish_snapshot.py`；[[rerecord-ste-custom]] 的兩條指令改寫 `{skillGroups.common}/skills/asd-ste/scripts/draft.py`。
 
-## 3. 要做的
+## 4. 要做的
 
 ### 已決定（2026-10-30）
 
@@ -63,7 +67,7 @@
 4. [[rerecord-ste-custom]] 的路徑改成 `{skillGroups.common}`。
 5. 跑 `check_chores.py`、`check_tasks.py`，以及 `publish_snapshot.py check`。
 
-## 4. 驗證
+## 5. 驗證
 
 - `check_chores.py` 在本 agency 是 PASS；在副本把某個 chore 的指令改成 `python scripts/x.py`，它就 FAIL。
 - `publish_snapshot.py check` 從新的位置執行，結果和搬之前一樣。
@@ -76,17 +80,17 @@
 - `publish_snapshot.py check` 從新的位置執行：scan 是 `nothing found`，列出和上次發佈相比的變動。
 - chore-rules.md `check_ste.py` 是 PASS，與中文版 `check_parity.py` 是 0 failure，`diff_md.py --verify` 是 0 failure；`check_tasks.py` 是 PASS。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 86]]：chore 改用名稱，並把執行紀錄搬到摘要表；本 task 再定下 chore 與 skill 的分工。
 - [[Task 78]]：建立 `publish_snapshot.py` 與 [[publish-gestalt]]。
 - [[Task 85]]：別的 agency 做本 agency 的 chore；程式在 skill group 裡，別的 agency 才拿得到。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

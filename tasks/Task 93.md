@@ -14,7 +14,11 @@ skill loader 只接受 1024 字元以內的 description，超過的 skill 可能
 
 這兩個問題是 asd-ste 既有的，不是 Task 40 造成的；Skills Dashboard 的 asd-ste 列記成 ❌。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-11-02 四個 skill 都改好之後
 
@@ -59,7 +63,7 @@ skill loader 只接受 1024 字元以內的 description，超過的 skill 可能
 - gen-rsdc-app：1013
 - compile-skill：1002
 
-## 3. 要做的
+## 4. 要做的
 
 1. 縮短 asd-ste、imp-home、gen-imp-app、chinese 四個 skill 的 description，每一個都在 1024 字元以內。
    動手之前，先和使用者確認要拿掉或改寫哪些內容。
@@ -73,18 +77,18 @@ skill loader 只接受 1024 字元以內的 description，超過的 skill 可能
 - 四個 skill 的 `SKILL.md`，以及 asd-ste、imp-home、chinese 的 `SKILL-tw.md`
 - Skills Dashboard
 
-## 4. 驗證
+## 5. 驗證
 
 - check-skill 的 check 1 與 3，跑 asd-ste、imp-home、gen-imp-app 與 chinese：四個 skill 的 1.1 都通過，check 3 都 ✅；asd-ste 另跑了全部六項，都 ✅。
 - `check_parity.py`：asd-ste、imp-home 與 chinese 的 SKILL.md 各和中文版比對，0 failure。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 40]]：驗證對照頁時發現 asd-ste 的兩個問題，記在它第 1、3、9 項的驗證裡。
 - [[Task 24]]：把其餘 skill 改成新格式時，也會改到這些 SKILL.md；兩個 task 不要同時做。
 - [[Task 54]]：建立定期以 check-skill 檢查每個 skill 的 chore；之後同類的問題由它找出來。
 
-## 6. 知識
+## 7. 知識
 
 ### 適合寫成新 topic
 
@@ -98,7 +102,7 @@ skill loader 只接受 1024 字元以內的 description，超過的 skill 可能
 
 - **縮短 description 時，先刪「為什麼」的理由與實作細節**：行為、產出與觸發語要留著，否則 check 3 會報少寫了東西。
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

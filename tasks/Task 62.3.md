@@ -14,7 +14,11 @@
 - 2026-10-18 試過：`check_tasks.py` 與 `check_chores.py` 遇到沒有任何列的摘要表都 PASS，所以表可以先是空的。
 - 在 [[Task 62.7]] 做完之前，這裡的 session 還會在 InvestForge commit，前綴用這裡的編號，例如 2026-10-18 的 d3828bf `task 32.10:`。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-10-18）
 
@@ -38,7 +42,7 @@
 - 這裡：task-rules.md、chore-rules.md 與中文版的 Links 一節改成 `Task N @ <workspace>` 的寫法；`check_ste.py --ste` PASS，`check_parity.py` 0 failure。
 - [[Task 62.4]] 第 1 步引用這裡的 task 時改用這個寫法；[[Task 62.5]] 加上建 InvestForge 的 `chores/` 這件事。
 
-## 3. 要做的
+## 4. 要做的
 
 1. ✅ 建 InvestForge 的 `tasks/` 與 `dashboard/task-summary.md`：開頭說明、表頭與圖例，照 [[Task 62.1]] 的規則檔；`tasks/` 裡是 Task 1。
 2. ✅ InvestForge 根目錄的 CLAUDE.md 加上 `## Tasks` 一節，用英文：照 task-rules.md 做，並寫出檢查指令。
@@ -47,21 +51,21 @@
 4. ✅ 在 InvestForge 的根目錄跑 `check_tasks.py`。
 5. ✅ 使用者看過之後 commit：InvestForge 一個，前綴 `task 1`；這裡一個，前綴 `task 62.3`。
 
-## 4. 驗證
+## 5. 驗證
 
 - 在 InvestForge 的根目錄跑 `check_tasks.py`，PASS；`check_chores.py` 等 [[Task 62.5]] 建了 `chores/` 再跑。
 - 只讀 InvestForge 的 CLAUDE.md，就找得到 task 的規則與檢查指令。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 62.4]]、[[Task 62.5]]：把 task 與 chore 搬進本 task 建好的地方；[[Task 62.5]] 也建 InvestForge 的 `chores/`。
 - [[Task 62.7]]：做完之後，這裡的 session 不再在 InvestForge commit。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-10-18
 

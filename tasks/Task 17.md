@@ -16,7 +16,11 @@
 - **RSDC Checker 讀得了 App 範本**（Task 12 的丙）：以 App 範本為形狀（`--template`、`--tw-template` 指向 gen-rsdc-app 的範本）檢查範本本身，12 項通過；2 項失敗只是 Twin 連結的佔位符，和 Skill-System 範本的自我檢查相同。
   但 gen-rsdc-app 與 imp-app 都不執行它，app 的 RSDC 仍然沒有機械檢查。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 **[[Task 10]] 第 2 點已做的（2026-10-11）**：gen-rsdc-app 的 Step 1（EN 與 tw）已規定在 design pair 的檔頭連到 `> [[RSDC-App-tmp]]`，並以 `depends_on.py record … --config config.yaml` 記下，這一項不必再做。
 `check_rsdc.py` 也已改成從檔頭讀出範本：第 3 點執行 RSDC Checker 時，連到範本的 app RSDC 不必再指定 `--template`；而檢查英文 RSDC 時，沒有連到範本會判 FAIL。
@@ -31,7 +35,7 @@
 3. gen-rsdc-app 的 Step 1 寫完並記錄之後執行 RSDC Checker（先英文檔、再這一對），有 FAIL 就改到通過，交回的內容附上結果；Dataflow 與 Steps at a Glance 一起改。
    - `check_rsdc.py`：範本有 Directory Structure 或 Presentation Form 時不再禁止這兩節；沒有 CLI 節時，「每個 stage 有 component 執行」與「4.5 提到每個 component」改用 3.1 的 component 檢查。
 
-## 3. 要做的
+## 4. 要做的
 
 **要做的**：
 
@@ -42,22 +46,22 @@
 
 **牽涉的檔案**：gen-rsdc-app、imp-app 的 `SKILL.md` 與 tw；gen-imp-app 的 `SKILL.md`；若有只屬 skill system 的檢查要跳過，還有 `check_rsdc.py`。
 
-## 4. 驗證
+## 5. 驗證
 
 **驗證**：App 範本與 tw 機械填成的合成樣本（另一份省略 4.4、之後遞補），修改前 Checker 判 2 項 FAIL（就是那兩節），修改後英文檔與 pair 全部通過；反向測試抓得到沒有執行者的 stage（FAIL）與 4.5 沒提到的 component（WARN）。
 既有 7 份 RSDC 的 Checker 輸出與修改前逐字相同。
 兩份 twin 依 chinese 的 INCREMENTAL 更新，parity 0 失敗，`diff_md.py --verify` 通過。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 **相關**：gen-rsdc-app 是 [[Task 14]] 建立的。
 Task 14 的第 2 期（在新位置做範本對齊）已由 Task 12 做完；它的「要決定的」第 5 點也提到 Checker 的支援放在 gen-rsdc-app。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

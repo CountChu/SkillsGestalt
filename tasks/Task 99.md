@@ -11,7 +11,11 @@
 - 2026-11-02 核對 Claude Code 的 [Memory](https://code.claude.com/docs/en/memory) 文件，寫進 [[Task 97]] 「知識」表 1 的 Claude Code 欄：v2.1.277 起，工作目錄與上層都沒有 CLAUDE.md 時直接讀 AGENTS.md。
 - 這個 task 只評估、寫下建議，不改 script、範本與 CLAUDE.md。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 官方文件（2026-11-02 讀）
 
@@ -60,7 +64,7 @@
   它還沒跟上 [[Task 97.2]]：仍是舊的 CLAUDE.md 全文與 `CLAUDE-local.md`，沒有 AGENTS.md。
 - **使用者設定**：`~/.claude/settings.json` 與 `settings.local.json` 都沒有設 Project instructions，所以是預設值。
 - **實測沒有做成**：在 scratchpad 建了三個目錄（只有 AGENTS.md、CLAUDE.md import AGENTS.md、AGENTS.md 加 `CLAUDE.local.md`），以 `claude -p` 問指示裡的暗號；三次都在 sandbox 裡 `OAuth session expired` 失敗。
-  所以「只有 AGENTS.md 時會讀」只有文件為證，見「4. 驗證」。
+  所以「只有 AGENTS.md 時會讀」只有文件為證，見「5. 驗證」。
 
 ### [[Task 97.2]] 當初為什麼保留 CLAUDE.md
 
@@ -72,9 +76,9 @@
 使用者回答了 6 個問題，都照建議：
 
 1. **保留 CLAUDE.md**，理由見下一節。
-2. **實測記為未驗證**，列進「4. 驗證」，由使用者在自己的終端機跑。
+2. **實測記為未驗證**，列進「5. 驗證」，由使用者在自己的終端機跑。
 3. **task 完成**：這次只評估。
-4. **拿掉時要改的檔寫在「2. 現況」，標明不做**；「3. 要做的」寫 —。
+4. **拿掉時要改的檔寫在「3. 過程」，標明不做**；「4. 要做的」寫 —。
 5. **AGENTS-tmp.md 第 11 行只記在這裡，不改範本**。
 6. **知識寫成「適合併進現有 topic」**，併進 [[Task 97]] 的 topic 候選。
 
@@ -110,24 +114,24 @@
   Forge 要做：確定每個使用者的 Claude Code 是 v2.1.277 以上；執行 `{python} {skillGroups.common}/scripts/gen_agents_md.py`，commit 刪掉的 CLAUDE.md；有 `CLAUDE.local.md` 的使用者，要把 Project instructions 設成 `claude-md-and-agents-md`，否則讀不到 AGENTS.md。
 ```
 
-## 3. 要做的
+## 4. 要做的
 
 —
 
-## 4. 驗證
+## 5. 驗證
 
 - 已做：官方文件 Memory 頁的 AGENTS.md 一節、「Share one file with other coding tools」與讀不到 AGENTS.md 的情況，2026-11-02 由代理讀過。
 - 已做：`claude --version` 是 2.1.289；InvestForge 與 SkillsGestalt 的上層沒有會擋 AGENTS.md 的檔。
 - 未驗證：只有 AGENTS.md、CLAUDE.md import AGENTS.md、AGENTS.md 加 `CLAUDE.local.md` 三種目錄，Claude Code 各讀到什麼。
   在 sandbox 裡 `claude -p` 無法登入；使用者可以在自己的終端機，於只放一個 AGENTS.md 的空目錄執行 `claude -p "What code word appears in your project instructions?"` 來驗證。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 97]]：它「知識」的表 1 記下 Claude Code 讀 AGENTS.md 的方式，這個 task 由此提出。
 - [[Task 97.2]]：決定 CLAUDE.md 只有 `@AGENTS.md` 一行；這個 task 確認保留，理由換成讀不到 AGENTS.md 的 session 與 `CLAUDE.local.md`。
 - [[Task 62]]：common 是上游；這個 task 不改 common，不加 CHANGES.md，InvestForge 不必做什麼。
 
-## 6. 知識
+## 7. 知識
 
 ### 適合寫成新 topic
 
@@ -148,7 +152,7 @@
 - 本機 Claude Code 是 2.1.289；InvestForge 還沒跟上 [[Task 97.2]]，沒有 `CLAUDE.local.md`。
 - sandbox 裡的 `claude -p` 因 OAuth 過期無法登入，不能用來實測。
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

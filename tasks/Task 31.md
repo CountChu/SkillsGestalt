@@ -11,7 +11,11 @@
 本 task 把同一範圍的每一份檔案都交給 asd-ste 產生 STE 草稿與它的中文版。
 本 task 自己不改原檔：人工審核與審核通過後的取代，都在 [[Task 32]]。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 **檔案（2026-10-12）**
 
@@ -303,7 +307,7 @@ flag 原本也要加，但它在 DFD-ste、RSDC-Standard-ste 是 DFD 的旗形�
        這次改寫成不重疊的說法。
   3. 原檔中文版 SKILL-tmp-tw 把 script 譯成「腳本」、canonical skill invocation 譯成「標準化的 skill 叫用方式」，都是 keep-English 清單標記的譯法；草稿的中文版照清單留了英文，取代之後這些會一起消失。
 
-## 3. 要做的
+## 4. 要做的
 
 **DFD 與 RSDC-Standard 的草稿要先改的（2026-10-12）**
 
@@ -337,14 +341,14 @@ flag 原本也要加，但它在 DFD-ste、RSDC-Standard-ste 是 DFD 的旗形�
    Task 34 為它加了 26 個詞，原檔從 82 行變成 108 行。
 4. ✅ templates 的 README-tmp 與 SKILL-tmp：同上；草稿與草稿中文版 2026-10-13 完成（SKILL-tmp `cbf93d6`、README-tmp `692b3ef`），見下。
 
-## 4. 驗證
+## 5. 驗證
 
 **驗證**
 
 - 每一份草稿：`check_ste.py` 沒有 FAIL，草稿與中文版的 `check_parity.py` 0 failure，一句一行。
 - 2026-10-13 第 4 步完成之後，11 份全部重驗一次：`check_ste.py` 都 PASS；`check_parity.py` 都 0 failure，warning 只有 RSDC-Standard 的「元數據」與 tw-keep-english 表格裡的譯法；用 reformat-md 在副本上試轉，22 份都沒有改變；`depends_on.py check` 都 UNCHANGED，README-tmp 除外，它的 `{COMMON_PATH}` 連結要 `--config` 才讀得到，原檔也一樣。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 **與其他 task 的關係**
 
@@ -356,11 +360,11 @@ flag 原本也要加，但它在 DFD-ste、RSDC-Standard-ste 是 DFD 的旗形�
 - [[Task 25]]：會改 `check_ste.py` 對 `___X___` 的處理；範本用的是 `{X}`，不受影響。
 - [[Task 26]]：決定 ASD-STE100 的 PDF 是否留在 git；草稿的檔頭連到它，PDF 若只移出 git、仍留在磁碟上，連結照樣找得到。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

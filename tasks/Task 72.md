@@ -12,7 +12,11 @@ design document 不點名 Agentic Panel：對它來說，panel 只是又一個 c
 它自己的設計已從那份文件移出，因為沒有任何 compiler 會產出它，而 design document 也不點名使用它所規定之內容的應用程式。
 「要做的」是它被移出時的那份設計——給日後實作 Agentic Panel 的人作為起點，也是屆時它自己那份 design document 的雛形。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-10-20 移來時的狀態
 
@@ -20,7 +24,7 @@ design document 不點名 Agentic Panel：對它來說，panel 只是又一個 c
 - 這個 workspace 還沒有 Location 寫的 `system/` 目錄。
 - 「要做的」引用的節號，已改成 SkillCompiler-RSDC 照 template 對齊後的節號（[[Task 18.2]]）。
 
-## 3. 要做的
+## 4. 要做的
 
 ### What it must keep
 
@@ -55,21 +59,21 @@ system/
   - 若為 `deterministic_interactive`，在展開的 Prompt Area 中顯示常規的輸入表單——每個參數一個控制項，依它的 `type` 選擇：`path` 用檔案路徑選擇器，`boolean` 用核取方塊，其餘用文字框——並提供執行按鈕。
   - 若為 `cognitive_automated` 或 `cognitive_interactive`，則**隱藏執行按鈕**，並在 Prompt Area 給予高度顯眼的強調框（如紅色或黃底黑字），顯示：**`Warning: This step is a cognitive task and cannot be processed by this system. Please have the user invoke the Skill separately.`**
 
-## 4. 驗證
+## 5. 驗證
 
 —
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - **[[Task 71]]**（2026-10-20）：把本 task 從 compile-skill 的 Tasks.md 移到這裡；Tasks.md 與中文版已刪除。
 - **[[Task 18.2]]**（2026-10-20）：對齊 SkillCompiler-RSDC，本 task 引用的節號同一次改成對齊後的節號。
   §2.1 *Artifact Types and Flow* 依引用的內容改成 §2.1 *Terminology* 或 §2.2 *Artifact Types*，§2.4 *CLI* 改成 §2.7 *CLI*，§2.1 *Active Prompt Rule for Cognitive Steps* 改成 §2.7 *CLI* 與 §2.8 *Invariants*。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

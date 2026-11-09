@@ -34,7 +34,11 @@ asd-ste 的 [README.md](../skill-groups/common/skills/asd-ste/README.md) 是第�
 - Step 1、Step 3 列出 script 會印什麼的清單（L286–294、L348–363，2.2 KB，7.7%）：script 的輸出本身就有 `[PASS]`／`[FAIL]` 標籤，但清單讓 agent 先知道要看什麼。
 - MUST FOLLOW 與術語表裡說明理由的句子：嚴格說不是必要的，但在規則沒寫到的情況下，能幫 agent 做出正確判斷。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 **已決定（2026-10-11）**
 
@@ -89,7 +93,7 @@ README.md 的讀者也包括修改 skill 的 agent，為了讓 agent 真的會�
 先前在這裡的 asd-ste 依賴圖草稿，已寫成 [README.md](../skill-groups/common/skills/asd-ste/README.md) 的 When the Skill Runs、When the Skill Is Changed 與 Tracked Dependencies 三章。
 以 README.md 為準，這裡不再保留副本，免得兩份各自走樣。
 
-## 3. 要做的
+## 4. 要做的
 
 **Dependency 的格式**
 
@@ -137,11 +141,11 @@ README.md 的讀者也包括修改 skill 的 agent，為了讓 agent 真的會�
 - 由 Task 22 處理的：範本 [SKILL-tmp.md](../skill-groups/common/templates/SKILL-tmp.md)、[SKILL-tmp-tw.md](../skill-groups/common/templates/SKILL-tmp-tw.md)，以及 [gen-skill/SKILL.md](../skill-groups/common/skills/gen-skill/SKILL.md)、[check-skill/SKILL.md](../skill-groups/common/skills/check-skill/SKILL.md)。
 - 推廣到其他 skill 時：每個 skill 目錄的 `README.md` 與 `README-tw.md`。
 
-## 4. 驗證
+## 5. 驗證
 
 - 驗證都通過：三組 twin 的 `check_parity.py` 沒有失敗；`depends_on.py check` 對 SKILL.md、SKILL-tw.md、README.md 與 README-tw.md 全部 UNCHANGED；六份檔案都是每行一句，英中逐句對齊；`check_ste.py` 對 DFD.md 與 DFD-ste.md 的回歸測試通過。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 **與其他 task 的關係**
 
@@ -150,11 +154,11 @@ README.md 的讀者也包括修改 skill 的 agent，為了讓 agent 真的會�
 - [[Task 22]]：讓 gen-skill、check-skill 與 SKILL 範本跟上本 task 的拆分。
 - [[Task 24]]：把其餘 skill 改成新格式。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

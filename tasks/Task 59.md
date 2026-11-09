@@ -11,7 +11,11 @@ app 在大多數 twin 裡都保留英文，卻不在清單上。
 imp-home 的三份中文版把 app 寫成「應用」，所以 twin 已用了兩種譯法。
 compile-skill 的 Tasks-tw.md 有 2 處「應用程式」，翻的是英文的 application，不算 app 的譯法。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 決定
 
@@ -43,28 +47,28 @@ compile-skill 的 Tasks-tw.md 有 2 處「應用程式」，翻的是英文的 a
 - Home-RSDC 的 `check_rsdc.py` 在 HEAD 就有一項 FAIL：fenced blocks are byte-identical。
   這次沒有處理，由 [[Task 60]] 處理。
 
-## 3. 要做的
+## 4. 要做的
 
 ✅ 2026-10-18 app 加進清單，imp-home 三份中文版改好，Task 58 的紀錄更正。
 
-## 4. 驗證
+## 5. 驗證
 
 - tw-keep-english.md `check_ste.py --ste` PASS，警告和改之前相同。
 - tw-keep-english 中英兩份 `check_parity.py` 0 failure，警告和 HEAD 相同；`diff_md.py --verify` PASS。
 - imp-home 三對 `check_parity.py` 0 failure，警告和改之前相同。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 58]]：翻 md-style 的中文版時發現 app 不在清單上。
 - [[Task 48]]：把 term 加進清單時，一起改了中文版裡的「術語」；這次照同樣的做法。
 - [[Task 32.8]]：同一天在改 tw-keep-english 的 Technical words，兩邊分開提交。
 - [[Task 60]]：處理順帶發現的 fenced blocks FAIL。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

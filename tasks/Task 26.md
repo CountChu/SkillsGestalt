@@ -12,7 +12,11 @@ PDF 在 [external/ASD-STE100_ISSUE9.pdf](../external/ASD-STE100_ISSUE9.pdf)，�
 建立 asd-ste 的 session 因此建議 PDF 不進 git，並建議把 `external/` 加進 `.gitignore`；當時使用者選擇不加。
 從 PDF 抽出的字典 [ste-dictionary.json](../skill-groups/common/skills/asd-ste/references/ste-dictionary.json) 也屬於規格的部分內容，當時由使用者決定 commit。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-10-30）
 
@@ -35,7 +39,7 @@ PDF 在 [external/ASD-STE100_ISSUE9.pdf](../external/ASD-STE100_ISSUE9.pdf)，�
   找不到 PDF 時，STE 檔 header quote 的那一行不記錄，其餘照常。
 - 字典 JSON 才是執行時真正用到的檔案：沒有它，asd-ste 在 Step 0 就會停下，要用 `convert_spec.py` 從 PDF 重建。
 
-## 3. 要做的
+## 4. 要做的
 
 **要決定的**
 
@@ -54,12 +58,12 @@ PDF 在 [external/ASD-STE100_ISSUE9.pdf](../external/ASD-STE100_ISSUE9.pdf)，�
 - [ste-dictionary.json](../skill-groups/common/skills/asd-ste/references/ste-dictionary.json)
 - [.gitignore](../.gitignore)
 
-## 4. 驗證
+## 5. 驗證
 
 - `git ls-files external/ASD-STE100_ISSUE9.pdf` 仍列出這個檔：PDF 留在 `m1` 的 git。
 - `git ls-tree -r --name-only origin/main | grep -i '\.pdf$'` 沒有輸出：公開版沒有任何 PDF。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 **與其他 task 的關係**
 
@@ -67,11 +71,11 @@ PDF 在 [external/ASD-STE100_ISSUE9.pdf](../external/ASD-STE100_ISSUE9.pdf)，�
 - [[Task 78]]：公開到 GitHub 時決定 PDF 不放進公開版，字典 JSON 公開。
 - [[publish-gestalt]]：發佈時排除 `external/` 與任何 `.pdf`；它第 5 章那一行改成本 task 的決定。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

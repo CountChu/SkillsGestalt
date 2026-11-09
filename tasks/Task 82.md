@@ -15,7 +15,11 @@
   - 寫的是本 repo 的值：`{skillGroups.common}` 是 `.github/common`、keep-English 稽核是 [[keep-english]]、`config.example.yaml`。
   所以共通的規則要寫成一份不綁定任何 agency 的檔。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-10-30 比較的結果
 
@@ -35,7 +39,7 @@
 - `agency-rules.md` 與 `agency-rules-tw.md`：開頭說明各 agency 的 CLAUDE.md 引用本檔、不寫任何 agency 的值；四節是 Markdown、繁體中文 twins、Tasks、Chores。
 - 本 repo 的 [CLAUDE.md](../CLAUDE.md)：一句「Follow agency-rules.md」加 Markdown 連結，下一行 `@.github/common/rules/agency-rules.md`；新的一節 Settings of This Agency 先說 agency-rules.md 用到這些設定，再寫出 `{skillGroups.common}` 是 `.github/common`、`config.example.yaml`、keep-English chore 是 [[keep-english]]，以及兩條可以直接執行的檢查指令；Branches 照舊。
 
-## 3. 要做的
+## 4. 要做的
 
 ### 已決定（2026-10-30）
 
@@ -59,7 +63,7 @@
 2. 本 repo 的 CLAUDE.md：刪掉 twins、Tasks、Chores 三節與 md-style 一條，改成一行 `@` import；只留本 repo 的值（`{skillGroups.common}` 是 `.github/common`、keep-English 稽核是 [[keep-english]]、`config.example.yaml`）與 Branches。
 3. 共用檔之後一改，所有 Forge 都跟著變；在共用檔自己的開頭註明這份檔是各 agency 的 CLAUDE.md 引用的。
 
-## 4. 驗證
+## 5. 驗證
 
 - 共用檔 `check_ste.py` 是 PASS，與中文版 `check_parity.py` 是 0 failure。
 - 本 repo 的 CLAUDE.md 載入後，原本的每一條規則都還在，`check_tasks.py` 與 `check_chores.py` 照舊能跑。
@@ -74,18 +78,18 @@
 - `check_tasks.py` 與 `check_chores.py` 照新的 CLAUDE.md 的指令執行，都是 PASS。
 - 還沒在新的 Claude Code session 實際確認 `@` 有被展開：下一個在本 repo 開始的 session 會載入它。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 84]]：取代本 task 的做法。
 - [[Task 80]]：把 CLAUDE.md 改寫成英文；本 task 改的是同一份檔。
 - [[Task 81]]：術語表定義了 agency、Gestalt 與 Forge；共用檔用這些名稱。
 - InvestForge 與 BookMaster 的 CLAUDE.md 要改成引用共用檔，在它們自己的 tasks 開 task，不在本 task 改。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-10-30
 

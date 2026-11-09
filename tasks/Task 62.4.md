@@ -19,7 +19,11 @@
 - Task 30（讓 4 個 owner skill 的 design pair 跟上 App 範本）→ Task 5 @ InvestForge
 - Task 37（讓 InvCov 的 Wireframe 中英兩份逐行對齊）→ Task 6 @ InvestForge
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-10-18 查的結果
 
@@ -51,7 +55,7 @@
   [[Task 18]] 的 Status 行、sub task 清單與「要決定的」只留這裡的 3 份。
   [[Task 14]]、[[Task 18]]、[[Task 18.7]]、[[Task 32]]、[[Task 33]] 與 [[Task 55]] 指向它們的 wikilink 改成純文字，各記一行日誌。
 
-## 3. 要做的
+## 4. 要做的
 
 1. ✅ 在 InvestForge 匯入 9 個 task，照 [[Task 62.1]] 的規則檔：
    - 編號接在 InvestForge 現有的號碼之後，依原本的 Raised 排序。
@@ -64,22 +68,22 @@
 5. ✅ 兩邊都跑 `check_tasks.py`。
 6. ✅ 使用者看過之後 commit：InvestForge 一個、這裡一個，前綴都是 `task 62.4`。
 
-## 4. 驗證
+## 5. 驗證
 
 - 兩邊的 `check_tasks.py` 都 PASS。
 - 這裡的 `tasks/` 沒有 18.1、18.3–18.6、28、29、30 與 37 的檔，也沒有指向它們的 wikilink。
 - InvestForge 每個搬來的 task 都寫著原本的編號，兩個 repo 的 `git log --grep` 用原本的編號找得到當時的 commit。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 18]]：只留 18.2、18.7 與 18.8。
 - [[Task 62.5]]：其他一半是 InvestForge 的 task 在那裡拆。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-10-19
 

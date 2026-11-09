@@ -13,7 +13,11 @@
   現在那份在 InvestForge 的 `wikiDir`（InvLlmWiki）裡，表上只有 common 的 asd-ste 一列。
 - memory 的 repo-skills-run-by-hand 寫著：這裡的根目錄沒有 config.yaml，`{skillGroups.common}` 就取 `.github/common`。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-10-20 查的結果
 
@@ -49,7 +53,7 @@
 - memory 的 repo-skills-run-by-hand 改成這裡有自己的 config.yaml。
 - 使用者以「開啟資料夾為 vault」打開 SkillsLlmWiki：它有了 `.obsidian/`，Obsidian 的 vault 清單也有它。
 
-## 3. 要做的
+## 4. 要做的
 
 1. ✅ 在根目錄寫 `config.yaml`：`skillGroups.common` 是 `.github/common`，再加上這裡的工具要的其他鍵。
 2. ✅ 決定 Skills Dashboard 放哪裡，[[Task 54]] 照它寫。
@@ -57,7 +61,7 @@
 4. ✅ 使用者在 Obsidian 打開 SkillsLlmWiki。
 5. ✅ 使用者看過之後 commit：這裡一個，InvestForge 一個，前綴都是 `task 62.6`。
 
-## 4. 驗證
+## 5. 驗證
 
 - 在這裡跑 `scan_skill.py` 與 `depends_on.py check`，`--config` 給這裡的 `config.yaml`，不用到 InvestForge 的任何檔。
 - `{wikiDir}/dashboard/` 存在，`update_dashboard.py` 可以寫到 `{wikiDir}/dashboard/skills.md`。
@@ -68,17 +72,17 @@
 - `depends_on.py check --config config.yaml` 對 imp-home 的 Home-RSDC.md：經由 skillGroups 找到 `[[RSDC-App-tmp]]` 等 3 筆紀錄，都是 UNCHANGED。
 - config.yaml 以 `yaml.safe_load` 讀得出來；`wikiDir` 與它的 `dashboard/` 都存在，vaultName 是 SkillsLlmWiki。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 54]]：Chore 3 的 Skills Dashboard 照本 task 決定的位置。
 - [[Task 7]]：臨時 config 的做法。
 - Task 10 @ InvestForge：那裡的儀表板 common 一節，本 task 之後不再更新。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

@@ -13,7 +13,11 @@ asd-ste 草稿的中文版也由 chinese skill 寫成，所以它的 pairing lin
 取代之後，原檔中文版的 pairing line 連到已刪除的 SKILL-tmp-ste.md；`check_parity.py` 找不到連回 SKILL-tmp.md 的 pairing line，報「pairing line present」失敗。
 SKILL-tmp 是 [[Task 32]] 第一份有 frontmatter 的草稿；以後替任何 SKILL.md 寫 STE 草稿，都會遇到同樣的問題。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 發現（2026-10-19）
 
@@ -56,28 +60,28 @@ SKILL-tmp 是 [[Task 32]] 第一份有 frontmatter 的草稿；以後替任何 S
   三對 `check_parity.py` 0 failure，警告和修改前相同；兩份中文版的 `diff_md.py --verify` 都 PASS。
   SKILL.md 與 README 的 `depends_on.py check` 都 UNCHANGED；check-skill 的 `scan_skill.py` 只多了 pairing line 這個名詞與 1 行，沒有新的問題。
 
-## 3. 要做的
+## 4. 要做的
 
 1. ✅ 先讀 asd-ste 的 [README.md](../skill-groups/common/skills/asd-ste/README.md) 的 When the Skill Is Changed 與 [skill-writing.md](../skill-groups/common/rules/skill-writing.md)，照它改，並跑它列出的檢查。
 2. ✅ `draft.py replace` 把草稿中文版的 pairing line 指回原檔：連結的文字與目標，都把草稿的檔名換成原檔的檔名。
 3. ✅ SKILL.md 的 Step 7 與 README 說明 replace 做的事的地方，一併寫上 pairing line；中文版照 chinese skill 跟著改。
 4. ✅ 在 [[Task 32.11]] 以 Step 7 取代 SKILL-tmp 之前做完。
 
-## 4. 驗證
+## 5. 驗證
 
 - 在 workspace 以外的副本上，對 SKILL-tmp 跑 `draft.py replace`：原檔中文版的 pairing line 連到 SKILL-tmp.md，`check_parity.py` 0 failure。
 - asd-ste README 列出的檢查都通過。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 32.11]]：SKILL-tmp 的草稿；它的 Step 7 要等本 task 做完。
 - [[Task 62.7]]：也要改 asd-ste 的 Step 7，兩個 task 會改到同一份 SKILL.md 與 README；本 task 做完時它還沒開始。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

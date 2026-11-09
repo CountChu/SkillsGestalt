@@ -18,7 +18,11 @@ Task 14（gen-rsdc-app）決定 twin 最終交給 chinese，但要先做 Task 10
 所以這一項擋住的不只是 gen-rsdc-skill 的 RSDC，還有所有 app 的 RSDC。
 Task 14 擔心的「逐行對齊」chinese 已經做到，不必等這一項；但 gen-rsdc-app 自己寫 twin 的規則（例如標題逐字保留英文），交給 chinese 之前要確認 chinese 都涵蓋。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 狀態細節
 
@@ -49,7 +53,7 @@ Task 14 擔心的「逐行對齊」chinese 已經做到，不必等這一項；�
 寫在 chinese 的 `SKILL.md` 與 tw（MUST FOLLOW 一條、Step 2 散文一句、Step 3 一則 WARN），`check_parity.py` 對兩種情形各發 WARN（inline code、placeholder token 與連結文字都算英文，粗體標記透明）。
 同時清掉既有 twin 的 41 則警告，只改 twin、不動英文檔：加了 13 個空白（英文緊貼中文：imp-app、imp-home 的 `SKILL-tw.md`、`Home-RSDC-tw.md`、`MermaidView-RSDC-tw.md`），拿掉 46 個空白（多半在中文粗體前後：imp-home 的 `SKILL-tw.md`、`Home-RSDC-tw.md`、`Wireframe-tw.md`，imp-app 的 `SKILL-tw.md`）。
 
-## 3. 要做的
+## 4. 要做的
 
 **要決定的事**：
 
@@ -161,19 +165,19 @@ Task 14 擔心的「逐行對齊」chinese 已經做到，不必等這一項；�
 - 還帶著標題後綴的 twin（第 1 點，已收尾）：`.github/common/skills/compile-skill/references/Tasks-tw.md`、`SkillCompiler-RSDC-tw.md`，InvestForge 的 7 份 RSDC twin（StopPriceChecker、InvDataflow、InvIndexAnalyzer、InvCtl、InvFinSight、InvDatabase、InvTechRank），以及 InvestForge 的 `imp-inv-fin-sight`、`imp-inv-tech-rank` 的 `SKILL-tw.md`。
 - 日後要重寫的 RSDC twin：InvestForge 的 `.claude/skills/check-stop-price/references/StopPriceChecker-RSDC-tw.md`（舊格式），以及其他已寫好的 RSDC，都已列入 Task 18。
 
-## 4. 驗證
+## 5. 驗證
 
 —
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 —
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

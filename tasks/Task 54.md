@@ -16,7 +16,11 @@
   skill 被別的 session 改了，Needs check 不會自動打勾，只有 check-skill 自己的 Step 6 改它時才會標。
 - 為什麼等 [[Task 24]]：[[Task 32]] 的 2.10、2.11 會以 STE 版取代兩份範本，Task 24 再把其餘 skill 改成新格式；在那之前全面檢查，多半只會報不符範本。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-10-18）
 
@@ -33,29 +37,29 @@
 - 找過期 skill 的腳本：比對每個 skill 資料夾在 git 裡最後一次修改的日期與儀表板的 Checked，列出該查的。
 - 執行紀錄：儀表板不在 git 裡，Chore 3 的執行紀錄要寫什麼，例如這次查了哪些 skill、各自的 Verdict。
 
-## 3. 要做的
+## 4. 要做的
 
 1. 照 [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 決定「要決定的」五項，建立 `chores/Chore 3.md` 與摘要表的一列。
 2. 需要的話，寫找過期 skill 的腳本。
 3. 跑 Chore 3 的第一次。
 
-## 4. 驗證
+## 5. 驗證
 
 - `check_chores.py` 與 `check_tasks.py` 都 PASS。
 - Chore 3 第一次執行之後，儀表板上有它查過的每個 skill 的一列。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 24]]：本 task 依賴它——其餘 skill 改成新格式之後，檢查才有意義。
 - [[Task 32]]：Task 24 依賴它——2.10、2.11 以 STE 版取代 README-tmp 與 SKILL-tmp。
 - [[Task 53]]：建立 chore 制度；[[rerecord-ste-custom]] 與 [[keep-english]] 是前兩個 chore。
 - [[Task 40]]：記下 asd-ste 那一列的兩個 ❌，等使用者決定 description 怎麼改。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

@@ -11,7 +11,11 @@
 沒點名的 5.2 是：指令寫 `python`，但這台 Mac 沒有 `.venv` 時只有 `python3`。
 使用者要 SkillsGestalt 建自己的 `.venv`，不改 SKILL.md。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-11-02 改好之後
 
@@ -22,7 +26,7 @@
 - **6.1**：asd-ste 的 README.md 與 README-tw.md 的 Dataflow 加上 `INVT --> S2`、`CUSTOM --> S6`、`CONFIG --> S3` 三條黑色箭頭，加在最後，`linkStyle` 的編號不變。
 - Skills Dashboard 的 asd-ste 列標記為要重查。
 
-## 3. 要做的
+## 4. 要做的
 
 ### 已決定（2026-11-02）
 
@@ -36,19 +40,19 @@
 6. **SKILL-tw.md 的 description 照 chinese skill 翻譯新的 description**。
 7. **開新 task**，1.1 與 3.1 記在 [[Task 93]]，兩邊各一個 commit。
 
-## 4. 驗證
+## 5. 驗證
 
 - `check_parity.py`：SKILL.md 與 README.md 各和中文版比對，0 failure；警告都是改之前就有的。
 - `depends_on.py check` 查 asd-ste 的 README.md：9 項都 UNCHANGED。
 - `.venv/bin/python --version` 是 3.10.21，`pip freeze` 和 requirements.txt 相同。
 - 沒有重跑 check-skill；Skills Dashboard 的 asd-ste 列標記為要重查。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 93]]：同一次 check-skill 的 1.1 與 3.1，改 asd-ste 的 description。
 - [[Task 41.1]]：改完 asd-ste 之後跑了這次 check-skill。
 
-## 6. 知識
+## 7. 知識
 
 ### 適合寫成新 topic
 
@@ -62,7 +66,7 @@
 
 - **這台 Mac 沒有 `python`，只有 `python3`**：skill 的指令照 SKILL-tmp 寫 `python`，要靠 `.venv` 才能照字面跑。
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

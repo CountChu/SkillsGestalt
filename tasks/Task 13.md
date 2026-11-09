@@ -9,7 +9,11 @@
 依賴格式（Task 8）：文件開頭的檔頭引用區，每一行一個連結，後面依序是 `cited`（只算引用到的節時才寫）、確認的日期與指紋，例如 `` > [[SkillCompiler-RSDC]]  `cited`  `2026-10-10`  `bd7932a83cd3` ``。
 讀寫它的是共用的 [depends_on.py](../skill-groups/common/scripts/depends_on.py)。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 狀態細節
 
@@ -29,7 +33,7 @@ compile-skill 與 gen-skill 兩列要等觸發條件，移到 [[Task 16]]。
   它的 Dataflow 有「Step 1、2 讀目標檔，Step 3 才改」（TW twins 也一樣），和 [[Task 7]] 是同一類問題。
   它取代了原本 check-skill 那一列：check-skill 不必改。
 
-## 3. 要做的
+## 4. 要做的
 
 **要做的**：
 
@@ -41,19 +45,19 @@ compile-skill 與 gen-skill 兩列要等觸發條件，移到 [[Task 16]]。
 | chinese | **已完成（2026-10-10）**：英文檔 `record` 之後，跑一次 chinese——它的 INCREMENTAL 更新依 git diff 只改那一行（line for line 的檔換那一行；SKILL.md 的檔頭引用區屬於 `(preamble)` 一段，整段重寫，pairing line 保留）——twin 的紀錄就和英文檔一致，「twin 只由 chinese 寫」也不變；check-md-deps 的 Twin 一項會提醒。為此把檔頭引用區的每一行（連結與其後的 inline code）寫進 kept-English span，`scan_md.py` 與 `check_parity.py` 也把 wiki link `[[name]]` 當成連結列出、比對；並修正 INCREMENTAL 那句還要「保留 twin 標題後綴」的舊規則 | — | `chinese/SKILL.md` 與 tw、`scripts/scan_md.py`、`scripts/check_parity.py` |
 | check-stop-price（InvestForge） | **已完成（2026-10-10）**：依賴方定為 Rule Copies，由新檔 `rule-copies.md`（skill 根目錄，取代 `plan-docs-hash.json`）代表。不用 SKILL.md：它之後會由 gen-rsdc-skill 記 StopPriceChecker-RSDC 的 `cited` 紀錄，同一份文件對同一個目標只能有一行，兩種驗證會互相蓋掉對方的擔保。檔頭五行：四份 Plan Docs 寫成 `[名稱](<{wikiDir}/plan/...>)`，整份算；StopPriceChecker-RSDC 標 `cited`，本文引用 §2.4、§2.7，只算 Step 1 會讀的這兩節。Fingerprint Checker 改用共用的 `depends_on.py`（加 `--config config.yaml`），`plan_docs_hash.py` 與 `plan-docs-hash.json` 刪除；SKILL.md 的詞彙表、CONFIGURATION、目錄樹、Data Read/Write Rules、Step 0（確認紀錄檔存在）與 Step 1 跟著改，tw 依 chinese 的 INCREMENTAL 更新（parity 結果與改前相同，`--verify` 通過）。舊紀錄：四份 Plan Docs 自 10-07 起整份 SHA-256 沒變，以新算法換算、沿用 10-07 的日期；StopPriceChecker-RSDC 自當時的 `fb1a78f` 起 §2.4、§2.7 有實質修改，不換算、留 `NO_RECORD`，下次執行時 Step 1 照規定重讀並核對常數。Plan Docs 的指紋不含它們自己的檔頭，check-wiki-doc 在那裡 `record` 不再被判為改過 | — | InvestForge 的 `check-stop-price/SKILL.md` 與 tw、`rule-copies.md`（新）、`scripts/plan_docs_hash.py` 與 `plan-docs-hash.json`（刪）；SkillsGestalt 的 `depends_on.py` 說明 |
 
-## 4. 驗證
+## 5. 驗證
 
 —
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 —
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

@@ -10,7 +10,11 @@
 2026-10-18 它改了 3 次（[[Task 50]]、[[Task 51]]、[[Task 32.6]] 的 merge），10-12 以來共 15 次；每次都把 22 份重檢、重記一輪。
 只記日期分不出同一天的先後：00:30 核對過、記成 2026-10-18 的檔，看不出 11:21 與 11:46 那兩次修改，所以指紋留著，改的是重記的時機。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-10-18）
 
@@ -33,7 +37,7 @@
 - ste-custom.md 第 9 行改成四句：改了不必立刻重檢、當天最後一次修改之後跑一次 `recheck` 並單獨 commit、它怎麼檢查與重記、正在處理的草稿是例外。
 - README 的 When the Skill Is Changed：draft.py 與 ste-custom.md 兩處，以及改完要跑的檢查多一項 `recheck` 的測試。
 
-## 3. 要做的
+## 4. 要做的
 
 1. draft.py 加上 `recheck`，docstring 一起改。
 2. SKILL.md 的 Step 6 與 Step 7：開始之前比對 `step_3` 群組的 `custom_fingerprint` 與 ste-custom.md 現在的指紋，不同就先重跑 Step 3（Step 7 再加上 Step 6）。
@@ -43,23 +47,23 @@
 6. 照 README 跑它列出的檢查。
    ste-custom.md 這次也改了，22 份照新的做法，等當天最後一次修改之後由 `recheck` 一次重記，另一個 commit；這件例行工作由 [[rerecord-ste-custom]] 接手。
 
-## 4. 驗證
+## 5. 驗證
 
 - 在 workspace 以外的副本上：ste-custom.md 加一列之後，`recheck --dry-run` 列出 22 份與各自的檢查；`recheck` 全部重記，6 份草稿存了 `step_3`；之後 `--dry-run` 一份都不列。
 - 副本上讓一份草稿出現 FAIL：那一份與它的中文版不重記，`recheck` 以 1 結束；出現新的 WARN 的那一份照樣重記，並列出那則 WARN。
 - README 列出的檢查都通過。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 50]]：每份 STE 檔都宣告 `[[ste-custom]]`，所以 ste-custom.md 一改就是 22 份。
 - [[Task 51]]、[[Task 32.6]]：2026-10-18 另外兩次修改 ste-custom.md。
 - [[rerecord-ste-custom]]：執行本 task 定下的集中重記，每次的結果記在那裡；由 [[Task 53]] 建立。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

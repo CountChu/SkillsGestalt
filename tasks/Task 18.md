@@ -10,7 +10,11 @@
 本 task 讓它們跟上 template，每一份 RSDC 一個 sub task。
 這個 workspace 只留自己的 3 份；InvestForge 的 5 份由 Task 2 @ InvestForge 處理。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-10-20 查的結果
 
@@ -23,7 +27,7 @@
 
 各份 RSDC 的細節在它自己的 sub task。
 
-## 3. 要做的
+## 4. 要做的
 
 ### Sub task
 
@@ -45,7 +49,7 @@
 
 1. [[Task 18.8]] 的待決事項，包括最後一節「How This Version Came About」怎麼處理，2026-10-31 都已決定，見 [[Task 18.8]] 的「已決定」。
 
-## 4. 驗證
+## 5. 驗證
 
 每個 sub task 對齊之後，都要通過這些檢查，和 [[Task 18.7]] 一樣：
 
@@ -58,7 +62,7 @@
 
 三個 sub task 都 ✅ 時，本 task 完成。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - **Task 2 @ InvestForge**：InvestForge 的 5 份 RSDC——StopPriceChecker、InvCov、InvDataflow、InvIndexAnalyzer 與 InvHome 的 Home-RSDC。
   它們原是本 task 的 Task 18.1、18.3–18.6，2026-10-18 移過去。
@@ -71,11 +75,11 @@
 - **[[Task 60]]**：記下各份單獨檢查的 6 項 FAIL。
 - **[[Task 75]]**：gen-rsdc-skill 的範例引用被 `--skill` 當成對 SkillCompiler-RSDC 的引用；修好之前，這一項 FAIL 是已知誤判。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-10-31
 

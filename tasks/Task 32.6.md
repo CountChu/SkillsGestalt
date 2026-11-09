@@ -9,7 +9,11 @@
 審核 [[Task 31]] 為 [report-yaml-rules.md](../skill-groups/common/rules/report-yaml-rules.md) 產生的 STE 草稿與草稿中文版；通過就由 asd-ste 的 Step 7 取代原檔與它的中文版。
 分工、取代的方式與「每取代一份要一併做的」，見 [[Task 32]]。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 審核時決定的
 
@@ -46,26 +50,26 @@
   第二輪（2026-10-18）：英文第 3 點的第 1 項（You made it.）與第 3 項（change）標 `[x]`，照使用者的決定改寫；檔頭、標題用字與第 20–21 行（agrees with）通過。
   同日再審，14 項全部通過，由 Step 7 取代原檔。
 
-## 3. 要做的
+## 4. 要做的
 
 —
 
-## 4. 驗證
+## 5. 驗證
 
 —
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 44]]：2026-10-16 審 report-yaml-rules（2.6）時開出——rule 收進專案核准詞，同日做完；2.3、2.5 的草稿也因此改了 Technical words 那一行。
 - [[Task 52]]：Step 6、7 一開始比對 `step_3` 的 `custom_fingerprint`，ste-custom.md 改過就先重跑 Step 3；取代本草稿時會用到。
 - [[Task 53]]：建立 chore 制度，例行的重記寫成 chore。
 - [[rerecord-ste-custom]]：ste-custom.md 有改動的日子集中重記一次，本草稿與它的中文版也在其中。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

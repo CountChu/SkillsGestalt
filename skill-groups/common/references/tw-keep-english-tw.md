@@ -1,11 +1,11 @@
 # Terms Kept in English in 繁體中文 Twins
 
-> Version: 261030
+> Version: 261108
 > [[ASD-STE100_ISSUE9.pdf]]  `2026-10-18`  `d1f4ea9e7cd6`
 > [[ste-custom]]  `2026-11-02`  `c612bdfa1ea7`
 
 > 本檔案以 ASD-STE100 Simplified Technical English（STE）第 9 版寫成。
-> 技術用字：agency、agent、alias、app、argument、automated、baseline、caller、canonical skill invocation、cell、character、checkpoint、class、clean mode、clock、cognitive、column、command、command line、commit、context、contract、data structure、delimiter、design document、diff、docstring、document、epoch、event、exit status、external input、fence、fenced block、file、fingerprint、flag、folded block scalar、Forge、frontmatter、Gestalt、glossary、handler、handoff、hard break、hash、heading、here-string、hexagon、hook、hunk、idempotent-only mode、identifier、import、inline code、inline-code span、interactive、interpolation、introspection、line、line break、link、link target、list、match、math、MD report、metadata、no-op、non-breaking space、null、one-run data、operating system、pairing line、parse、path、pattern、pipe、placeholder、plain scalar、process、prose、raw mode、record、regular expression、rendering、repository、request、route、scalar、schema、script、second、section、section partial、sentence、separator、session、shell、skill、span、spelling、stage、stale、statement、step、string、string literal、style、table、template、term、text、token、traceback、twin、variable、verdict、version、wiki、wireframe、word、word character、workflow、workspace。
+> 技術用字：agency、agent、alias、app、argument、automated、baseline、bug、build、caller、canonical skill invocation、cell、character、checkpoint、class、clean mode、clock、cognitive、column、command、command line、commit、context、contract、data structure、delimiter、design document、diff、docstring、document、epoch、event、exit status、external input、feature、fence、fenced block、file、fingerprint、flag、folded block scalar、Forge、frontmatter、Gestalt、glossary、handler、handoff、hard break、hash、heading、here-string、hexagon、hook、hunk、idempotent-only mode、identifier、import、inline code、inline-code span、interactive、interpolation、introspection、line、line break、link、link target、list、match、math、MD report、metadata、no-op、non-breaking space、null、one-run data、operating system、pairing line、parse、path、pattern、pipe、pipeline、placeholder、plain scalar、process、prose、pull request、raw mode、record、regular expression、rendering、repository、request、route、scalar、schema、script、second、section、section partial、sentence、separator、server、session、shell、skill、span、spelling、stage、stale、statement、step、string、string literal、style、table、template、term、test case、text、token、traceback、twin、variable、verdict、version、wiki、wireframe、word、word character、work item、workflow、workspace。
 
 每一份 `-tw` twin，都在它的正文中把下列清單的 term 保留為英文。
 twin 的例子有 skill 的 `SKILL-tw.md`、設計文件的 `-RSDC-tw.md`，以及 wireframe 的 `-tw.md`。
@@ -72,6 +72,8 @@ twin 的正文使用英文的 term。
 | app | 應用, 應用程式 | — | 它是 system 中一種類型的名稱，而且 twin 已用了兩種譯法：應用，以及英文的 app。 |
 | automated | 自動, 無頭自動 | 無頭自動 | 它是一種 step 類型的名稱。 |
 | baseline | 基準, 基線 | 基線 | 它是 diff 所依據的 commit 的名稱，而且 twin 已用了不只一種譯法。基準太常出現，不列入 Flagged。 |
+| bug | 錯誤, 缺陷, 臭蟲 | 臭蟲 | 它是 Azure DevOps 中一種 work item 的名稱，而且 twin 可能用三種譯法。錯誤與缺陷太常出現，不列入 Flagged。 |
+| build | 建置, 組建 | 組建 | 它是 Azure DevOps 中一種項目的名稱，也就是 pipeline 的一次執行，而且 twin 可能用兩種譯法。建置太常出現，不列入 Flagged。 |
 | caller | 呼叫者, 呼叫端, 呼叫方 | 呼叫者, 呼叫端 | 它是在 system 外部啟動 system、並提供其 request 的 role 的名稱，而且 twin 已用了三種譯法。呼叫方太常出現，不列入 Flagged，例如呼叫方式裡就有它。 |
 | canonical skill invocation | 標準形式的 skill 呼叫, 標準的 skill 呼叫, 標準化的 skill 叫用方式, 標準化的 skill 呼叫形式, 標準化的 skill 呼叫式, 正規化的 skill 呼叫形式 | 標準形式的 skill 呼叫, 標準的 skill 呼叫, 標準化的 skill 叫用方式, 標準化的 skill 呼叫形式, 標準化的 skill 呼叫式, 正規化的 skill 呼叫形式 | 它是 Step 0 所保存的 `/<skill-name>` 指令及其解析後引數的名稱，而且 twin 已用了六種譯法。 |
 | checkpoint | 檢查點 | 檢查點 | 它是一種 record 的名稱。 |
@@ -86,6 +88,7 @@ twin 的正文使用英文的 term。
 | epoch | 紀元, 紀元時間 | 紀元 | 它是時鐘開始計秒的那個時間點的名稱，而且沒有固定的中文譯法。 |
 | exit status | 結束狀態, 退出狀態 | 結束狀態 | 它是程式的一種 outcome 的名稱，而且 twin 已用了不只一種譯法。 |
 | external input | 外部輸入 | 外部輸入 | 它是 DFD 中一種資料的名稱。 |
+| feature | 功能, 特性, 特色 | — | 它是 Azure DevOps 中一種 work item 的名稱，而且 twin 可能用三種譯法。三種都太常出現，不列入 Flagged。 |
 | fence | 圍欄, 柵欄 | 圍欄, 柵欄 | 它是開啟或關閉 fenced block 的那一行的名稱，而且沒有固定的中文譯法。 |
 | fenced block | 程式碼區塊, 圍欄區塊 | 程式碼區塊, 圍欄區塊 | twin 已用了兩種譯法，而且它是 Markdown 檔案中 twin 原樣照抄的部分的名稱。 |
 | folded block scalar | 摺疊區塊純量, 折疊式區塊 | — | 它是 YAML 一種 scalar 寫法的名稱，而且沒有固定的中文譯法。 |
@@ -121,6 +124,7 @@ twin 的正文使用英文的 term。
 | plain scalar | 純量, 普通純量 | — | 它是 YAML 一種 scalar 寫法的名稱，而且沒有固定的中文譯法。 |
 | process | 程序, 行程, 進程 | — | 它是 DFD 所顯示的工作單位的名稱。它不是作業系統的 process，而且 twin 已用了三種譯法。它們全都太常出現，不列入 Flagged，因為程序指的是 procedure，行程指的是作業系統的 process。 |
 | prompt | 提示詞, 提示 | 提示詞 | twin 已用了兩種譯法，而且它是 skill 一種輸入的名稱。 |
+| pull request | 拉取請求, 合併請求, 提取要求 | 拉取請求, 合併請求, 提取要求 | 它是 `git` 伺服器上一種項目的名稱，例如 Azure DevOps 上的，而且 twin 可能用三種譯法。 |
 | raw mode | 原始模式 | 原始模式 | 它是 `reformat-md` 的一種模式的名稱，由 `--mode raw` 選用。 |
 | record | 紀錄, 記錄 | — | 它是 DFD 中一種資料的名稱，也是記錄指紋時得到的 outcome 的名稱。兩種譯法都太常出現，不列入 Flagged。 |
 | repository | 儲存庫, 版本庫, 倉庫 | 儲存庫, 版本庫 | 它是 system 中一種類型的名稱，而且 twin 已用了三種譯法。 |
@@ -137,6 +141,7 @@ twin 的正文使用英文的 term。
 | system | 系統 | — | 它是 DFD 或設計文件所呈現之對象的名稱。它的 role 在它外部，它的 process 與 record 在它內部。系統太常出現，不列入 Flagged，因為作業系統指的是 operating system。 |
 | template | 範本, 模板 | 範本, 模板 | twin 已用了兩種譯法：範本，以及英文的 template。 |
 | term | 術語, 技術詞 | 術語, 技術詞 | twin 已用了兩種譯法：術語，以及英文的 term。 |
+| test case | 測試案例, 測試用例 | 測試案例, 測試用例 | 它是 Azure DevOps 中一種 work item 的名稱，而且 twin 可能用兩種譯法。 |
 | token | 詞元, 權杖, 標記 | 詞元 | twin 已用了三種譯法，用在它是 LLM 所計算的單位時，也用在它是解析後字串的一部分時。 |
 | traceback | 回溯, 追蹤訊息 | — | 它是程式因錯誤而停止時所給的輸出的名稱，而且沒有固定的中文譯法。 |
 | twin | 孿生檔, 雙胞胎 | 孿生檔, 雙胞胎 | twin 已用了三種譯法：孿生檔、雙胞胎，以及英文的 twin。 |
@@ -144,6 +149,7 @@ twin 的正文使用英文的 term。
 | wiki | 維基 | — | 它是 skill 寫入其 MD report 的位置的名稱，由 `wikiDir` 設定。維基太常出現，不列入 Flagged，例如維基百科裡就有它。 |
 | wireframe | 線框圖, 線框稿 | 線框圖, 線框稿 | 它是 system 中一種文件類型的名稱，而且沒有固定的中文譯法。 |
 | word character | 文字字元, 單字字元 | 文字字元, 單字字元 | 它是正規表示式中一類字元的名稱，而且 twin 已用了兩種譯法。 |
+| work item | 工作項目 | 工作項目 | 它是 Azure DevOps 中一種項目的名稱。 |
 | workflow | 工作流程, 流程 | 工作流程 | twin 已用了兩種譯法，而且它是 skill 中一節的名稱。 |
 | workspace | 工作區, 工作空間 | — | twin 已用了兩種譯法，而且它是 system 讀取資料的位置的名稱。 |
 

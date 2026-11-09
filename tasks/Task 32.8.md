@@ -9,7 +9,11 @@
 審核 [[Task 31]] 為 [skill-writing.md](../skill-groups/common/rules/skill-writing.md) 產生的 STE 草稿與草稿中文版；通過就由 asd-ste 的 Step 7 取代原檔與它的中文版。
 分工、取代的方式與「每取代一份要一併做的」，見 [[Task 32]]。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 審核時決定的
 
@@ -79,15 +83,15 @@
   [[Task 31]] 表格裡指向兩份草稿的連結改成行內程式碼，並註明已取代。
   另外 20 份的 ste-custom 紀錄仍是舊的：使用者說今天可能還會改 ste-custom.md，[[rerecord-ste-custom]] 等當天最後一次修改之後再跑。
 
-## 3. 要做的
+## 4. 要做的
 
 —
 
-## 4. 驗證
+## 5. 驗證
 
 —
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 44]]：標題的 Rules 收進專案核准詞。
 - [[Task 41]]：Technical words 裡的 program 字典不核准，`check_ste.py` 不提醒；第二輪改由 ste-custom.md 核准，Task 41 的清單拿掉它。
@@ -95,11 +99,11 @@
 - [[Task 61]]：審本草稿時刪掉兩處重複之後提出，檢查所有定規則的 md 之間重複的規則；skill-writing 取代原檔之後，也在它的範圍內。
 - [[rerecord-ste-custom]]：ste-custom.md 有改動的日子集中重記一次，本草稿與它的中文版也在其中。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

@@ -9,7 +9,11 @@
 背景：[[Task 31]] 為 `.github/common` 的 references、rules、templates 共 11 份原檔產生 STE 草稿與草稿的中文版。
 其中 4 份原檔本身沒有中文版，本 task 先為它們寫出中文版，Task 31 再為它們產生草稿。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 **2026-10-12 做了什麼：第 1 份**（commit `3bdb57a`）
 
@@ -62,7 +66,7 @@
 - **合計**：本 task 為 keep-English 清單加了 26 個詞，原檔從 82 行變成 108 行。
   新的 Flagged 譯法會讓現有中文版出現 320 行警告：canonical skill invocation 10、metadata 2、script 276、identifier 13、handler 4、glossary 15，都不在本 task 的範圍內修正。
 
-## 3. 要做的
+## 4. 要做的
 
 **已決定（2026-10-12）**
 
@@ -96,13 +100,13 @@
   chinese 的工具讀的是英文版（`--keep` 指向它），中文版不影響工具。
 - md-style.md 由 reformat-md 讀取，讀的也是英文版。
 
-## 4. 驗證
+## 5. 驗證
 
 **驗證**
 
 - 每一對的 `check_parity.py` 0 failure，中文版逐行對齊英文。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 **與其他 task 的關係**
 
@@ -110,11 +114,11 @@
 - [[Task 33]]：本 task 依賴它。
 - [[Task 32]]：審核通過、以草稿取代原檔時，草稿的中文版寫回本 task 寫出的 `-tw.md`。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

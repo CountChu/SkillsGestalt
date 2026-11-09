@@ -10,7 +10,11 @@ rule 不在 STE Issue 9 的字典裡。
 到 2026-10-16 為止，11 份 STE 檔與草稿中有 10 份把它列在 `Technical words:`，只有 report-yaml-rules 的草稿沒有列：它只在標題用到 rule，而 `check_ste.py` 只在內文找技術用字（見 [[Task 41]]）。
 rule 是本專案每份文件都用的一般用語，不是某個主題的技術名詞（STE 規則 1.5），比較適合當專案核准詞：[ste-custom.md](../skill-groups/common/skills/asd-ste/references/ste-custom.md) 核准的字是核准詞，不列為技術用字（House Rule 11）。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-10-16）
 
@@ -30,7 +34,7 @@ rule 是本專案每份文件都用的一般用語，不是某個主題的技術
 - DFD、RSDC-Standard、md-style 的 `check_ste.py --ste` PASS，警告和之前相同。
 - 重記：宣告 `[[ste-custom]]` 的 20 份；記錄 DFD.md 的 14 份、RSDC-Standard.md 的 8 份、md-style.md 的 6 份，讀過改動都仍成立。
 
-## 3. 要做的
+## 4. 要做的
 
 1. ste-custom.md 加上 rule 一列，中文版照 chinese skill 跟著改。
 2. 10 份 STE 檔與草稿的 `Technical words:` 拿掉 rule，中文版的「技術用字」那一行同步：
@@ -43,23 +47,23 @@ rule 是本專案每份文件都用的一般用語，不是某個主題的技術
    - DFD.md、RSDC-Standard.md、md-style.md 的 `Technical words:` 那一行算在指紋裡：記錄它們的文件讀過改動之後重記，DFD 14 份、RSDC-Standard 8 份、md-style 6 份，其中 InvestForge 4 份。
 6. 跑 asd-ste 的 README 為 ste-custom.md 列出的檢查。
 
-## 4. 驗證
+## 5. 驗證
 
 - ste-custom 與 10 份 STE 檔、草稿的中英對照：`check_parity.py` 0 failure，`diff_md.py --verify` PASS。
 - 7 份草稿的 Step 3 與 3 份 STE 檔的 `check_ste.py --ste` 都 PASS，警告和之前相同。
 - 重記的文件 `depends_on.py check` 都是 UNCHANGED；兩份 RSDC 範本的 `check_rsdc.py --standard` PASS。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 32]]：審 2.6 時提出；2.3、2.5 的對照頁是改之前建的，下次 `run step 6` 時更新。
 - [[Task 41]]：標題裡用到的字不算進技術用字，所以 report-yaml-rules 的草稿沒有列 rule。
 - [[Task 43]]：把 STE customization 改稱專案核准詞。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

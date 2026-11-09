@@ -10,12 +10,16 @@
 - Forge 要的設定不一樣：`skillGroups.common` 是本 repo 的絕對路徑（可用 `~`）、`agencies` 給出本 repo 的根目錄、`keepEnglishChore` 的 chore 在本 repo；InvestForge 還有 `wikiRootDir`、`dashboardDir`、`dedi`。
 - [[Task 85]] 當時決定 `config.example.yaml` 不加 `agencies` 的範例；這裡改成另寫一份範本，不動本 repo 自己的。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 - [config-forge-tmp.yaml](../skill-groups/common/templates/config-forge-tmp.yaml)：開頭的註解說明它給誰用、怎麼用（複製成根目錄的 `config.yaml`、換掉每個佔位符）、相對路徑與 `~`、以 `{` 開頭的值要保留引號，以及術語在 glossary.md。
 - 鍵：`wikiDir`、`wikiRootDir`、`skillGroups`（`common` 是 `{GESTALT_ROOT}/.github/common`、`dedi` 預設 `.claude`、`external` 空著）、`agencies.SkillsGestalt` 是 `{GESTALT_ROOT}`、`keepEnglishChore` 預設 `keep-english`；每個鍵的說明寫在行尾的英文註解。
 
-## 3. 要做的
+## 4. 要做的
 
 ### 已決定（2026-10-31）
 
@@ -29,7 +33,7 @@
 - 要填的值用 `{UPPER_SNAKE}` 佔位符：`{GESTALT_ROOT}`、`{WIKI_DIR}`、`{WIKI_ROOT_DIR}`；`dedi` 與 `keepEnglishChore` 給預設值 `.claude` 與 `keep-english`。
 - 以 `{` 開頭的值加上引號：沒有引號時，YAML 會把它讀成 mapping。
 
-## 4. 驗證
+## 5. 驗證
 
 - 以範本做出的 `config.yaml`，讓 `gen_claude_md.py` 產生 CLAUDE.md，`check_chores.py` 找得到 [[keep-english]] 的定義。
 
@@ -40,17 +44,17 @@
 - 填好佔位符之後：`gen_claude_md.py` 寫出 CLAUDE.md，標題是資料夾的名稱，指令用 `~/…/SkillsGestalt/.github/common/scripts/…`，keep-English chore 連到 SkillsGestalt 的 `chores/keep-english.md`；摘要表一列文字的 `keep-english`，`check_chores.py` 是 18 passed。
 - 拿掉 `keepEnglishChore` 那一行，產生的 CLAUDE.md 就沒有 keep-English chore 那一句。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 88]]：本 task 是它的第 1 步。
 - [[Task 88.2]]：指南引用這份範本。
 - [[Task 85]]：當時決定 `config.example.yaml` 不加 `agencies`。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

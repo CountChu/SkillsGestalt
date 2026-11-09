@@ -10,7 +10,11 @@
 `check_parity.py` 也多了三項檢查：逐行對應、fenced block 逐字相同，以及畫面上會變成星號的粗體（只警告）。
 下面三份 twin 都不是 chinese skill 寫的，失敗反映的是真實的差異，不是誤報；它們在舊版 `check_parity.py` 下本來就不通過（舊版假設每個檔都有 frontmatter、都連回 `SKILL.md`）。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 狀態細節
 
@@ -29,7 +33,7 @@ Home-RSDC-tw：四個章標題改回英文檔的字樣，「過期」換成 stal
 
 **不在這一項**：同一次檢查中，gen-rsdc-skill 的 `SKILL-tw.md` 也不通過，原因是另一個 session 正在改它的 `SKILL.md`（加了 Step 12 - Write the MD Report），twin 尚未同步；舊版 `check_parity.py` 一樣不通過，與本項無關。
 
-## 3. 要做的
+## 4. 要做的
 
 **各份的修法與要決定的**：
 
@@ -57,19 +61,19 @@ Home-RSDC-tw：四個章標題改回英文檔的字樣，「過期」換成 stal
 - `.github/common/skills/imp-home/references/Home-RSDC-tw.md`
 - 若決定 twin 可以連 twin：`.github/common/skills/chinese/SKILL.md` 與 `.github/common/skills/chinese/scripts/check_parity.py`。
 
-## 4. 驗證
+## 5. 驗證
 
 驗證：三份的 `check_parity.py` 都 0 failure。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 —
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

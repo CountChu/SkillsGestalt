@@ -11,7 +11,11 @@
 - 這樣 agent 每次都要讀這些說明句，而一致性靠事後檢查。
 - 由程式展開模板產生 CLAUDE.md，CLAUDE.md 就只有實際路徑：不用 `@`、不用說明句、不用逐處比對路徑；VS Code 的 agent 也讀得到完整的規則。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-10-30 做完之後
 
@@ -37,7 +41,7 @@
 - 模板的 Tasks 一節拿掉「In the rules, `{skillGroups.common}` is …」：task-rules.md 與 chore-rules.md 只在檢查指令用到這個佔位符，而 CLAUDE.md 已經給出展開好的指令；skill 在 Step 0 自己讀 `config.yaml`。
   `gen_claude_md.py` 的 `{{name}}` 功能留著，現在沒有句子用到。
 
-## 3. 要做的
+## 4. 要做的
 
 ### 已決定（2026-10-30）
 
@@ -84,7 +88,7 @@
 4. 產生本 repo 的 CLAUDE.md，和現在的對照：每一條規則都還在，路徑都是實際值。
 5. 刪掉 agency-rules.md 與中文版、`check_claude_md.py`，並改掉提到它們的地方。
 
-## 4. 驗證
+## 5. 驗證
 
 - `gen_claude_md.py --check` 在本 repo 是 PASS；直接改 CLAUDE.md 一個字，它就 FAIL。
 - 暫用副本把 `skillGroups.common` 改成別的值，重新產生的 CLAUDE.md 每個路徑都跟著變。
@@ -107,18 +111,18 @@
 - 模擬的 InvestForge：`config.yaml` 沒有 `keepEnglishChore` 時那一行不出現，前後沒有多出空行；加上 `keepEnglishChore: Chore 1` 之後連到 Chore 1。
 - CLAUDE.md 與模板 `check_ste.py` 是 PASS，`depends_on.py check CLAUDE.md` 是 UNCHANGED，`reformat_md.py --mode clean` 不改動。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 82]]：建立 agency-rules.md 與 `@` import；本 task 完成後它們退場。
 - [[Task 83]]：建立 `check_claude_md.py`；本 task 以 `gen_claude_md.py --check` 取代它。
 - [[Task 81]]：術語表定義了 agency、Gestalt 與 Forge；模板用這些名稱。
 - InvestForge 與 BookMaster 改成以模板產生 CLAUDE.md，在它們自己的 tasks 做。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

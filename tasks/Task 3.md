@@ -42,7 +42,11 @@ DFD 已經畫出每個 stage 讀寫哪些資料，這四個部分還有存在的
 skill 引用的全是規則（例如「Holding Judge 整份重寫 Check Table，會抹掉 back-solve 的欄位，所以每次 Step 2 之後都要重跑 Step 3」），兩張表一次也沒被引用。
 重複的是兩張表，不是四個部分；這也和 SKILL template 的前例一致：誰讀寫什麼由圖說，圖說不出來的用文字寫。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 做了什麼（EN 與 tw 一起改、逐行對齊）：
 
@@ -56,7 +60,7 @@ skill 引用的全是規則（例如「Holding Judge 整份重寫 Check Table，
   - 新增兩項檢查：2.2 開頭列出的 stage 就是圖上的圓角框；圖上每個節點都是 DFD.md 五種形狀之一（取代原本的 Kind 欄檢查）。
   - 刪掉 `STAGE_HEADER`、`DATA_HEADER`、`KINDS`；範本不再需要這兩個表頭。
 
-## 3. 要做的
+## 4. 要做的
 
 ### 牽涉的檔案
 
@@ -74,7 +78,7 @@ skill 引用的全是規則（例如「Holding Judge 整份重寫 Check Table，
 - **已寫好的文件還沒對齊**：InvestForge 的 StopPriceChecker-RSDC 與 `mods/mermaid-view/MermaidView-RSDC.md`（各與 tw）仍有兩張表，下次對齊時刪掉；在那之前，Checker 會把它們報成 Dataflow 的部分不符。
   check-stop-price 引用的三個部分都還在，只是 Dataflow 隨 Task 2 改成 2.2，它的 §2.3 引用到時要改成 §2.2。
 
-## 4. 驗證
+## 5. 驗證
 
 驗證：
 
@@ -82,15 +86,15 @@ skill 引用的全是規則（例如「Holding Judge 整份重寫 Check Table，
 - 用範本填的樣本：single PASS（29 項；唯一的警告是 Verification Obligations 沒列出樣本的元件），pair PASS（唯一的警告是樣本用英文填中文占位造成的英中相連）。
 - 反向測試：圖上多一個方框節點 → FAIL；2.2 開頭列的 stage 與圖不一致 → FAIL。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 —
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

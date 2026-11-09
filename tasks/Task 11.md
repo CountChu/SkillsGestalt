@@ -12,7 +12,11 @@
 
 重現方式：`python .github/common/skills/chinese/scripts/check_parity.py --en <英文檔> --tw <twin> --keep .github/common/references/tw-keep-english.md`，看 `[WARN] '<譯法>' at ...` 那幾行。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 狀態細節
 
@@ -30,7 +34,7 @@ RSDC-Standard-tw 歷史條目裡的 7 處「範本」也改了，不發新版本
 
 **同幾份 twin 裡還有清單 261005 就有的舊警告**，不屬於本項，可以順手一起處理：check-skill 的 twin「確定性」1 行；gen-skill 的 twin「確定性」1 行、「步驟」1 行；imp-app 的 twin「代理人」1 行、「確定性」4 行、「過期」1 行、「步驟」26 行；Wireframe-tw「過期」1 行。
 
-## 3. 要做的
+## 4. 要做的
 
 **修法**：逐一讀過每個警告，指稱該術語的換成英文，同一個字用在別的意思上的就保留——清單的規則就是這樣要求的。
 只換字、不動其他內容，三份逐行對應的 twin（RSDC-Standard-tw、checking-criteria-tw、Wireframe-tw）也就仍然逐行對應。
@@ -49,19 +53,19 @@ RSDC-Standard-tw 歷史條目裡的 7 處「範本」也改了，不發新版本
 
 **牽涉的檔案**：上表的六份 twin；若決定改清單而不是改 twin，則是 `.github/common/references/tw-keep-english.md`（版本行與清單列）。
 
-## 4. 驗證
+## 5. 驗證
 
 驗證：六份的 `check_parity.py` 不再出現上表的警告，failure 仍為 0。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 與其他項的關係：Task 9（另外三份 twin 的修正）與 Task 10（chinese skill 承接 RSDC twin 的規則）也都在動 twin 與 chinese skill，可以排在同一次處理。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

@@ -10,7 +10,11 @@
 它的 SKILL.md 與 README.md（含中文版）把 `-ste` 檔當成產出：用「`DFD.md` 變成 `DFD-ste.md`」當範例，README 的「改完要跑的檢查」也拿 DFD.md 與 DFD-ste.md 當測試材料。
 使用者決定：`-ste` 檔只是給人審核用的暫存草稿，審核通過之後就成為原檔。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 審核時決定的
 
@@ -66,7 +70,7 @@
   同一天也決定等 [[Task 39]] 讓 asd-ste 能產生對照頁；DFD 用手做的對照頁照常審完。
   兩個 task 同日都已完成：11 份草稿加上拼法檢查重跑都通過；唯一一處 kept span 裡的英式拼法是 README-tmp 的 placeholder，四份檔案都已改成 `{WHY_THOSE_STEPS_NEED_JUDGMENT}`。
 
-## 3. 要做的
+## 4. 要做的
 
 ### 已決定
 
@@ -125,11 +129,11 @@
 
 先讀 asd-ste 的 [README.md](../skill-groups/common/skills/asd-ste/README.md) 的 When the Skill Is Changed，照它改 SKILL.md、README.md 與兩者的中文版、`check_ste.py`、`save_step.py`，並跑它列出的檢查。
 
-## 4. 驗證
+## 5. 驗證
 
 —
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 **與其他 task 的關係**
 
@@ -143,11 +147,11 @@
 - [[Task 26]]：決定 ASD-STE100 的 PDF 是否留在 git；取代後的檔頭仍連到它。
 - [[Task 66]]、[[Task 70]]：本 task 完成時，範本的後續交給它們，README 與 SKILL.md 各一個。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

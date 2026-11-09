@@ -15,7 +15,11 @@ asd-ste 的 Step 6 以 `make_review.py` 產生對照頁 `step_6-review.html`，`
 - [[Task 39]] 與 [[Task 40]] 的現況：每一項當時的決定，例如兩欄捲動、◄ ► 行號、反白規則、狀態的順序與 key 的算法。
   其中有幾項被後來的項目取代，例如第 2 項被第 4 項取代、第 6 項的順序被第 8 項取代，要讀完全部才知道對照頁現在的樣子。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-11-01 結果
 
@@ -54,7 +58,7 @@ gen-rsdc-app 假設 app 以 `node server.js` 啟動，實際的工作由 Python 
 
 做的時候，逐項決定範本的哪些章節照寫、哪些寫 —，並和使用者確認。
 
-## 3. 要做的
+## 4. 要做的
 
 1. 讀 gen-rsdc-app 的 SKILL.md（它沒有 README.md），照它從 `make_review.py`、`review_server.js` 寫 ReviewPage-RSDC.md。
    以 [[Task 39]]、[[Task 40]] 的紀錄核對每一項設計，被取代的項目只寫最後的結果。
@@ -69,7 +73,7 @@ gen-rsdc-app 假設 app 以 `node server.js` 啟動，實際的工作由 Python 
 - asd-ste 的 `README.md` 與 `README-tw.md`
 - `tasks/Task 40.md` 與摘要表
 
-## 4. 驗證
+## 5. 驗證
 
 - 在 scratchpad 以四個 15 行的測試檔與三個 item 實際跑兩支程式，結果寫進 RSDC 4.5 的 10 列；頁面的點擊沿用 [[Task 40]] 當時在瀏覽器裡的觀察，4 列；hub 那一列是 *not verified*。
   測試用的伺服器在 port 8797、8798 上啟動，測完都已關掉。
@@ -79,18 +83,18 @@ gen-rsdc-app 假設 app 以 `node server.js` 啟動，實際的工作由 Python 
 - `check_parity.py` 對 README 一對：0 failure，2 個 warning 和改之前相同；`diff_md.py --verify`：0 failure。
 - `depends_on.py check`：README.md、ReviewPage-RSDC.md 與中文版都是 UNCHANGED。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 39]]：建立對照頁；它的現況是 RSDC 的來源之一。
 - [[Task 40]]：對照頁的 9 項修改；本 task 完成時一併結束它。
 - [[Task 93]]：也改 asd-ste 的 SKILL.md 與 README.md，兩個 task 不要同時做。
 - [[Task 24]]：把其餘 skill 改成新格式時可能也改到 asd-ste 的 README.md，兩個 task 不要同時做。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

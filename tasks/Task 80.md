@@ -9,12 +9,16 @@
 [CLAUDE.md](../CLAUDE.md) 的開頭與規則連結是英文，但 Branches、Tasks、Chores 三節是中文。
 InvestForge 的 CLAUDE.md 全部是英文；[task-rules.md](../skill-groups/common/rules/task-rules.md) 這些共用規則也是英文。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 - CLAUDE.md 全部是英文，開頭有 header quote，宣告 ASD-STE100 Issue 9 與 ste-custom，並列出 technical words。
 - Branches、Tasks、Chores 三節照原本的中文逐句翻譯，內容不變；指令照舊用實際路徑 `.github/common`。
 
-## 3. 要做的
+## 4. 要做的
 
 ### 已決定（2026-10-30）
 
@@ -23,21 +27,21 @@ InvestForge 的 CLAUDE.md 全部是英文；[task-rules.md](../skill-groups/comm
 - 以 ASD-STE100 寫，過 `check_ste.py`；中文的術語都換成英文，檔名與路徑照舊。
 - Branches 一節的 tag 說明與 [[publish-gestalt]] 的連結一起翻成英文。
 
-## 4. 驗證
+## 5. 驗證
 
 - `check_ste.py --ste CLAUDE.md` 是 PASS。
 - `depends_on.py check CLAUDE.md` 是 UNCHANGED。
 - `reformat_md.py --mode clean` 不改動。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 79]]：加了 Branches 一節。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

@@ -10,7 +10,11 @@ STE Issue 9 不核准 false（替代字是 INCORRECT），alarm 則不在字典�
 tw-keep-english 的原文第 114 行寫「where one can be searched for without false alarms」；草稿改寫成 STE 時只能寫 incorrect warnings，第 59、148 行都是，中文版跟著寫「不正確的警告」。
 `check_ste.py` 認得由幾個字組成的核准詞：整個詞組當成一個單位，不再逐字檢查。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-10-17）
 
@@ -32,29 +36,29 @@ tw-keep-english 的原文第 114 行寫「where one can be searched for without 
 - 宣告 `[[ste-custom]]` 的 20 份重記；RSDC-Standard 的正文沒變，記錄它的文件不用重記。
 - `check_ste.py` 列出「用到的專案核准詞」時不列詞組，所以 false alarm 不會出現在 `[INFO]` 裡；不影響檢查結果。
 
-## 3. 要做的
+## 4. 要做的
 
 1. ste-custom.md 加上 false 與 false alarm 兩列，中文版照 chinese skill 跟著改。
 2. tw-keep-english 的草稿與中文版改第 59、148 行。
 3. 7 份草稿重跑 Step 3，3 份 STE 檔跑 `check_ste.py --ste`；20 份重記 `[[ste-custom]]`。
 4. 2.3 的對照頁重建。
 
-## 4. 驗證
+## 5. 驗證
 
 - ste-custom 與 tw-keep-english 草稿兩對中英對照：`check_parity.py` 0 failure，`diff_md.py --verify` PASS。
 - 7 份草稿的 Step 3 與 3 份 STE 檔的 `check_ste.py --ste` 都 PASS，警告和之前相同。
 - 重記的 20 份 `depends_on.py check` 都是 UNCHANGED。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 32]]：審 2.3 時提出。
 - [[Task 47]]：前一天把 phrase 收進專案核准詞，本 task 照同樣的做法。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-10-17
 

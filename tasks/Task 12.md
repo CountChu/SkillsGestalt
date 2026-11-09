@@ -16,7 +16,11 @@ RSDC Checker（`.github/common/skills/gen-rsdc-skill/scripts/check_rsdc.py`）�
 imp-app 沒有任何 RSDC 檢查腳本。
 甲類中的「Exception Paths 三個標籤」「目標表表頭」「Verification Obligations 表頭」「Order Imposed by the Data 的固定句」補齊之後，同一支 Checker 就能檢查 app 的 RSDC（還需要 App 範本加上 Optional 標記與 Twin 一行，見乙）。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 **甲、標準有要求，但其中一份範本沒做到（優先）**
 
@@ -105,7 +109,7 @@ HTTP API 與 Mountable Handler（對 CLI 與 Rule Constants）；Directory Struc
 - Task 2 留下的 Default 欄：兩份都不設，設定檔缺少的欄位回報為缺少。
 - Task 14 實測留下的三個範本問題：第 3 點（4.5 每個 component 只有一列）已解，4.5 改成每個主張一列；第 1 點（Presentation Contract 沒有放「使用者必須能夠……」的地方）由 3.4 的指示把每一列接到 2.7 第 2 題的答案，2.7 沒有另加 placeholder；第 2 點（Directory Structure 列不列 `.imp-app.json`）沒有處理，留在 Task 14。
 
-## 3. 要做的
+## 4. 要做的
 
 **要決定的**
 
@@ -125,19 +129,19 @@ HTTP API 與 Mountable Handler（對 CLI 與 Rule Constants）；Directory Struc
 
 暫時的傾向（尚未決定）：先做甲類（這些是標準的要求），方向是 App 往 Skill-System 靠，再看要不要做乙類與 Checker 的支援。
 
-## 4. 驗證
+## 5. 驗證
 
 - 驗證：兩份範本 EN 與 tw 的 `check_parity.py` 都是 0 failure，`check_rsdc.py --standard` PASS，`depends_on.py check` 全部 UNCHANGED。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 後續工作另開 [[Task 17]]（gen-rsdc-app 與 imp-app 跟上範本、執行 RSDC Checker）與 [[Task 18]]（已寫好的 RSDC 跟上範本）。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

@@ -14,7 +14,11 @@
 
 沒有採用「加反引號」：會和上面兩種反引號的用法混在一起，連結目標與 mermaid 圖裡也加不了，tw 裡黏著中文的佔位符還得逐一補空格。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 **已完成（2026-10-10）**：
 - 兩份 RSDC 範本，EN 與 tw：Skill-System 每份 182 個（tw 183 個——第 32 行把 EN 的 it 寫成 `{THE_SYSTEM}`），App 每份 96 個。
@@ -49,7 +53,7 @@
 依賴：gen-skill、check-skill、asd-ste 的 `README.md` 與 tw 追蹤了 SKILL 範本、README 範本與 chinese 的 `SKILL.md`（asd-ste 另有 `report-yaml-rules.md`）。
 這些改動不影響 README 的內容，所以用 `depends_on.py record --target` 只重新記錄這幾項。
 
-## 3. 要做的
+## 4. 要做的
 
 **尚未改**（照同一方式）：
 - SKILL 範本：`.github/common/templates/SKILL-tmp.md` 與 tw，各 90 個，其中 36 個在反引號裡。
@@ -73,7 +77,7 @@
   也沒有跑完整的 `/check-skill`；只跑了它們的腳本。
 - `tasks/` 裡的舊 task 仍寫著 `___X___`，那是歷史紀錄，不改。
 
-## 4. 驗證
+## 5. 驗證
 
 驗證：
 - `check_parity.py`：10 組 twin（兩份範本、gen-skill 與 check-skill 的 `SKILL.md` 與 README、`checking-criteria.md`、chinese 與 asd-ste 的 `SKILL.md`、asd-ste 的 README）與改動前相同，沒有新的失敗；gen-skill 原本的一個警告消失了。
@@ -81,15 +85,15 @@
 - `depends_on.py check`：六份 README 全部 UNCHANGED。
 - mermaid：README 範本與 tw、兩份 RSDC 範本的 4 張圖，用 mermaid 10.9.1 在瀏覽器實際渲染，都沒有錯誤，每個佔位符都照字面顯示在節點裡。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 —
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-10-18
 

@@ -31,7 +31,11 @@
   - InvestForge 的 memory：`upper-lower-documents.md`。
   - 這份 tasks.md 的 Task 2、Task 3 也提到它。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 做了什麼（2026-10-09，採用推薦的 **RSDC-Standard**；標題 `# ArtifactFlowAgent: The Responsibilities of the Four RSDC Chapters` 不變）：
 
@@ -51,11 +55,11 @@
 搜尋範圍：repo 全部；repo 外以檔名找出的 46 份 `*RSDC*.md`、`CLAUDE.md`／`AGENTS.md`，以及所有 Claude memory。
 對整個 Dropbox 的內容搜尋沒有跑完——為了不觸發雲端檔案下載而中止——所以 Dropbox 裡不屬於上述檔名的檔案若提到舊名稱，可能還沒找到。
 
-## 3. 要做的
+## 4. 要做的
 
 —
 
-## 4. 驗證
+## 5. 驗證
 
 驗證：
 
@@ -64,15 +68,15 @@
 - `check_parity.py`：gen-rsdc-skill、imp-app、imp-home 都 0 failure（imp-app 10 個、imp-home 7 個警告，與 HEAD 相同，原本就有）。
   `scan_source.py`：gen-rsdc-skill、imp-app、gen-imp-app、imp-home 都 valid。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 —
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

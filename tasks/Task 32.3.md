@@ -9,7 +9,11 @@
 審核 [[Task 31]] 為 [tw-keep-english.md](../skill-groups/common/references/tw-keep-english.md) 產生的 STE 草稿與草稿中文版；通過就由 asd-ste 的 Step 7 取代原檔與它的中文版。
 分工、取代的方式與「每取代一份要一併做的」，見 [[Task 32]]。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 審核時決定的
 
@@ -65,15 +69,15 @@
   2026-10-18 使用者說審完了：29 項都算通過（中文第 148 行那一項第八輪改過之後沒有再點 `[v]`，使用者說算通過），同日由 Step 7 取代原檔。
   這份草稿沒有雙重否定的警告，Step 3 PASS；對照頁因檔頭的紀錄重建，項目與狀態和第八輪相同。
 
-## 3. 要做的
+## 4. 要做的
 
 —
 
-## 4. 驗證
+## 5. 驗證
 
 —
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 43]]：2026-10-14 審 tw-keep-english（2.3）時開出——technical term 改稱 term，STE customization 改稱 project-approved word。
   它改到 tw-keep-english 的草稿；ste-custom.md 一改，宣告它的草稿都要重跑 Step 3，包括正在審的 report-md-rules（2.5）；同日都已做完。
@@ -84,11 +88,11 @@
 - [[Task 49]]：2026-10-17 審 2.3 中文第 148 行時開出——false 與 false alarm 收進專案核准詞，同日做完。
 - [[Task 50]]：2026-10-17 解釋 2.3 第八輪時開出——ste-custom.md 分成 Words 與 Rules，第一條規則是不用雙重否定，同日做完；tools 的草稿（2.9）第 24 行因此改成肯定句，2.5 的對照頁下次 `run step 6` 時更新。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

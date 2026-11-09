@@ -14,7 +14,11 @@
 - [[Task 55]]（尚未開始）：依賴巡檢的範圍是兩個 workspace 的全部 md。
 - [[keep-english]]（使用中）：`audit_keep_english.py audit` 帶著 `--root . --root ../InvestForge`。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-10-19）
 
@@ -47,7 +51,7 @@
 - 檢查：這裡的 `check_tasks.py` 18 項、`check_chores.py` 14 項 PASS；InvestForge 的 `check_tasks.py` 18 項（16 個 task 檔）、`check_chores.py` 14 項 PASS。
   兩個 chore 的 `due` 都從各自的根目錄跑得通，都印出 due：清單是 261018，基準是 261016。
 
-## 3. 要做的
+## 4. 要做的
 
 1. ✅ [[Task 32]]：check-stop-price 兩份中文版那一項，在 InvestForge 另立 task；Task 32 只留這裡的部分。
 2. ✅ [[Task 38]]：「待決定 1」只留這裡的既有檔案；InvestForge 的 29 份，在 InvestForge 另立 task 決定。
@@ -60,22 +64,22 @@
 7. ✅ 改過的每一項加一節日誌；兩邊都跑 `check_tasks.py` 與 `check_chores.py`。
 8. ✅ 使用者看過之後 commit：InvestForge 一個，前綴 `task 7`；這裡一個，前綴 `task 62.5`。
 
-## 4. 驗證
+## 5. 驗證
 
 - 這 5 項沒有一件還要做的事會改 InvestForge 的檔；已記下的紀錄照 [[Task 62]] 的「已決定」保留。
 - 兩邊的 `check_tasks.py` 與 `check_chores.py` 都 PASS。
 - 兩個 chore 的 `due` 指令，從各自的根目錄跑得通。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 62.6]]：[[Task 54]] 的 Skills Dashboard 放哪裡。
 - [[Task 62.7]]：InvestForge 的依賴巡檢 chore 建好、跑過一次之後才能做。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-10-30
 

@@ -14,7 +14,11 @@
 - [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 已允許一個 workspace 引用它所用的 skill group 所在 workspace 的 chore，文字寫成 `Chore N @ <workspace>`；不允許反方向。
   所以 Forge 使用本 agency 的 chore 合乎現行規則；本 agency 不知道哪些 Forge 在用。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-10-30 [[keep-english]] 綁定本 agency 的地方
 
@@ -45,7 +49,7 @@
 - 這條規則適用於每個用到 checkpoints 的 chore，寫在 [chore-rules.md](../skill-groups/common/rules/chore-rules.md) 與中文版的 The Chore File 一節；它取代上面「報告目錄的名稱不含 chore 編號」那一句。
 - [[keep-english]] 的兩條指令與執行紀錄改成這個路徑，報告從 `checkpoints/chores/keep-english/` 搬過去，`due` 仍是 not due。
 
-## 3. 要做的
+## 4. 要做的
 
 ### 已決定（2026-10-30）
 
@@ -79,7 +83,7 @@
 4. [[keep-english]]：路徑改寫 `{skillGroups.common}`，報告目錄改成中性的名稱，「3. 怎麼做」的提交步驟改成不帶本 agency 的編號與 task；舊的報告搬到新的目錄或在執行紀錄註明。
 5. 重新產生本 agency 的 CLAUDE.md，跑 `--check`。
 
-## 4. 驗證
+## 5. 驗證
 
 - 本 agency：`check_chores.py` 與 `gen_claude_md.py --check` 都是 PASS；[[keep-english]] 照新的步驟跑 `due` 得到 not due。
 - 暫用副本模擬一個 Forge：`config.yaml` 設 `agencies.SkillsGestalt` 與 `keepEnglishChore: Chore 2 @ SkillsGestalt`，摘要表有一列 `Chore 2 @ SkillsGestalt`。
@@ -97,18 +101,18 @@
 - chore-rules.md `check_ste.py` 是 PASS，與中文版 `check_parity.py` 是 0 failure，`diff_md.py --verify` 確認中文版只改了新的一節與 technical words；`reformat_md.py --mode clean` 不改動。
 - [[keep-english]] 的第 1 到 4 章，指令裡沒有寫死的 `.github/common`；剩下的兩個 Markdown 連結是從 Chore 2 檔起算的相對路徑，指向本 agency 裡的檔，在哪裡讀都對。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 62.5]]：2026-10-19 把 [[keep-english]] 的範圍縮回本 agency；本 task 不改這一點，只讓 Forge 能使用同一份定義。
 - [[Task 84]]：`gen_claude_md.py` 與 `keepEnglishChore`；本 task 讓它能連到別的 agency 的 chore。
 - [[Task 81]]：術語表的 agency；`agencies` 的名稱照它。
 - 各 Forge 改用 [[keep-english]]，在它們自己的 tasks 做，不在本 task 改。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

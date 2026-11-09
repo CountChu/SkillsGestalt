@@ -10,7 +10,11 @@ task 是做完就結束的工作，狀態是尚未開始、進行中、完成。
 有些工作條件成立就要做、做完還會再來，例如 [[Task 52]] 的集中重記、兩個 workspace 中英對照的 keep-English 稽核，以及以 check-skill 掃描全部 skill 之後更新 Skills Dashboard。
 這類工作放在 task 裡，task 標了完成卻還要一直做，每次做了什麼也沒有固定的地方記。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-10-18）
 
@@ -40,7 +44,7 @@ task 是做完就結束的工作，狀態是尚未開始、進行中、完成。
   它從 chinese skill 的 `scan_md.py` 匯入讀清單與正文的函式，所以和 `check_parity.py` 找的是同樣的東西。
 - `chores/Chore 2.md` 與摘要表的一列。
 
-## 3. 要做的
+## 4. 要做的
 
 1. 寫 `chores/CLAUDE.md`、`dashboard/chore-summary.md` 與 `chores/Chore 1.md`。
 2. 寫 `.github/common/scripts/check_chores.py`。
@@ -48,21 +52,21 @@ task 是做完就結束的工作，狀態是尚未開始、進行中、完成。
 4. [[Task 52]] 的關係一章加上 [[rerecord-ste-custom]]。
 5. 跑 [[rerecord-ste-custom]] 的第一次，結果單獨一個 commit，前綴 `chore 1: `。
 
-## 4. 驗證
+## 5. 驗證
 
 - `check_chores.py` 與 `check_tasks.py` 都 PASS。
 - 把 chore 檔與摘要表故意改得不一致（標題、圖示、上次執行），`check_chores.py` 以 1 結束並指出那一項。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 52]]：定下集中重記的做法，由 [[rerecord-ste-custom]] 接手執行。
 - [[rerecord-ste-custom]]：本 task 建立的第一個 chore。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-10-30
 

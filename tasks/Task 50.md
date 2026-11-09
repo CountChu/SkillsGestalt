@@ -10,7 +10,11 @@ ste-custom.md 原本只有專案核准詞的表格，標題是 Project-Approved 
 ASD-STE100 Issue 9 的 Part 1 共 9 節寫作規則，沒有一條提到雙重否定；唯一提到否定的是第 7 節的說明，要求安全指示寫出 DO NOT。
 asd-ste 的 [ste-rules.md](../skill-groups/common/skills/asd-ste/references/ste-rules.md) 有 11 條 House Rules，是 skill 自己的寫法約定；使用者為本專案決定的規則，從此放在 ste-custom.md。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-10-17）
 
@@ -75,7 +79,7 @@ asd-ste 的 [ste-rules.md](../skill-groups/common/skills/asd-ste/references/ste-
 - asd-ste 的 README 列出的檢查：`1710643` 的 DFD 兩項都 PASS；`ed0076e` 的 DFD 檢查仍因 Catalogue 失敗，inventory 仍以 `3` 結束（SOURCE-FIRST，問 Kinds）；check-skill 的 `scan_skill.py`（借 InvestForge 的 `config.yaml`）沒有沒用到的 glossary term，Dataflow 沒有漏畫的 step 或多個寫入者的 record。
   `draft.py`、`save_step.py`、`make_review.py`、`review_server.js` 沒有改，沒有跑它們的檢查與 `test` 目錄的那次執行。
 
-## 3. 要做的
+## 4. 要做的
 
 1. ste-custom.md 與中文版分成 Words 與 Rules，加上第一條規則。
 2. `check_ste.py` 加上雙重否定的 `[WARN]`，docstring、報告與 findings 跟著改。
@@ -93,24 +97,24 @@ asd-ste 的 [ste-rules.md](../skill-groups/common/skills/asd-ste/references/ste-
 11. report-yaml-rules 的對照頁：註記的草稿行號跟著移，兩項「檔頭」改寫，重跑 Step 6。
 12. [[Task 32]] 的 report-yaml-rules 進度補一句；跑 asd-ste 的 README 列出的檢查。
 
-## 4. 驗證
+## 5. 驗證
 
 - ste-custom、SKILL、README、tools 草稿的中英對照：`check_parity.py` 0 failure，`diff_md.py --verify` PASS。
 - `check_ste.py` 在 tools 草稿原本的第 24 行報出雙重否定，改好之後不再報；其他檔案新出現的警告都讀過、處理或說明。
 - 重記的文件 `depends_on.py check` 都是 UNCHANGED。
 - 2026-10-18：`check_ste.py` 對沒宣告 `[[ste-custom]]` 的檔報 `[FAIL]`，對宣告了而沒用到任何詞的檔不再報 `[WARN]`；report-yaml-rules 的草稿 Step 3 PASS，對照頁的每個行號都對到原本的那一行。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 32]]：審 2.3 時提出；2026-10-18 重新打開時，report-yaml-rules（2.6）的草稿加上宣告，對照頁重建。
 - [[Task 43]]：把 STE customization 改稱 project-approved words，本 task 再加上 rules。
 - [[Task 49]]：把 false 與 false alarm 收進專案核准詞，草稿第 148 行因此改回 without false alarms，不再是雙重否定。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

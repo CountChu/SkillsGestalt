@@ -8,7 +8,7 @@ chore 檔的格式與摘要表的維護方式，見 [chore-rules.md](../skill-gr
 | Chore | Started | Title | 何時要做 | 上次執行 | Status |
 | --- | --- | --- | --- | --- | --- |
 | [[follow-gestalt]] | 2026-10-31 | 跟上 Gestalt 的改動 | `{skillGroups.common}/CHANGES.md` 有比上次處理的那一筆新的條目 | — | 🔁 |
-| [[pull-gestalt]] | 2026-10-31 | 把 GitHub 上的新快照拿進工作分支 | 發佈之前、git fetch 看到新快照時，或使用者要求時 | 2026-10-31 | 🔁 |
+| [[pull-gestalt]] | 2026-10-31 | 把 GitHub 上的新快照拿進工作分支 | 發佈之前、git fetch 看到新快照時，或使用者要求時 | 2026-11-02 | 🔁 |
 | [[publish-gestalt]] | 2026-10-30 | 發佈到 GitHub | 使用者要求發佈到 GitHub 時 | 2026-10-31 | 🔁 |
 | [[keep-english]] | 2026-10-18 | keep-English 稽核 | tw-keep-english.md 換了版本，和上次稽核的版本不同 | 2026-10-30 | 🔁 |
 | [[rerecord-ste-custom]] | 2026-10-18 | 集中重記 ste-custom.md | 當天改過 ste-custom.md，而且當天的修改都做完了 | 2026-10-30 | 🔁 |
@@ -20,6 +20,15 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 ## 執行紀錄
 
 ### pull-gestalt
+
+#### 2026-11-02
+
+- 在公開 repo 的 clone 上做，work branch 是 `countdell`：`incoming` 列出新快照 `1b41f68`（SkillsGestalt 2026-11-02），變動 295 個檔，作者與 committer 是 CountChu，掃描 `nothing found`。
+  經使用者同意，舊的 `countdell`（`7d0dcd9`）存成 tag `archive/countdell-261102-pull`；本機 `main` 從 `65c25e5` 移到 `1b41f68`；`countdell` 的 2 個 commit rebase 上去，沒有衝突。
+- rebase 過來的 4765af0 發佈紀錄自成一個 `#### 2026-10-31`，併進 `### publish-gestalt` 同一天的段落，放在 `65c25e5` 與 `93b4e1e` 兩筆之間，並註明它後來換成 `4d2c5db`。
+- 新快照把 `.github/` 改名為 `skill-groups/`：本機的 `config.yaml` 的 `skillGroups` 跟著改；`gen_agents_md.py` 重新產生 AGENTS.md 與 CLAUDE.md，沒有變動。
+  這個 clone 的 `external/` 不在 git，所以 `git diff main countdell` 沒有不公開的路徑。
+- `incoming` 印出 `nothing to pull`；`gen_agents_md.py --check`、`check_tasks.py` 與 `check_chores.py` 都是 PASS。
 
 #### 2026-10-31
 
@@ -36,6 +45,11 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
   先做 [[pull-gestalt]]：`incoming` 印出 `nothing to pull`；`check` 與 `publish` 的掃描都是 `nothing found`，快照的作者與 committer 是 `publish_snapshot.py` 的 `IDENTITY`。
   發佈之前，經使用者同意，把早上的歷史另存成 tag `archive/m1-261031-1`（指向 `b2e967f`）：`archive/m1-261031` 一改指，就有 34 個 commit 沒有任何 ref，其中 14 個 hash 被文件引用，11 個在 CHANGES.md；以後的做法由 [[Task 92]] 決定。
   `m1` 跟著從 `65c25e5` 重新開始（`e1db93c`），`archive/m1-261031` 改指 `3933273`；GitHub 上確認：`main` 有 6 個 commit，最新的是 `65c25e5`，tree 和本機做出的 `450e498` 相同，293 個檔裡沒有排除的路徑。
+- 第一次從公開 repo 的 clone 發佈，work branch 是 `countdell`，不是 `m1`：以 `countdell` 的 `96b7534` 做出快照 `4765af0`，接在 `93b4e1e` 之後；變動 124 個檔，其中 108 個是 task 加上「6. 知識」這一章。
+  快照 commit 第一次帶有改動的摘要（`--summary-file`），摘要寫的是 10 個 commit 做的事。
+  程式推送失敗：這個 clone 沒有 GitHub 的帳號資料，由使用者自己執行 `git push origin main:main`；之後用程式的 `restart_work` 讓 `countdell` 從 `4765af0` 重新開始（`93357d9`），舊的在 tag `archive/countdell-261031`。
+  GitHub 上確認：`main` 是 `4765af0`，只比 `93b4e1e` 多 1 個 commit，沒有排除的路徑。
+  它的作者是工作的身分，之後由 [[pull-gestalt]] 換成 `4d2c5db`。
 - 以 `m1` 的 `b2e967f` 做出快照 `93b4e1e`，接在 `258940e` 之後，推到 `main`；變動 63 個檔，新增 23、改名 3、刪除 1、修改 36，來自 [[Task 26]]、[[Task 79]] 到 [[Task 88]]，以及 keep-english 與上次 publish-github 的執行紀錄。
   `check` 與 `publish` 的掃描都是 `nothing found`。
   `m1` 跟著從 `93b4e1e` 重新開始（`b9933dd`），舊的在 tag `archive/m1-261031`；GitHub 上確認：`main` 有 4 個 commit，最新的是 `93b4e1e`，tree 和本機做出的 `e5c202f` 相同，289 個檔裡沒有排除的路徑。

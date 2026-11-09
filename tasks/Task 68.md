@@ -11,7 +11,11 @@
 - Task 8、10、11、13、19、33 已經寫 pairing line；寫「配對行」的是 Task 9、31、32.11、67 與摘要表。
 - `check_tasks.py` 不查 keep-English 的 term，chinese skill 的 `check_parity.py --keep` 與 [[keep-english]] 的稽核也不看 task 檔。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-10-19）
 
@@ -35,29 +39,29 @@
 - 改到的四個 task 檔，各在日誌的 2026-10-19 補一行，連到本 task，照 [[Task 62.1]] 與 [[Task 62.4]] 改別的 task 檔時的做法。
 - 改完之後，task 檔與摘要表裡還寫「配對行」的，只有本 task 談這個譯法本身的地方。
 
-## 3. 要做的
+## 4. 要做的
 
 1. ✅ 33 處改成 pairing line，Task 67 的標題與摘要表的 Title 一起改。
 2. ✅ 改到的四個 task 檔在日誌補一行。
 3. ✅ 跑 `check_tasks.py`。
 
-## 4. 驗證
+## 5. 驗證
 
 - `check_tasks.py` PASS。
 - task 檔與摘要表裡的「配對行」，只剩本 task 談這個譯法本身的地方。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 67]]：在這裡發現，23 處在它的檔案裡，它的標題跟著改。
 - [[Task 69]]：其他 keep-English 譯法的盤點與 `check_tasks.py` 的掃描。
 - [[Task 63]]：決定 task、chore 等新詞要不要加進清單；本 task 不併進去。
 - [[Task 48]]：中文版的「術語」改成 term；中英文之間的空格照它。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

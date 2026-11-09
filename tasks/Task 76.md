@@ -12,7 +12,11 @@
 - gen-rsdc-skill 把 system 定義成 deterministic、不用 LLM 的 Python script，但只約束它處理的 skill。
 - [skill-writing.md](../skill-groups/common/rules/skill-writing.md) 第 38 行規定程式能確定地做的 step 交給 script，要讀文字、做判斷、寫摘要的 step 交給 agent，但沒有說 script 不呼叫 LLM。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-10-20）
 
@@ -33,7 +37,7 @@
 使用者決定 RSDC 先不改，留給本 task 決定這兩句要不要改成「做編譯的 skill 執行程式，再把結果交給 Compiler」，寫出 system 與 agent 互不認識、由 skill 調控。
 範圍只有這兩句，[[Task 18.2]] 的「Compiler 留在系統內」不重新討論。
 
-## 3. 要做的
+## 4. 要做的
 
 1. 以 STE 寫這條規則，放在 skill-writing.md 第 38 行那條之後；`check_ste.py --ste` PASS。
 2. skill-writing-tw.md 照 [chinese](../skill-groups/common/skills/chinese/SKILL.md) skill 更新。
@@ -41,7 +45,7 @@
 4. 決定 check-skill 要不要加一項檢查，例如找 script 裡的 LLM client。
 5. 決定 SkillCompiler-RSDC 3.1 第 593 行與 3.2 第 604 行要不要改成由 skill 執行程式、再把結果交給 Compiler，見「現況」；要改的話，中文版照 chinese skill 一起改。
 
-## 4. 驗證
+## 5. 驗證
 
 - `check_ste.py --ste` PASS，警告和改之前相同。
 - skill-writing.md 中英兩份的 `check_parity.py` 0 failure；中文版以 INCREMENTAL 更新時，`diff_md.py --verify` PASS。
@@ -49,16 +53,16 @@
 - 若改了 SkillCompiler-RSDC：`check_rsdc.py --rsdc` 單獨與中英對照都 PASS；中文版的 `check_parity.py` 0 failure，`diff_md.py --verify` PASS。
   compile-skill 的 README 與中文版記的 `[[SkillCompiler-RSDC]]` 指紋會變成 CHANGED，讀過 SKILL-Compile.md、確認它仍成立之後重記。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 18.2]]：使用者在這裡提出，並決定 Compiler 留在 SkillCompiler 的系統內。
 - [[Task 77]]：compile SOP 只寫 agent 的判斷，程式由 SKILL.md 執行；RSDC 3.1 那兩句要不要跟著改，留給本 task。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

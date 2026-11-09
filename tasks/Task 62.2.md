@@ -13,7 +13,11 @@
   2026-10-18 在 InvestForge 實測：53.8 萬個檔，19.9 秒，其中 InvDatabase 占 35.8 萬；git 追蹤的只有 810 個。
 - [[Task 62.1]] 的 task-rules.md 與 chore-rules.md 已照本 task 之後的版本寫編號規則：號碼不重複、可以有空號、用過不再用。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 已決定（2026-10-18）
 
@@ -39,7 +43,7 @@
 - task-rules.md、chore-rules.md 與中文版：Numbers 一節加上空號那一行的規則；`check_ste.py --ste` PASS，`check_parity.py` 0 failure。
   ste-custom.md 有別的 session 還沒 commit 的改動（run 成為專案核准詞），那個 session 也在改兩份規則的 Technical words；兩份的 ste-custom 紀錄不在本 task 重記，留給那個 session 與 [[rerecord-ste-custom]]。
 
-## 3. 要做的
+## 4. 要做的
 
 1. ✅ check 1：允許空號，空號記在摘要表的空號那一行；sub task 也一樣。
 2. ✅ 新 task 的號碼是用過的最大號碼加 1，最大的可能在空號那一行；規則檔寫明。
@@ -47,7 +51,7 @@
 4. ✅ 兩支腳本的 docstring 跟著改；[[Task 62.1]] 的規則檔寫的檢查項目也一致。
 5. ✅ 使用者看過之後 commit，前綴 `task 62.2`；兩份規則檔照規則只 stage 自己的修改。
 
-## 4. 驗證
+## 5. 驗證
 
 - 在 scratchpad 的副本上刪掉幾個 task 檔與它們的列，check 1 PASS；再放一個沒有父 task 的 sub task 檔，check 1 以 1 結束。
 - 以 `--vault` 指向 InvestForge 跑一次，幾秒內跑完，找到的斷掉的連結和 `rglob` 的結果相同。
@@ -70,17 +74,17 @@
   在這裡不加 `--vault`：新版 0.11 秒，舊版 0.40 秒。
 - 這裡的 `check_tasks.py` 18 項、`check_chores.py` 14 項 PASS。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 6]]：`check_tasks.py` 是那時寫的。
 - [[Task 53]]：`check_chores.py` 是那時寫的。
 - [[Task 62.4]]：搬走 task 之前，要先做完本 task；搬走時把 9 個號碼寫進空號那一行，並在圖例的說明加一句。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

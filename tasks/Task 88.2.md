@@ -9,7 +9,11 @@
 - 接上 SkillsGestalt 要做的事散在 [[Task 82]] 到 [[Task 87]]、[chore-rules.md](../skill-groups/common/rules/chore-rules.md)、[CLAUDE-tmp.md](../skill-groups/common/templates/AGENTS-tmp.md) 與 `gen_claude_md.py` 的說明裡。
 - InvestForge 是靠 Task 13 @ InvestForge 的 session 收到一則則訊息才接上的。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 - [forge-setup.md](../skill-groups/common/references/forge-setup.md) 與 [中文版](../skill-groups/common/references/forge-setup-tw.md)，以 STE 寫，例子用虛構的 BookForge：
   - Make a Forge：七個編號步驟，每步一個動作、一個檢查——建立根目錄與 git repository、複製 [config-forge-tmp.yaml](../skill-groups/common/templates/config-forge-tmp.yaml) 並換掉佔位符、寫 `CLAUDE-local.md`、以 `gen_claude_md.py` 產生 CLAUDE.md、把設定記成 Task 1 並寫 task 摘要表、寫 chore 摘要表（一列文字的 [[keep-english]]）、commit。
@@ -18,7 +22,7 @@
   - After a Change in SkillsGestalt：Forge 直接讀 SkillsGestalt，改了之後再跑三個檢查。
 - [README.md](../README.md) 與中文版的 Gestalt and Forge 一節、[glossary.md](../skill-groups/common/references/glossary.md) 與中文版的 Forge、`config-forge-tmp.yaml` 開頭的註解，都加一句連到指南。
 
-## 3. 要做的
+## 4. 要做的
 
 ### 已決定（2026-10-31）
 
@@ -34,7 +38,7 @@
 - 步驟寫成編號，每步一個動作、一個檢查。
 - 第一個 task：沒有 `tasks/` 時 `check_tasks.py` 會停下來，而 git 不保留空目錄；所以照 InvestForge 當初的做法，把這次的設定記成 Task 1，指南附上它的內容。
 
-## 4. 驗證
+## 5. 驗證
 
 - 照指南在一個新的暫用資料夾從零接上本 repo：`gen_claude_md.py --check`、`check_tasks.py` 與 `check_chores.py` 都是 PASS。
 - 指南 `check_ste.py` 是 PASS，與中文版 `check_parity.py` 是 0 failure。
@@ -45,17 +49,17 @@
 - 走這一遍時發現第 2 步原本的檢查「`config.yaml` 裡沒有 `{`」不成立，因為範本的註解本身有 `{`；改成「`config.yaml` 的值裡沒有三個佔位符」。
 - 指南與 glossary.md 的 `check_ste.py` 是 PASS；指南、README、glossary 三組中英對照 `check_parity.py` 都是 0 failure，`diff_md.py --verify` 確認 README 與 glossary 的中文版只改了新加的一行；`reformat_md.py --mode clean` 不改動。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 88]]：本 task 是它的第 2 步。
 - [[Task 88.1]]：指南引用它的範本。
 - BookMaster 改成新的機制時，可以當這份指南的第一個試用者，在 BookMaster 自己的 tasks 做。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

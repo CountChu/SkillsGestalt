@@ -14,7 +14,11 @@ DFD.md 的範例圖把一份資料叫做 `Catalogue`，asd-ste 寫的草稿沒�
 
 Task 32 已把 DFD 的四份都改成 `Catalog`（SkillsGestalt `4f57e68`）。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 **結果（2026-10-13）**
 
@@ -120,7 +124,7 @@ Task 32 已把 DFD 的四份都改成 `Catalog`（SkillsGestalt `4f57e68`）。
 | `InvIndexAnalyzer/docs/Prompts.md` | 3 | behaviour 2、totalling | — |
 | `InvIndexAnalyzer/docs/Wireframe.md` | 18 | colour 7、emphasised 7、analyse、behaviour、grey、labelled | — |
 
-## 3. 要做的
+## 4. 要做的
 
 **已決定（2026-10-13）**
 
@@ -160,7 +164,7 @@ Task 32 已把 DFD 的四份都改成 `Catalog`（SkillsGestalt `4f57e68`）。
 先讀 asd-ste 的 [README.md](../skill-groups/common/skills/asd-ste/README.md) 的 When the Skill Is Changed，照它改 SKILL.md、README.md 與兩者的中文版、`check_ste.py`，並跑它列出的檢查。
 reformat-md 沒有 README.md，改它時照 [skill-writing.md](../skill-groups/common/rules/skill-writing.md)。
 
-## 4. 驗證
+## 5. 驗證
 
 **驗證**
 
@@ -169,18 +173,18 @@ reformat-md 沒有 README.md，改它時照 [skill-writing.md](../skill-groups/c
 - md-style.md 加上規則之後，reformat-md 的 Step 0 不會停下。
 - md-style.md 與它的草稿，兩對中英對照的 `check_parity.py` 都是 0 failure；`depends_on.py check` 找不到還記著 md-style.md 舊指紋的文件。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 **與其他 task 的關係**
 
 - [[Task 32]]：本 task 的來源；它依賴本 task，本 task 完成之前不審核其餘 10 份草稿。
 - [[Task 31]]：產生 11 份草稿；本 task 加上拼法檢查之後，要對它們重跑。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

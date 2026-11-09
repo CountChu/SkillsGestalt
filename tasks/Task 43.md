@@ -11,7 +11,11 @@
 中文版要不要保留英文：[tw-keep-english.md](../skill-groups/common/references/tw-keep-english.md) 規則裡的 **technical term**（它的中文版寫「技術詞」，chinese skill 的中文版寫「技術術語」），以及判定要保留英文、列進表格的 **keep-English list**。
 technical term 和 technical word 只差一個字，中文的「技術詞」和「技術用字」也是；customization 則看不出它其實就是核准字，只是由本專案核准，所以不算技術用字。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 **已決定（2026-10-14）**
 
@@ -63,7 +67,7 @@ technical term 和 technical word 只差一個字，中文的「技術詞」和�
   2.3 的對照頁：第 8 項改寫成四個子項，其他項目的行號自動對到新位置，共 108 個行號；檔頭那一項維持通過。
   現在中文版寫 term 的，是 chinese skill 與 tw-keep-english；其他中文版仍寫「術語」。
 
-## 3. 要做的
+## 4. 要做的
 
 **要改的（2026-10-14 盤點）**
 
@@ -87,22 +91,22 @@ asd-ste 有 README.md：先讀它的 When the Skill Is Changed，照它一起改
 chinese、write-note 與 write-topic 沒有 README.md：先讀 [skill-writing.md](../skill-groups/common/rules/skill-writing.md)。
 中文版照 chinese skill 只翻改動的部分，再以 `check_parity.py` 對照。
 
-## 4. 驗證
+## 5. 驗證
 
 —
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 **與其他 task 的關係**
 
 - [[Task 32]]：本 task 改到它正在審的 tw-keep-english 草稿（2.3），也讓宣告 `[[ste-custom]]` 的草稿要重跑 Step 3，包括正在審的 report-md-rules（2.5）。
 - [[Task 35]]：建立 ste-custom.md，當時取名 STE customization。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

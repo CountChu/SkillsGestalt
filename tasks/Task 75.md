@@ -13,7 +13,11 @@ gen-rsdc-skill 的 [SKILL.md](../skill-groups/common/skills/gen-rsdc-skill/SKILL
 - [check_rsdc.py](../skill-groups/common/skills/gen-rsdc-skill/scripts/check_rsdc.py) 的 `--skill` 檢查，把 SKILL.md 裡的每一個 § 引用都對照到 `--rsdc` 指定的 RSDC。
 - [depends_on.py](../skill-groups/common/scripts/depends_on.py) 的 `cited` 依節名對照，所以 gen-rsdc-skill 記下的指紋也涵蓋 SkillCompiler-RSDC 的 Derivation Rules 與 Presentation Contract；這兩節一改，gen-rsdc-skill 就被判為 CHANGED。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 ### 2026-10-20 查的結果
 
@@ -23,29 +27,29 @@ gen-rsdc-skill 的 [SKILL.md](../skill-groups/common/skills/gen-rsdc-skill/SKILL
 - compile-skill 的 `--skill` 也判 FAIL，6 項通過、1 項失敗：the skill links to SkillCompiler-RSDC.md。
   原因和範例引用不同：[[Task 77]] 讓 compile-skill 的 SKILL.md 只讀 SKILL-Compile.md、不連到 RSDC，RSDC 的指紋改記在它的 README.md；`--skill` 預設 skill 會連到它的 RSDC，這個前提對 compile-skill 不成立。
 
-## 3. 要做的
+## 4. 要做的
 
 1. 決定怎麼讓程式認出範例引用，例如範例的那一行不算，或範例用不同的寫法。
 2. 照決定改 `check_rsdc.py` 與 `depends_on.py`；兩支都改的話，`cited` 的說明（docstring 與 check-md-deps 的 SKILL.md）跟著改。
 3. 若改的是範例的寫法，gen-rsdc-skill 的 SKILL.md 與中文版照 [chinese](../skill-groups/common/skills/chinese/SKILL.md) skill 一起改。
 
-## 4. 驗證
+## 5. 驗證
 
 - `check_rsdc.py --rsdc SkillCompiler-RSDC.md --skill gen-rsdc-skill/SKILL.md` PASS。
 - gen-rsdc-skill 記下的 `[[SkillCompiler-RSDC]]` 指紋只涵蓋 §2.3 Dataflow：改 SkillCompiler-RSDC 的其他節，它仍是 UNCHANGED。
 - 引用 RSDC 的其他 SKILL.md，`--skill` 的結果和改之前一樣。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 18.2]]：對齊 SkillCompiler-RSDC 之後發現這項 FAIL，記為已知誤判。
 - [[Task 18]]：它的「驗證」要求引用 RSDC 的每一份 SKILL.md 都 PASS，gen-rsdc-skill 這一項要等本 task。
 - [[Task 77]]：compile-skill 的 SKILL.md 不再連到 SkillCompiler-RSDC，`--skill` 因此判 FAIL。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

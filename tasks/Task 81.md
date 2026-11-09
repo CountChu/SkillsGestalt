@@ -10,7 +10,11 @@ SkillsGestalt 與 InvestForge 各有許多 skills 與 agents，共同完成工�
 InvestForge 透過 `config.yaml` 的 `skillGroups.common` 使用 SkillsGestalt 的共用 skills、rules、templates 與 scripts，另有自己的 `dedi`。
 文件現在把兩者都叫 workspace，但這個字和 VS Code 的 workspace 撞名：`InvestForge.code-workspace` 把 SkillsGestalt 也掛成其中一個資料夾。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 - 名稱已定（2026-10-30）：
   - **Agency**：一個 repo 加上它自己的 wiki，裡面的 skills 與 agents 共同完成工作；SkillsGestalt 與 InvestForge 都是一個 agency。
@@ -23,7 +27,7 @@ InvestForge 透過 `config.yaml` 的 `skillGroups.common` 使用 SkillsGestalt �
 - [README.md](../README.md) 與中文版在 What Is Here 前加上 Gestalt and Forge 一節，連到術語表。
 - [tw-keep-english.md](../skill-groups/common/references/tw-keep-english.md) 與中文版加上 agency、Forge、Gestalt，版本從 261018 換成 261030。
 
-## 3. 要做的
+## 4. 要做的
 
 ### 已決定（2026-10-30）
 
@@ -44,7 +48,7 @@ InvestForge 透過 `config.yaml` 的 `skillGroups.common` 使用 SkillsGestalt �
 - README 與中文版加一節，連到術語表；根目錄的 CLAUDE.md 不改。
 - 每個術語寫成粗體加定義的清單，和 skill 的 TERMINOLOGY 一樣；以 SkillsGestalt 與 InvestForge 當例子；不畫關係圖。
 
-## 4. 驗證
+## 5. 驗證
 
 - 術語表的英文版 `check_ste.py` 是 PASS，與中文版的 `check_parity.py` 是 0 failure。
 - 術語表說明的 `wikiDir`、`wikiRootDir`、`skillGroups` 和兩邊 `config.yaml` 的現況一致。
@@ -56,17 +60,17 @@ InvestForge 透過 `config.yaml` 的 `skillGroups.common` 使用 SkillsGestalt �
 - `check_parity.py` 對 glossary、tw-keep-english 與 README 三組都是 0 failure。
 - `reformat_md.py --mode clean` 不改動任何一個檔。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 - [[Task 80]]：討論起於比較兩邊 CLAUDE.md 的 Tasks 與 Chores 兩節。
 - InvestForge 的文件若要改，在 InvestForge 自己的 tasks 開 task，不在本 task 改。
 - [[keep-english]]：keep-English list 換成 261030 版，下一次 keep-English 稽核該做了。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-11-02
 

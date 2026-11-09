@@ -10,7 +10,11 @@
 中文版在同一行連回英文，chinese skill 把這一行當作中文版的 pairing line。
 照範本寫的 RSDC 則用 metadata 的「- **Twin**:」一行，`check_rsdc.py` 原本要求英文與中文版都要有，少了就是 FAIL。
 
-## 2. 現況
+## 2. 結論
+
+—
+
+## 3. 過程
 
 **2026-10-12 做了什麼：第 1 步**（SkillsGestalt `0e55dde`、InvestForge `7d4f3fd`）
 
@@ -88,7 +92,7 @@
 - **再掃一次**：兩個 workspace 都找不到指向中文版的寫法——`Its 繁體中文 twin`、`- **Twin**:`、`([繁體中文](…))`、`Chinese reading copy` 與中文版裡連回英文的那一行都沒有了。
 - **依賴方**：Task 31、18、30 裡「等 Task 33」的說明改成已完成；摘要表裡 Task 34、31、30、18 的 Depends on 圖示改成 ✅。
 
-## 3. 要做的
+## 4. 要做的
 
 **已決定（2026-10-12）**
 
@@ -143,7 +147,7 @@
 - 改 skill 之前，先讀它 README 的 When the Skill Is Changed，照它改並跑它列出的檢查。
 - RSDC：`check_rsdc.py` 與兩份範本已在第 1 步改好；拿掉已寫好的 RSDC 的這一句之後，每一份跑 RSDC Checker。
 
-## 4. 驗證
+## 5. 驗證
 
 **驗證**
 
@@ -153,7 +157,7 @@
 - `depends_on.py check` 找不到本 task 造成的 CHANGED。
 - 2026-10-12 的結果與例外，見「第 4 步」。
 
-## 5. 與其他 task 的關係
+## 6. 與其他 task 的關係
 
 **與其他 task 的關係**
 
@@ -164,11 +168,11 @@
   本 task 先照新的版本規則做；原檔裡寫的版本規則，要等 Task 32 以草稿取代原檔才改過來。
 - [[Task 24]]：要照 README-tmp.md 寫 27 份 README，本 task 改了範本之後，它寫出的 README 就沒有這一句。
 
-## 6. 知識
+## 7. 知識
 
 —
 
-## 7. 日誌
+## 8. 日誌
 
 ### 2026-10-18
 

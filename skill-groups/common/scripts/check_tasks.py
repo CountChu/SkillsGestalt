@@ -22,8 +22,8 @@ A task file opens with its heading and its two lines:
   **Raised**：<YYYY-MM-DD>，<why it was raised>
   **Depends on**：<[[Task M]]、[[Task K]]，or —>
 
-Then the numbered chapters, in this order: "## 1. 背景", "## 2. 現況", "## 3. 要做的", "## 4. 驗證",
-"## 5. 與其他 task 的關係", "## 6. 知識", "## 7. 日誌" ("###" inside them is free; a chapter with nothing to say holds "—").
+Then the numbered chapters, in this order: "## 1. 背景", "## 2. 結論", "## 3. 過程", "## 4. 要做的",
+"## 5. 驗證", "## 6. 與其他 task 的關係", "## 7. 知識", "## 8. 日誌" ("###" inside them is free; a chapter with nothing to say holds "—").
 The log holds one "### YYYY-MM-DD" section per day, each recording what changed that day, newest first;
 the oldest is the day the task was raised.
 
@@ -65,7 +65,7 @@ them leaves them apart. What a program can compare, this script compares:
   14. icons       the icon after each link in a Depends on cell is the icon that task's own row has now
   15. day sections each file has "### YYYY-MM-DD" sections, one per day, a real date each, newest first,
                  and the oldest is the day on its Raised line
-  16. chapters   each file has the numbered "##" chapters, in order, and its day sections are inside the last one (7. 日誌)
+  16. chapters   each file has the numbered "##" chapters, in order, and its day sections are inside the last one (8. 日誌)
 
 What it cannot judge - what a task says, how far its background was looked into, whether it is done -
 stays with whoever edits the files.
@@ -422,7 +422,7 @@ def main() -> None:
     rep.check(not days, 'each file has one "### YYYY-MM-DD" section per day, newest first, the oldest being its Raised day', days)
 
     # 16. numbered chapters
-    FIXED = ['1. 背景', '2. 現況', '3. 要做的', '4. 驗證', '5. 與其他 task 的關係', '6. 知識', '7. 日誌']
+    FIXED = ['1. 背景', '2. 結論', '3. 過程', '4. 要做的', '5. 驗證', '6. 與其他 task 的關係', '7. 知識', '8. 日誌']
     secs = []
     for n in order:
         heads2, first_day, fenced = [], None, False
