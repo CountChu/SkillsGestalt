@@ -23,6 +23,10 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 
 #### 2026-11-10
 
+- 在公開 repo 的 clone 上做，work branch 是 `countdell`：拿進 `m1` 發佈的快照 `1cd81c2`（SkillsGestalt 2026-11-10），變動 133 個檔，作者與 committer 是 CountChu，`incoming` 的掃描是 `nothing found`。
+  經使用者同意，舊的 `countdell`（`9c168fb`）存成 tag `archive/countdell-261110-pull`；本機 `main` 從 `8f47eda` 移到 `1cd81c2`；`countdell` 的 2 個 commit rebase 上去，沒有衝突，成為 `6e23485` 與 `5e8b1b9`，所以上面 2026-11-09 那筆的 `ba9039a` 現在只在這個 tag。
+  這個 clone 沒有不公開的路徑在 git 裡，`git diff main countdell` 只有 2026-11-09 第二次發佈的紀錄；`gen_agents_md.py` 印出 unchanged，`check_tasks.py` 與 `check_chores.py` 都是 PASS。
+  新快照把 tw-keep-english.md 換成 261110，所以 [[keep-english]] 該做了。
 - 拿進 `countdell` 發佈的兩個快照 `bb7eca1` 與 `8f47eda`（SkillsGestalt 2026-11-09）：變動 137 個檔，作者與 committer 是 CountChu，`incoming` 的掃描是 `nothing found`。
   經使用者同意，舊的 `m1`（`a04f0d1`）存成 tag `archive/m1-261110-pull`；本機 `main` 從 `1b41f68` 移到 `8f47eda`；`m1` 的 157 個 commit rebase 上去。
   開始之前，經使用者同意還原 `tasks/Task 97.md` 在 2026-11-06 只補空白的表格對齊，並移除 `.git/rebase-merge`，它是 2026-10-31 留下的空目錄。
@@ -51,6 +55,11 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 
 #### 2026-11-09
 
+- 第二次發佈：以 `countdell` 的 `822e561` 做出快照 `8f47eda`，接在 `bb7eca1` 之後，推到 `main`；變動 2 個檔，是第一次發佈與 [[keep-english]] 261108 稽核的執行紀錄。
+  先做 [[pull-gestalt]]：本機的 `main` 和 `origin/main` 都是 `bb7eca1`；`check` 與 `publish` 的掃描都是 `nothing found`。
+  這次程式自己推上去了，不必由使用者推。
+  `countdell` 跟著從 `8f47eda` 重新開始（`ba9039a`），`archive/countdell-261109` 從 `e7e9684` 改指 `822e561`；經使用者同意，早上的歷史另存成 tag `archive/countdell-261109-1`（指向 `e7e9684`），因為下面那筆紀錄引用它。
+  GitHub 上確認：`main` 是 `8f47eda`，只比 `bb7eca1` 多 1 個 commit，沒有排除的路徑。
 - 以 `countdell` 的 `e7e9684` 做出快照 `bb7eca1`，接在 `1b41f68` 之後；變動 136 個檔，其中 127 個是 task 改成八章，來自 5 個 commit：task 的八章與 2. 結論、結論用表格、伺服器上的項目連到它的 URL，以及 tw-keep-english.md 261108。
   先做 [[pull-gestalt]]：本機的 `main` 和 `origin/main` 都是 `1b41f68`，沒有東西要拿進來；`check` 與 `publish` 的掃描都是 `nothing found`，快照的作者與 committer 是 `publish_snapshot.py` 的 `IDENTITY`。
   程式推送失敗：這個 clone 仍沒有 GitHub 的帳號資料，由使用者自己執行 `git push origin main:main`；之後用程式的 `restart_work` 讓 `countdell` 從 `bb7eca1` 重新開始（`4feaeaf`），舊的在 tag `archive/countdell-261109`。
