@@ -37,15 +37,20 @@ SkillsGestalt 可能在不只一台電腦上，各有自己的工作分支，例
    新快照改了規則或格式時，只在 `<work>` 上的檔可能過不了，例如還沒發佈的 task；照新快照的 `CHANGES.md` 改它們。
 10. 在摘要表 `## 執行紀錄` 的 `### pull-gestalt` 下記一筆：拿進來的快照、tag、衝突與改了什麼；摘要表的「上次執行」改成當天。
     commit 以 `chore pull-gestalt: ` 開頭。
+11. 從根目錄跑 `git bundle create ../SkillsGestalt.bundle.tmp --all && git bundle verify -q ../SkillsGestalt.bundle.tmp && mv -f ../SkillsGestalt.bundle.tmp ../SkillsGestalt.bundle`，把整個 repo 備份到根目錄旁的 `SkillsGestalt.bundle`。
+    `.git` 不在 Dropbox 同步（[[Task 101]]），所以 work branch 的歷史與 `archive/*` tag 只靠這個檔備份；先寫暫存檔，驗證過再換掉，Dropbox 才不會同步到寫了一半的檔。
+    Windows 上在 Git Bash 跑這一行。
 
 ## 4. 驗證
 
 - `python {skillGroups.common}/scripts/publish_snapshot.py incoming` 印出 `nothing to pull`。
 - `main` 是 `<work>` 的祖先，`git diff --name-status main <work>` 只有不公開的路徑與還沒發佈的改動。
 - `gen_agents_md.py --check`、`check_tasks.py` 與 `check_chores.py` 都是 PASS。
+- `git bundle verify -q ../SkillsGestalt.bundle` 印出 `is okay`，`git bundle list-heads ../SkillsGestalt.bundle` 有 `<work>` 最新的 commit。
 
 ## 5. 與其他 task、chore 的關係
 
 - [[Task 89]]：建立本 chore 與 `publish_snapshot.py incoming`。
 - [[publish-gestalt]]：發佈之前先做本 chore。
 - [[follow-gestalt]]：給 Forge 做的 chore；本 chore 是 SkillsGestalt 自己的另一份 clone 跟上 GitHub。
+- [[Task 101]]：讓 Dropbox 不同步 `.git`，加上最後一步的 bundle 備份。

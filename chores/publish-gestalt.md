@@ -50,6 +50,9 @@ work branch 不推，要設 `branch.<work branch>.pushRemote no_push`，在它�
    快照的作者與 committer 是根目錄 `config.yaml` 的 `identity`（`name` 與 `email` 兩個都要寫），沒有就是 `publish_snapshot.py` 的 `IDENTITY`，不受這台電腦的 git 設定影響；讓 work branch 重新開始的那個 commit 不推出去，仍用 git 的 `user.name` 與 `user.email`。
 5. 到 GitHub 確認：`gh api "repos/CountChu/SkillsGestalt/commits?sha=main" --jq '.[0].sha'` 是新的快照，`gh api "repos/CountChu/SkillsGestalt/git/trees/main?recursive=1"` 裡沒有排除的路徑。
 6. 在摘要表 `## 執行紀錄` 的 `### publish-gestalt` 下記下這次發佈，並更新摘要表的「上次執行」；commit 以 `chore publish-gestalt: ` 開頭。
+7. 從根目錄跑 `git bundle create ../SkillsGestalt.bundle.tmp --all && git bundle verify -q ../SkillsGestalt.bundle.tmp && mv -f ../SkillsGestalt.bundle.tmp ../SkillsGestalt.bundle`，把整個 repo 備份到根目錄旁的 `SkillsGestalt.bundle`。
+   `.git` 不在 Dropbox 同步（[[Task 101]]），所以 work branch 的歷史與 `archive/*` tag 只靠這個檔備份；先寫暫存檔，驗證過再換掉，Dropbox 才不會同步到寫了一半的檔。
+   Windows 上在 Git Bash 跑這一行。
 
 ### 已決定的
 
@@ -66,6 +69,7 @@ work branch 不推，要設 `branch.<work branch>.pushRemote no_push`，在它�
 - `check` 與 `publish` 的掃描都是 `nothing found`。
 - GitHub 上 `main` 最新的 commit 是新的快照，只比上次多一個 commit，沒有 work branch 的歷史。
 - GitHub 上的檔案裡沒有 `checkpoints/`、`external/`、`skill-groups/external/`、`skill-groups/archived/`、`config.yaml`、預覽檔與 PDF。
+- `git bundle verify -q ../SkillsGestalt.bundle` 印出 `is okay`，`git bundle list-heads ../SkillsGestalt.bundle` 有 `<work>` 最新的 commit。
 
 ## 5. 與其他 task、chore 的關係
 
@@ -73,3 +77,4 @@ work branch 不推，要設 `branch.<work branch>.pushRemote no_push`，在它�
 - [[Task 79]]：把本機分支 `master` 改名為 `m1`、`public` 改名為 `main`，並讓 `m1` 從 `main` 重新開始。
 - [[Task 26]]：ASD-STE100 的 PDF 留在 `m1` 的 git，不放進公開版（2026-10-30 決定）。
 - [[Task 91]]：2026-10-31 把名稱從 `publish-github` 改成 `publish-gestalt`；git 歷史裡以 `chore publish-github: ` 開頭的 commit 也是本 chore 的。
+- [[Task 101]]：讓 Dropbox 不同步 `.git`，加上最後一步的 bundle 備份。

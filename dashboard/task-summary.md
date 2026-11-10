@@ -8,6 +8,7 @@ task 檔的格式與摘要表的維護方式，見 [task-rules.md](../skill-grou
 | Task | Raised | Title | Status | Depends on |
 | --- | --- | --- | --- | --- |
 | [[Task 102]] | 2026-11-10 | publish_snapshot.py 改成可以設定，讓 Forge 也能照 publish-gestalt、pull-gestalt 發佈快照 | ✅ | — |
+| [[Task 101]] | 2026-11-10 | 讓 Dropbox 不同步 SkillsGestalt 的 .git | ✅ | — |
 | [[Task 100]] | 2026-11-05 | 決定 skill 執行中的資料該寫進 checkpoints 還是 temp | ✅ | — |
 | ├─ [[Task 100.1]] | 2026-11-06 | 把很少用的 skill 搬到 skill-groups/archived | ✅ | — |
 | ├─ [[Task 100.2]] | 2026-11-06 | 寫 run-data-rules.md，取代 scratch-rules 與 report-yaml-rules | ✅ | — |

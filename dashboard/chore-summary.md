@@ -34,6 +34,15 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
   `task-rules.md` 與中文版的 Technical words 取聯集，`m1` 新加的 topic 規則照八章寫成 `7. 知識` 與 `8. 日誌`。
 - 新快照把 task 改成八章：只在 `m1` 上的 13 份 Task 100 照 CHANGES.md 改好，`2. 結論` 寫 `—`（`72f88dc`）。
 - `git diff main m1` 仍有 `external/` 與 `skill-groups/external/`；`gen_agents_md.py --check` 要用 `.venv` 的 python，它與 `check_tasks.py`、`check_chores.py` 都是 PASS。
+- 第二次：`countdell` 又發佈了只有執行紀錄的 `b080dc7`；照使用者的決定只拿進來、不發佈，免得兩台互相發佈只有紀錄的快照。
+  開始前發現 `.git/rebase-merge` 又出現：內容是早上那次 rebase 停在 128/157 時的狀態，那次 rebase 早已做完，應是 Dropbox 放回的舊副本；經使用者同意搬到 scratchpad，沒有執行 `git rebase --abort`，因為它會把 `m1` 拉回 `a04f0d1`。
+  舊的 `m1`（`21c88b7`）存成 tag `archive/m1-261110-pull-2`；本機 `main` 從 `1cd81c2` 移到 `b080dc7`；`m1` 的 2 個 commit rebase 上去，沒有衝突。
+  `git diff main m1` 仍有 `external/` 與 `skill-groups/external/`；`gen_agents_md.py --check`、`check_tasks.py` 與 `check_chores.py` 都是 PASS，`incoming` 印出 `nothing to pull`。
+- 第三次：拿進 `countdell` 的 `94db4c4`（[[Task 102]]：`publish_snapshot.py` 可以由 `config.yaml` 的 `publish:` 設定），變動 9 個檔，掃描 `nothing found`。
+  舊的 `m1`（`62e1082`）存成 tag `archive/m1-261110-pull-3`；本機 `main` 從 `b080dc7` 移到 `94db4c4`；`m1` 的 4 個 commit rebase 上去。
+  衝突：`chore-summary.md` 的 `### publish-gestalt` 兩邊在同一天的段落各加一筆，兩筆都留，`b080dc7` 在前；`task-summary.md` 兩列都留，Task 102 在前。
+  `publish-gestalt.md` 與 `pull-gestalt.md` 自動合併，和 `94db4c4` 相比只多了 [[Task 101]] 的 bundle 那一步。
+  `gen_agents_md.py --check`、`check_tasks.py` 與 `check_chores.py` 都是 PASS，`incoming` 印出 `nothing to pull`。
 
 #### 2026-11-02
 
@@ -60,6 +69,11 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
   `countdell` 跟著從 `b080dc7` 重新開始（`0a7cf29`），舊的在 tag `archive/countdell-261110`。
   GitHub 上確認：`main` 是 `b080dc7`，只比 `1cd81c2` 多 1 個 commit，沒有排除的路徑，也沒有 `skill-groups/archived/`。
   [[keep-english]] 261110 還沒做，使用者決定先發佈。
+- 先做 [[pull-gestalt]]：GitHub 上有 `countdell` 的 `bb7eca1` 與 `8f47eda`，拿進來之後 `m1` 是 `dda8233`。
+- 以 `m1` 的 `dda8233` 做出快照 `1cd81c2`，接在 `8f47eda` 之後，推到 `main`；變動 133 個檔，修改 87、新增 15、刪除 31，共 158 個 commit。
+  主要是 [[Task 100]] 的 run data：run-data-rules.md 取代 scratch-rules 與 report-yaml-rules，6 個很少用的 skill 搬到 `skill-groups/archived`；其餘是 script 從執行所在的 workspace 找根目錄、task-rules 的 Obsidian URI，以及 keep-English list 261110。
+  `check` 與 `publish` 的掃描都是 `nothing found`，快照的作者與 committer 是 `publish_snapshot.py` 的 `IDENTITY`；訊息有五段英文摘要，照使用者的決定不加 Co-Authored-By。
+  `m1` 跟著從 `1cd81c2` 重新開始（`871ac1c`），舊的在 tag `archive/m1-261110`；GitHub 上確認：`main` 有 10 個 commit，最新的是 `1cd81c2`，tree 和本機做出的 `6415266` 相同，297 個檔裡沒有排除的路徑。
 
 #### 2026-11-09
 
