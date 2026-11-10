@@ -9,8 +9,8 @@ chore 檔的格式與摘要表的維護方式，見 [chore-rules.md](../skill-gr
 | --- | --- | --- | --- | --- | --- |
 | [[follow-gestalt]] | 2026-10-31 | 跟上 Gestalt 的改動 | `{skillGroups.common}/CHANGES.md` 有比上次處理的那一筆新的條目 | — | 🔁 |
 | [[pull-gestalt]] | 2026-10-31 | 把 GitHub 上的新快照拿進工作分支 | 發佈之前、git fetch 看到新快照時，或使用者要求時 | 2026-11-10 | 🔁 |
-| [[publish-gestalt]] | 2026-10-30 | 發佈到 GitHub | 使用者要求發佈到 GitHub 時 | 2026-11-09 | 🔁 |
-| [[keep-english]] | 2026-10-18 | keep-English 稽核 | tw-keep-english.md 換了版本，和上次稽核的版本不同 | 2026-11-09 | 🔁 |
+| [[publish-gestalt]] | 2026-10-30 | 發佈到 GitHub | 使用者要求發佈到 GitHub 時 | 2026-11-10 | 🔁 |
+| [[keep-english]] | 2026-10-18 | keep-English 稽核 | tw-keep-english.md 換了版本，和上次稽核的版本不同 | 2026-11-10 | 🔁 |
 | [[rerecord-ste-custom]] | 2026-10-18 | 集中重記 ste-custom.md | 當天改過 ste-custom.md，而且當天的修改都做完了 | 2026-10-30 | 🔁 |
 
 Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
@@ -52,6 +52,14 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 - 新快照把 task 改成七章：只在 `m1` 上的 [[Task 89]] 插入 `6. 知識`；CLAUDE.md 重新產生。
 
 ### publish-gestalt
+
+#### 2026-11-10
+
+- 以 `countdell` 的 `65a42e4` 做出快照 `b080dc7`，接在 `1cd81c2` 之後，推到 `main`；變動 1 個檔，是 2026-11-09 第二次發佈與本日 [[pull-gestalt]] 的執行紀錄。
+  先做 [[pull-gestalt]]，拿進 `m1` 發佈的 `1cd81c2`；`check` 與 `publish` 的掃描都是 `nothing found`，程式自己推上去了。
+  `countdell` 跟著從 `b080dc7` 重新開始（`0a7cf29`），舊的在 tag `archive/countdell-261110`。
+  GitHub 上確認：`main` 是 `b080dc7`，只比 `1cd81c2` 多 1 個 commit，沒有排除的路徑，也沒有 `skill-groups/archived/`。
+  [[keep-english]] 261110 還沒做，使用者決定先發佈。
 
 #### 2026-11-09
 
@@ -98,6 +106,18 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 - 寫好程式之後試跑：`check` 對 master 的 `5c5094a` 是 `nothing found`；對清理之前的 `6cb068b` 找到 101 筆，以 `1` 結束。
 
 ### keep-english
+
+#### 2026-11-10
+
+- 清單 261110 版（261108 與 261106 合併，有 working data）：38 對中英對照，19 份中文版有 189 行警告；working data 的「工作資料」沒有找到任何一筆。
+- 在 `countdell` 的 clone 稽核，和 2026-11-09 的 261108 版報告比：2 筆新出現，2 筆消失。
+  - 新出現：checking-criteria-tw.md 與 gen-skill `SKILL-tw.md` 的 template「範本」各 1 行。
+  - 消失：gen-rsdc-skill `SKILL-tw.md` 的「標準化的 skill 叫用方式」，imp-app `SKILL-tw.md` 的「標準的 skill 呼叫」。
+  - 行數改變：imp-home `SKILL-tw.md` 的「步驟」24 → 31 行，check-skill `SKILL-tw.md` 的「腳本」22 → 25 行，imp-app `SKILL-tw.md` 的「腳本」10 → 9 行，asd-ste `SKILL-tw.md` 的「標準形式的 skill 呼叫」2 → 1 行；這些和 `m1` 2026-11-06 那筆列出的相同，是 `1cd81c2` 帶進來的。
+- 最多的 3 種譯法：script 的「腳本」131 行（14 份）、step 的「步驟」31 行（1 份）、identifier 的「識別碼」9 行（7 份）。
+- 「英文也寫中文」1 行，不算進警告：MermaidView-RSDC-tw.md 的「角色」，和上次相同。
+- 只列出，沒有改中文版；要改的仍記在 [[Task 73]]。
+- 報告：`checkpoints/chores/keep-english/2026-11-10-261110.txt`，只在 `countdell` 的 clone。
 
 #### 2026-11-09
 

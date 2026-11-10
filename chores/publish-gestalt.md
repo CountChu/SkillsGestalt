@@ -3,7 +3,7 @@
 **Status**：使用中——每次發佈先跑 `check`，使用者看過變動、同意之後才 `publish`。
 **Started**：2026-10-30，SkillsGestalt 公開到 GitHub 之後，發佈要重複做；做法由 [[Task 78]] 定下，也由它建立本 chore。
 **When**：使用者要求發佈到 GitHub 時
-**Private**：只有 SkillsGestalt 做——它發佈的是本 repo 的工作分支到它自己的 GitHub repo，`publish_snapshot.py` 寫死了 `main`、`origin` 與這個 GitHub repo。
+**Private**：只有 SkillsGestalt 做——它發佈的是本 repo 的工作分支到它自己的 GitHub repo，第 5 步用 `gh` 讀這個 GitHub repo。`publish_snapshot.py` 的分支、remote、排除的路徑與掃描可以由根目錄 `config.yaml` 的 `publish:` 改，所以 Forge 用它寫自己的 chore；本 chore 不寫 `publish:`，用 script 裡 SkillsGestalt 的值。
 
 ## 1. 目的
 
@@ -38,7 +38,7 @@ work branch 不推，要設 `branch.<work branch>.pushRemote no_push`，在它�
    它先印出用的 `work`，再做出要公開的 tree，也就是 work branch 的內容拿掉 `external/`、`skill-groups/external/` 與 `skill-groups/archived/`，掃描每個檔，再列出和上次發佈相比的變動；它不寫入任何東西。
    掃描找的是：email、私有 IP、Azure DevOps 的組織、使用者的家目錄、token 與私鑰、關鍵字檔裡的名稱，以及不該在 tree 裡的路徑。
 2. 有 `[FIND]` 就以 `1` 結束：在 work branch 上改掉那些內容並 commit，再回到第 1 步。
-   是誤報的話，改 [publish_snapshot.py](../skill-groups/common/scripts/publish_snapshot.py) 的允許清單（`EMAIL_ALLOWED`、`ADO_ALLOWED`），不要為了通過掃描而改內容。
+   是誤報的話，改 [publish_snapshot.py](../skill-groups/common/scripts/publish_snapshot.py) 的允許清單（`EMAIL_ALLOWED`、`ADO_ALLOWED`；只和一個 workspace 有關的 email 網域，寫在它的 `publish.emailAllowed`），不要為了通過掃描而改內容。
 3. 依 `check` 列出的 commit 寫這次改動的摘要，摘要用英文，一段或幾段，段落之間空一行。
    把摘要寫進 repo 外的一個 UTF-8 檔，例如 scratchpad；只有一行時也可以用 `--summary "<摘要>"`。
    多行的摘要不要用 `--summary`：Windows 上 python 的 `.bat` shim 會在換行處切斷參數。

@@ -3,7 +3,7 @@
 **Status**：使用中——先 `git fetch`，`incoming` 掃描新的快照與它的作者，使用者同意之後，本機 `main` 移到 `origin/main`，工作分支 rebase 上去。
 **Started**：2026-10-31，另一台電腦的 SkillsGestalt 以 `countdell` 為工作分支，也發佈快照到同一個 GitHub repo；由 [[Task 89]] 建立。
 **When**：發佈之前、git fetch 看到新快照時，或使用者要求時
-**Private**：只有 SkillsGestalt 做——它把 SkillsGestalt 自己的 GitHub repo 的快照拿進本 repo 的工作分支，用的 `publish_snapshot.py` 寫死了 SkillsGestalt 的值。
+**Private**：只有 SkillsGestalt 做——它把 SkillsGestalt 自己的 GitHub repo 的快照拿進本 repo 的工作分支，用 `publish_snapshot.py` 裡 SkillsGestalt 的值；Forge 以根目錄 `config.yaml` 的 `publish:` 改這些值，寫自己的 chore。
 
 ## 1. 目的
 

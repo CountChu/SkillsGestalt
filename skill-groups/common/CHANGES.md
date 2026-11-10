@@ -5,6 +5,19 @@ SkillsGestalt 的 `common` skill group 裡，會影響 Forge 的改動。
 每一筆寫明改了什麼、commit，以及 Forge 要做什麼；新的日期在前。
 Forge 以 chore [follow-gestalt](../../chores/follow-gestalt.md) 處理這裡的條目：它的執行紀錄記下處理到哪一筆，比那一筆新的就該做了。
 
+### 2026-11-10
+
+- **`publish_snapshot.py` 可以由根目錄 `config.yaml` 的 `publish:` 設定，Forge 也能照 publish-gestalt、pull-gestalt 的做法發佈快照**（`3bd738f`）：
+  - `publish:` 可以改的值有：快照標題的第一個字 `name`、restart commit 寫的 chore 名稱 `chore`、本機的快照分支 `branch`、`remote`、`remoteBranch`、快照拿掉的路徑 `excluded`、不該在 tree 裡的路徑 `privatePaths`（regular expression）、要做的掃描 `scans`（`email`、`privateIP`、`ado`、`home`、`token`、`keyword` 選幾個）、關鍵字檔 `keywords`，以及多允許的 email 網域 `emailAllowed`。範例在 [config.example.yaml](../../config.example.yaml)。
+  - 沒寫的 key 用 SkillsGestalt 的值；沒有 `publish:` 時，`check` 與 `incoming` 的輸出和改之前一樣。不認得的 key、值的形式不對、同一個 key 寫兩次，都以 `2` 結束。
+  - `scans` 沒有 `keyword` 時，不需要關鍵字檔。有 `publish:` 時，email 掃描只放過快照自己的 `identity`，不放過 SkillsGestalt 的 `IDENTITY`。
+  - 根目錄是 `--workspace`，或從目前的目錄往上、最近一個 `config.yaml` 有 `skillGroups` 的目錄，不再從 script 自己的位置找（2026-11-09 那一筆的例外沒有了）。
+  - `check` 與 `publish` 多了 `--orphan`：遠端分支已有自己的歷史（不是一串快照）時，第一次發佈用它，快照沒有 parent，push 用 `--force-with-lease` 換掉那段歷史；遠端在上次 fetch 之後變了，push 會被拒絕。
+  - push 失敗時，本機的快照分支移回原位，工作分支不變，以 `2` 結束；以前快照分支會留在沒推出去的快照上。
+  - token 掃描的 `sk-` 只算在字的開頭，`task-note-description` 不再是 finding。
+  - publish-gestalt、pull-gestalt 仍是 Private：它們發佈到 SkillsGestalt 自己的 GitHub repo，並用 `gh` 確認。
+  Forge 要做的：要像 SkillsGestalt 一樣發佈快照的 Forge，在根目錄的 `config.yaml` 寫 `publish:` 與 `identity:`，照 publish-gestalt、pull-gestalt 寫自己的 chore（確認的步驟用自己的 remote，不用 `gh`）；遠端分支已有歷史時，第一次發佈加 `--orphan`。不發佈快照的 Forge 不必做。
+
 ### 2026-11-09
 
 - **asd-ste 的 review server 與 imp-home 的 `test_hub.js` 也從目前的目錄找 workspace 的根目錄**（接續 `8eae02d`）：兩支都多了 `--workspace`；除了只在 SkillsGestalt 執行的 `publish_snapshot.py`，`common` 裡已經沒有從 script 自己的位置找根目錄的 script。

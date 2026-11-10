@@ -9,3 +9,12 @@ keepEnglishChore: keep-english   # the chore that audits the 繁體中文 twins 
 # identity:                 # the author and committer of each snapshot that publish-gestalt makes; without it, IDENTITY in publish_snapshot.py
 #   name: Your Name
 #   email: you@example.com
+# publish:                  # only for a Forge that publishes itself as publish-gestalt does; SkillsGestalt has no such section, and publish_snapshot.py uses its own values
+#   name: MyForge             # the first word of the subject of a snapshot
+#   branch: release           # the local branch of the releases
+#   remote: origin
+#   remoteBranch: users/me/release
+#   excluded: []              # the paths that a snapshot leaves out
+#   privatePaths: ['^checkpoints/', '^temp/']   # regular expressions: a path that must not be in the tree
+#   scans: [email, token]     # some of email, privateIP, ado, home, token, keyword
+#   emailAllowed: [example.org]   # more domains whose email addresses are not a finding
