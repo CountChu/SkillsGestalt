@@ -5,6 +5,17 @@ SkillsGestalt 的 `common` skill group 裡，會影響 Forge 的改動。
 每一筆寫明改了什麼、commit，以及 Forge 要做什麼；新的日期在前。
 Forge 以 chore [follow-gestalt](../../chores/follow-gestalt.md) 處理這裡的條目：它的執行紀錄記下處理到哪一筆，比那一筆新的就該做了。
 
+### 2026-11-12
+
+- **新的 skill `clean-checkpoints` 與 chore `clean-checkpoints`：`checkpoints\` 超過門檻時，列出舊的項目，使用者確認後送到資源回收筒**（Task 103）：
+  - 項目是 `checkpoints\{skill}\` 底下的每一個資料夾或檔案；它最新的檔案超過保留天數，才列為可以清。
+  - 一定保留：`keep` 裡的 skill 資料夾、`checkpoints\chores\`，以及名稱或名稱裡 7 位以上的數字出現在 ⬜／🔄 task 檔裡的項目（task 由 `taskSummary` 與 `tasksDir` 找）。
+  - 設定在根目錄 `config.yaml` 的 `cleanCheckpoints`：`maxSizeGB`（門檻，預設 10）、`keepDays`（保留天數，預設 60）、`keep`（預設沒有）；範例在 [config.example.yaml](../../config.example.yaml)。
+  - Forge 要做：
+    - 在 `config.yaml` 加 `cleanCheckpoints`，把別的 skill 還會讀的 `checkpoints\` 資料夾寫進 `keep`；然後跑 `gen_agents_md.py`。
+    - 要做這個 chore 的話，照 [chore-rules.md](rules/chore-rules.md) 的「A Chore of a Different Agency」在摘要表加一列 `clean-checkpoints`。
+    - 試跑 `python {skillGroups.common}/skills/clean-checkpoints/scripts/clean_checkpoints.py list --run <yymmdd>.<N>`，看 `temp\clean-checkpoints\<yymmdd>.<N>\items.yaml` 的清單是否正確；這個指令不移任何東西。
+
 ### 2026-11-10
 
 - **`publish_snapshot.py` 可以由根目錄 `config.yaml` 的 `publish:` 設定，Forge 也能照 publish-gestalt、pull-gestalt 的做法發佈快照**（`3bd738f`）：

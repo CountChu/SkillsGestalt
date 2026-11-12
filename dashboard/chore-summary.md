@@ -7,6 +7,7 @@ chore 檔的格式與摘要表的維護方式，見 [chore-rules.md](../skill-gr
 
 | Chore | Started | Title | 何時要做 | 上次執行 | Status |
 | --- | --- | --- | --- | --- | --- |
+| [[clean-checkpoints]] | 2026-11-12 | 清理 checkpoints\ 的舊項目 | checkpoints\ 超過 config.yaml 的 cleanCheckpoints.maxSizeGB（沒寫時 10 GB） | — | 🔁 |
 | [[follow-gestalt]] | 2026-10-31 | 跟上 Gestalt 的改動 | `{skillGroups.common}/CHANGES.md` 有比上次處理的那一筆新的條目 | — | 🔁 |
 | [[pull-gestalt]] | 2026-10-31 | 把 GitHub 上的新快照拿進工作分支 | 發佈之前、git fetch 看到新快照時，或使用者要求時 | 2026-11-10 | 🔁 |
 | [[publish-gestalt]] | 2026-10-30 | 發佈到 GitHub | 使用者要求發佈到 GitHub 時 | 2026-11-10 | 🔁 |
@@ -27,6 +28,10 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
   經使用者同意，舊的 `countdell`（`9c168fb`）存成 tag `archive/countdell-261110-pull`；本機 `main` 從 `8f47eda` 移到 `1cd81c2`；`countdell` 的 2 個 commit rebase 上去，沒有衝突，成為 `6e23485` 與 `5e8b1b9`，所以上面 2026-11-09 那筆的 `ba9039a` 現在只在這個 tag。
   這個 clone 沒有不公開的路徑在 git 裡，`git diff main countdell` 只有 2026-11-09 第二次發佈的紀錄；`gen_agents_md.py` 印出 unchanged，`check_tasks.py` 與 `check_chores.py` 都是 PASS。
   新快照把 tw-keep-english.md 換成 261110，所以 [[keep-english]] 該做了。
+- 在 `countdell` 的第二次：拿進 `m1` 發佈的快照 `593cb10`（[[Task 101]]：Dropbox 不同步 `.git`，兩個 chore 最後加上 bundle 備份），變動 5 個檔，作者與 committer 是 CountChu，`incoming` 的掃描是 `nothing found`。
+  經使用者同意，舊的 `countdell`（`2896027`）存成 tag `archive/countdell-261110-pull`；這個 tag 原本指的 `9c168fb` 沒有別的 ref，所以另存成 `archive/countdell-261110-pull-1`，和 `archive/countdell-261109-1` 的做法相同。
+  本機 `main` 從 `94db4c4` 移到 `593cb10`；`countdell` 的 2 個 commit rebase 上去，沒有衝突，成為 `08fe78b` 與 `ad6b6d9`。
+  `gen_agents_md.py --check`、`check_tasks.py` 與 `check_chores.py` 都是 PASS；repo 在 2026-11-10 從 OneDrive 搬到 `WorkArea\Innovation`，不在 Dropbox，bundle 仍照新步驟做在 `..\SkillsGestalt.bundle`。
 - 拿進 `countdell` 發佈的兩個快照 `bb7eca1` 與 `8f47eda`（SkillsGestalt 2026-11-09）：變動 137 個檔，作者與 committer 是 CountChu，`incoming` 的掃描是 `nothing found`。
   經使用者同意，舊的 `m1`（`a04f0d1`）存成 tag `archive/m1-261110-pull`；本機 `main` 從 `1b41f68` 移到 `8f47eda`；`m1` 的 157 個 commit rebase 上去。
   開始之前，經使用者同意還原 `tasks/Task 97.md` 在 2026-11-06 只補空白的表格對齊，並移除 `.git/rebase-merge`，它是 2026-10-31 留下的空目錄。
@@ -64,6 +69,11 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 
 #### 2026-11-10
 
+- 第二次發佈：以 `countdell` 的 `015b0f6` 做出快照 `94db4c4`，接在 `b080dc7` 之後，推到 `main`；變動 9 個檔，是 [[Task 102]]（`publish_snapshot.py` 可以由 `publish:` 設定、`--orphan`）與 [[keep-english]] 261110 稽核。
+  先做 [[pull-gestalt]]：本機的 `main` 和 `origin/main` 都是 `b080dc7`，`nothing to pull`；`check` 與 `publish` 的掃描都是 `nothing found`。
+  `countdell` 跟著從 `94db4c4` 重新開始（`de150e1`）；同一天第二次發佈，tag `archive/countdell-261110` 從 `65a42e4` 移到 `015b0f6`。
+  這台沒有 `gh`，改用 git 確認：`git ls-remote` 的 `main` 是 `94db4c4`，只比 `b080dc7` 多 1 個 commit，作者是 `CountChu`；`origin/main` 的 tree 沒有排除的路徑。
+  m1 的 Task 101 還沒發佈，所以快照有 Task 102、沒有 Task 101，`check_tasks.py` 在快照上會報 101 號沒有檔案，直到 m1 發佈。
 - 以 `countdell` 的 `65a42e4` 做出快照 `b080dc7`，接在 `1cd81c2` 之後，推到 `main`；變動 1 個檔，是 2026-11-09 第二次發佈與本日 [[pull-gestalt]] 的執行紀錄。
   先做 [[pull-gestalt]]，拿進 `m1` 發佈的 `1cd81c2`；`check` 與 `publish` 的掃描都是 `nothing found`，程式自己推上去了。
   `countdell` 跟著從 `b080dc7` 重新開始（`0a7cf29`），舊的在 tag `archive/countdell-261110`。
