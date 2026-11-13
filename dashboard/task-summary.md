@@ -7,6 +7,7 @@ task 檔的格式與摘要表的維護方式，見 [task-rules.md](../skill-grou
 
 | Task | Raised | Title | Status | Depends on |
 | --- | --- | --- | --- | --- |
+| [[Task 104]] | 2026-11-13 | 整理在新電腦上安裝 SkillsGestalt 的步驟 | ✅ | — |
 | [[Task 103]] | 2026-11-12 | 加 skill 與 chore clean-checkpoints：checkpoints\ 太大時列出舊的項目，確認後清掉 | ✅ | — |
 | [[Task 102]] | 2026-11-10 | publish_snapshot.py 改成可以設定，讓 Forge 也能照 publish-gestalt、pull-gestalt 發佈快照 | ✅ | — |
 | [[Task 101]] | 2026-11-10 | 讓 Dropbox 不同步 SkillsGestalt 的 .git | ✅ | — |

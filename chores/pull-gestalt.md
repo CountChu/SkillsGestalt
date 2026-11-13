@@ -41,6 +41,8 @@ SkillsGestalt 可能在不只一台電腦上，各有自己的工作分支，例
     `.git` 不在 Dropbox 同步（[[Task 101]]），所以 work branch 的歷史與 `archive/*` tag 只靠這個檔備份；先寫暫存檔，驗證過再換掉，Dropbox 才不會同步到寫了一半的檔。
     Windows 上在 Git Bash 跑這一行。
 
+一台還沒有 SkillsGestalt 的新電腦不跑上面的步驟，先做 [[clone-gestalt]]。
+
 ## 4. 驗證
 
 - `python {skillGroups.common}/scripts/publish_snapshot.py incoming` 印出 `nothing to pull`。
@@ -51,6 +53,8 @@ SkillsGestalt 可能在不只一台電腦上，各有自己的工作分支，例
 ## 5. 與其他 task、chore 的關係
 
 - [[Task 89]]：建立本 chore 與 `publish_snapshot.py incoming`。
+- [[Task 104]]：新電腦的安裝步驟搬到 [[clone-gestalt]]。
+- [[clone-gestalt]]：新電腦先做它，之後才做本 chore。
 - [[publish-gestalt]]：發佈之前先做本 chore。
 - [[follow-gestalt]]：給 Forge 做的 chore；本 chore 是 SkillsGestalt 自己的另一份 clone 跟上 GitHub。
 - [[Task 101]]：讓 Dropbox 不同步 `.git`，加上最後一步的 bundle 備份。

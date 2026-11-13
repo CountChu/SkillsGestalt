@@ -7,10 +7,11 @@ chore 檔的格式與摘要表的維護方式，見 [chore-rules.md](../skill-gr
 
 | Chore | Started | Title | 何時要做 | 上次執行 | Status |
 | --- | --- | --- | --- | --- | --- |
+| [[clone-gestalt]] | 2026-11-13 | 在新電腦上裝 SkillsGestalt | 要在一台新電腦上裝 SkillsGestalt，也要在上面改、發佈時 | — | 🔁 |
 | [[clean-checkpoints]] | 2026-11-12 | 清理 checkpoints\ 的舊項目 | checkpoints\ 超過 config.yaml 的 cleanCheckpoints.maxSizeGB（沒寫時 10 GB） | — | 🔁 |
 | [[follow-gestalt]] | 2026-10-31 | 跟上 Gestalt 的改動 | `{skillGroups.common}/CHANGES.md` 有比上次處理的那一筆新的條目 | — | 🔁 |
 | [[pull-gestalt]] | 2026-10-31 | 把 GitHub 上的新快照拿進工作分支 | 發佈之前、git fetch 看到新快照時，或使用者要求時 | 2026-11-10 | 🔁 |
-| [[publish-gestalt]] | 2026-10-30 | 發佈到 GitHub | 使用者要求發佈到 GitHub 時 | 2026-11-10 | 🔁 |
+| [[publish-gestalt]] | 2026-10-30 | 發佈到 GitHub | 使用者要求發佈到 GitHub 時 | 2026-11-12 | 🔁 |
 | [[keep-english]] | 2026-10-18 | keep-English 稽核 | tw-keep-english.md 換了版本，和上次稽核的版本不同 | 2026-11-10 | 🔁 |
 | [[rerecord-ste-custom]] | 2026-10-18 | 集中重記 ste-custom.md | 當天改過 ste-custom.md，而且當天的修改都做完了 | 2026-10-30 | 🔁 |
 
@@ -66,6 +67,14 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 - 新快照把 task 改成七章：只在 `m1` 上的 [[Task 89]] 插入 `6. 知識`；CLAUDE.md 重新產生。
 
 ### publish-gestalt
+
+#### 2026-11-12
+
+- 以 `countdell` 的 `00dd814` 做出快照 `04a90cc`（SkillsGestalt 2026-11-12），接在 `593cb10` 之後，推到 `main`；變動 9 個檔，是 [[Task 103]]（skill 與 chore `clean-checkpoints`）。
+  本機的 `main` 和 `origin/main` 都是 `593cb10`，不必先做 [[pull-gestalt]]；`check` 與 `publish` 的掃描都是 `nothing found`。
+  發佈前自己查 diff，發現 2026-11-10 [[pull-gestalt]] 的執行紀錄寫了公司的雲端資料夾名稱，掃描沒抓到；改掉之後才發佈（`00dd814`）。
+  `countdell` 跟著從 `04a90cc` 重新開始（`492602c`），舊的在 tag `archive/countdell-261112`。
+  這台沒有 `gh`，改用 git 確認：`git ls-remote` 的 `main` 是 `04a90cc`，只比 `593cb10` 多 1 個 commit；`origin/main` 的 tree 沒有排除的路徑。
 
 #### 2026-11-10
 
