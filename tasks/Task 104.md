@@ -28,7 +28,7 @@
 | 要做的事 | 寫在哪裡 |
 | --- | --- |
 | `git clone https://github.com/CountChu/SkillsGestalt` | 都沒寫 |
-| 從 [config.example.yaml](../config-tmp.yaml) 做出 `config.yaml`，設 `wikiDir` | [README.md](../README.md) 的 Getting Started（`README-tw.md` 也有） |
+| 從 [config.example.yaml](../config.shared.yaml) 做出 `config.yaml`，設 `wikiDir` | [README.md](../README.md) 的 Getting Started（`README-tw.md` 也有） |
 | 建 `.venv`，裝 `requirements.txt` | [[Task 95]]；Forge 的部分在 `forge-setup.md` 的 Make a Forge 第 3 步（[[Task 96]]） |
 | 本機的 `main` 只放快照，追蹤 `origin/main` | [[publish-gestalt]] 的 `1. 目的` |
 | 工作分支，設 `branch.<work>.pushRemote no_push` | [[publish-gestalt]] 的 `1. 目的` |

@@ -57,7 +57,7 @@
 ## 4. 要做的
 
 1. 用 `git mv` 把 `.github` 改名為 `skill-groups`。
-2. 改 `config.yaml`、[config.example.yaml](../config-tmp.yaml) 與 `config-forge-tmp.yaml` 的 `skillGroups`；key 仍是 `skillGroups`。
+2. 改 `config.yaml`、[config.example.yaml](../config.shared.yaml) 與 `config-forge-tmp.yaml` 的 `skillGroups`；key 仍是 `skillGroups`。
 3. 改 72 個檔裡的 `.github/`，中文版也是；STE 檔與依賴的指紋照規定重記。
 4. 改 publish_snapshot.py 排除的路徑，以及 [publish-gestalt](../chores/publish-gestalt.md) 與其他 chore 的路徑。
 5. 在範本 [CLAUDE-tmp.md](../skill-groups/common/templates/AGENTS-tmp.md) 寫明 skill 在 `skill-groups/<group>/skills/<name>/SKILL.md`，要執行 skill 時讀它；[[Task 97.2]] 把它變成 AGENTS.md。

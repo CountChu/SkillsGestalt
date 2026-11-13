@@ -35,7 +35,7 @@
 
 ### 2026-11-02 改好之後
 
-- `git mv`：`CLAUDE-tmp.md` → [AGENTS-tmp.md](../skill-groups/common/templates/AGENTS-tmp.md)、`CLAUDE-local.md` → [AGENTS-local.md](../AGENTS-local.md)、`gen_claude_md.py` → [gen_agents_md.py](../skill-groups/common/scripts/gen_agents_md.py)；`skills/CLAUDE.md` 刪掉。
+- `git mv`：`CLAUDE-tmp.md` → [AGENTS-tmp.md](../skill-groups/common/templates/AGENTS-tmp.md)、`CLAUDE-local.md` → [AGENTS-local.md](../AGENTS.shared.md)、`gen_claude_md.py` → [gen_agents_md.py](../skill-groups/common/scripts/gen_agents_md.py)；`skills/CLAUDE.md` 刪掉。
 - gen_agents_md.py 寫出 AGENTS.md 與只有 `@AGENTS.md` 的 CLAUDE.md，`--check` 比對兩個檔；slot 改名為 `{AGENTS-local-top}` 與 `{AGENTS-local}`。
 - 範本：引言寫明 script 也產生 CLAUDE.md；Skills 一節加上改 skill 前先讀 README.md 與 skill-writing.md 的規則；`Technical words:` 加上 directory、line、section。
 - 改了上面列的檔裡指 CLAUDE.md 的地方，中文版也是；`config.yaml` 的註解也改了。

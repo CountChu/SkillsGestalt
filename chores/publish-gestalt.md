@@ -10,7 +10,8 @@
 把本機 work branch 目前的內容發佈到公開的 repo <https://github.com/CountChu/SkillsGestalt>，而不公開 work branch 的歷史、本機專用的檔案與公司內部資訊。
 本機有兩種分支：work branch 是平常工作的分支，`main` 只放發佈的快照。
 work branch 不寫死：程式用 `--work` 指定的分支，沒指定就用目前 checkout 的分支。
-SkillsGestalt 工作區的 work branch 是 `m1`；別的 clone 可以是別的名稱，例如 `countdell`。
+每個 clone 的 work branch 不同，例如 `m1`、`countdell`、`devbox`：`config.local.yaml` 的 `workBranch` 寫這台的，`config.shared.yaml` 的 `workBranches` 列出全部（[[Task 111]]）。
+`check` 與 `publish` 沒有 `--work` 時用 `workBranch`；`--work` 和它不同、它不在 `workBranches` 裡，或沒有設 `pushRemote no_push`，都以 `2` 結束。
 work branch 不能是 `main`，HEAD 也不能是 detached。
 work branch 不推，要設 `branch.<work branch>.pushRemote no_push`，在它上面 `git push` 會失敗；每次發佈是 `main` 上的一個快照 commit，只把 `main` 推到 GitHub 的 `main`。
 不要在本機的 `main` 上 commit。
@@ -59,7 +60,7 @@ work branch 不推，要設 `branch.<work branch>.pushRemote no_push`，在它�
 
 這些決定來自 [[Task 78]]：
 
-- 本機專用、不進 git：根目錄的 `config.yaml` 與 `config.local.yaml`（`config.yaml` 由 [config-tmp.yaml](../config-tmp.yaml) 產生）、`*.mermaid.html` 預覽檔、`publish-keywords.local.txt`。
+- 本機專用、不進 git：根目錄的 `config.yaml` 與 `config.local.yaml`（`config.yaml` 由 [config.shared.yaml](../config.shared.yaml) 產生）、`*.mermaid.html` 預覽檔、`publish-keywords.local.txt`。
 - 快照排除、work branch 照舊：`external/` 是 ASD-STE100 規格的 PDF，規格的版權頁寫明不得散布；`skill-groups/external/` 放從外面來的 skill；`skill-groups/archived/` 放封存的 skill，不能執行，其中的 eli5 原作者與授權不明（[[Task 100.1]]）。
 - `ste-dictionary.json` 公開，是使用者的決定。
 - 每次發佈之後都重做 work branch，讓它的歷史一直很短；舊的歷史留在本機的 tag，不推。

@@ -13,7 +13,7 @@
 
 ## 2. 結論
 
-- `config.example.yaml` 以 `git mv` 改名為 [config-tmp.yaml](../config-tmp.yaml)；`wikiDir` 寫成 `"{wikiDir}"`，開頭的註解改成說明 `gen_config.py` 與 `config.local.yaml`（`3.1`）。
+- `config.example.yaml` 以 `git mv` 改名為 [config-tmp.yaml](../config.shared.yaml)；`wikiDir` 寫成 `"{wikiDir}"`，開頭的註解改成說明 `gen_config.py` 與 `config.local.yaml`（`3.1`）。
 - 這台寫了 `config.local.yaml`，只有 `wikiDir` 一行；產生的 `config.yaml` 和原本的只差開頭的註解（`3.1`）。
 - `.gitignore` 加上 `/config.local.yaml`。
 - 每個說 `config.example.yaml` 的檔都改了；`tasks/` 與 `dashboard/` 是過去的紀錄，不改（`3.2`）。
@@ -77,6 +77,7 @@
 
 - [[Task 108]]：做了 `gen_config.py`；本 task 讓 SkillsGestalt 自己也用它，改掉 108 的 `3.5`。
 - [[Task 105]]：clone-gestalt 的上一次改動。
+- [[Task 110]]：`config-tmp.yaml` 再改名為 `config.shared.yaml`。
 
 ## 7. 知識
 

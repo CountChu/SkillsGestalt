@@ -20,7 +20,7 @@
 
 ## 3. 怎麼做
 
-1. 確認執行的 agency 的 `config.yaml` 有 `cleanCheckpoints`（範例在 SkillsGestalt 的 [config-tmp.yaml](../config-tmp.yaml)）；別的 skill 還會讀的資料夾要先寫進 `keep`。
+1. 確認執行的 agency 的 `config.yaml` 有 `cleanCheckpoints`（範例在 SkillsGestalt 的 [config.shared.yaml](../config.shared.yaml)）；別的 skill 還會讀的資料夾要先寫進 `keep`。
 2. 跑 skill：`/clean-checkpoints`。
    - Step 1 列出每個項目與理由；沒超過門檻就停。
    - Step 2 給使用者看可以清的項目，問要全部、部分或都不要；使用者沒說要的一律不動。

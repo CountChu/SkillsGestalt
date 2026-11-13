@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-- [[Task 97.2]] 把規則改寫在 AGENTS.md，由 [gen_agents_md.py](../skill-groups/common/scripts/gen_agents_md.py) 從 [AGENTS-tmp.md](../skill-groups/common/templates/AGENTS-tmp.md) 與 [AGENTS-local.md](../AGENTS-local.md) 產生。
+- [[Task 97.2]] 把規則改寫在 AGENTS.md，由 [gen_agents_md.py](../skill-groups/common/scripts/gen_agents_md.py) 從 [AGENTS-tmp.md](../skill-groups/common/templates/AGENTS-tmp.md) 與 [AGENTS-local.md](../AGENTS.shared.md) 產生。
 - 同一支 script 也寫出只有一行 `@AGENTS.md` 的 CLAUDE.md，因為當時認定 Claude Code 只讀 CLAUDE.md；VS Code 的 Copilot harness 不讀 CLAUDE.md，但不用設定就讀 AGENTS.md。
 - 2026-11-02 核對 Claude Code 的 [Memory](https://code.claude.com/docs/en/memory) 文件，寫進 [[Task 97]] 「知識」表 1 的 Claude Code 欄：v2.1.277 起，工作目錄與上層都沒有 CLAUDE.md 時直接讀 AGENTS.md。
 - 這個 task 只評估、寫下建議，不改 script、範本與 CLAUDE.md。

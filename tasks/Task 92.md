@@ -9,7 +9,7 @@
 - 每次發佈之後，`publish_snapshot.py` 把工作分支舊的歷史存成 tag `archive/<work>-<yymmdd>`，日期是發佈當天，再讓工作分支從新的快照重新開始。
 - [[Task 79]] 定下一天一個 tag：同一天再發佈，就改指那天的 tag，並印出它原本指的 commit；[publish_snapshot.py](../skill-groups/common/scripts/publish_snapshot.py) 第 193 行的說明也這樣寫。
 - tag 一改指，當天較早那次發佈之前的歷史就沒有任何 ref，之後可能被 `git gc` 清掉。
-- [CLAUDE-local.md](../AGENTS-local.md) 第 18、19 行卻說：發佈之前的 commit 在這些 tag 裡，文件引用的 hash 到這些 tag 裡找。
+- [CLAUDE-local.md](../AGENTS.shared.md) 第 18、19 行卻說：發佈之前的 commit 在這些 tag 裡，文件引用的 hash 到這些 tag 裡找。
   兩者互相矛盾：較早的那段被清掉之後，文件引用的 hash 就找不到了。
 
 ## 2. 結論
@@ -47,7 +47,7 @@
 
 - 同一天再發佈時，較早的 tag 怎麼命名：例如依序加 `-1`、`-2`，或每次發佈都以快照命名。
 - 由 `publish_snapshot.py` 自己另存，或寫進 [[publish-gestalt]] 的 step。
-- [CLAUDE-local.md](../AGENTS-local.md) 的「一天一個 tag」與 chore 檔的說明怎麼改。
+- [CLAUDE-local.md](../AGENTS.shared.md) 的「一天一個 tag」與 chore 檔的說明怎麼改。
 - 要不要有一個檢查：文件引用的 hash 都找得到某個 tag 或分支，例如把上面的查法寫成程式。
 - CHANGES.md 引用的是 `m1` 的 hash，只有這台電腦的 SkillsGestalt 查得到；別台電腦的 Forge 要不要改成引用快照。
 

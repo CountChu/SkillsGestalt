@@ -18,7 +18,7 @@ SkillsGestalt 可能在不只一台電腦上，各有自己的工作分支，例
 
 ## 3. 怎麼做
 
-以下的 `<work>` 是本 clone 的工作分支，例如 `m1` 或 `countdell`；`<yymmdd>` 是當天。
+以下的 `<work>` 是本 clone 的工作分支，也就是 `config.yaml` 的 `workBranch`，例如 `m1` 或 `countdell`；`<yymmdd>` 是當天。
 
 1. 確認在 `<work>` 上，`git status` 沒有任何變動。
 2. 跑 `git fetch origin`，再跑 `python {skillGroups.common}/scripts/publish_snapshot.py incoming`。
@@ -33,8 +33,8 @@ SkillsGestalt 可能在不只一台電腦上，各有自己的工作分支，例
 7. 把 `<work>` rebase 到新的 `main`：`git rebase --onto main <第 5 步記下的 main> <work>`。
    衝突時停下來，把衝突的檔給使用者看，問怎麼解；`dashboard/` 的摘要表通常是兩邊都留。
 8. 確認不公開的路徑還在：`git diff --name-status main <work>` 要有 `external/` 與 `skill-groups/external/`。
-9. 從根目錄跑 `python {skillGroups.common}/scripts/gen_config.py`：新快照改了 `config-tmp.yaml` 時，它重新產生 `config.yaml`，再跑 `gen_agents_md.py`。再跑 AGENTS.md 給出的 `check_tasks.py` 與 `check_chores.py`。
-   沒有 `config.local.yaml`，或 `config-tmp.yaml` 用了它沒有的名稱時，它以 `2` 結束：照 [[clone-gestalt]] 第 5 步寫這台的值。
+9. 從根目錄跑 `python {skillGroups.common}/scripts/gen_config.py`：新快照改了 `config.shared.yaml` 時，它重新產生 `config.yaml`，再跑 `gen_agents_md.py`。再跑 AGENTS.md 給出的 `check_tasks.py` 與 `check_chores.py`。
+   沒有 `config.local.yaml`，或 `config.shared.yaml` 用了它沒有的名稱時，它以 `2` 結束：照 [[clone-gestalt]] 第 5 步寫這台的值。
    新快照改了規則或格式時，只在 `<work>` 上的檔可能過不了，例如還沒發佈的 task；照新快照的 `CHANGES.md` 改它們。
 10. 在摘要表 `## 執行紀錄` 的 `### pull-gestalt` 下記一筆：拿進來的快照、tag、衝突與改了什麼；摘要表的「上次執行」改成當天。
     commit 以 `chore pull-gestalt: ` 開頭。

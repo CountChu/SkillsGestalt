@@ -7,20 +7,40 @@ Forge 以 chore [follow-gestalt](../../chores/follow-gestalt.md) 處理這裡的
 
 ### 2026-11-13
 
-- **新的 [gen_config.py](scripts/gen_config.py)：用 `config-tmp.yaml` 與 `config.local.yaml` 產生 `config.yaml`，再跑 `gen_agents_md.py`；`gen_agents_md.py` 不再受 CRLF 影響**（Task 108）：
-  - `config-tmp.yaml` 進 git，放共用的設定，這台的值寫成 `{name}`，例如 `wikiDir: "{home}/MyVault"`；`config.local.yaml` 不進 git，只放 `name: value`，例如 `home: D:/Work`。
-  - script 把 `config-tmp.yaml` 當文字代換，註解與順序原樣留在 `config.yaml`，第一行多一行註解說它是產生的；`{{name}}` 寫成 `{name}`；`#` 開頭的註解行不代換。[config-forge-tmp.yaml](templates/config-forge-tmp.yaml) 不用改就能當 `config-tmp.yaml`，`config.local.yaml` 寫 `WIKI_DIR`、`WIKI_ROOT_DIR` 與 `GESTALT_ROOT`。`config.local.yaml` 沒有的名稱、結果不是正確的 YAML，都以 `2` 結束；沒用到的名稱只印出來。
-  - `--check` 比對 `config.yaml`、`AGENTS.md` 與 `CLAUDE.md`，什麼都不寫。沒有 `config-tmp.yaml` 的 workspace，`config.yaml` 不動，只跑 `gen_agents_md.py`。
-  - [AGENTS-tmp.md](templates/AGENTS-tmp.md) 的指令改成 `gen_config.py`，也說有 `config-tmp.yaml` 時不改 `config.yaml`。
+- **每個 agency 都要有 `workBranch`；[AGENTS-tmp.md](templates/AGENTS-tmp.md) 加一節 Work Branch and Commits：在 `workBranch` 上工作，commit 訊息不加 `Co-Authored-By`，根目錄的 `.claude/settings.json` 讓 Claude Code 不加**（Task 112）：
+  - 這些規則原本只在 SkillsGestalt 的 `AGENTS.shared.md`，現在每個 agency 的 `AGENTS.md` 都有。
+  - [gen_agents_md.py](scripts/gen_agents_md.py)：`config.yaml` 沒有 `workBranch`，或有 `workBranches` 卻沒列出 `workBranch` 時，以 `2` 結束。所以沒有 `workBranch` 的 Forge，`gen_agents_md.py --check` 會從 PASS 變成結束碼 `2`。
+  - [config-forge-tmp.yaml](templates/config-forge-tmp.yaml) 多了 `workBranches` 與 `workBranch: "{WORK_BRANCH}"`。[forge-setup.md](references/forge-setup.md) 與中文版：第 2 步換掉 `{WORK_BRANCH}`；第 4 步多寫 `.claude/settings.json`，第 8 步一起 commit。
+  - Forge 要做：
+    - 在每台電腦定義這個 clone 的 work branch。有 `config.shared.yaml` 的，在它寫 `workBranches`（列出每個 clone 的分支）與 `workBranch: "{workBranch}"`，在每台的 `config.local.yaml` 寫 `workBranch`；`config.yaml` 還在 git 的，先在 `config.yaml` 寫 `workBranch` 與 `workBranches`，之後照 2026-11-13 `gen_config.py` 那一筆改成每台自己的 `config.local.yaml`。
+    - 在根目錄寫 `.claude/settings.json`，內容是 `{"attribution": {"commit": "", "pr": "", "sessionUrl": false}}`；已經有這個檔的話，把 `attribution` 併進去，不要蓋掉別的設定。
+    - 跑 `gen_config.py`，commit `.claude/settings.json` 與 `AGENTS.md`；`AGENTS.shared.md` 裡同樣的規則可以拿掉。
+- **[publish_snapshot.py](scripts/publish_snapshot.py) 讀 `config.yaml` 頂層的 `workBranch` 與 `workBranches`**（Task 111）：
+  - `workBranch` 是這個 clone 的 work branch，`check` 與 `publish` 沒有 `--work` 時用它；`workBranches` 列出每個 clone 的 work branch。
+  - 有 `workBranch` 時，`--work` 和它不同、它不在 `workBranches` 裡（有這份清單時），或 git 沒有 `branch.<workBranch>.pushRemote no_push`，都以 `2` 結束。
+  - 沒有 `workBranch` 時和以前一樣，用目前 checkout 的分支。
+  - Forge 要做：不必做。在多台電腦上發佈的 Forge 可以在 `config.shared.yaml` 寫 `workBranches` 與 `workBranch: "{workBranch}"`，在每台的 `config.local.yaml` 寫 `workBranch`，`AGENTS.shared.md` 說 work branch 是 `config.yaml` 的 `workBranch`。
+- **`AGENTS-local.md` 改名為 `AGENTS.shared.md`，兩個 slot 改名為 `{AGENTS-shared}` 與 `{AGENTS-shared-top}`；`AGENTS-tmp.md` 加一節 File Names**（Task 110）：
+  - 檔名的規則：`-tmp` 是 `common/templates/` 裡給許多 agency 用的模板，進 git；`.shared.` 只屬於這個 agency、各台電腦共用，進 git；`.local.` 只屬於這台電腦，不進 git，例如 `config.local.yaml`。`AGENTS-local.md` 的內容進 git，和 `.local.` 的意思衝突，所以改名。
+  - [gen_agents_md.py](scripts/gen_agents_md.py) 讀 `AGENTS.shared.md`；只有 `AGENTS-local.md` 或 `CLAUDE-local.md` 時以 `2` 結束，印出 `git mv` 的指令；`AGENTS.shared.md` 裡還有一行 `{AGENTS-local}` 或 `{CLAUDE-local}` 時也以 `2` 結束。
+  - [forge-setup.md](references/forge-setup.md) 與中文版的第 4、5 步改用新名稱。
+  - Forge 要做：`git mv AGENTS-local.md AGENTS.shared.md`；裡面有一行 `{AGENTS-local}` 的話，改成 `{AGENTS-shared}`；跑 `gen_config.py`，commit `AGENTS.shared.md` 與 `AGENTS.md`；自己的 chore 與文件裡的 `AGENTS-local.md` 也跟著改。
+- **`gen_config.py` 讀的共用設定檔從 `config-tmp.yaml` 改名為 `config.shared.yaml`**（Task 110）：下面那一筆已改用新名稱；快照 `8e9e9d1` 發佈時的名稱是 `config-tmp.yaml`。
+  - Forge 要做：已經寫了 `config-tmp.yaml` 的 Forge，`git mv config-tmp.yaml config.shared.yaml`，再跑 `gen_config.py`；自己的 chore 與文件裡的 `config-tmp.yaml` 也跟著改。還沒寫的照下面那一筆做。
+- **新的 [gen_config.py](scripts/gen_config.py)：用 `config.shared.yaml` 與 `config.local.yaml` 產生 `config.yaml`，再跑 `gen_agents_md.py`；`gen_agents_md.py` 不再受 CRLF 影響**（Task 108）：
+  - `config.shared.yaml` 進 git，放共用的設定，這台的值寫成 `{name}`，例如 `wikiDir: "{home}/MyVault"`；`config.local.yaml` 不進 git，只放 `name: value`，例如 `home: D:/Work`。
+  - script 把 `config.shared.yaml` 當文字代換，註解與順序原樣留在 `config.yaml`，第一行多一行註解說它是產生的；`{{name}}` 寫成 `{name}`；`#` 開頭的註解行不代換。[config-forge-tmp.yaml](templates/config-forge-tmp.yaml) 不用改就能當 `config.shared.yaml`，`config.local.yaml` 寫 `WIKI_DIR`、`WIKI_ROOT_DIR` 與 `GESTALT_ROOT`。`config.local.yaml` 沒有的名稱、結果不是正確的 YAML，都以 `2` 結束；沒用到的名稱只印出來。
+  - `--check` 比對 `config.yaml`、`AGENTS.md` 與 `CLAUDE.md`，什麼都不寫。沒有 `config.shared.yaml` 的 workspace，`config.yaml` 不動，只跑 `gen_agents_md.py`。
+  - [AGENTS-tmp.md](templates/AGENTS-tmp.md) 的指令改成 `gen_config.py`，也說有 `config.shared.yaml` 時不改 `config.yaml`。
   - `gen_agents_md.py` 讀檔時把 CRLF 換成 LF，`core.autocrlf=true` 的 clone 不再印出 `the template has 0 line(s) {AGENTS-local}, not 1`；只有換行不同的 `AGENTS.md`、`CLAUDE.md` 算 PASS。
-  - Forge 要做：跑 `python {skillGroups.common}/scripts/gen_config.py`，commit 改了的 `AGENTS.md`。在多台電腦上、路徑不同的 Forge，可以把 `config.yaml` 改寫成 `config-tmp.yaml`，寫這台的 `config.local.yaml`，確認產生的 `config.yaml` 除了第一行都和原本的一樣，再把 `config.yaml`、`config.local.yaml` 與 `AGENTS.md` 移出 git，並改自己的 clone、pull、publish chore。
+  - Forge 要做：跑 `python {skillGroups.common}/scripts/gen_config.py`，commit 改了的 `AGENTS.md`。在多台電腦上、路徑不同的 Forge，可以把 `config.yaml` 改寫成 `config.shared.yaml`，寫這台的 `config.local.yaml`，確認產生的 `config.yaml` 除了第一行都和原本的一樣，再把 `config.yaml`、`config.local.yaml` 與 `AGENTS.md` 移出 git，並改自己的 clone、pull、publish chore。
 
 ### 2026-11-12
 
 - **新的 skill `clean-checkpoints` 與 chore `clean-checkpoints`：`checkpoints\` 超過門檻時，列出舊的項目，使用者確認後送到資源回收筒**（Task 103）：
   - 項目是 `checkpoints\{skill}\` 底下的每一個資料夾或檔案；它最新的檔案超過保留天數，才列為可以清。
   - 一定保留：`keep` 裡的 skill 資料夾、`checkpoints\chores\`，以及名稱或名稱裡 7 位以上的數字出現在 ⬜／🔄 task 檔裡的項目（task 由 `taskSummary` 與 `tasksDir` 找）。
-  - 設定在根目錄 `config.yaml` 的 `cleanCheckpoints`：`maxSizeGB`（門檻，預設 10）、`keepDays`（保留天數，預設 60）、`keep`（預設沒有）；範例在 [config-tmp.yaml](../../config-tmp.yaml)。
+  - 設定在根目錄 `config.yaml` 的 `cleanCheckpoints`：`maxSizeGB`（門檻，預設 10）、`keepDays`（保留天數，預設 60）、`keep`（預設沒有）；範例在 [config.shared.yaml](../../config.shared.yaml)。
   - Forge 要做：
     - 在 `config.yaml` 加 `cleanCheckpoints`，把別的 skill 還會讀的 `checkpoints\` 資料夾寫進 `keep`；然後跑 `gen_agents_md.py`。
     - 要做這個 chore 的話，照 [chore-rules.md](rules/chore-rules.md) 的「A Chore of a Different Agency」在摘要表加一列 `clean-checkpoints`。
@@ -29,7 +49,7 @@ Forge 以 chore [follow-gestalt](../../chores/follow-gestalt.md) 處理這裡的
 ### 2026-11-10
 
 - **`publish_snapshot.py` 可以由根目錄 `config.yaml` 的 `publish:` 設定，Forge 也能照 publish-gestalt、pull-gestalt 的做法發佈快照**（`3bd738f`）：
-  - `publish:` 可以改的值有：快照標題的第一個字 `name`、restart commit 寫的 chore 名稱 `chore`、本機的快照分支 `branch`、`remote`、`remoteBranch`、快照拿掉的路徑 `excluded`、不該在 tree 裡的路徑 `privatePaths`（regular expression）、要做的掃描 `scans`（`email`、`privateIP`、`ado`、`home`、`token`、`keyword` 選幾個）、關鍵字檔 `keywords`，以及多允許的 email 網域 `emailAllowed`。範例在 [config-tmp.yaml](../../config-tmp.yaml)。
+  - `publish:` 可以改的值有：快照標題的第一個字 `name`、restart commit 寫的 chore 名稱 `chore`、本機的快照分支 `branch`、`remote`、`remoteBranch`、快照拿掉的路徑 `excluded`、不該在 tree 裡的路徑 `privatePaths`（regular expression）、要做的掃描 `scans`（`email`、`privateIP`、`ado`、`home`、`token`、`keyword` 選幾個）、關鍵字檔 `keywords`，以及多允許的 email 網域 `emailAllowed`。範例在 [config.shared.yaml](../../config.shared.yaml)。
   - 沒寫的 key 用 SkillsGestalt 的值；沒有 `publish:` 時，`check` 與 `incoming` 的輸出和改之前一樣。不認得的 key、值的形式不對、同一個 key 寫兩次，都以 `2` 結束。
   - `scans` 沒有 `keyword` 時，不需要關鍵字檔。有 `publish:` 時，email 掃描只放過快照自己的 `identity`，不放過 SkillsGestalt 的 `IDENTITY`。
   - 根目錄是 `--workspace`，或從目前的目錄往上、最近一個 `config.yaml` 有 `skillGroups` 的目錄，不再從 script 自己的位置找（2026-11-09 那一筆的例外沒有了）。

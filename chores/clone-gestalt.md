@@ -19,7 +19,7 @@ SkillsGestalt 可以在不只一台電腦上改、發佈，每台有自己的工
 
 ## 3. 怎麼做
 
-`<work>` 是這台的工作分支，例如 `devbox`；名稱不能是 `main`，也不要和別台的工作分支一樣。
+`<work>` 是這台的工作分支，例如 `devbox`；名稱不能是 `main`，也不能是 [config.shared.yaml](../config.shared.yaml) 的 `workBranches` 裡已經有的名稱，那些是別台的。
 
 1. 要有 git 與 Python 3.10 以上，以及可以推到 GitHub repo `CountChu/SkillsGestalt` 的 GitHub 帳號；第一次 push 時，Git Credential Manager 會要求登入。
 2. 到要放 SkillsGestalt 的目錄。這台也要放 Forge 的話，用 Forge 的 `config.yaml` 裡 `skillGroups.common` 指的位置，例如 `~/WorkArea/Innovation`。
@@ -30,8 +30,9 @@ SkillsGestalt 可以在不只一台電腦上改、發佈，每台有自己的工
    已經 clone 好才發現的話：`git config core.autocrlf false`，`git status` 沒有改動時，再 `git rm -rq --cached .` 與 `git reset -q --hard HEAD`，重新 checkout。
 4. `git switch -c <work> main`，再 `git config branch.<work>.pushRemote no_push`。
    從本機的 `main` 建，`<work>` 就不追蹤遠端；`git push` 會失敗，只有 [[publish-gestalt]] 推 `main`。
-5. 在根目錄寫 `config.local.yaml`，內容是這台的值：一行 `wikiDir: <這台的 Obsidian vault>`，路徑用 `/`。它與第 8 步產生的 `config.yaml` 都不進 git。
-   不改 [config-tmp.yaml](../config-tmp.yaml)：它是各台共用的範本，`{wikiDir}` 由 `config.local.yaml` 代換（[[Task 109]]）。
+5. 在根目錄寫 `config.local.yaml`，內容是這台的值，兩行：`wikiDir: <這台的 Obsidian vault>`，路徑用 `/`；`workBranch: <work>`。它與第 8 步產生的 `config.yaml` 都不進 git。
+   [config.shared.yaml](../config.shared.yaml) 是各台共用的範本，`{wikiDir}`、`{workBranch}` 由 `config.local.yaml` 代換（[[Task 109]]）。
+   只改一處：把 `<work>` 加進它的 `workBranches`，只寫分支名稱，不寫電腦名稱；這個改動和第 11 步的紀錄一起 commit（[[Task 111]]）。
    不要寫 `publish:`。快照的作者是 `identity`，沒寫就是 `publish_snapshot.py` 的 `IDENTITY`，不受這台 git 的 `user.name` 與 `user.email` 影響（[[Task 90]]）。
 6. 從原本那台複製這些不進 git、也不公開的檔，不要經過 git：
    - `publish-keywords.local.txt`：沒有它，`publish_snapshot.py` 以 `2` 結束。
@@ -59,5 +60,6 @@ SkillsGestalt 可以在不只一台電腦上改、發佈，每台有自己的工
 - [[publish-gestalt]]：裝好之後，用它發佈。
 - [[Task 89]]、[[Task 90]]：另一台電腦的 pull 與快照的身分。
 - [[Task 95]]：`.venv` 的建法。
-- [[Task 109]]：`config.yaml` 改由 `config-tmp.yaml` 與 `config.local.yaml` 產生。
+- [[Task 109]]：`config.yaml` 改由 `config.shared.yaml` 與 `config.local.yaml` 產生。
+- [[Task 111]]：`workBranches` 與 `workBranch`。
 - [[Task 105]]：第 3 步加上 `core.autocrlf=false`。

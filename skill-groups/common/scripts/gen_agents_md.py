@@ -6,7 +6,7 @@ The shared rules are written once, as a template in the common skill group; each
 own part, beside its AGENTS.md; this script puts the two together and fills in the paths:
 
   {skillGroups.common}/templates/AGENTS-tmp.md   the shared rules, its paths written {skillGroups.common}
-  AGENTS-local.md                                the agency's own part, at the root of its workspace
+  AGENTS.shared.md                               the agency's own part, at the root of its workspace, in git
   AGENTS.md                                      what this script writes - read by the agent, never edited
   CLAUDE.md                                      the one line @AGENTS.md, also written here
 
@@ -34,10 +34,10 @@ The template is read as written, but for:
   {skillGroupRoots}   a line of its own, replaced by a list of each skill group of skillGroups in config.yaml,
                       in its order, with its root as written there: - `common`: `skill-groups/common`
   {{name}}            {name}, as it is: for a sentence that has to show a placeholder
-  {AGENTS-local-top}  a line of its own, replaced by the top part of AGENTS-local.md
-  {AGENTS-local}      a line of its own, replaced by the rest of AGENTS-local.md
+  {AGENTS-shared-top} a line of its own, replaced by the top part of AGENTS.shared.md
+  {AGENTS-shared}     a line of its own, replaced by the rest of AGENTS.shared.md
 
-AGENTS-local.md is split at a line {AGENTS-local} of its own: what is above it goes to the top slot, what
+AGENTS.shared.md is split at a line {AGENTS-shared} of its own: what is above it goes to the top slot, what
 is below it to the other. Without that line, all of it goes to the other slot, and the top slot and its
 blank line go.
 
@@ -46,7 +46,7 @@ with ~, as ../SkillsGestalt/skill-groups/common/...: a Markdown viewer does not 
 names no account. When no relative path exists - two drives on Windows - the link keeps the value as
 written. A command and an inline-code span keep the value as written, ~ and all, which a shell expands.
 
-AGENTS-local.md may open with a "> Technical words: ..." line. That line does not go into AGENTS.md as it
+AGENTS.shared.md may open with a "> Technical words: ..." line. That line does not go into AGENTS.md as it
 is: its words join the template's own "> Technical words:" line, so that the STE check of AGENTS.md knows
 them all, and its blank line goes with it.
 
@@ -57,12 +57,16 @@ Each file is read with its CRLF line ends made LF, as a Git for Windows clone wi
 checks it out; the files are written with LF. A CRLF AGENTS.md or CLAUDE.md that is otherwise the same
 is unchanged, and passes --check.
 
-Run it from the root of the workspace after a change to the template, to AGENTS-local.md or to
-config.yaml. A workspace that has a config-tmp.yaml runs gen_config.py instead: it makes config.yaml,
+Run it from the root of the workspace after a change to the template, to AGENTS.shared.md or to
+config.yaml. A workspace that has a config.shared.yaml runs gen_config.py instead: it makes config.yaml,
 and then runs this script. Exit status: 0 the two files are written, or are already what it would write; 1 under --check,
-one is not; 2 a file is missing or unreadable, or the template names a value config.yaml does not have.
-An agency that still has the CLAUDE-local.md of an older version, and no AGENTS-local.md, stops with 2:
-rename the file to AGENTS-local.md, and its {CLAUDE-local} lines to {AGENTS-local}.
+one is not; 2 a file is missing or unreadable, the template names a value config.yaml does not have, or
+config.yaml has no workBranch, the work branch of this clone, or a list workBranches without it.
+An agency that still has the AGENTS-local.md or the CLAUDE-local.md of an older version, and no
+AGENTS.shared.md, stops with 2: rename the file to AGENTS.shared.md, and its {AGENTS-local} or
+{CLAUDE-local} line to {AGENTS-shared}. An AGENTS.shared.md that still has such a line also stops with 2.
+The name says where the file applies: -tmp is a template of the common skill group, .shared. is of this
+agency and in git, and .local. is of one computer and not in git.
 """
 from __future__ import annotations
 
@@ -76,10 +80,11 @@ from pathlib import Path
 import yaml
 
 TEMPLATE = 'templates/AGENTS-tmp.md'
-LOCAL = 'AGENTS-local.md'
-OLD_LOCAL = 'CLAUDE-local.md'
-LOCAL_SLOT = '{AGENTS-local}'
-TOP_SLOT = '{AGENTS-local-top}'
+LOCAL = 'AGENTS.shared.md'
+OLD_LOCALS = ('AGENTS-local.md', 'CLAUDE-local.md')
+LOCAL_SLOT = '{AGENTS-shared}'
+TOP_SLOT = '{AGENTS-shared-top}'
+OLD_SLOTS = ('{AGENTS-local}', '{CLAUDE-local}')
 CLAUDE_TEXT = '@AGENTS.md\n'
 CHORE = '{keepEnglishChore}'
 ROOTS_SLOT = '{skillGroupRoots}'
@@ -118,11 +123,24 @@ def render(root: Path) -> str:
     groups = {k: str(v) for k, v in (config.get('skillGroups') or {}).items() if v}
     if 'common' not in groups:
         fail(f'{root / "config.yaml"}: skillGroups.common is not set')
+    work = config.get('workBranch')
+    if not isinstance(work, str) or not work.strip():
+        fail(f'{root / "config.yaml"}: workBranch is not set: each clone names its work branch, '
+             f'in config.local.yaml when the root has config.shared.yaml')
+    listed = config.get('workBranches')
+    if listed is not None and (not isinstance(listed, list) or work not in [str(b) for b in listed]):
+        fail(f'{root / "config.yaml"}: workBranches does not list workBranch {work}')
     common = Path(os.path.expanduser(groups['common']))
     template = read((common if common.is_absolute() else root / common) / TEMPLATE)
-    if not (root / LOCAL).is_file() and (root / OLD_LOCAL).is_file():
-        fail(f'{root / OLD_LOCAL}: rename it to {LOCAL}, and its {{CLAUDE-local}} lines to {LOCAL_SLOT}')
+    if not (root / LOCAL).is_file():
+        for old in OLD_LOCALS:
+            if (root / old).is_file():
+                fail(f'{root / old}: rename it to {LOCAL} (git mv {old} {LOCAL}), '
+                     f'and a line {" or ".join(OLD_SLOTS)} in it to {LOCAL_SLOT}')
     local = read(root / LOCAL)
+    for old in OLD_SLOTS:
+        if old in local.split('\n'):
+            fail(f'{root / LOCAL}: change its line {old} to {LOCAL_SLOT}')
 
     words: list[str] = []
     if local.startswith(WORDS):

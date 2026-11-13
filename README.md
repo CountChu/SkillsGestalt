@@ -25,7 +25,7 @@ To make a Forge, follow [forge-setup.md](skill-groups/common/references/forge-se
 ## Getting Started
 
 1. Write `config.local.yaml` at the root of the workspace, with the line `wikiDir: <your Obsidian vault>`.
-   Then run `python skill-groups/common/scripts/gen_config.py`: it makes `config.yaml` from [config-tmp.yaml](config-tmp.yaml) and `config.local.yaml`.
+   Then run `python skill-groups/common/scripts/gen_config.py`: it makes `config.yaml` from [config.shared.yaml](config.shared.yaml) and `config.local.yaml`.
 2. Read the `SKILL.md` of a skill, and do its steps.
 
 ## Not in This Repository

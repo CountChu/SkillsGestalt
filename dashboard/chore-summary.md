@@ -94,6 +94,11 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 
 #### 2026-11-13
 
+- 第三次發佈：以 `devbox` 的 `c39a780` 做出快照 `8e9e9d1`，接在 `countdell` 發佈的 `2f07db8` 之後，推到 `main`；變動 28 個檔，是 [[Task 108]]、[[Task 109]] 與這台第二次發佈、pull 的執行紀錄。
+  先做 [[pull-gestalt]]：`incoming` 印出 `nothing to pull`。第一次 `check` 的掃描找到 [[Task 109]] 裡描述掃描結果的那一行有使用者目錄的路徑，改掉並 commit（`c39a780`）之後，`check` 與 `publish` 都是 `nothing found`。
+  `devbox` 跟著從 `8e9e9d1` 重新開始（`029ccba`）；tag `archive/devbox-261113` 從 `31e193e` 移到 `c39a780`。發佈後把 `31e193e` 存成 tag `archive/devbox-261113-2`，因為下面一筆與 `fd9a3e7` 的訊息引用它。
+  用 git 確認：`git ls-remote` 的 `main` 是 `8e9e9d1`；`origin/main` 的 tree 沒有排除的路徑，有 `config-tmp.yaml`；快照沒有 `Co-Authored-By`。
+  別台下次 [[pull-gestalt]] 第 9 步要先照 [[clone-gestalt]] 第 5 步寫自己的 `config.local.yaml`（[[Task 109]]）。
 - 第二次發佈：以 `devbox` 的 `31e193e` 做出快照 `5e7a102`，接在 `7f62c8a` 之後，推到 `main`；變動 8 個檔，是 [[Task 106]]、[[Task 107]] 與第一次發佈的執行紀錄。
   先做 [[pull-gestalt]]：`git fetch` 之後 `incoming` 印出 `nothing to pull`；`check` 與 `publish` 的掃描都是 `nothing found`。照 [[Task 106]] 改過的第 4 步，不加 `--co-author`。
   `devbox` 跟著從 `5e7a102` 重新開始（`dd61196`）；同一天第二次發佈，tag `archive/devbox-261113` 從 `a098a95` 移到 `31e193e`。發佈前先把 `a098a95` 存成 tag `archive/devbox-261113-1`，因為 [[clone-gestalt]] 的執行紀錄引用 `ea4ada9`。

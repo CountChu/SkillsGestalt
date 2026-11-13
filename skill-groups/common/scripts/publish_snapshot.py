@@ -20,8 +20,11 @@ config.yaml at the root has a section "publish:", which a Forge writes to publis
 A key that is not there keeps the value of SkillsGestalt. The root is --workspace, or the nearest
 directory at or above the current directory whose config.yaml has skillGroups; the script runs there.
 
-The work branch is the branch that --work names, by default the branch that is checked out: m1 in the
-workspace, or a different branch in a different clone. It cannot be BRANCH. Below, WORK stands for it.
+The work branch is the branch that --work names. By default it is workBranch of the config.yaml at the
+root, or, without workBranch, the branch that is checked out. Each clone has its own, such as m1 or
+devbox; it cannot be BRANCH. Below, WORK stands for it. When config.yaml has workBranch, WORK must be it,
+it must be in the list workBranches when config.yaml has that list, and git must have
+branch.WORK.pushRemote no_push, so that a push of WORK fails; else check and publish stop with 2.
 
 The remote branch carries no history of the work branch. Each release is one commit on the
 local branch BRANCH, whose tree is the tree of WORK with the paths of EXCLUDED taken out; only BRANCH is
@@ -314,8 +317,43 @@ def last_release() -> str | None:
     return r.stdout.strip() or None
 
 
+def top_level(config: Path, key: str) -> str | list[str] | None:
+    """The value of a key at the top level of config.yaml: a scalar, an inline list [a, b], or a list with
+    one "- item" on each line below it; None when config.yaml or the key is not there."""
+    if not config.is_file():
+        return None
+    lines = config.read_text(encoding='utf-8-sig').split('\n')
+    for i, line in enumerate(lines):
+        bare = re.sub(r'''\s+#(?=(?:[^'"]|'[^']*'|"[^"]*")*$).*$''', '', line).rstrip()
+        if not bare.startswith(f'{key}:'):
+            continue
+        value = bare[len(key) + 1:].strip()
+        if value.startswith('[') and value.endswith(']'):
+            return [unquote(v) for v in re.findall(r'''"[^"]*"|'[^']*'|[^,\s][^,]*''', value[1:-1])]
+        if value:
+            return unquote(value)
+        items = []
+        for below in lines[i + 1:]:
+            item = re.sub(r'''\s+#(?=(?:[^'"]|'[^']*'|"[^"]*")*$).*$''', '', below).strip()
+            if not item or item.startswith('#'):
+                continue
+            if not below.startswith((' ', '\t', '-')) or not item.startswith('- '):
+                break
+            items.append(unquote(item[2:]))
+        return items
+    return None
+
+
 def work_branch(name: str | None) -> str:
-    """The work branch: `name`, or the branch that is checked out. Never BRANCH, never a detached HEAD."""
+    """The work branch: `name`, or workBranch of config.yaml, or the branch that is checked out. Never BRANCH,
+    never a detached HEAD; it agrees with workBranch, workBranches and branch.<name>.pushRemote."""
+    wanted = top_level(Path(CONFIG), 'workBranch')
+    listed = top_level(Path(CONFIG), 'workBranches')
+    if isinstance(wanted, list):
+        print(f'{CONFIG}: workBranch must be one branch name', file=sys.stderr)
+        sys.exit(2)
+    if name is None and wanted:
+        name = wanted
     if name is None:
         r = subprocess.run(['git', 'symbolic-ref', '-q', '--short', 'HEAD'], capture_output=True, text=True)
         name = r.stdout.strip()
@@ -329,6 +367,18 @@ def work_branch(name: str | None) -> str:
     if subprocess.run(['git', 'rev-parse', '--verify', '-q', f'refs/heads/{name}'], capture_output=True).returncode:
         print(f'{name}: no such local branch', file=sys.stderr)
         sys.exit(2)
+    if wanted:
+        if name != wanted:
+            print(f'the work branch of this clone is {wanted} (workBranch in {CONFIG}), not {name}', file=sys.stderr)
+            sys.exit(2)
+        if listed is not None and name not in (listed if isinstance(listed, list) else [listed]):
+            print(f'{name} is not in workBranches of {CONFIG}: add it to the shared config, '
+                  f'or correct workBranch', file=sys.stderr)
+            sys.exit(2)
+        r = subprocess.run(['git', 'config', f'branch.{name}.pushRemote'], capture_output=True, text=True)
+        if r.stdout.strip() != 'no_push':
+            print(f'{name} can be pushed: run git config branch.{name}.pushRemote no_push', file=sys.stderr)
+            sys.exit(2)
     return name
 
 

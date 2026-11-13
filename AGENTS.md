@@ -7,20 +7,21 @@
 > Technical words: agency, argument, audit, branch, chore, clone, command, commit, computer, day, directory, document, English, entry, file, Forge, git, glob, hash, line, list, message, pattern, publish, repository, root, script, section, session, skill, snapshot, summary, table, tag, template, term, text, twin, user, version.
 
 Instructions for an agent that works in this agency.
-A script makes this file from the template `skill-groups/common/templates/AGENTS-tmp.md` and the `AGENTS-local.md` at the root.
+A script makes this file from the template `skill-groups/common/templates/AGENTS-tmp.md`, and from the `AGENTS.shared.md` and the `config.yaml` at the root.
 The script also makes `CLAUDE.md`, which contains only the line `@AGENTS.md`: Claude Code reads `CLAUDE.md`, and this line gives it all of this file.
 
 Do not change this file or `CLAUDE.md`.
 To change a rule for each agency, change the template.
-To change a rule for only this agency, change `AGENTS-local.md`.
-Then, and after each change to the `config.yaml`, `config-tmp.yaml` or `config.local.yaml` at the root, run this command from the root:
+To change a rule for only this agency, change `AGENTS.shared.md`.
+Then, and after each change to the `config.shared.yaml` or the `config.local.yaml` at the root, run this command from the root:
 
 ```bash
 python skill-groups/common/scripts/gen_config.py
 ```
 
-If the root has a `config-tmp.yaml`, the command first makes the `config.yaml` from it and from `config.local.yaml`.
-Then, do not change the `config.yaml`: change `config-tmp.yaml` for each computer, or `config.local.yaml` for only this computer.
+If the root has a `config.shared.yaml`, the command first makes the `config.yaml` from it and from `config.local.yaml`.
+Then, do not change the `config.yaml`: change `config.shared.yaml` for all the computers, or `config.local.yaml` for only this computer.
+If the root has no `config.shared.yaml`, run the command also after each change to the `config.yaml`.
 
 ## Skills
 
@@ -49,6 +50,29 @@ The `SKILL.md` of a skill does not refer to its `README.md`, because a run of th
 ## Markdown
 
 When you write or change a Markdown file in the repository, follow [md-style.md](skill-groups/common/rules/md-style.md).
+
+## File Names
+
+The name of a file tells which computers and agencies use it, and if it is in git:
+
+- `-tmp`, for example `AGENTS-tmp.md`: a template in `skill-groups/common/templates/`, for many agencies.
+  It is in git.
+- `.shared.`, for example `AGENTS.shared.md`: a file of only this agency, for all the computers.
+  It is in git.
+- `.local.`, for example `config.local.yaml`: a file of only this computer.
+  It is not in git.
+
+When you add such a file, give it a name that follows this list.
+
+## Work Branch and Commits
+
+Do your work on the branch that `workBranch` in the `config.yaml` at the root gives.
+Each clone of this agency has its own work branch.
+If the `config.yaml` has `workBranches`, it gives the list of them.
+If the root has a `config.shared.yaml`, the `config.local.yaml` of each computer sets `workBranch`.
+
+Do not put a `Co-Authored-By` line in a commit message.
+The `.claude/settings.json` at the root stops this line in the commits of Claude Code.
 
 ## 繁體中文 twins
 
@@ -86,26 +110,20 @@ python skill-groups/common/scripts/check_chores.py --summary dashboard/chore-sum
 
 ## Settings of This Agency
 
-The `config.yaml` and the `config.local.yaml` at the root are not in git.
-`gen_config.py` makes the `config.yaml` from the template [config-tmp.yaml](config-tmp.yaml) and from `config.local.yaml`.
 A change in the `common` skill group can make work for a Forge, or a `FAIL` in a check of a Forge.
 For such a change, add an entry to [CHANGES.md](skill-groups/common/CHANGES.md).
 Each Forge does the chore [follow-gestalt](chores/follow-gestalt.md) for these entries.
 
 ## Branches
 
-Do your work on `m1`.
-In a different clone, you can do your work on a different branch.
 The local `main` contains only the snapshots that go to GitHub.
 Do not commit on it.
 
 The commits before 2026-10-30 are in the tag `archive/master`.
-The commits before each subsequent release are in `archive/<branch>-<yymmdd>`, for example `archive/m1-261030`, with one tag for each day.
-To find a hash that a document refers to, look in these tags.
+The commits before each subsequent release are in `archive/<branch>-<yymmdd>`, for example `archive/m1-261030`.
+A day can have more than one release or pull.
+Then more tags keep the commits of that day, for example `archive/devbox-261113-1` and `archive/devbox-261113-pull`.
+To find a hash that a document refers to, look in all these tags.
+
 To publish, follow the steps of [publish-gestalt](chores/publish-gestalt.md).
-
-## Commits
-
-Do not put a `Co-Authored-By` line in a commit message.
-This rule is also true for the snapshots of [publish-gestalt](chores/publish-gestalt.md).
-The `.claude/settings.json` at the root stops this line in the commits of Claude Code.
+A snapshot of [publish-gestalt](chores/publish-gestalt.md) also has no `Co-Authored-By` line.

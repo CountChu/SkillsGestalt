@@ -20,7 +20,7 @@
   第一批條目補記 2026-10-30 的改動（CLAUDE.md 由模板產生、`keepEnglishChore`、chore 改用名稱、沒有 `chores/` 也可以、chore 不放自己的程式），以及 2026-10-31 的 follow-gestalt 本身；被同一天取代的做法（`agency-rules.md`、使用檔）只在取代它的那一筆提到。
 - [[follow-gestalt]]：定義在本 repo，Forge 透過 `agencies` 做；何時要做是 `CHANGES.md` 有比上次處理的那一筆新的條目；怎麼做是照條目做、重新產生 CLAUDE.md、跑兩個檢查、在摘要表記下處理到哪一筆。
   本 repo 的摘要表也有它的一列（每個 chore 檔都要有一列），上次執行是 —，本 repo 自己不做。
-- [CLAUDE-local.md](../AGENTS-local.md) 的 Settings of This Agency 加兩句：`common` 的改動會讓 Forge 要做事或檢查出現 `FAIL` 時，在 CHANGES.md 記一筆；每個 Forge 做 follow-gestalt 處理這些條目；重新產生 CLAUDE.md。
+- [CLAUDE-local.md](../AGENTS.shared.md) 的 Settings of This Agency 加兩句：`common` 的改動會讓 Forge 要做事或檢查出現 `FAIL` 時，在 CHANGES.md 記一筆；每個 Forge 做 follow-gestalt 處理這些條目；重新產生 CLAUDE.md。
 
 ## 4. 要做的
 

@@ -1,6 +1,6 @@
 # Task 84 - 由 CLAUDE-tmp.md 與 CLAUDE-local.md 產生 CLAUDE.md
 
-**Status**：完成——2026-10-30 寫好 [CLAUDE-tmp.md](../skill-groups/common/templates/AGENTS-tmp.md)、本 repo 的 [CLAUDE-local.md](../AGENTS-local.md) 與 [gen_claude_md.py](../skill-groups/common/scripts/gen_agents_md.py)，CLAUDE.md 由它產生；重新打開之後，keep-English chore 改由 `config.yaml` 的 `keepEnglishChore` 填入。
+**Status**：完成——2026-10-30 寫好 [CLAUDE-tmp.md](../skill-groups/common/templates/AGENTS-tmp.md)、本 repo 的 [CLAUDE-local.md](../AGENTS.shared.md) 與 [gen_claude_md.py](../skill-groups/common/scripts/gen_agents_md.py)，CLAUDE.md 由它產生；重新打開之後，keep-English chore 改由 `config.yaml` 的 `keepEnglishChore` 填入。
 **Raised**：2026-10-30，[[Task 83]] 做完之後，使用者提出：路徑由程式展開，比讓 agent 讀說明、或靠檢查比對路徑都直接，agent 也不必花 token 理解這些說明。
 **Depends on**：[[Task 82]]、[[Task 83]]
 
@@ -21,7 +21,7 @@
 
 - [CLAUDE-tmp.md](../skill-groups/common/templates/AGENTS-tmp.md)：標題 `# {agencyName}`、STE 的 header quote、引言，以及 Markdown、繁體中文 twins、Tasks、Chores 四節；路徑都寫 `{skillGroups.common}`；最後一行 `{CLAUDE-local}`。
   引言說明 CLAUDE.md 由模板與 `CLAUDE-local.md` 產生、不要直接改；每個 agency 都適用的規則改模板，只有本 agency 的改 `CLAUDE-local.md`；改完或改了 `config.yaml` 之後執行 `gen_claude_md.py`。
-- 本 repo 的 [CLAUDE-local.md](../AGENTS-local.md)：第一行 `> Technical words:` 列出它自己的 technical words，然後是 Settings of This Agency（`config.example.yaml`、keep-English chore 是 [[keep-english]]）與 Branches。
+- 本 repo 的 [CLAUDE-local.md](../AGENTS.shared.md)：第一行 `> Technical words:` 列出它自己的 technical words，然後是 Settings of This Agency（`config.example.yaml`、keep-English chore 是 [[keep-english]]）與 Branches。
 - [gen_claude_md.py](../skill-groups/common/scripts/gen_agents_md.py)：
   - 從 `config.yaml` 取 `skillGroups.common`，讀 `{skillGroups.common}/templates/CLAUDE-tmp.md` 與根目錄的 `CLAUDE-local.md`。
   - `{agencyName}` 換成根目錄的資料夾名稱，`{skillGroups.X}` 換成 `config.yaml` 裡寫的值，`{{name}}` 留成 `{name}`（給要顯示佔位符的句子），`{CLAUDE-local}` 那一行換成片段。
@@ -34,7 +34,7 @@
 
 - 使用者問：CLAUDE.md 的「繁體中文 twins」為何提到 `CLAUDE-local.md`？
   因為模板不知道各 agency 的 keep-English chore 是哪一個，只能說「`CLAUDE-local.md` 可以指定一個」；但 agent 讀的是合併好的 CLAUDE.md，這句話會讓它以為要再開另一個檔。
-- `config.yaml` 加一個設定 `keepEnglishChore`，值寫 chore 的名稱，例如 `Chore 2`；[config.example.yaml](../config-tmp.yaml) 與本機的 `config.yaml` 都加上 `keepEnglishChore: Chore 2`。
+- `config.yaml` 加一個設定 `keepEnglishChore`，值寫 chore 的名稱，例如 `Chore 2`；[config.example.yaml](../config.shared.yaml) 與本機的 `config.yaml` 都加上 `keepEnglishChore: Chore 2`。
 - 模板那三句改成一行：「When the version of the list changes, do the keep-English chore, `{keepEnglishChore}`: it audits all the twins against the list.」
 - `gen_claude_md.py` 把 `{keepEnglishChore}` 換成 `[Chore 2](chores/Chore%202.md)` 這樣的連結；沒設定時，含它的那一行整行拿掉。
 - 本 repo 的 `CLAUDE-local.md` 拿掉「The keep-English chore is Chore 2」。

@@ -6,31 +6,31 @@ folder of one computer, and a pull on a different computer writes over that comp
 shared part goes into git as a template, the part of each computer stays out of git, and this script puts
 the two together:
 
-  config-tmp.yaml     the shared settings, in git; a value of this computer is written {name}
+  config.shared.yaml  the shared settings, in git; a value of this computer is written {name}
   config.local.yaml   the values of this computer, not in git: a mapping of names to values,
                       such as  home: D:/Work
   config.yaml         what this script writes - read by the skills and the scripts, never edited, not in git
 
-config-tmp.yaml is read as text, not as YAML, so that its comments and its order go into config.yaml as they
+config.shared.yaml is read as text, not as YAML, so that its comments and its order go into config.yaml as they
 are; each {name} is replaced by the value of name in config.local.yaml, as written there, and {{name}} by
 {name}, as it is. A line that starts with # is a comment, and stays as it is, so that a comment can name a
 placeholder; a comment at the end of a line is replaced as the line is. The result must be valid YAML. A {name} that config.local.yaml does not have is an error;
-a name of config.local.yaml that config-tmp.yaml does not use is only told. A value is put into the text as
-it is: write paths with / or in single quotes, as the line of config-tmp.yaml needs.
+a name of config.local.yaml that config.shared.yaml does not use is only told. A value is put into the text as
+it is: write paths with / or in single quotes, as the line of config.shared.yaml needs.
 
 config.yaml starts with a comment line that names the two files. Then, in the same run, the script runs
 gen_agents_md.py with the same --root and --check, because AGENTS.md takes its paths from config.yaml.
-A workspace without config-tmp.yaml keeps its config.yaml as it is, and the script only runs
+A workspace without config.shared.yaml keeps its config.yaml as it is, and the script only runs
 gen_agents_md.py; so each workspace can run this one command.
 
   (no flag)  write config.yaml, then AGENTS.md and CLAUDE.md
   --check    write nothing; compare config.yaml, AGENTS.md and CLAUDE.md with what would be written
 
-Run it from the root of the workspace after a change to config-tmp.yaml, to config.local.yaml, to the
-template of AGENTS.md or to AGENTS-local.md. Each file is read with its CRLF line ends made LF; config.yaml
+Run it from the root of the workspace after a change to config.shared.yaml, to config.local.yaml, to the
+template of AGENTS.md or to AGENTS.shared.md. Each file is read with its CRLF line ends made LF; config.yaml
 is written with LF. Exit status: 0 the files are written, or are already what it would write; 1 under
 --check, one is not; 2 a file is missing or unreadable, config.local.yaml is not a mapping of names to
-values, config-tmp.yaml uses a name that config.local.yaml does not have, or the result is not valid YAML.
+values, config.shared.yaml uses a name that config.local.yaml does not have, or the result is not valid YAML.
 """
 from __future__ import annotations
 
@@ -43,7 +43,7 @@ from pathlib import Path
 
 import yaml
 
-TEMPLATE = 'config-tmp.yaml'
+TEMPLATE = 'config.shared.yaml'
 LOCAL = 'config.local.yaml'
 TARGET = 'config.yaml'
 HEADER = f'# Made by gen_config.py from {TEMPLATE} and {LOCAL}. Do not change this file: change those two, and run gen_config.py.\n'

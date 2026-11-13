@@ -31,7 +31,7 @@ database/
 handoff/
 temp/
 
-# Local configuration: gen_config.py makes config.yaml from config-tmp.yaml and config.local.yaml
+# Local configuration: gen_config.py makes config.yaml from config.shared.yaml and config.local.yaml
 /config.yaml
 /config.local.yaml
 

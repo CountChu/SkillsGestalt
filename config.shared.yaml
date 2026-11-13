@@ -8,6 +8,11 @@ skillGroups:
   common: skill-groups/common       # the shared skills, rules, templates and scripts that every workspace uses
   external: skill-groups/external   # skills that come from outside
 keepEnglishChore: keep-english   # the chore that audits the 繁體中文 twins when tw-keep-english.md changes its version; AGENTS.md links it
+workBranches:              # the work branch of each clone; a new clone adds its own branch here, never a computer name
+  - m1
+  - countdell
+  - devbox
+workBranch: "{workBranch}"   # the work branch of this clone, from config.local.yaml; publish_snapshot.py checks it
 # cleanCheckpoints:         # the clean-checkpoints skill; without it, or without a key, the default of the key applies
 #   maxSizeGB: 10             # the skill cleans only when checkpoints\ is larger than this size
 #   keepDays: 60              # an item is old when its newest file is older than this number of days

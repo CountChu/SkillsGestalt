@@ -29,7 +29,7 @@
 - `[[publish-github]]` 的 wikilink 共 42 個：
   - [pull-gestalt](../chores/pull-gestalt.md) 3 個，[摘要表](../dashboard/chore-summary.md) 1 個。
   - [[Task 26]] 2 個、[[Task 78]] 5 個、[[Task 79]] 4 個、[[Task 80]] 1 個、[[Task 86]] 1 個、[[Task 87]] 11 個、[[Task 88]] 1 個、[[Task 89]] 7 個、[[Task 90]] 6 個。
-- Markdown 連結：[CLAUDE-local.md](../AGENTS-local.md) 第 20 行與 [[Task 26]] 第 20 行連到 `chores/publish-github.md`。
+- Markdown 連結：[CLAUDE-local.md](../AGENTS.shared.md) 第 20 行與 [[Task 26]] 第 20 行連到 `chores/publish-github.md`。
   CLAUDE.md 第 74 行是 `gen_claude_md.py` 從 CLAUDE-local.md 產生的。
 - chore 檔 `chores/publish-github.md`：標題行，以及第 49、52 行的 commit 前綴 `chore publish-github: `；第 52 行也寫了執行紀錄的小節 `### publish-github`。
 - [摘要表](../dashboard/chore-summary.md)：那一列，以及執行紀錄的小節 `### publish-github`。
@@ -50,12 +50,12 @@
 
 - chore 檔改名為 [publish-gestalt.md](../chores/publish-gestalt.md)：標題行、兩處 commit 前綴與執行紀錄的小節名稱跟著改，關係一章加上本 task，寫明舊名稱與舊前綴。
 - 43 個 wikilink 改成 [[publish-gestalt]]：[pull-gestalt](../chores/pull-gestalt.md) 3 個、[摘要表](../dashboard/chore-summary.md) 1 個，其餘在 9 個 task 檔；[[Task 90]] 在本 task 建立之後多了 1 個，所以是 7 個。
-- [CLAUDE-local.md](../AGENTS-local.md) 與 [[Task 26]] 的 Markdown 連結改到 `chores/publish-gestalt.md`；CLAUDE.md 以 `gen_claude_md.py` 重新產生，只差那一行。
+- [CLAUDE-local.md](../AGENTS.shared.md) 與 [[Task 26]] 的 Markdown 連結改到 `chores/publish-gestalt.md`；CLAUDE.md 以 `gen_claude_md.py` 重新產生，只差那一行。
 - 9 個 task 檔各在日誌的 2026-10-31 加一行：[[Task 26]]、[[Task 78]]、[[Task 79]]、[[Task 80]]、[[Task 86]]、[[Task 87]] 新增這一天，[[Task 88]]、[[Task 89]]、[[Task 90]] 接在當天的最後。
 - [摘要表](../dashboard/chore-summary.md)：那一列與執行紀錄的小節改成新名稱；小節裡「上次 publish-github 的執行紀錄」是當時的紀錄，照舊。
 - [publish_snapshot.py](../skill-groups/common/scripts/publish_snapshot.py)：開頭的說明、新的「重新開始」commit 的前綴與 `incoming` 的訊息改成新名稱。
   `RESTART` 是 `^chore (?:publish-gestalt|publish-github): \S+ starts again from `，上面的註解說明 publish-github 是舊名稱，工作分支上還可能有它的「重新開始」commit。
-- [config.example.yaml](../config-tmp.yaml) 第 9 行：[[Task 90]] 在本 task 建立之後加上的 `identity` 註解也寫著舊名稱，改成新名稱；本機的 `config.yaml` 沒有提到它。
+- [config.example.yaml](../config.shared.yaml) 第 9 行：[[Task 90]] 在本 task 建立之後加上的 `identity` 註解也寫著舊名稱，改成新名稱；本機的 `config.yaml` 沒有提到它。
 - 照舊的：inline code、commit 前綴與純文字的紀錄，[CHANGES.md](../skill-groups/common/CHANGES.md) 第 18 行，以及 git 歷史。
 - repo 之外：這台 Mac 上 Claude 的 memory `branches-m1-main-archive.md` 改成新名稱，也記下舊名稱與舊前綴。
 
@@ -91,7 +91,7 @@
 2. 以 `git mv` 改 chore 檔的名稱，改標題行、commit 前綴與執行紀錄的小節名稱，並在關係一章加上舊名稱。
 3. 改 [pull-gestalt](../chores/pull-gestalt.md) 與[摘要表](../dashboard/chore-summary.md)：連結，以及執行紀錄的小節名稱。
 4. 改 [publish_snapshot.py](../skill-groups/common/scripts/publish_snapshot.py) 的 4 處，`RESTART` 新舊都認。
-5. 改 [CLAUDE-local.md](../AGENTS-local.md) 第 20 行，再跑 `gen_claude_md.py` 重新產生 CLAUDE.md。
+5. 改 [CLAUDE-local.md](../AGENTS.shared.md) 第 20 行，再跑 `gen_claude_md.py` 重新產生 CLAUDE.md。
 6. 改 task 檔的連結，各加一行日誌。
 7. 更新這台 Mac 上 Claude 的 memory。
 8. 跑「驗證」一章的檢查。

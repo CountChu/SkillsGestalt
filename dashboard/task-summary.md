@@ -7,6 +7,9 @@ task 檔的格式與摘要表的維護方式，見 [task-rules.md](../skill-grou
 
 | Task | Raised | Title | Status | Depends on |
 | --- | --- | --- | --- | --- |
+| [[Task 112]] | 2026-11-13 | AGENTS.shared.md 裡通用的規則搬到 AGENTS-tmp.md | ✅ | [[Task 111]] ✅ |
+| [[Task 111]] | 2026-11-13 | work branch 寫在 config.shared.yaml 與 config.local.yaml | ✅ | [[Task 110]] ✅ |
+| [[Task 110]] | 2026-11-13 | config-tmp.yaml 與 AGENTS-local.md 改成 .shared. 的名稱 | ✅ | [[Task 108]] ✅、[[Task 109]] ✅ |
 | [[Task 109]] | 2026-11-13 | SkillsGestalt 的 config.example.yaml 改為 config-tmp.yaml | ✅ | [[Task 108]] ✅ |
 | [[Task 108]] | 2026-11-13 | 用 config-tmp.yaml 與 config.local.yaml 產生 config.yaml | ✅ | — |
 | [[Task 107]] | 2026-11-13 | commit 訊息不加 Co-Authored-By | ✅ | — |

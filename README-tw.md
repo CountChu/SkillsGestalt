@@ -25,7 +25,7 @@ SkillsGestalt 是 Gestalt：以 skill 本身為主題的 agency。
 ## Getting Started
 
 1. 在 workspace 根目錄寫 `config.local.yaml`，內容是一行 `wikiDir: <你的 Obsidian vault>`。
-   再跑 `python skill-groups/common/scripts/gen_config.py`：它用 [config-tmp.yaml](config-tmp.yaml) 與 `config.local.yaml` 產生 `config.yaml`。
+   再跑 `python skill-groups/common/scripts/gen_config.py`：它用 [config.shared.yaml](config.shared.yaml) 與 `config.local.yaml` 產生 `config.yaml`。
 2. 讀某個 skill 的 `SKILL.md`，照它的 step 做。
 
 ## Not in This Repository

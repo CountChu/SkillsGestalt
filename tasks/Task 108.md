@@ -93,7 +93,7 @@
 
 ### 3.5 SkillsGestalt 自己（2026-11-13）
 
-- SkillsGestalt 的 `config.yaml` 本來就不在 git，範本是 `config.example.yaml`，[[Task 109]] 改名為 [config-tmp.yaml](../config-tmp.yaml)。
+- SkillsGestalt 的 `config.yaml` 本來就不在 git，範本是 `config.example.yaml`，[[Task 109]] 改名為 [config-tmp.yaml](../config.shared.yaml)。
 - 它的 `AGENTS.md` 只有相對路徑，例如 `skill-groups/common`，每台都一樣，可以留在 git。所以不改。
 - 之後使用者要它也用 `config-tmp.yaml`，好讓範本新的 key 跟到各台；由 [[Task 109]] 做。
 
