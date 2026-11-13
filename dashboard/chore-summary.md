@@ -7,7 +7,7 @@ chore 檔的格式與摘要表的維護方式，見 [chore-rules.md](../skill-gr
 
 | Chore | Started | Title | 何時要做 | 上次執行 | Status |
 | --- | --- | --- | --- | --- | --- |
-| [[clone-gestalt]] | 2026-11-13 | 在新電腦上裝 SkillsGestalt | 要在一台新電腦上裝 SkillsGestalt，也要在上面改、發佈時 | — | 🔁 |
+| [[clone-gestalt]] | 2026-11-13 | 在新電腦上裝 SkillsGestalt | 要在一台新電腦上裝 SkillsGestalt，也要在上面改、發佈時 | 2026-11-13 | 🔁 |
 | [[clean-checkpoints]] | 2026-11-12 | 清理 checkpoints\ 的舊項目 | checkpoints\ 超過 config.yaml 的 cleanCheckpoints.maxSizeGB（沒寫時 10 GB） | — | 🔁 |
 | [[follow-gestalt]] | 2026-10-31 | 跟上 Gestalt 的改動 | `{skillGroups.common}/CHANGES.md` 有比上次處理的那一筆新的條目 | — | 🔁 |
 | [[pull-gestalt]] | 2026-10-31 | 把 GitHub 上的新快照拿進工作分支 | 發佈之前、git fetch 看到新快照時，或使用者要求時 | 2026-11-10 | 🔁 |
@@ -20,6 +20,18 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 上次執行：下面「執行紀錄」一節裡這個 chore 最新的日期；— 表示還沒做過。
 
 ## 執行紀錄
+
+### clone-gestalt
+
+#### 2026-11-13
+
+- 第一次，在 DevBox（Windows 11）做，work branch 是 `devbox`：repo 已經 clone 好，本機 `main` 追蹤 `origin/main`，是快照 `9b7b872`（SkillsGestalt 2026-11-13）。
+  `git switch -c devbox main`，`branch.devbox.pushRemote` 設成 `no_push`，`git push` 以 128 失敗；`config.yaml` 只改 `wikiDir`；`.venv` 用 Python 3.12 建，`pip install` 以 0 結束。
+- 這台的 Git 在全系統設了 `core.autocrlf=true`，checkout 出來的檔是 CRLF，`gen_agents_md.py` 以 2 結束；這個 clone 設 `core.autocrlf=false`，重新 checkout 之後 `--check` 是 PASS。
+  這一步由 [[Task 105]] 加進本 chore 的第 3 步（`ea4ada9`）。
+- `publish-keywords.local.txt` 從原本那台複製過來；`check` 的掃描是 `nothing found`，因為 `devbox` 已有 `ea4ada9`，印出的是 3 個檔的改動，不是 `no change since the last release`；`incoming` 印出 `nothing to pull`。
+- `external/ASD-STE100_ISSUE9.pdf` 也從原本那台複製過來；之後 `check_tasks.py` 與 `check_chores.py` 都是 PASS。
+- 這台沒有 `skill-groups/external/`。`git status` 只列出 `external/`，和 [[Task 104]] 試做的那份相同；不列出 `config.yaml`、`.venv/` 與 `publish-keywords.local.txt`。
 
 ### pull-gestalt
 

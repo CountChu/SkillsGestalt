@@ -23,8 +23,11 @@ SkillsGestalt 可以在不只一台電腦上改、發佈，每台有自己的工
 
 1. 要有 git 與 Python 3.10 以上，以及可以推到 GitHub repo `CountChu/SkillsGestalt` 的 GitHub 帳號；第一次 push 時，Git Credential Manager 會要求登入。
 2. 到要放 SkillsGestalt 的目錄。這台也要放 Forge 的話，用 Forge 的 `config.yaml` 裡 `skillGroups.common` 指的位置，例如 `~/WorkArea/Innovation`。
-3. `git clone https://github.com/CountChu/SkillsGestalt SkillsGestalt`，再 `cd SkillsGestalt`。
+3. `git clone -c core.autocrlf=false https://github.com/CountChu/SkillsGestalt SkillsGestalt`，再 `cd SkillsGestalt`。
    clone 出來的本機 `main` 已經追蹤 `origin/main`，只放快照，不在上面 commit。
+   `-c core.autocrlf=false` 寫進這個 clone 的 `.git/config`，在 checkout 之前生效：檔案照 repo 裡的行尾 checkout，不轉成 CRLF。
+   Windows 版 Git 常在全系統設 `core.autocrlf=true`，checkout 出來的檔就變成 CRLF，`gen_agents_md.py` 會以 `2` 結束，印出 `the template has 0 line(s) {AGENTS-local}, not 1`（[[Task 105]]）。
+   已經 clone 好才發現的話：`git config core.autocrlf false`，`git status` 沒有改動時，再 `git rm -rq --cached .` 與 `git reset -q --hard HEAD`，重新 checkout。
 4. `git switch -c <work> main`，再 `git config branch.<work>.pushRemote no_push`。
    從本機的 `main` 建，`<work>` 就不追蹤遠端；`git push` 會失敗，只有 [[publish-gestalt]] 推 `main`。
 5. 把 [config.example.yaml](../config.example.yaml) 複製成根目錄的 `config.yaml`，設 `wikiDir`；`config.yaml` 不進 git。
@@ -43,6 +46,7 @@ SkillsGestalt 可以在不只一台電腦上改、發佈，每台有自己的工
 ## 4. 驗證
 
 - `git branch -vv`：`main` 追蹤 `origin/main`；`<work>` 沒有 upstream，`git config branch.<work>.pushRemote` 是 `no_push`。
+- `git config --local core.autocrlf` 是 `false`；`git ls-files --eol` 沒有一行是 `i/lf` 而 `w/crlf`。
 - `gen_agents_md.py --check`、`check_tasks.py` 與 `check_chores.py` 都是 PASS。
 - `publish_snapshot.py check` 的掃描是 `nothing found`，`incoming` 印出 `nothing to pull`。
 - `git status` 不列出 `config.yaml`、`.venv/` 與 `publish-keywords.local.txt`。
@@ -54,3 +58,4 @@ SkillsGestalt 可以在不只一台電腦上改、發佈，每台有自己的工
 - [[publish-gestalt]]：裝好之後，用它發佈。
 - [[Task 89]]、[[Task 90]]：另一台電腦的 pull 與快照的身分。
 - [[Task 95]]：`.venv` 的建法。
+- [[Task 105]]：第 3 步加上 `core.autocrlf=false`。
