@@ -34,7 +34,7 @@
 
 - 使用者問：CLAUDE.md 的「繁體中文 twins」為何提到 `CLAUDE-local.md`？
   因為模板不知道各 agency 的 keep-English chore 是哪一個，只能說「`CLAUDE-local.md` 可以指定一個」；但 agent 讀的是合併好的 CLAUDE.md，這句話會讓它以為要再開另一個檔。
-- `config.yaml` 加一個設定 `keepEnglishChore`，值寫 chore 的名稱，例如 `Chore 2`；[config.example.yaml](../config.example.yaml) 與本機的 `config.yaml` 都加上 `keepEnglishChore: Chore 2`。
+- `config.yaml` 加一個設定 `keepEnglishChore`，值寫 chore 的名稱，例如 `Chore 2`；[config.example.yaml](../config-tmp.yaml) 與本機的 `config.yaml` 都加上 `keepEnglishChore: Chore 2`。
 - 模板那三句改成一行：「When the version of the list changes, do the keep-English chore, `{keepEnglishChore}`: it audits all the twins against the list.」
 - `gen_claude_md.py` 把 `{keepEnglishChore}` 換成 `[Chore 2](chores/Chore%202.md)` 這樣的連結；沒設定時，含它的那一行整行拿掉。
 - 本 repo 的 `CLAUDE-local.md` 拿掉「The keep-English chore is Chore 2」。

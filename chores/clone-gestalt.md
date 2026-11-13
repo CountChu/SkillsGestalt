@@ -30,14 +30,15 @@ SkillsGestalt 可以在不只一台電腦上改、發佈，每台有自己的工
    已經 clone 好才發現的話：`git config core.autocrlf false`，`git status` 沒有改動時，再 `git rm -rq --cached .` 與 `git reset -q --hard HEAD`，重新 checkout。
 4. `git switch -c <work> main`，再 `git config branch.<work>.pushRemote no_push`。
    從本機的 `main` 建，`<work>` 就不追蹤遠端；`git push` 會失敗，只有 [[publish-gestalt]] 推 `main`。
-5. 把 [config.example.yaml](../config.example.yaml) 複製成根目錄的 `config.yaml`，設 `wikiDir`；`config.yaml` 不進 git。
+5. 在根目錄寫 `config.local.yaml`，內容是這台的值：一行 `wikiDir: <這台的 Obsidian vault>`，路徑用 `/`。它與第 8 步產生的 `config.yaml` 都不進 git。
+   不改 [config-tmp.yaml](../config-tmp.yaml)：它是各台共用的範本，`{wikiDir}` 由 `config.local.yaml` 代換（[[Task 109]]）。
    不要寫 `publish:`。快照的作者是 `identity`，沒寫就是 `publish_snapshot.py` 的 `IDENTITY`，不受這台 git 的 `user.name` 與 `user.email` 影響（[[Task 90]]）。
 6. 從原本那台複製這些不進 git、也不公開的檔，不要經過 git：
    - `publish-keywords.local.txt`：沒有它，`publish_snapshot.py` 以 `2` 結束。
    - `external/ASD-STE100_ISSUE9.pdf`：asd-ste 讀它。
    - 有的話，`skill-groups/external/` 的 skill。
 7. 建 `.venv`：`python -m venv .venv --prompt Gestalt`，再用 `.venv` 的 python 執行 `-m pip install -r {skillGroups.common}/requirements.txt`（`{skillGroups.common}` 是 `config.yaml` 的 `skillGroups.common`，預設 `skill-groups/common`）；`.venv/` 不進 git。
-8. 從根目錄跑 `python {skillGroups.common}/scripts/gen_agents_md.py`，再跑 AGENTS.md 給出的 `check_tasks.py` 與 `check_chores.py`，都要 PASS。
+8. 從根目錄跑 `python {skillGroups.common}/scripts/gen_config.py`：它產生 `config.yaml`，再跑 `gen_agents_md.py`。再跑 AGENTS.md 給出的 `check_tasks.py` 與 `check_chores.py`，都要 PASS。
 9. 跑 `python {skillGroups.common}/scripts/publish_snapshot.py check` 與 `incoming`：印出 `no change since the last release` 與 `nothing to pull`。
 10. 在 `<work>` 上跑 `git push`，要失敗。
 11. 在摘要表 `## 執行紀錄` 的 `### clone-gestalt` 下記一筆：哪台電腦、`<work>` 的名稱、clone 到的快照；摘要表的「上次執行」改成當天。
@@ -47,9 +48,9 @@ SkillsGestalt 可以在不只一台電腦上改、發佈，每台有自己的工
 
 - `git branch -vv`：`main` 追蹤 `origin/main`；`<work>` 沒有 upstream，`git config branch.<work>.pushRemote` 是 `no_push`。
 - `git config --local core.autocrlf` 是 `false`；`git ls-files --eol` 沒有一行是 `i/lf` 而 `w/crlf`。
-- `gen_agents_md.py --check`、`check_tasks.py` 與 `check_chores.py` 都是 PASS。
+- `gen_config.py --check`、`check_tasks.py` 與 `check_chores.py` 都是 PASS。
 - `publish_snapshot.py check` 的掃描是 `nothing found`，`incoming` 印出 `nothing to pull`。
-- `git status` 不列出 `config.yaml`、`.venv/` 與 `publish-keywords.local.txt`。
+- `git status` 不列出 `config.yaml`、`config.local.yaml`、`.venv/` 與 `publish-keywords.local.txt`。
 
 ## 5. 與其他 task、chore 的關係
 
@@ -58,4 +59,5 @@ SkillsGestalt 可以在不只一台電腦上改、發佈，每台有自己的工
 - [[publish-gestalt]]：裝好之後，用它發佈。
 - [[Task 89]]、[[Task 90]]：另一台電腦的 pull 與快照的身分。
 - [[Task 95]]：`.venv` 的建法。
+- [[Task 109]]：`config.yaml` 改由 `config-tmp.yaml` 與 `config.local.yaml` 產生。
 - [[Task 105]]：第 3 步加上 `core.autocrlf=false`。

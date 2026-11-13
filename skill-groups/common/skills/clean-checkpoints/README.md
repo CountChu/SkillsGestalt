@@ -149,7 +149,7 @@ clean-checkpoints/SKILL.md
  │     the terms Item, Threshold, Keep period, Keep list, Open task and Clean item;
  │     the defaults (10 GB, 60 days, no keep list); the keys of items.yaml that Step 1 copies;
  │     the confirmed list of step_2.yaml that Step 3 reads; the exit codes 2, 3 and 4
- ├─⇄ config.example.yaml at the root of SkillsGestalt: the cleanCheckpoints example
+ ├─⇄ config-tmp.yaml at the root of SkillsGestalt: the cleanCheckpoints example
  ├─⇄ common/CHANGES.md: an entry when a key of cleanCheckpoints changes, because each Forge sets them
  ├─⇄ chores/clean-checkpoints.md at the root of SkillsGestalt: how the chore runs the skill
  ├─▶ common/rules/skill-writing.md: how the steps are written

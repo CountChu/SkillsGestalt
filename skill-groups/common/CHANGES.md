@@ -5,12 +5,22 @@ SkillsGestalt 的 `common` skill group 裡，會影響 Forge 的改動。
 每一筆寫明改了什麼、commit，以及 Forge 要做什麼；新的日期在前。
 Forge 以 chore [follow-gestalt](../../chores/follow-gestalt.md) 處理這裡的條目：它的執行紀錄記下處理到哪一筆，比那一筆新的就該做了。
 
+### 2026-11-13
+
+- **新的 [gen_config.py](scripts/gen_config.py)：用 `config-tmp.yaml` 與 `config.local.yaml` 產生 `config.yaml`，再跑 `gen_agents_md.py`；`gen_agents_md.py` 不再受 CRLF 影響**（Task 108）：
+  - `config-tmp.yaml` 進 git，放共用的設定，這台的值寫成 `{name}`，例如 `wikiDir: "{home}/MyVault"`；`config.local.yaml` 不進 git，只放 `name: value`，例如 `home: D:/Work`。
+  - script 把 `config-tmp.yaml` 當文字代換，註解與順序原樣留在 `config.yaml`，第一行多一行註解說它是產生的；`{{name}}` 寫成 `{name}`；`#` 開頭的註解行不代換。[config-forge-tmp.yaml](templates/config-forge-tmp.yaml) 不用改就能當 `config-tmp.yaml`，`config.local.yaml` 寫 `WIKI_DIR`、`WIKI_ROOT_DIR` 與 `GESTALT_ROOT`。`config.local.yaml` 沒有的名稱、結果不是正確的 YAML，都以 `2` 結束；沒用到的名稱只印出來。
+  - `--check` 比對 `config.yaml`、`AGENTS.md` 與 `CLAUDE.md`，什麼都不寫。沒有 `config-tmp.yaml` 的 workspace，`config.yaml` 不動，只跑 `gen_agents_md.py`。
+  - [AGENTS-tmp.md](templates/AGENTS-tmp.md) 的指令改成 `gen_config.py`，也說有 `config-tmp.yaml` 時不改 `config.yaml`。
+  - `gen_agents_md.py` 讀檔時把 CRLF 換成 LF，`core.autocrlf=true` 的 clone 不再印出 `the template has 0 line(s) {AGENTS-local}, not 1`；只有換行不同的 `AGENTS.md`、`CLAUDE.md` 算 PASS。
+  - Forge 要做：跑 `python {skillGroups.common}/scripts/gen_config.py`，commit 改了的 `AGENTS.md`。在多台電腦上、路徑不同的 Forge，可以把 `config.yaml` 改寫成 `config-tmp.yaml`，寫這台的 `config.local.yaml`，確認產生的 `config.yaml` 除了第一行都和原本的一樣，再把 `config.yaml`、`config.local.yaml` 與 `AGENTS.md` 移出 git，並改自己的 clone、pull、publish chore。
+
 ### 2026-11-12
 
 - **新的 skill `clean-checkpoints` 與 chore `clean-checkpoints`：`checkpoints\` 超過門檻時，列出舊的項目，使用者確認後送到資源回收筒**（Task 103）：
   - 項目是 `checkpoints\{skill}\` 底下的每一個資料夾或檔案；它最新的檔案超過保留天數，才列為可以清。
   - 一定保留：`keep` 裡的 skill 資料夾、`checkpoints\chores\`，以及名稱或名稱裡 7 位以上的數字出現在 ⬜／🔄 task 檔裡的項目（task 由 `taskSummary` 與 `tasksDir` 找）。
-  - 設定在根目錄 `config.yaml` 的 `cleanCheckpoints`：`maxSizeGB`（門檻，預設 10）、`keepDays`（保留天數，預設 60）、`keep`（預設沒有）；範例在 [config.example.yaml](../../config.example.yaml)。
+  - 設定在根目錄 `config.yaml` 的 `cleanCheckpoints`：`maxSizeGB`（門檻，預設 10）、`keepDays`（保留天數，預設 60）、`keep`（預設沒有）；範例在 [config-tmp.yaml](../../config-tmp.yaml)。
   - Forge 要做：
     - 在 `config.yaml` 加 `cleanCheckpoints`，把別的 skill 還會讀的 `checkpoints\` 資料夾寫進 `keep`；然後跑 `gen_agents_md.py`。
     - 要做這個 chore 的話，照 [chore-rules.md](rules/chore-rules.md) 的「A Chore of a Different Agency」在摘要表加一列 `clean-checkpoints`。
@@ -19,7 +29,7 @@ Forge 以 chore [follow-gestalt](../../chores/follow-gestalt.md) 處理這裡的
 ### 2026-11-10
 
 - **`publish_snapshot.py` 可以由根目錄 `config.yaml` 的 `publish:` 設定，Forge 也能照 publish-gestalt、pull-gestalt 的做法發佈快照**（`3bd738f`）：
-  - `publish:` 可以改的值有：快照標題的第一個字 `name`、restart commit 寫的 chore 名稱 `chore`、本機的快照分支 `branch`、`remote`、`remoteBranch`、快照拿掉的路徑 `excluded`、不該在 tree 裡的路徑 `privatePaths`（regular expression）、要做的掃描 `scans`（`email`、`privateIP`、`ado`、`home`、`token`、`keyword` 選幾個）、關鍵字檔 `keywords`，以及多允許的 email 網域 `emailAllowed`。範例在 [config.example.yaml](../../config.example.yaml)。
+  - `publish:` 可以改的值有：快照標題的第一個字 `name`、restart commit 寫的 chore 名稱 `chore`、本機的快照分支 `branch`、`remote`、`remoteBranch`、快照拿掉的路徑 `excluded`、不該在 tree 裡的路徑 `privatePaths`（regular expression）、要做的掃描 `scans`（`email`、`privateIP`、`ado`、`home`、`token`、`keyword` 選幾個）、關鍵字檔 `keywords`，以及多允許的 email 網域 `emailAllowed`。範例在 [config-tmp.yaml](../../config-tmp.yaml)。
   - 沒寫的 key 用 SkillsGestalt 的值；沒有 `publish:` 時，`check` 與 `incoming` 的輸出和改之前一樣。不認得的 key、值的形式不對、同一個 key 寫兩次，都以 `2` 結束。
   - `scans` 沒有 `keyword` 時，不需要關鍵字檔。有 `publish:` 時，email 掃描只放過快照自己的 `identity`，不放過 SkillsGestalt 的 `IDENTITY`。
   - 根目錄是 `--workspace`，或從目前的目錄往上、最近一個 `config.yaml` 有 `skillGroups` 的目錄，不再從 script 自己的位置找（2026-11-09 那一筆的例外沒有了）。

@@ -4,7 +4,7 @@
 > [[ste-custom]]  `2026-11-02`  `c612bdfa1ea7`
 
 > This file is in ASD-STE100 Simplified Technical English (STE), Issue 9.
-> Technical words: agency, argument, audit, branch, chore, clone, command, commit, day, directory, document, English, entry, file, Forge, git, glob, hash, line, list, message, pattern, publish, repository, root, script, section, session, skill, snapshot, summary, table, tag, template, term, text, twin, user, version.
+> Technical words: agency, argument, audit, branch, chore, clone, command, commit, computer, day, directory, document, English, entry, file, Forge, git, glob, hash, line, list, message, pattern, publish, repository, root, script, section, session, skill, snapshot, summary, table, tag, template, term, text, twin, user, version.
 
 Instructions for an agent that works in this agency.
 A script makes this file from the template `skill-groups/common/templates/AGENTS-tmp.md` and the `AGENTS-local.md` at the root.
@@ -13,11 +13,14 @@ The script also makes `CLAUDE.md`, which contains only the line `@AGENTS.md`: Cl
 Do not change this file or `CLAUDE.md`.
 To change a rule for each agency, change the template.
 To change a rule for only this agency, change `AGENTS-local.md`.
-Then, and after each change to the `config.yaml` at the root, run this command from the root:
+Then, and after each change to the `config.yaml`, `config-tmp.yaml` or `config.local.yaml` at the root, run this command from the root:
 
 ```bash
-python skill-groups/common/scripts/gen_agents_md.py
+python skill-groups/common/scripts/gen_config.py
 ```
+
+If the root has a `config-tmp.yaml`, the command first makes the `config.yaml` from it and from `config.local.yaml`.
+Then, do not change the `config.yaml`: change `config-tmp.yaml` for each computer, or `config.local.yaml` for only this computer.
 
 ## Skills
 
@@ -83,7 +86,8 @@ python skill-groups/common/scripts/check_chores.py --summary dashboard/chore-sum
 
 ## Settings of This Agency
 
-The `config.yaml` at the root is not in git, and [config.example.yaml](config.example.yaml) is its template.
+The `config.yaml` and the `config.local.yaml` at the root are not in git.
+`gen_config.py` makes the `config.yaml` from the template [config-tmp.yaml](config-tmp.yaml) and from `config.local.yaml`.
 A change in the `common` skill group can make work for a Forge, or a `FAIL` in a check of a Forge.
 For such a change, add an entry to [CHANGES.md](skill-groups/common/CHANGES.md).
 Each Forge does the chore [follow-gestalt](chores/follow-gestalt.md) for these entries.

@@ -31,8 +31,9 @@ database/
 handoff/
 temp/
 
-# Local configuration: copy config.example.yaml to config.yaml
+# Local configuration: gen_config.py makes config.yaml from config-tmp.yaml and config.local.yaml
 /config.yaml
+/config.local.yaml
 
 # Previews that mermaid-view writes on this machine
 *.mermaid.html

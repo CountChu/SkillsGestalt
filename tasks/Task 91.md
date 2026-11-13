@@ -55,7 +55,7 @@
 - [摘要表](../dashboard/chore-summary.md)：那一列與執行紀錄的小節改成新名稱；小節裡「上次 publish-github 的執行紀錄」是當時的紀錄，照舊。
 - [publish_snapshot.py](../skill-groups/common/scripts/publish_snapshot.py)：開頭的說明、新的「重新開始」commit 的前綴與 `incoming` 的訊息改成新名稱。
   `RESTART` 是 `^chore (?:publish-gestalt|publish-github): \S+ starts again from `，上面的註解說明 publish-github 是舊名稱，工作分支上還可能有它的「重新開始」commit。
-- [config.example.yaml](../config.example.yaml) 第 9 行：[[Task 90]] 在本 task 建立之後加上的 `identity` 註解也寫著舊名稱，改成新名稱；本機的 `config.yaml` 沒有提到它。
+- [config.example.yaml](../config-tmp.yaml) 第 9 行：[[Task 90]] 在本 task 建立之後加上的 `identity` 註解也寫著舊名稱，改成新名稱；本機的 `config.yaml` 沒有提到它。
 - 照舊的：inline code、commit 前綴與純文字的紀錄，[CHANGES.md](../skill-groups/common/CHANGES.md) 第 18 行，以及 git 歷史。
 - repo 之外：這台 Mac 上 Claude 的 memory `branches-m1-main-archive.md` 改成新名稱，也記下舊名稱與舊前綴。
 

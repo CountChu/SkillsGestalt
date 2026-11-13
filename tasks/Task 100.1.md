@@ -23,7 +23,7 @@
 - **`skill-groups/external/README.md`**：eli5 搬走之後 `external` 沒有 skill，`skillGroups.external` 照舊保留；這個檔說明它的用途，也讓 git 留著這個目錄。
 - **發佈**：[publish_snapshot.py](../skill-groups/common/scripts/publish_snapshot.py) 的 `EXCLUDED` 與 `PRIVATE_PATH` 加上 `skill-groups/archived`；[publish-gestalt](../chores/publish-gestalt.md) 的三處跟著改。
 - **compile-skill 的例子**：[SKILL.md](../skill-groups/common/skills/compile-skill/SKILL.md) 與中文版的 report-skills 換成 chinese，report-logs 換成 reformat-md。
-- **eli5 的例子**：[glossary.md](../skill-groups/common/references/glossary.md) 與中文版、[config.example.yaml](../config.example.yaml) 拿掉「例如 eli5」。
+- **eli5 的例子**：[glossary.md](../skill-groups/common/references/glossary.md) 與中文版、[config.example.yaml](../config-tmp.yaml) 拿掉「例如 eli5」。
 - **CHANGES.md** 加一筆，讓 Forge 跟上。
 
 ### 已決定（2026-11-06）

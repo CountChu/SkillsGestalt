@@ -53,8 +53,13 @@ them all, and its blank line goes with it.
   (no flag)  write AGENTS.md and CLAUDE.md
   --check    write nothing; compare the two files with what it would write, and print the difference
 
+Each file is read with its CRLF line ends made LF, as a Git for Windows clone with core.autocrlf=true
+checks it out; the files are written with LF. A CRLF AGENTS.md or CLAUDE.md that is otherwise the same
+is unchanged, and passes --check.
+
 Run it from the root of the workspace after a change to the template, to AGENTS-local.md or to
-config.yaml. Exit status: 0 the two files are written, or are already what it would write; 1 under --check,
+config.yaml. A workspace that has a config-tmp.yaml runs gen_config.py instead: it makes config.yaml,
+and then runs this script. Exit status: 0 the two files are written, or are already what it would write; 1 under --check,
 one is not; 2 a file is missing or unreadable, or the template names a value config.yaml does not have.
 An agency that still has the CLAUDE-local.md of an older version, and no AGENTS-local.md, stops with 2:
 rename the file to AGENTS-local.md, and its {CLAUDE-local} lines to {AGENTS-local}.
@@ -94,7 +99,7 @@ def fail(message: str) -> None:
 def read(path: Path) -> str:
     if not path.is_file():
         fail(f'{path}: no such file')
-    return path.read_bytes().decode('utf-8')
+    return path.read_bytes().decode('utf-8').replace('\r\n', '\n')
 
 
 def link_base(value: str, root: Path) -> str:
@@ -181,7 +186,7 @@ def main() -> None:
     failed = False
     for name, text in wanted.items():
         target = root / name
-        now = target.read_bytes().decode('utf-8') if target.is_file() else ''
+        now = target.read_bytes().decode('utf-8').replace('\r\n', '\n') if target.is_file() else ''
         if not a.check:
             if now != text:
                 target.write_bytes(text.encode('utf-8'))

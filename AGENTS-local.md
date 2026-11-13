@@ -2,7 +2,8 @@
 
 ## Settings of This Agency
 
-The `config.yaml` at the root is not in git, and [config.example.yaml](config.example.yaml) is its template.
+The `config.yaml` and the `config.local.yaml` at the root are not in git.
+`gen_config.py` makes the `config.yaml` from the template [config-tmp.yaml](config-tmp.yaml) and from `config.local.yaml`.
 A change in the `common` skill group can make work for a Forge, or a `FAIL` in a check of a Forge.
 For such a change, add an entry to [CHANGES.md](skill-groups/common/CHANGES.md).
 Each Forge does the chore [follow-gestalt](chores/follow-gestalt.md) for these entries.

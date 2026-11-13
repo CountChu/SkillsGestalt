@@ -33,7 +33,8 @@ SkillsGestalt 可能在不只一台電腦上，各有自己的工作分支，例
 7. 把 `<work>` rebase 到新的 `main`：`git rebase --onto main <第 5 步記下的 main> <work>`。
    衝突時停下來，把衝突的檔給使用者看，問怎麼解；`dashboard/` 的摘要表通常是兩邊都留。
 8. 確認不公開的路徑還在：`git diff --name-status main <work>` 要有 `external/` 與 `skill-groups/external/`。
-9. 從根目錄跑 `python {skillGroups.common}/scripts/gen_agents_md.py`，再跑 AGENTS.md 給出的 `check_tasks.py` 與 `check_chores.py`。
+9. 從根目錄跑 `python {skillGroups.common}/scripts/gen_config.py`：新快照改了 `config-tmp.yaml` 時，它重新產生 `config.yaml`，再跑 `gen_agents_md.py`。再跑 AGENTS.md 給出的 `check_tasks.py` 與 `check_chores.py`。
+   沒有 `config.local.yaml`，或 `config-tmp.yaml` 用了它沒有的名稱時，它以 `2` 結束：照 [[clone-gestalt]] 第 5 步寫這台的值。
    新快照改了規則或格式時，只在 `<work>` 上的檔可能過不了，例如還沒發佈的 task；照新快照的 `CHANGES.md` 改它們。
 10. 在摘要表 `## 執行紀錄` 的 `### pull-gestalt` 下記一筆：拿進來的快照、tag、衝突與改了什麼；摘要表的「上次執行」改成當天。
     commit 以 `chore pull-gestalt: ` 開頭。
@@ -47,7 +48,7 @@ SkillsGestalt 可能在不只一台電腦上，各有自己的工作分支，例
 
 - `python {skillGroups.common}/scripts/publish_snapshot.py incoming` 印出 `nothing to pull`。
 - `main` 是 `<work>` 的祖先，`git diff --name-status main <work>` 只有不公開的路徑與還沒發佈的改動。
-- `gen_agents_md.py --check`、`check_tasks.py` 與 `check_chores.py` 都是 PASS。
+- `gen_config.py --check`、`check_tasks.py` 與 `check_chores.py` 都是 PASS。
 - `git bundle verify -q ../SkillsGestalt.bundle` 印出 `is okay`，`git bundle list-heads ../SkillsGestalt.bundle` 有 `<work>` 最新的 commit。
 
 ## 5. 與其他 task、chore 的關係
@@ -58,3 +59,4 @@ SkillsGestalt 可能在不只一台電腦上，各有自己的工作分支，例
 - [[publish-gestalt]]：發佈之前先做本 chore。
 - [[follow-gestalt]]：給 Forge 做的 chore；本 chore 是 SkillsGestalt 自己的另一份 clone 跟上 GitHub。
 - [[Task 101]]：讓 Dropbox 不同步 `.git`，加上最後一步的 bundle 備份。
+- [[Task 109]]：第 9 步改跑 `gen_config.py`。

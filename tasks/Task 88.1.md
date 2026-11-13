@@ -6,7 +6,7 @@
 
 ## 1. 背景
 
-- [config.example.yaml](../config.example.yaml) 是本 repo 自己的設定範例：`wikiDir`、`skillGroups.common` 是相對路徑 `.github/common`、`keepEnglishChore`。
+- [config.example.yaml](../config-tmp.yaml) 是本 repo 自己的設定範例：`wikiDir`、`skillGroups.common` 是相對路徑 `.github/common`、`keepEnglishChore`。
 - Forge 要的設定不一樣：`skillGroups.common` 是本 repo 的絕對路徑（可用 `~`）、`agencies` 給出本 repo 的根目錄、`keepEnglishChore` 的 chore 在本 repo；InvestForge 還有 `wikiRootDir`、`dashboardDir`、`dedi`。
 - [[Task 85]] 當時決定 `config.example.yaml` 不加 `agencies` 的範例；這裡改成另寫一份範本，不動本 repo 自己的。
 

@@ -56,7 +56,7 @@
 - push 失敗時，快照分支移回原位、工作分支不動，以 `2` 結束，並說要先 fetch、必要時先 pull。
 - `excluded: []` 時不跑 `git rm`（沒有路徑時 git 會失敗）；restart commit 說這次沒有排除的路徑。
 - `SECRET` 的 `sk-` 前面不能是字母或數字。
-- 改了 [config.example.yaml](../config.example.yaml)（`publish:` 的範例，註解掉）、[[publish-gestalt]] 與 [[pull-gestalt]] 的 Private 說明、publish-gestalt 第 2 步的允許清單、`skill-groups/common/CHANGES.md`。
+- 改了 [config.example.yaml](../config-tmp.yaml)（`publish:` 的範例，註解掉）、[[publish-gestalt]] 與 [[pull-gestalt]] 的 Private 說明、publish-gestalt 第 2 步的允許清單、`skill-groups/common/CHANGES.md`。
 
 ### 3.3 驗證
 
@@ -77,7 +77,7 @@
 ## 4. 要做的
 
 1. ✅ 讀完 `publish_snapshot.py`，列出所有寫死、和 SkillsGestalt 有關的值（表 1）。
-2. ✅ 訂 `config.yaml` 的設定格式，寫進 [config.example.yaml](../config.example.yaml)。
+2. ✅ 訂 `config.yaml` 的設定格式，寫進 [config.example.yaml](../config-tmp.yaml)。
 3. ✅ 改 `publish_snapshot.py`：讀設定、預設值等於現在的值；掃描可以選。
 4. ✅ 在 SkillsGestalt 跑一次 `check` 與 `incoming`，結果和改之前一樣。
 5. ✅ 決定 chore 怎麼給 Forge 用；在 `CHANGES.md` 寫一筆「Forge 要做」。

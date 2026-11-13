@@ -59,7 +59,7 @@ work branch 不推，要設 `branch.<work branch>.pushRemote no_push`，在它�
 
 這些決定來自 [[Task 78]]：
 
-- 本機專用、不進 git：根目錄的 `config.yaml`（範本是 [config.example.yaml](../config.example.yaml)）、`*.mermaid.html` 預覽檔、`publish-keywords.local.txt`。
+- 本機專用、不進 git：根目錄的 `config.yaml` 與 `config.local.yaml`（`config.yaml` 由 [config-tmp.yaml](../config-tmp.yaml) 產生）、`*.mermaid.html` 預覽檔、`publish-keywords.local.txt`。
 - 快照排除、work branch 照舊：`external/` 是 ASD-STE100 規格的 PDF，規格的版權頁寫明不得散布；`skill-groups/external/` 放從外面來的 skill；`skill-groups/archived/` 放封存的 skill，不能執行，其中的 eli5 原作者與授權不明（[[Task 100.1]]）。
 - `ste-dictionary.json` 公開，是使用者的決定。
 - 每次發佈之後都重做 work branch，讓它的歷史一直很短；舊的歷史留在本機的 tag，不推。

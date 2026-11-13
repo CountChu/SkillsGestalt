@@ -36,7 +36,7 @@
 - `config.yaml` 的寫法是 `identity:` 底下 `name:` 與 `email:` 兩個鍵；只寫一個時以 `2` 結束，不和程式的值混用。
 - 程式自己讀這一段，不需要 PyYAML；`check` 印出 `identity: … from config.yaml` 或 `from publish_snapshot.py`。
 - `config.yaml` 的身分一樣以關鍵字檔檢查，提示改成「改 config.yaml 的 identity」；檔案的掃描放過程式的 `IDENTITY` 與實際使用的那一個 email。
-- [config.example.yaml](../config.example.yaml) 加上註解掉的範例，用 `you@example.com`；[[publish-gestalt]] 第 4 步跟著改。
+- [config.example.yaml](../config-tmp.yaml) 加上註解掉的範例，用 `you@example.com`；[[publish-gestalt]] 第 4 步跟著改。
 - 暫用 clone 試過四種情況：有 `identity` 時快照用它、重新開始的 commit 仍用 git 設定；只有 `name` 時以 `2` 結束；工作網域的 email 報兩個 `[FIND]`；沒有 `identity` 時用程式的值。
 
 ## 4. 要做的

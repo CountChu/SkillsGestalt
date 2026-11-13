@@ -73,7 +73,7 @@
 - **只推一份清理過的新歷史**：本機保留 `public` 分支，每次發佈把 master 的內容做成 `public` 上的一個快照 commit，只把 `public` 推到 GitHub 的 `main`。
   master 不推，所以它的歷史、包括那個以工作 email 為作者的 commit，都不會公開；其他 session 照舊在 master 上工作。
 - **快照 commit 的作者**：使用者的個人 email，名稱 CountChu。
-- **本機專用的檔案不進 git**：根目錄的 `config.yaml` 有本機 vault 的絕對路徑，改成只在本機，另加 [config.example.yaml](../config.example.yaml)；`SKILL.mermaid.html` 是 mermaid-view 在本機產生的預覽，[.gitignore](../.gitignore) 加上 `*.mermaid.html`。
+- **本機專用的檔案不進 git**：根目錄的 `config.yaml` 有本機 vault 的絕對路徑，改成只在本機，另加 [config.example.yaml](../config-tmp.yaml)；`SKILL.mermaid.html` 是 mermaid-view 在本機產生的預覽，[.gitignore](../.gitignore) 加上 `*.mermaid.html`。
   [skill_tokens.py](../scripts/skill_tokens.py) 的 workspace 對照表用 `~/`，看不到帳號名稱，照舊。
 - **根目錄加上** [README.md](../README.md) 與中文版，以及 MIT 授權的 [LICENSE](../LICENSE)，著作權人 CountChu。
 - **公開** `tasks/`、`chores/` 與 `dashboard/`：公司資訊已經清掉。

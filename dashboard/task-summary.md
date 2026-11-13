@@ -7,6 +7,8 @@ task 檔的格式與摘要表的維護方式，見 [task-rules.md](../skill-grou
 
 | Task | Raised | Title | Status | Depends on |
 | --- | --- | --- | --- | --- |
+| [[Task 109]] | 2026-11-13 | SkillsGestalt 的 config.example.yaml 改為 config-tmp.yaml | ✅ | [[Task 108]] ✅ |
+| [[Task 108]] | 2026-11-13 | 用 config-tmp.yaml 與 config.local.yaml 產生 config.yaml | ✅ | — |
 | [[Task 107]] | 2026-11-13 | commit 訊息不加 Co-Authored-By | ✅ | — |
 | [[Task 106]] | 2026-11-13 | publish-gestalt 第 4 步拿掉 --co-author | ✅ | — |
 | [[Task 105]] | 2026-11-13 | clone-gestalt 加上 core.autocrlf=false | ✅ | — |

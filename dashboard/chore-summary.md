@@ -37,6 +37,10 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 
 #### 2026-11-13
 
+- 在 DevBox 的 `devbox` 做：拿進 `countdell` 發佈的快照 `2f07db8`（SkillsGestalt 2026-11-13），變動 1 個檔，是 `chore-summary.md` 的執行紀錄；作者與 committer 是 CountChu，`incoming` 的掃描是 `nothing found`。
+  經使用者同意，舊的 `devbox`（`44a3890`）存成 tag `archive/devbox-261113-pull`；本機 `main` 從 `5e7a102` 移到 `2f07db8`；`devbox` 的 2 個 commit rebase 上去，沒有衝突，成為 `1b10a06` 與 `fd9a3e7`。
+  `### publish-gestalt` 的 2026-11-13 自動合併：`devbox` 的 2 筆在上面，`countdell` 發佈 `9b7b872` 那 1 筆在下面。
+  `git diff main devbox` 只有這次與第二次發佈的執行紀錄；這個 clone 的 `external/` 不在 git。`gen_agents_md.py` 印出 unchanged，`check_tasks.py` 與 `check_chores.py` 都是 PASS，`incoming` 印出 `nothing to pull`。
 - 在 `countdell` 的 clone 做：拿進 DevBox 的 `devbox` 發佈的兩個快照 `7f62c8a`（[[Task 105]]）與 `5e7a102`（[[Task 106]]、[[Task 107]]：commit 訊息不寫 `Co-Authored-By`），變動 10 個檔，作者與 committer 是 CountChu，`incoming` 的掃描是 `nothing found`。
   經使用者同意，舊的 `countdell`（`1a26674`）存成 tag `archive/countdell-261113-pull`；本機 `main` 從 `9b7b872` 移到 `5e7a102`；`countdell` 的 2 個 commit rebase 上去，成為 `690e978` 與 `cd8adc8`。
 - 衝突：`dashboard/chore-summary.md` 的 `### publish-gestalt` 兩邊都加了 2026-11-13 的紀錄；照使用者的決定兩邊都留，`devbox` 那 2 筆放上面，`countdell` 發佈 `9b7b872` 那 1 筆放下面。
@@ -90,6 +94,10 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 
 #### 2026-11-13
 
+- 第二次發佈：以 `devbox` 的 `31e193e` 做出快照 `5e7a102`，接在 `7f62c8a` 之後，推到 `main`；變動 8 個檔，是 [[Task 106]]、[[Task 107]] 與第一次發佈的執行紀錄。
+  先做 [[pull-gestalt]]：`git fetch` 之後 `incoming` 印出 `nothing to pull`；`check` 與 `publish` 的掃描都是 `nothing found`。照 [[Task 106]] 改過的第 4 步，不加 `--co-author`。
+  `devbox` 跟著從 `5e7a102` 重新開始（`dd61196`）；同一天第二次發佈，tag `archive/devbox-261113` 從 `a098a95` 移到 `31e193e`。發佈前先把 `a098a95` 存成 tag `archive/devbox-261113-1`，因為 [[clone-gestalt]] 的執行紀錄引用 `ea4ada9`。
+  用 git 確認：`git ls-remote` 的 `main` 是 `5e7a102`，只比 `7f62c8a` 多 1 個 commit，作者是 `CountChu`；`origin/main` 的 tree 沒有排除的路徑；`7f62c8a` 之後的 commit 都沒有 `Co-Authored-By`。
 - 第一次從 DevBox 的 clone 發佈，work branch 是 `devbox`：以 `devbox` 的 `a098a95` 做出快照 `7f62c8a`（SkillsGestalt 2026-11-13），接在 `9b7b872` 之後，推到 `main`；變動 4 個檔，是 [[Task 105]] 與 [[clone-gestalt]] 第一次的執行紀錄。
   先做 [[pull-gestalt]]：`git fetch` 之後 `incoming` 印出 `nothing to pull`；`check` 與 `publish` 的掃描都是 `nothing found`，發佈前自己查 diff，也沒有主機名稱、帳號名稱或公司的雲端資料夾名稱。
   這台第一次 push，Git Credential Manager 要求登入 GitHub，使用者登入之後程式自己推上去了。

@@ -1,7 +1,9 @@
 # Workspace configuration of SkillsGestalt: the skills that run here read it in their Step 0.
-# Copy this file to config.yaml at the workspace root, and set wikiDir. config.yaml is not in git.
+# gen_config.py makes config.yaml at the workspace root from this file and config.local.yaml. config.yaml and config.local.yaml are not in git.
+# Each {name} below is the value of name in config.local.yaml, such as  wikiDir: D:/Notes/MyVault
+# Write a path in config.local.yaml with /, not \: the value goes into double quotes here.
 # A relative path is relative to the workspace root, where this file is.
-wikiDir: /path/to/your/ObsidianVault   # the Obsidian vault for the MD reports, and the Skills Dashboard in dashboard/skills.md; vaultName is its last path segment
+wikiDir: "{wikiDir}"   # the Obsidian vault for the MD reports, and the Skills Dashboard in dashboard/skills.md; vaultName is its last path segment
 skillGroups:
   common: skill-groups/common       # the shared skills, rules, templates and scripts that every workspace uses
   external: skill-groups/external   # skills that come from outside

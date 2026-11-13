@@ -4,7 +4,7 @@
 > [[ste-custom]]  `2026-11-02`  `c612bdfa1ea7`
 
 > This file is in ASD-STE100 Simplified Technical English (STE), Issue 9.
-> Technical words: agency, argument, audit, chore, command, commit, directory, English, file, glob, line, list, pattern, repository, root, script, section, session, skill, summary, table, template, term, text, twin, user, version.
+> Technical words: agency, argument, audit, chore, command, commit, computer, directory, English, file, glob, line, list, pattern, repository, root, script, section, session, skill, summary, table, template, term, text, twin, user, version.
 
 Instructions for an agent that works in this agency.
 A script makes this file from the template `{skillGroups.common}/templates/AGENTS-tmp.md` and the `AGENTS-local.md` at the root.
@@ -13,11 +13,14 @@ The script also makes `CLAUDE.md`, which contains only the line `@AGENTS.md`: Cl
 Do not change this file or `CLAUDE.md`.
 To change a rule for each agency, change the template.
 To change a rule for only this agency, change `AGENTS-local.md`.
-Then, and after each change to the `config.yaml` at the root, run this command from the root:
+Then, and after each change to the `config.yaml`, `config-tmp.yaml` or `config.local.yaml` at the root, run this command from the root:
 
 ```bash
-python {skillGroups.common}/scripts/gen_agents_md.py
+python {skillGroups.common}/scripts/gen_config.py
 ```
+
+If the root has a `config-tmp.yaml`, the command first makes the `config.yaml` from it and from `config.local.yaml`.
+Then, do not change the `config.yaml`: change `config-tmp.yaml` for each computer, or `config.local.yaml` for only this computer.
 
 {AGENTS-local-top}
 
