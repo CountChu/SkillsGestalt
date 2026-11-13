@@ -11,7 +11,7 @@ chore 檔的格式與摘要表的維護方式，見 [chore-rules.md](../skill-gr
 | [[clean-checkpoints]] | 2026-11-12 | 清理 checkpoints\ 的舊項目 | checkpoints\ 超過 config.yaml 的 cleanCheckpoints.maxSizeGB（沒寫時 10 GB） | — | 🔁 |
 | [[follow-gestalt]] | 2026-10-31 | 跟上 Gestalt 的改動 | `{skillGroups.common}/CHANGES.md` 有比上次處理的那一筆新的條目 | — | 🔁 |
 | [[pull-gestalt]] | 2026-10-31 | 把 GitHub 上的新快照拿進工作分支 | 發佈之前、git fetch 看到新快照時，或使用者要求時 | 2026-11-10 | 🔁 |
-| [[publish-gestalt]] | 2026-10-30 | 發佈到 GitHub | 使用者要求發佈到 GitHub 時 | 2026-11-12 | 🔁 |
+| [[publish-gestalt]] | 2026-10-30 | 發佈到 GitHub | 使用者要求發佈到 GitHub 時 | 2026-11-13 | 🔁 |
 | [[keep-english]] | 2026-10-18 | keep-English 稽核 | tw-keep-english.md 換了版本，和上次稽核的版本不同 | 2026-11-10 | 🔁 |
 | [[rerecord-ste-custom]] | 2026-10-18 | 集中重記 ste-custom.md | 當天改過 ste-custom.md，而且當天的修改都做完了 | 2026-10-30 | 🔁 |
 
@@ -79,6 +79,17 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 - 新快照把 task 改成七章：只在 `m1` 上的 [[Task 89]] 插入 `6. 知識`；CLAUDE.md 重新產生。
 
 ### publish-gestalt
+
+#### 2026-11-13
+
+- 第一次從 DevBox 的 clone 發佈，work branch 是 `devbox`：以 `devbox` 的 `a098a95` 做出快照 `7f62c8a`（SkillsGestalt 2026-11-13），接在 `9b7b872` 之後，推到 `main`；變動 4 個檔，是 [[Task 105]] 與 [[clone-gestalt]] 第一次的執行紀錄。
+  先做 [[pull-gestalt]]：`git fetch` 之後 `incoming` 印出 `nothing to pull`；`check` 與 `publish` 的掃描都是 `nothing found`，發佈前自己查 diff，也沒有主機名稱、帳號名稱或公司的雲端資料夾名稱。
+  這台第一次 push，Git Credential Manager 要求登入 GitHub，使用者登入之後程式自己推上去了。
+  `devbox` 跟著從 `7f62c8a` 重新開始（`ba712f7`），舊的在 tag `archive/devbox-261113`。
+  這台的 `gh` 沒有登入，改用 git 確認：`git ls-remote` 的 `main` 是 `7f62c8a`，只比 `9b7b872` 多 1 個 commit，作者是 `CountChu`；`origin/main` 的 tree 沒有排除的路徑。
+- 第一次推上去的快照是 `4235a83`，訊息有 `Co-Authored-By`，因為照第 4 步加了 `--co-author`；使用者要求拿掉。
+  經使用者同意，做出同樣 tree、parent、作者與時間、只拿掉這一行的 `7f62c8a`，以 `--force-with-lease` 換掉 GitHub 上的 `4235a83`；`devbox` 重新開始的 commit 也照樣重做（`a35eff1` 換成 `ba712f7`）。
+  別台若在這之間拿進了 `4235a83`，下次 [[pull-gestalt]] 的 `incoming` 會印出 `diverged`。以後發佈不加 `--co-author`。
 
 #### 2026-11-12
 

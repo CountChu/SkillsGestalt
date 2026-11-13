@@ -43,7 +43,8 @@ work branch 不推，要設 `branch.<work branch>.pushRemote no_push`，在它�
    把摘要寫進 repo 外的一個 UTF-8 檔，例如 scratchpad；只有一行時也可以用 `--summary "<摘要>"`。
    多行的摘要不要用 `--summary`：Windows 上 python 的 `.bat` shim 會在換行處切斷參數。
    把變動清單與摘要給使用者看，問要不要發佈；使用者同意之前不推。
-4. 執行 `python {skillGroups.common}/scripts/publish_snapshot.py publish --work <check 印出的 work> --source <check 印出的 source> --tree <check 印出的 tree> --summary-file <摘要檔> --co-author "<agent 的名稱與 email>"`。
+4. 執行 `python {skillGroups.common}/scripts/publish_snapshot.py publish --work <check 印出的 work> --source <check 印出的 source> --tree <check 印出的 tree> --summary-file <摘要檔>`。
+   不加 `--co-author`：使用者決定快照與 work branch 重新開始的 commit 都不寫 `Co-Authored-By`（[[Task 106]]）。
    它重做一次 tree，和 `check` 那次不同就以 `2` 結束，表示 work branch 在這之間有了新的 commit，要回到第 1 步。
    相同的話，它再掃描一次，建一個快照 commit 接在本機的 `main` 後面，推到 `origin` 的 `main`。
    最後它讓 work branch 從新的快照重新開始，commit 以 `chore publish-gestalt: ` 開頭；work branch 在這之間有了新的 commit 時，它不動 work branch，只印出來，work branch 留著原本的歷史，到下次發佈再重新開始。
@@ -78,3 +79,4 @@ work branch 不推，要設 `branch.<work branch>.pushRemote no_push`，在它�
 - [[Task 26]]：ASD-STE100 的 PDF 留在 `m1` 的 git，不放進公開版（2026-10-30 決定）。
 - [[Task 91]]：2026-10-31 把名稱從 `publish-github` 改成 `publish-gestalt`；git 歷史裡以 `chore publish-github: ` 開頭的 commit 也是本 chore 的。
 - [[Task 101]]：讓 Dropbox 不同步 `.git`，加上最後一步的 bundle 備份。
+- [[Task 106]]：第 4 步拿掉 `--co-author`。

@@ -1,4 +1,4 @@
-> Technical words: branch, clone, day, document, entry, Forge, git, hash, publish, snapshot, tag.
+> Technical words: branch, clone, commit, day, document, entry, Forge, git, hash, line, message, publish, snapshot, tag.
 
 ## Settings of This Agency
 
@@ -18,3 +18,9 @@ The commits before 2026-10-30 are in the tag `archive/master`.
 The commits before each subsequent release are in `archive/<branch>-<yymmdd>`, for example `archive/m1-261030`, with one tag for each day.
 To find a hash that a document refers to, look in these tags.
 To publish, follow the steps of [publish-gestalt](chores/publish-gestalt.md).
+
+## Commits
+
+Do not put a `Co-Authored-By` line in a commit message.
+This rule is also true for the snapshots of [publish-gestalt](chores/publish-gestalt.md).
+The `.claude/settings.json` at the root stops this line in the commits of Claude Code.

@@ -4,7 +4,7 @@
 > [[ste-custom]]  `2026-11-02`  `c612bdfa1ea7`
 
 > This file is in ASD-STE100 Simplified Technical English (STE), Issue 9.
-> Technical words: agency, argument, audit, branch, chore, clone, command, commit, day, directory, document, English, entry, file, Forge, git, glob, hash, line, list, pattern, publish, repository, root, script, section, session, skill, snapshot, summary, table, tag, template, term, text, twin, user, version.
+> Technical words: agency, argument, audit, branch, chore, clone, command, commit, day, directory, document, English, entry, file, Forge, git, glob, hash, line, list, message, pattern, publish, repository, root, script, section, session, skill, snapshot, summary, table, tag, template, term, text, twin, user, version.
 
 Instructions for an agent that works in this agency.
 A script makes this file from the template `skill-groups/common/templates/AGENTS-tmp.md` and the `AGENTS-local.md` at the root.
@@ -99,3 +99,9 @@ The commits before 2026-10-30 are in the tag `archive/master`.
 The commits before each subsequent release are in `archive/<branch>-<yymmdd>`, for example `archive/m1-261030`, with one tag for each day.
 To find a hash that a document refers to, look in these tags.
 To publish, follow the steps of [publish-gestalt](chores/publish-gestalt.md).
+
+## Commits
+
+Do not put a `Co-Authored-By` line in a commit message.
+This rule is also true for the snapshots of [publish-gestalt](chores/publish-gestalt.md).
+The `.claude/settings.json` at the root stops this line in the commits of Claude Code.
