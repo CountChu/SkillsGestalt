@@ -10,7 +10,7 @@ chore 檔的格式與摘要表的維護方式，見 [chore-rules.md](../skill-gr
 | [[clone-gestalt]] | 2026-11-13 | 在新電腦上裝 SkillsGestalt | 要在一台新電腦上裝 SkillsGestalt，也要在上面改、發佈時 | 2026-11-13 | 🔁 |
 | [[clean-checkpoints]] | 2026-11-12 | 清理 checkpoints\ 的舊項目 | checkpoints\ 超過 config.yaml 的 cleanCheckpoints.maxSizeGB（沒寫時 10 GB） | — | 🔁 |
 | [[follow-gestalt]] | 2026-10-31 | 跟上 Gestalt 的改動 | `{skillGroups.common}/CHANGES.md` 有比上次處理的那一筆新的條目 | — | 🔁 |
-| [[pull-gestalt]] | 2026-10-31 | 把 GitHub 上的新快照拿進工作分支 | 發佈之前、git fetch 看到新快照時，或使用者要求時 | 2026-11-10 | 🔁 |
+| [[pull-gestalt]] | 2026-10-31 | 把 GitHub 上的新快照拿進工作分支 | 發佈之前、git fetch 看到新快照時，或使用者要求時 | 2026-11-13 | 🔁 |
 | [[publish-gestalt]] | 2026-10-30 | 發佈到 GitHub | 使用者要求發佈到 GitHub 時 | 2026-11-13 | 🔁 |
 | [[keep-english]] | 2026-10-18 | keep-English 稽核 | tw-keep-english.md 換了版本，和上次稽核的版本不同 | 2026-11-10 | 🔁 |
 | [[rerecord-ste-custom]] | 2026-10-18 | 集中重記 ste-custom.md | 當天改過 ste-custom.md，而且當天的修改都做完了 | 2026-10-30 | 🔁 |
@@ -34,6 +34,14 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 - 這台沒有 `skill-groups/external/`。`git status` 只列出 `external/`，和 [[Task 104]] 試做的那份相同；不列出 `config.yaml`、`.venv/` 與 `publish-keywords.local.txt`。
 
 ### pull-gestalt
+
+#### 2026-11-13
+
+- 在 `countdell` 的 clone 做：拿進 DevBox 的 `devbox` 發佈的兩個快照 `7f62c8a`（[[Task 105]]）與 `5e7a102`（[[Task 106]]、[[Task 107]]：commit 訊息不寫 `Co-Authored-By`），變動 10 個檔，作者與 committer 是 CountChu，`incoming` 的掃描是 `nothing found`。
+  經使用者同意，舊的 `countdell`（`1a26674`）存成 tag `archive/countdell-261113-pull`；本機 `main` 從 `9b7b872` 移到 `5e7a102`；`countdell` 的 2 個 commit rebase 上去，成為 `690e978` 與 `cd8adc8`。
+- 衝突：`dashboard/chore-summary.md` 的 `### publish-gestalt` 兩邊都加了 2026-11-13 的紀錄；照使用者的決定兩邊都留，`devbox` 那 2 筆放上面，`countdell` 發佈 `9b7b872` 那 1 筆放下面。
+- `gen_agents_md.py --check`、`check_tasks.py` 與 `check_chores.py` 都是 PASS；這個 clone 沒有設 `core.autocrlf`，`git ls-files --eol` 是 `i/lf w/lf`，所以 [[Task 105]] 的修正這裡不需要。
+  從這次起，這個 clone 的 commit 也不寫 `Co-Authored-By`。
 
 #### 2026-11-10
 
@@ -90,6 +98,11 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 - 第一次推上去的快照是 `4235a83`，訊息有 `Co-Authored-By`，因為照第 4 步加了 `--co-author`；使用者要求拿掉。
   經使用者同意，做出同樣 tree、parent、作者與時間、只拿掉這一行的 `7f62c8a`，以 `--force-with-lease` 換掉 GitHub 上的 `4235a83`；`devbox` 重新開始的 commit 也照樣重做（`a35eff1` 換成 `ba712f7`）。
   別台若在這之間拿進了 `4235a83`，下次 [[pull-gestalt]] 的 `incoming` 會印出 `diverged`。以後發佈不加 `--co-author`。
+- 以 `countdell` 的 `7c80e47` 做出快照 `9b7b872`（SkillsGestalt 2026-11-13），接在 `04a90cc` 之後，推到 `main`；變動 5 個檔，是 [[Task 104]]（新的 chore [[clone-gestalt]]，pull-gestalt 指向它）與上次發佈的執行紀錄。
+  先做 [[pull-gestalt]]：本機的 `main` 和 `origin/main` 都是 `04a90cc`，`nothing to pull`；`check` 與 `publish` 的掃描都是 `nothing found`。
+  沒有給 `--co-author`：使用者不要 commit 訊息有 `Co-Authored-By`。
+  `countdell` 跟著從 `9b7b872` 重新開始（`94e838b`），舊的在 tag `archive/countdell-261113`。
+  這台沒有 `gh`，改用 git 確認：`git ls-remote` 的 `main` 是 `9b7b872`，作者是 `CountChu`；`origin/main` 的 tree 沒有排除的路徑。
 
 #### 2026-11-12
 
