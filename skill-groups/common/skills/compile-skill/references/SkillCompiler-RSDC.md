@@ -491,6 +491,7 @@ The request of 2.2 arrives as the Compiled Script's arguments: the step identifi
 Every location the Source Scanner and the Contract Checker read arrives as an argument too, and neither assumes a location of its own.
 A program that found its inputs from where it sits would stop working the moment it was kept anywhere else.
 The Compiled Script is the one exception, and only for its Skill Source, which it finds beside itself because it is compiled there; the workspace it finds from the working directory.
+A relative location the Source Scanner or the Contract Checker is given is read from the root of the workspace — the nearest directory, from the working directory up, whose `config.yaml` has `skillGroups` — because the steps that run them name every path from that root; an absolute location is read as given, after a leading `~` is expanded.
 
 Two rules hold for all three:
 

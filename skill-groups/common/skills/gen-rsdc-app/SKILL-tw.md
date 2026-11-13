@@ -257,11 +257,16 @@ flowchart TB
 
 - **Purpose**：在讀原始碼之前，先確定要為哪一個 app 寫文件、它的 **design pair** 寫到哪裡，以及 **design template** 是否仍是標準的形狀——因為依過時的形狀寫出的設計，遵循的是標準早已捨棄的規則。
 
-- 先執行 `.venv`——**dependency checker** 需要 `PyYAML`。
+- 找出 `{python}`，也就是 workspace 根目錄的 `.venv` 裡的 Python。
+  macOS 與 Linux 上它是 `.venv/bin/python`，Windows 上是 `.venv\Scripts\python.exe`。
+  後面 step 的每個 script 都以 `{python}` 執行：**dependency checker** 需要 `PyYAML`。
+  每個指令都在新的 shell 裡執行，新的 shell 不會沿用另一個指令啟動的 `.venv`。
+  workspace 沒有 `.venv` 時，停下來。
+  請使用者照 `common` skill group 的 forge-setup.md 第 3 步建立它。
 
 - 讀 workspace 根目錄的 workspace config [config.yaml](config.yaml)，解析出：
   - **`skillGroups`**：群組名稱 -> skills 根目錄的對照——這個 skill 自己的目錄是 `{skillGroups.common}\skills\gen-rsdc-app\`。
-  - 在下面各 step 裡出現 `{skillGroups.common}` 的每一處，包括命令裡，都代入解析出來的值。
+  - 在下面各 step 裡出現 `{python}` 或 `{skillGroups.common}` 的每一處，包括命令裡，都代入解析出來的值。
   - 如果 `config.yaml` 不存在，或缺了這個鍵，就停下來問使用者。
 
 - 在執行 workflow 之前，檢查下面這些檔案存在。
@@ -287,7 +292,7 @@ flowchart TB
   版本不同或有指紋改變時，在寫出任何東西之前停下。
   說出哪一項不同，並說明 `RSDC-App-tmp.md` 與它的閱讀版 `RSDC-App-tmp-tw.md` 要先跟上標準——依標準的「Changes in This Version」，內容在同一個版本之內改過時則依它的 git 歷史——再重新記下它們的版本與連到標準的連結，作為一項獨立的變更。
   依過時的形狀寫出的 **design pair**，遵循的是標準早已捨棄的規則；而一旦它帶有自己的決定，它就只能手動修正。
-  - 範例：`python {skillGroups.common}/scripts/depends_on.py check "{skillGroups.common}/skills/gen-rsdc-app/assets/RSDC-App-tmp.md"`
+  - 範例：`{python} {skillGroups.common}/scripts/depends_on.py check "{skillGroups.common}/skills/gen-rsdc-app/assets/RSDC-App-tmp.md"`
 
 - 顯示 **app dir**、**app name**、**output dir**、**requirements record** 或沒有它這件事，以及 template 檢查發現了什麼。
 
@@ -324,7 +329,7 @@ flowchart TB
   - **在檔頭引用區連到 design template，並記下它。**
     英文半邊在連到標準的連結之下帶著 `> [[RSDC-App-tmp]]`；寫好之後，用 **dependency checker** 記下它，並傳入 workspace 的 `config.yaml`：放在另一個 workspace 的 design pair 要靠它才找得到 template。
     **chinese skill** 會把檔頭引用區原樣抄進 twin，並透過那一行找到 template 的 twin；template 日後改了，也會顯示為一項改動。
-    - 範例：`python {skillGroups.common}/scripts/depends_on.py record "{output dir}/{app name}-RSDC.md" --target "[[RSDC-App-tmp]]" --config config.yaml`
+    - 範例：`{python} {skillGroups.common}/scripts/depends_on.py record "{output dir}/{app name}-RSDC.md" --target "[[RSDC-App-tmp]]" --config config.yaml`
   - 在 Coding 部分為 Specification 的每條規則給一項 **verification obligation**，讓每一個 **component** 都至少出現在一項裡，尚未證明的主張標 *not verified*——這些列是這個 app 對「已證明」將會擁有的唯一定義，沒有任何一列提到的規則，就沒有任何東西會檢查它。
   - **Presentation contract 的八個問題，全部作答。**
     某個 app 完全可以正當地回答「沒有這回事」；留白的才是缺口，而其中「收窄檢視後，畫面上的計數與下一個動作的作用範圍是否一致」是最常答成「否」的那一題。
@@ -340,7 +345,7 @@ flowchart TB
 - **對英文半邊執行 RSDC Checker**，並修正它，直到沒有任何一項檢查失敗。
   讀每一則警告，要嘛修正英文半邊，要嘛讓那則警告留著並寫明理由。
   推導漏掉的東西——漏寫的一節、留下的 placeholder——在這裡被抓到，趕在英文半邊被翻譯之前。
-  - 範例：`python {skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py --rsdc "{output dir}/{app name}-RSDC.md"`
+  - 範例：`{python} {skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py --rsdc "{output dir}/{app name}-RSDC.md"`
 
 - 存下 `step_1.yaml`，內容為這個 step 發現的東西，在這次執行結束時交回：**components**，連同每一個的原始碼住在哪裡、以及提到它的主張；**findings**；每一項缺陷，連同記錄它的那一節；以及 **RSDC Checker** 對英文半邊的 verdict，連同每一則留著的警告和它的理由。
   把這個 step 加進 run record。

@@ -119,13 +119,18 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - **Purpose**: settle what the run reads and what it is being asked, so no later step has to guess either.
 
-- Run `.venv` first.
+- Find `{python}`, the Python of the `.venv` at the root of the workspace.
+  It is `.venv/bin/python` on macOS and Linux, and `.venv\Scripts\python.exe` on Windows.
+  Run each script of the steps that follow with `{python}`.
+  Each command runs in a new shell, and a new shell does not use the `.venv` that a different command started.
+  If the workspace has no `.venv`, stop.
+  Tell the user to make it, as step 3 of forge-setup.md in the `common` skill group tells.
 
 - Read the workspace config [config.yaml](config.yaml) at the workspace root and resolve:
   - **`wikiDir`**: the vault root - the **Notes Dir** is a directory directly under it.
   - **`vaultName`**: the last path segment of `wikiDir` (e.g. `MyVault`) - the Obsidian vault name used to build the `obsidian://` links in Step 4.
   - **`skillGroups`**: the group name -> skills-root map - this skill's own directory is `{skillGroups.common}\skills\ask-note\`.
-  - Substitute the resolved values wherever `{wikiDir}`, `{vaultName}` or `{skillGroups.common}` appears in the steps below (including in commands).
+  - Substitute the resolved values wherever `{python}`, `{wikiDir}`, `{vaultName}` or `{skillGroups.common}` appears in the steps below (including in commands).
   - If `config.yaml` is missing or a needed key is absent, stop and ask the user.
 
 - Save the canonical skill invocation, for the `prompt` field of the run record.
@@ -179,7 +184,7 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 - **Purpose**: turning a term list into the exact set of sections that carry them is mechanical and total, and it is precisely the part that eyes skip - a section missed here is invisible to every step after it.
 
 - Run the script `search_notes.py` with the **Notes Dir** and the **Search Terms**.
-  - Example: `python {skillGroups.common}\skills\ask-note\scripts\search_notes.py --notes-dir "{wikiDir}\write-note" --terms X750 passed succeeded buildId`
+  - Example: `{python} {skillGroups.common}\skills\ask-note\scripts\search_notes.py --notes-dir "{wikiDir}\write-note" --terms X750 passed succeeded buildId`
 
 - The script:
   1. Reads every `*.md` directly in the **Notes Dir** (non-recursive).

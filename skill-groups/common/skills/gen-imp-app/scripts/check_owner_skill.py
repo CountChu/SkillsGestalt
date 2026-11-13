@@ -2,11 +2,13 @@
 
 Exits non-zero if any check fails: a failing check is a defect in what was just written.
 
-A relative --out is relative to the workspace root, not the current directory. The root is the
-directory --workspace names, or else the nearest one, from the current directory up, whose
-config.yaml has skillGroups: the session resolver's workspace_root finds it, so it is the root of
-the Checkpoint Dir that resolver printed. It is never found from this file, which can be in a
-different workspace.
+A relative --skill-dir, --app-dir or --out is relative to the workspace root, not the current
+directory, as gen-imp-app gives them: the owner skill under its skill group, the app dir under
+the artifacts root and the Checkpoint Dir. The root is the directory --workspace names, or else the
+nearest one, from the current directory up, whose config.yaml has skillGroups: the session
+resolver's workspace_root finds it, so it is the root of the Checkpoint Dir that resolver printed.
+It is never found from this file, which can be in a different workspace. When the three paths are
+absolute, no root is needed.
 """
 import argparse
 import json
@@ -230,24 +232,40 @@ def check_app_dir(app_dir, results):
 
 def main():
     ap = argparse.ArgumentParser(description="Verify an imp-{app} owner skill and its app dir.")
-    ap.add_argument("--skill-dir", required=True, help="the imp-{app} skill directory")
-    ap.add_argument("--app-dir", required=True, help="the app dir under artifacts")
+    ap.add_argument("--skill-dir", required=True,
+                    help="the imp-{app} skill directory; a relative path is relative to the workspace root")
+    ap.add_argument("--app-dir", required=True,
+                    help="the app dir under artifacts; a relative path is relative to the workspace root")
     ap.add_argument("--out", required=True,
                     help="the Checkpoint Dir for owner-skill-check.json; a relative path is relative to the workspace root")
     ap.add_argument("--workspace", help=WORKSPACE_HELP)
     args = ap.parse_args()
 
-    skill_md = os.path.join(args.skill_dir, "SKILL.md")
+    root = None
+
+    def under_root(path):
+        """The path as gen-imp-app means it: a relative one is under the workspace root, found once."""
+        nonlocal root
+        path = os.path.expanduser(path)
+        if os.path.isabs(path):
+            return path
+        if root is None:
+            root = workspace_root(args.workspace)
+        return os.path.join(root, path)
+
+    skill_dir = under_root(args.skill_dir)
+    app_dir = under_root(args.app_dir)
+    skill_md = os.path.join(skill_dir, "SKILL.md")
     if not os.path.isfile(skill_md):
         sys.exit(f"no SKILL.md at {skill_md}")
 
     results = []
-    text, _ = check_frontmatter(skill_md, args.skill_dir, results)
+    text, _ = check_frontmatter(skill_md, skill_dir, results)
     check_sections(text, results)
     check_markdown(text, "SKILL.md", results)
-    check_design_pair(args.skill_dir, text, results)
-    check_wireframe_pair(args.skill_dir, text, results)
-    check_app_dir(args.app_dir, results)
+    check_design_pair(skill_dir, text, results)
+    check_wireframe_pair(skill_dir, text, results)
+    check_app_dir(app_dir, results)
 
     width = max(len(name) for name, _, _ in results)
     for name, ok, detail in results:
@@ -255,7 +273,7 @@ def main():
     failed = [name for name, ok, _ in results if not ok]
     print(f"\n{len(results) - len(failed)}/{len(results)} passed")
 
-    out_dir = args.out if os.path.isabs(args.out) else os.path.join(workspace_root(args.workspace), args.out)
+    out_dir = under_root(args.out)
     os.makedirs(out_dir, exist_ok=True)
     out_file = os.path.join(out_dir, "owner-skill-check.json")
     with open(out_file, "w", encoding="utf-8") as fh:

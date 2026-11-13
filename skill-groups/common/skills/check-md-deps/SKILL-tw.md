@@ -7,7 +7,7 @@ description: >-
 本文件為 [SKILL.md](skill-groups/common/skills/check-md-deps/SKILL.md) 的繁體中文版。
 任一份改了某節，另一份必須在同一次執行中一起改。
 
-> [check-wiki-doc](../check-wiki-doc/SKILL.md)  `2026-11-06`  `cb3534f8d3ad`
+> [check-wiki-doc](../check-wiki-doc/SKILL.md)  `2026-11-12`  `909b993b2207`
 
 # TERMINOLOGY
 
@@ -194,11 +194,16 @@ flowchart TB
 
 - **Purpose**：確定本次執行要檢查哪些檔案、它的程式在哪裡，讓後面沒有任何 step 得去猜路徑。
 
-- 先執行 `.venv`——腳本需要 `PyYAML`。
+- 找出 `{python}`，也就是 workspace 根目錄的 `.venv` 裡的 Python。
+  macOS 與 Linux 上它是 `.venv/bin/python`，Windows 上是 `.venv\Scripts\python.exe`。
+  後面 step 的每個 script 都以 `{python}` 執行：這些 script 需要 `PyYAML`。
+  每個指令都在新的 shell 裡執行，新的 shell 不會沿用另一個指令啟動的 `.venv`。
+  workspace 沒有 `.venv` 時，停下來。
+  請使用者照 `common` skill group 的 forge-setup.md 第 3 步建立它。
 
 - 讀取 workspace 根目錄的 workspace config [config.yaml](config.yaml)（有的話）並解析：
   - **`skillGroups`**：群組名稱 -> skills 根目錄的對應——本 skill 自己的目錄是 `{skillGroups.common}\skills\check-md-deps\`，而 **Dependency Checker** 位於 `{skillGroups.common}\scripts\` 之下。
-  - 在下方各 step 中（包含指令內）凡出現 `{skillGroups.common}` 之處，都代換為解析後的值。
+  - 在下方各 step 中（包含指令內）凡出現 `{python}` 或 `{skillGroups.common}` 之處，都代換為解析後的值。
   - 沒有 `config.yaml` 時，把 `{skillGroups.common}` 當成本 skill 自己的目錄往上兩層——放著 `skills\` 的那一層——並且不帶 `--config` 執行：連結中用到 `config.yaml` 某個值（例如 `{wikiDir}`）的 dependency，就會顯示為 `UNRESOLVED`；連到 target file 所在 vault 之外的 `[[Name]]`——例如寫在其他 workspace 的文件連到 RSDC standard——則顯示為 `MISSING`；報告也會說明原因。
 
 - 執行 workflow 前，先確認 **Dependency Scanner** 與 **Dependency Checker** 存在。
@@ -221,7 +226,7 @@ flowchart TB
 - **Purpose**：讓程式找出讀者可能漏掉的每一項事實——用眼睛比對的 fingerprint、隔了一行空行而落在 header quote 之外的一行、一份文件自它的日期以來改了什麼——讀者只需要處理需要判斷的部分。
 
 - 對 Step 0 的 target file 路徑執行 **Dependency Scanner**；Step 0 找到 `config.yaml` 時，加上 `--config`。
-  - 範例：`python {skillGroups.common}\skills\check-md-deps\scripts\scan_md_deps.py "skill-groups\common\skills\compile-skill\SKILL.md" --config config.yaml`
+  - 範例：`{python} {skillGroups.common}\skills\check-md-deps\scripts\scan_md_deps.py "skill-groups\common\skills\compile-skill\SKILL.md" --config config.yaml`
 
 - 腳本：
   1. 找出每一份 target file 的 **header quote**，讀取其中的每一個 **dependency**，並列出每一個 **format problem**——格式錯誤、位置錯誤，或第二次宣告。
@@ -278,13 +283,13 @@ flowchart TB
   - 修改：只改它指名的那幾行，其他都不動；
   - record：對 target file 與它指名的連結執行 **Dependency Checker** 的 `record`，`cited` 的 dependency 加上 `--cited`。
     target file 旁邊有 twin（`<name>-tw.md`）時，也以同樣方式 record 它：`chinese` skill 會把 header quote 原封不動複製到 twin，所以兩者必須保持同一份 record。
-    - 範例：`python {skillGroups.common}\scripts\depends_on.py record "skill-groups\common\skills\compile-skill\README.md" --target "[[SkillCompiler-RSDC]]" --cited`
+    - 範例：`{python} {skillGroups.common}\scripts\depends_on.py record "skill-groups\common\skills\compile-skill\README.md" --target "[[SkillCompiler-RSDC]]" --cited`
   - twin：對 target file 執行 `chinese` skill——例如 `/chinese skill-groups\common\skills\compile-skill\SKILL.md`。
     twin 有 baseline 時，它只翻譯 change set；沒有時，翻譯整份檔案；它在寫入前會先詢問，並在使用者同意時把兩份一起 commit。
     更新了卻沒有 commit 的 twin，在接下來的掃描中會顯示為 `FULL`——它的修改尚未 commit——直到兩份一起 commit 為止。
 
 - 對改動過的 target file 再執行一次 **Dependency Scanner**，做法與 Step 1 相同。
-  - 範例：`python {skillGroups.common}\skills\check-md-deps\scripts\scan_md_deps.py "skill-groups\common\skills\compile-skill\SKILL.md"`
+  - 範例：`{python} {skillGroups.common}\skills\check-md-deps\scripts\scan_md_deps.py "skill-groups\common\skills\compile-skill\SKILL.md"`
 
 - 回報每一項被指名的 suggestion 已完成，附上掃描現在給出的 verdict，並說明哪些 suggestion 還沒套用。
 

@@ -1,7 +1,7 @@
 ---
 name: gen-skill
 description: >-
-  建立一個新的 skill，以 SKILL 與 README 兩份 template 逐步完成——從 prompt 解析 skill 名稱與描述，詢問新 skill 產出哪些輸出、使用哪一個 Working Dir、是否要繁體中文 twin，把 SKILL template 複製進選定的 skillGroups 根目錄，以取代每一個 placeholder 的方式產出其 workflow，並為該 workflow 需要的任何腳本或參考檔建立佔位檔。接著以 README template 寫出該 skill 的 README.md——Dataflow、每個 step 的 Purpose、每個 step 用到的檔案、哪些檔案要一起改，以及它的 header quote 宣告的檔案，這些檔案的指紋由 depends_on.py 記錄。若已有同名 skill，則在使用者確認後才覆寫它。使用者要了 twin 時，它請 chinese skill 寫出 SKILL-tw.md 與 README-tw.md，自己不翻譯任何東西。
+  建立一個新的 skill，以 SKILL 與 README 兩份 template 逐步完成——從 prompt 解析 skill 名稱與描述，詢問新 skill 產出哪些輸出、使用哪一個 Working Dir、是否要繁體中文 twin，把 SKILL template 複製進選定的 skillGroups 根目錄，以取代每一個 placeholder 的方式，產出它從 prompt 上方的對話推出的 workflow，並為該 workflow 需要的任何 script 或參考檔建立佔位檔。接著以 README template 寫出該 skill 的 README.md——Dataflow、每個 step 的 Purpose、每個 step 用到的檔案、哪些檔案要一起改，以及它的 header quote 宣告的檔案，這些檔案的指紋由 depends_on.py 記錄。若已有同名 skill，則在使用者確認後才覆寫它。使用者要了 twin 時，由 chinese skill 寫出 SKILL-tw.md 與 README-tw.md，它可能在共用的 keep-English list 加入一個 term，並在使用者同意後 commit 這兩份 twin。每次執行都會寫出它的 run record。
 ---
 
 本文件為 [SKILL.md](skill-groups/common/skills/gen-skill/SKILL.md) 的繁體中文版。
@@ -111,6 +111,13 @@ https://dev.azure.com/contoso/Firmware/_build/results?buildId=1234500&view=resul
 
 ## Step 0 - Warmup
 
+- 找出 `{python}`，也就是 workspace 根目錄的 `.venv` 裡的 Python。
+  macOS 與 Linux 上它是 `.venv/bin/python`，Windows 上是 `.venv\Scripts\python.exe`。
+  後面 step 的每個 script 都以 `{python}` 執行：**Dependency Checker** 需要 `PyYAML`。
+  每個指令都在新的 shell 裡執行，新的 shell 不會沿用另一個指令啟動的 `.venv`。
+  workspace 沒有 `.venv` 時，停下來。
+  請使用者照 `common` skill group 的 forge-setup.md 第 3 步建立它。
+
 - 讀取 workspace 根目錄的 workspace config [config.yaml](config.yaml) 並解析：
   - **`skillGroups`**：群組名稱 -> skills 根目錄路徑的對應（例如 `common` / `dedi` / `external`）。
     下方用到的每個 skills 根目錄都是 `{skillGroups[<group>]}\skills\`，而兩份 template 都在 `{skillGroups.common}\templates\` 之下。
@@ -177,7 +184,7 @@ https://dev.azure.com/contoso/Firmware/_build/results?buildId=1234500&view=resul
 - 把這個 step 加進 run record。
 
 
-## Step 2 - Copy Template
+## Step 2 - Copy the SKILL template
 
 - 把 **SKILL template** 複製到 **new skill directory** 的 `SKILL.md`，並顯示目的路徑。
 
@@ -211,7 +218,7 @@ https://dev.azure.com/contoso/Firmware/_build/results?buildId=1234500&view=resul
   - 每個 skill 都保留 run-data-rules 那一行與顯示路徑那一行，因為每個 skill 都寫 run record；沒有 MD report 時，路徑那一行只顯示 run record。
 
 - 編輯 Step 0 - Warmup：
-  - 若該 skill 不需要虛擬環境，移除 `.venv` 那一行。
+  - 若該 skill 沒有任何 step 執行 script，移除 `{python}` 那一條。
   - 在 `config.yaml` 那一條中，只保留該 skill 實際需要的鍵（Step 1 說沒有 MD report 時就拿掉 `wikiDir`）。
   - 若該 skill 不呼叫 Azure DevOps，移除 `ADO_PAT` 的解析與驗證兩條。
   - 移除 scripts／files 檢查區段，或以該 skill 的腳本取代 `{SCRIPT_PATH_1}`。
@@ -230,7 +237,7 @@ https://dev.azure.com/contoso/Firmware/_build/results?buildId=1234500&view=resul
 
 ## Step 4 - Create supporting files
 
-- 若 Step 3 寫出的任何 step 會執行腳本，就在 **new skill directory** 的 `scripts\` 之下為它建立一個佔位腳本檔。
+- 若 Step 3 寫出的任何 step 會執行 script，就在 **new skill directory** 的 `scripts\` 之下為它建立一個佔位 script 檔。
 - 若 Step 3 寫出的任何 step 需要參考用的 template，就在 **new skill directory** 的 `references\` 之下為它建立一個佔位檔。
 - 顯示已建立的檔案清單。
 
@@ -272,7 +279,7 @@ https://dev.azure.com/contoso/Firmware/_build/results?buildId=1234500&view=resul
 - 不要留下任何 **placeholder**——收尾前先掃過檔案，找緊接在 `{` 之後的大寫字母；只有 `{PLACEHOLDER}` 可以留著。
 
 - 以 **Dependency Checker** 記錄 header quote，它會在每一行之後寫入日期與指紋：
-  - 範例：`python {skillGroups.common}\scripts\depends_on.py record "{skillGroups[<group>]}\skills\<skill-name>\README.md"`
+  - 範例：`{python} {skillGroups.common}/scripts/depends_on.py record "<new skill directory>/README.md"`，其中 **new skill directory** 用絕對路徑：這支 script 從目前的目錄讀相對路徑，而不是從 workspace 根目錄。
   - 有一行指不到任何檔案時，它以 `2` 結束：修正那個連結，再記錄一次。
 
 - 以可點擊的 Markdown 連結顯示 `README.md` 的路徑。
@@ -284,8 +291,8 @@ https://dev.azure.com/contoso/Firmware/_build/results?buildId=1234500&view=resul
 
 - 若 Step 1 的回答是 `no`，說明沒有寫出任何 twin，然後直接做這個 step 的最後兩項。
 
-- 若是 `yes`，就先對 **new skill directory** 的 `SKILL.md`、再對它的 `README.md` 執行 `chinese` skill，把各自的路徑交給它——例如 `/chinese {skillGroups[<group>]}\skills\<skill-name>\SKILL.md`。
-  每一次執行都在來源檔旁邊寫出 **TW twins** 中的一份，讓每一個 heading、inline-code span、link target 與 placeholder token 都保留英文——`README.md` 的 header quote 也在其中——並以它自己的 parity check 收尾；對 `SKILL.md` 的那一次執行，還會在 twin 的 frontmatter 下方加上 pairing line。
+- 若是 `yes`，就先對 **new skill directory** 的 `SKILL.md`、再對它的 `README.md` 執行 `chinese` skill，把各自的路徑交給它——例如 `/chinese {skillGroups[<group>]}/skills/<skill-name>/SKILL.md`。
+  每一次執行都在來源檔旁邊寫出 **TW twins** 中的一份，讓每一個 heading、inline-code span、link target 與 placeholder token 都保留英文——`README.md` 的 header quote 也在其中——並以它自己的 parity check 收尾，接著提議把 twin 與它的來源一起 commit，只在使用者答應時才 commit，而且可能在 keep-English list 中加入一個 term；對 `SKILL.md` 的那一次執行，還會在 twin 的 frontmatter 下方加上 pairing line。
 
 - 不要在這裡翻譯任何一份檔案，也不要在過程中編輯所產生的 `SKILL.md` 或 `README.md`——`chinese` skill 視其來源檔為唯讀。
 

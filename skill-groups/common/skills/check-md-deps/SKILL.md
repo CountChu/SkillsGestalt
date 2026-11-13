@@ -3,7 +3,7 @@ name: check-md-deps
 description: Checks the dependencies a Markdown file declares in its header quote - the > lines at its head, one link to each document it depends on, then the date and the fingerprint it was last confirmed against - and whether the TW twin beside it, <name>-tw.md, has kept up with it, and reports what has gone stale and what is malformed, each with a numbered suggestion in check-wiki-doc's report format. It changes no file until the user names the suggestions to apply. Use it on a SKILL.md, an RSDC, a template or a wiki note, or on a directory of them, and when asked whether a document's dependencies are still current.
 ---
 
-> [check-wiki-doc](../check-wiki-doc/SKILL.md)  `2026-11-06`  `cb3534f8d3ad`
+> [check-wiki-doc](../check-wiki-doc/SKILL.md)  `2026-11-12`  `909b993b2207`
 
 # TERMINOLOGY
 
@@ -190,11 +190,16 @@ It is not a summary of what the step does; the bullets below it already say that
 
 - **Purpose**: settle which files this run checks and where its programs are, so that no later step guesses a path.
 
-- Run `.venv` first — the scripts need `PyYAML`.
+- Find `{python}`, the Python of the `.venv` at the root of the workspace.
+  It is `.venv/bin/python` on macOS and Linux, and `.venv\Scripts\python.exe` on Windows.
+  Run each script of the steps that follow with `{python}`: the scripts need `PyYAML`.
+  Each command runs in a new shell, and a new shell does not use the `.venv` that a different command started.
+  If the workspace has no `.venv`, stop.
+  Tell the user to make it, as step 3 of forge-setup.md in the `common` skill group tells.
 
 - Read the workspace config [config.yaml](config.yaml) at the workspace root, when there is one, and resolve:
   - **`skillGroups`**: the group name -> skills-root map — this skill's own directory is `{skillGroups.common}\skills\check-md-deps\`, and the **Dependency Checker** lies under `{skillGroups.common}\scripts\`.
-  - Substitute the resolved values wherever `{skillGroups.common}` appears in the steps below (including in commands).
+  - Substitute the resolved values wherever `{python}` or `{skillGroups.common}` appears in the steps below (including in commands).
   - Without a `config.yaml`, take `{skillGroups.common}` to be the directory two levels above this skill's own — the one that holds `skills\` — and run without `--config`: a dependency whose link names a value of `config.yaml`, such as `{wikiDir}`, then shows as `UNRESOLVED`, and a `[[Name]]` link to a note outside the target file's vault — the RSDC standard, for a document written in another workspace — shows as `MISSING`; the report says why.
 
 - Check the **Dependency Scanner** and the **Dependency Checker** exist before running the workflow.
@@ -217,7 +222,7 @@ It is not a summary of what the step does; the bullets below it already say that
 - **Purpose**: let a program find every fact a reader could miss — a fingerprint compared by eye, a line one blank line out of the header quote, what changed in a document since its date — so that a reader is left only what needs judgement.
 
 - Run the **Dependency Scanner** on the target paths of Step 0, with `--config` when Step 0 found a `config.yaml`.
-  - Example: `python {skillGroups.common}\skills\check-md-deps\scripts\scan_md_deps.py "skill-groups\common\skills\compile-skill\SKILL.md" --config config.yaml`
+  - Example: `{python} {skillGroups.common}\skills\check-md-deps\scripts\scan_md_deps.py "skill-groups\common\skills\compile-skill\SKILL.md" --config config.yaml`
 
 - The script:
   1. Finds each target file's **header quote**, reads each **dependency** on it, and lists every **format problem** — malformed, misplaced or a second declaration.
@@ -274,13 +279,13 @@ It is not a summary of what the step does; the bullets below it already say that
   - an edit: change exactly the lines it names, and no other;
   - a record: run the **Dependency Checker**'s `record` on the target file and the link it names, with `--cited` for a `cited` dependency.
     When a twin sits beside the target file, `<name>-tw.md`, record it the same way: the `chinese` skill copies the header quote into the twin unchanged, so the two must keep the same record.
-    - Example: `python {skillGroups.common}\scripts\depends_on.py record "skill-groups\common\skills\compile-skill\README.md" --target "[[SkillCompiler-RSDC]]" --cited`
+    - Example: `{python} {skillGroups.common}\scripts\depends_on.py record "skill-groups\common\skills\compile-skill\README.md" --target "[[SkillCompiler-RSDC]]" --cited`
   - a twin: run the `chinese` skill on the target file — e.g. `/chinese skill-groups\common\skills\compile-skill\SKILL.md`.
     It translates only the change set when the twin has a baseline, and the whole file when it has none; it asks before it writes, and commits the pair on the user's yes.
     A twin updated and not committed shows as `FULL` in the scan that follows, its changes being uncommitted, until the pair is committed.
 
 - Run the **Dependency Scanner** again on the target files changed, as Step 1 does.
-  - Example: `python {skillGroups.common}\skills\check-md-deps\scripts\scan_md_deps.py "skill-groups\common\skills\compile-skill\SKILL.md"`
+  - Example: `{python} {skillGroups.common}\skills\check-md-deps\scripts\scan_md_deps.py "skill-groups\common\skills\compile-skill\SKILL.md"`
 
 - Report each named suggestion as done, with the verdicts the scan now gives, and say which suggestions remain unapplied.
 

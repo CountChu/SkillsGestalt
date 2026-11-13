@@ -133,7 +133,7 @@ description: >-
   當某個 step 需要第 3 或第 4 章裡的東西，那東西就是一項契約——它要移到第 2 章，step 改在那裡引用它。
   這適用於執行自己 system 的 skill；工作是撰寫那些程式本身的 skill，要讀它們的 Design，那不是本 skill 處理的對象。
 - **命令列是 skill 與 system 之間唯一的介面。**
-  skill 以 `python <program> <arguments>` 執行每一支程式，讀回它的 exit status、印出的各行與寫出的 record；它絕不 import 程式來呼叫它的函式。
+  skill 以 `{python} <program> <arguments>` 執行每一支程式，讀回它的 exit status、印出的各行與寫出的 record；它絕不 import 程式來呼叫它的函式。
   import 會把 skill 綁在 system 的內部，而重構可以在一個參數都不改的情況下重新安排內部——讓 skill 在沒有任何錯誤訊息的情況下壞掉。
 - **程式放在哪裡，由 skill 決定**，寫在它的 CONFIGURATION 與 Directory Structure——所以 RSDC 沒有 Directory Structure 一節，這是本 skill 唯一偏離 RSDC standard 之處。
   含有目錄樹的 RSDC 會提到 skill 的目錄，而且 skill 一搬動就過時。
@@ -314,15 +314,20 @@ Step N 寫 `step_{N}.yaml`，其他 step 都不改它。
 
 - **Purpose**：把這次執行設定好——它的 config、它為哪一個 skill 撰寫設計、是完整執行還是只跑一個 step，以及這次執行——每個 step 存進它的 Working Dir，並把自己加進它的 run record——讓後面的 step 不必再推導自己的檔案放在哪裡。
 
-- 先執行 `.venv`。
-  Source Scanner 會 import `PyYAML`：用 `python -c "import yaml"` 確認它在；若缺少，就停止並指出缺了什麼。
+- 找出 `{python}`，也就是 workspace 根目錄的 `.venv` 裡的 Python。
+  macOS 與 Linux 上它是 `.venv/bin/python`，Windows 上是 `.venv\Scripts\python.exe`。
+  後面 step 的每個 script 都以 `{python}` 執行：Source Scanner 會 import `PyYAML`。
+  用 `{python} -c "import yaml"` 確認它在；若缺少，就停止並指出缺了什麼。
+  每個指令都在新的 shell 裡執行，新的 shell 不會沿用另一個指令啟動的 `.venv`。
+  workspace 沒有 `.venv` 時，停下來。
+  請使用者照 `common` skill group 的 forge-setup.md 第 3 步建立它。
 
 - 讀取 workspace 根目錄的 workspace config [config.yaml](config.yaml) 並解析：
   - **`wikiDir`**：MD report 的根目錄——本 skill 的報告放在 `{wikiDir}/gen-rsdc-skill/` 之下。
   - **`vaultName`**：`wikiDir` 的最後一段路徑——用來組出 `obsidian://` 連結的 Obsidian vault 名稱。
   - **`skillGroups`**：群組名稱 -> skills 根目錄的對應——裸的 skill 名稱解析為 `{skillGroups[<group>]}/skills/<skill-name>/SKILL.md`，而本 skill 自己的目錄是 `{skillGroups.common}/skills/gen-rsdc-skill/`。
     以 `~` 開頭的根目錄位於家目錄之下。
-  - 在下方各 step 中凡出現 `{wikiDir}`、`{vaultName}`、`{skillGroups.common}` 或 `{skillGroups[<group>]}` 之處（包含指令中），都代入解析後的值。
+  - 在下方各 step 中凡出現 `{python}`、`{wikiDir}`、`{vaultName}`、`{skillGroups.common}` 或 `{skillGroups[<group>]}` 之處（包含指令中），都代入解析後的值。
   - 若 `config.yaml` 不存在或缺少所需的鍵，停止，並告訴使用者缺了什麼。
 
 - 本 skill 不呼叫任何 API，也不需要憑證。
@@ -410,7 +415,7 @@ Step N 寫 `step_{N}.yaml`，其他 step 都不改它。
 
 - 對 RSDC standard 執行 **RSDC Checker**。
   它讀取 standard 檔頭引用區開頭的 Version 行所寫的版本，以及 RSDC template 與它的 twin 在指名 standard 之處所記下的版本；檢查這兩份也以同樣的方式寫出自己的版本；並把它們在每個連到 standard 的連結後面記下的指紋——檔頭引用區的 `> [[RSDC-Standard]]` 與 `> [[DFD]]`——與該檔案現在的內容比對。
-  - 範例：`python {skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py --standard "{skillGroups.common}/references/RSDC-Standard.md"`
+  - 範例：`{python} {skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py --standard "{skillGroups.common}/references/RSDC-Standard.md"`
 
 - 依它的 exit status 處理：
   - `0`：RSDC template 與它的 twin 記下的就是 standard 的版本，所記的指紋也就是它現在的內容；繼續。
@@ -437,7 +442,7 @@ Step N 寫 `step_{N}.yaml`，其他 step 都不改它。
 - **Purpose**：由程式、而不是靠閱讀，得知哪些 step 執行哪些程式——system 就是從這些程式中劃出來的，而一個什麼程式都不執行的 skill，最好在讀任何東西之前就被擋下。
 
 - 對 Skill Source 執行 **Source Scanner**。
-  - 範例：`python {skillGroups.common}/skills/compile-skill/scripts/scan_source.py --file "{skillGroups.dedi}/skills/check-stop-price/SKILL.md"`
+  - 範例：`{python} {skillGroups.common}/skills/compile-skill/scripts/scan_source.py --file "{skillGroups.dedi}/skills/check-stop-price/SKILL.md"`
 
 - 依它的 exit status 處理：
   - `0`：繼續。
@@ -536,7 +541,7 @@ Step N 寫 `step_{N}.yaml`，其他 step 都不改它。
 
 - 用 **Dependency Checker** 在 RSDC 的檔頭引用區、RSDC template 那一行記下它，並傳入 workspace 的 `config.yaml`：放在另一個 workspace 的 RSDC 要靠它才找得到 template。
   `chinese` skill 透過那一行，把 RSDC 與 template 共有的每一個句子從 template 的 twin 照抄過來；之後的檢查也能看出 template 是否改過。
-  - Example: `python {skillGroups.common}/scripts/depends_on.py record "{skillGroups.dedi}/skills/check-stop-price/references/StopPriceChecker-RSDC.md" --target "[[RSDC-Skill-System-tmp]]" --config config.yaml`
+  - Example: `{python} {skillGroups.common}/scripts/depends_on.py record "{skillGroups.dedi}/skills/check-stop-price/references/StopPriceChecker-RSDC.md" --target "[[RSDC-Skill-System-tmp]]" --config config.yaml`
 
 - 保存 `step_5.yaml`，內容為：
   - `rsdc`：它的路徑。
@@ -584,7 +589,7 @@ Step N 寫 `step_{N}.yaml`，其他 step 都不改它。
 
 - 對 RSDC 執行 **RSDC Checker**，並給它 target skill 的名稱。
   它從 RSDC 的檔頭引用區所指名的 template 讀取形狀——也就是 Step 5 記下的那個連結。
-  - 範例：`python {skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py --rsdc "{skillGroups.dedi}/skills/check-stop-price/references/StopPriceChecker-RSDC.md" --skill-name check-stop-price`
+  - 範例：`{python} {skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py --rsdc "{skillGroups.dedi}/skills/check-stop-price/references/StopPriceChecker-RSDC.md" --skill-name check-stop-price`
 
 - 它為每一項檢查印出一行——`[PASS]`、`[FAIL]` 或 `[WARN]`——最後印出 verdict。
 
@@ -624,7 +629,7 @@ Step N 寫 `step_{N}.yaml`，其他 step 都不改它。
     它的箭頭是 step 交給程式的東西、程式寫出的 record，以及 step 自己的 step file：程式只寫它的 record，step 只寫它的 step file。
   - **Report Contract**，當 skill 會寫 MD report 時，放一節 `# Report Contract`，其下有 `## Presentation Contract` 與 `## Presentation Form`。
     報告屬於 skill，所以它的契約放在這裡，不放在 RSDC；它要講清楚 RSDC 的 Presentation Contract 所要求的每一件事，而寫報告的 step 讀的是這份契約，不是 RSDC。
-  - **Workflow**：執行程式的 step 寫出完整的命令——`python <program>` 加上 CLI 規定的每一個參數——以及每一種 exit status 要怎麼處理。
+  - **Workflow**：執行程式的 step 寫出完整的命令——`{python} <program>` 加上 CLI 規定的每一個參數——以及每一種 exit status 要怎麼處理。
 
 - 適用於每一處編輯的規則：
   - 只引用 RSDC 第 1、2 章的內容，以編號加上標題引用——§2.6 *Derivation Rules*；子節則以它自己的標題引用——§2.6 *The Verdict*。
@@ -653,11 +658,11 @@ Step N 寫 `step_{N}.yaml`，其他 step 都不改它。
   它的 step inventory 還必須列出 `step_3.yaml` 中 step inventory 的那些 step；未經使用者同意而改變的 step，要改回來。
 
 - 對 RSDC 與 Skill Source 執行 **RSDC Checker**。
-  - 範例：`python {skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py --rsdc "{skillGroups.dedi}/skills/check-stop-price/references/StopPriceChecker-RSDC.md" --skill "{skillGroups.dedi}/skills/check-stop-price/SKILL.md"`
+  - 範例：`{python} {skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py --rsdc "{skillGroups.dedi}/skills/check-stop-price/references/StopPriceChecker-RSDC.md" --skill "{skillGroups.dedi}/skills/check-stop-price/SKILL.md"`
 
 - 依它的 exit status 處理：
   - `0`：用 **Dependency Checker** 在 Skill Source 檔頭引用區裡 RSDC 的那一行記下 RSDC——記的是 skill 所引用的那幾節現在的樣子——讓之後的檢查分辨得出其中哪一節改過；然後繼續。
-    - 範例：`python {skillGroups.common}/scripts/depends_on.py record "{skillGroups.dedi}/skills/check-stop-price/SKILL.md" --target "[[StopPriceChecker-RSDC]]" --cited`
+    - 範例：`{python} {skillGroups.common}/scripts/depends_on.py record "{skillGroups.dedi}/skills/check-stop-price/SKILL.md" --target "[[StopPriceChecker-RSDC]]" --cited`
   - `1`：針對每一個 `[FAIL]` 修正 Skill Source，再執行一次本 step，直到通過為止。
     若 skill 需要的名稱 RSDC 沒有定義，就是 RSDC 缺了一項契約：把它加進 RSDC 的第 2 章，並也再執行一次 Step 7 的腳本。
   - `2`：修正命令或路徑，再執行一次。

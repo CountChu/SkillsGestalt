@@ -1,4 +1,5 @@
 cffi==2.1.1
+click==8.4.2
 cryptography==50.0.2
 pycparser==3.11
 pypdf==6.21.4

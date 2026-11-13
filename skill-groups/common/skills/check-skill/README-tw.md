@@ -7,7 +7,7 @@
 > [SKILL-tmp.md](../../templates/SKILL-tmp.md)  `2026-11-06`  `0a1b73b86b05`
 > [README-tmp.md](../../templates/README-tmp.md)  `2026-11-06`  `549f2d3ba535`
 > [depends_on.py](../../scripts/depends_on.py)  `2026-10-16`  `53b1d3e60eca`
-> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-06`  `96933f295048`
+> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-12`  `a731ad143960`
 
 check-skill skill 由哪些部分組成，以及它的 [SKILL.md](SKILL.md) 依賴哪些檔案。
 skill 每次執行都會載入整份 SKILL.md，所以執行時用不到的部分放在這裡：SKILL.md 不連到本檔，也沒有任何一次執行會載入它。
@@ -37,9 +37,10 @@ flowchart TB
     DECL[/"files the README declares"/]
     CRIT[/"checking criteria"/]
     DFDDOC[/"DFD.md"/]
+    GSCRIPTS[/"skill-group scripts"/]
     SETTINGS>"Run settings"]
     SEL>"Selection"]
-    FACTS>"facts file"]
+    FACTS[("facts file")]
     FINDINGS>"Findings"]
     REPORT>"Report"]
     CHECKED[("checked skill")]
@@ -82,23 +83,28 @@ flowchart TB
     REPORT --> S6
     S6 <--> CHECKED
     S6 <--> DASH
+    GSCRIPTS --> S3
+    GSCRIPTS --> S2
+    SETTINGS --> S2
+    SETTINGS --> S6
 
-    linkStyle 0,2,4,5,7,8,24,26,27,29,30,31,32,34,35,36 stroke:#2563eb,stroke-width:2.5px
+    linkStyle 0,2,4,5,7,8,9,11,12,13,14,15,24,26,27,29,30,31,32,34,35,36 stroke:#2563eb,stroke-width:2.5px
 ```
 
 圖的讀法：
 
-- 平行四邊形是 external input：`config.yaml`、兩份 template、checked skill 的 README.md 所宣告的檔案、checking criteria 與 DFD.md——沒有任何 step 會寫入它們。
-  旗形是 one-run data：prompt 與 Answers、Step 0 解析出的執行設定、Step 1 做出的選取、Step 2 寫出的 facts file、Step 3 記下的 finding，以及 Step 4 印出的報告。
-  facts file 雖然是本次執行 Working Dir 中的一個檔案，但執行結束後沒有 step、也沒有人讀它，所以把它畫成 one-run data。
-  圓柱是 record：checked skill——它的 SKILL.md 與 README.md、它們的 twin、它的腳本與參考檔——以及 Skills Dashboard。
+- 平行四邊形是 external input：`config.yaml`、兩份 template、checked skill 的 README.md 所宣告的檔案、skill group 的 `scripts/` 裡的 script（Step 2 列出它們，step 執行其中一支時 Step 3 讀它）、checking criteria 與 DFD.md——沒有任何 step 會寫入它們。
+  旗形是 one-run data：prompt 與 Answers、Step 0 解析出的執行設定、Step 1 做出的選取、Step 3 記下的 finding，以及 Step 4 印出的報告。
+  facts file 是 record：Working Dir 裡的一個資料檔，skill 不會刪掉它。
+  圓柱是 record：checked skill——它的 SKILL.md 與 README.md、它們的 twin、它的 script 與參考檔——facts file，以及 Skills Dashboard。
   每個 step 也會把它的時間與模型加入 run record，而圖中不畫這個 record。
   圓角方框是 step。
-- 六角形是 skill 之外的 role：使用者，提供 prompt 與 Answers——在選單中選的 check，以及看完報告後指名的 item——並閱讀報告。
+- 六角形是 skill 之外的 role：使用者，提供 prompt 與 Answers——在選單中選的 check，以及看完報告後指名的 item——並閱讀報告；Step 0 詢問時使用者打的 skill 名稱，算是 prompt 的一部分。
 - 實線箭頭沿著資料移動的方向搬移資料；雙頭箭頭表示某個 step 對同一份資料既讀又寫。
 - 藍色箭頭承載的資料，本身會被寫進某個 record，或被轉成某個 record 的內容；其餘箭頭一律是黑色。
   prompt 中的 skill 名稱、Step 1 解析出的路徑與這次執行的日期，會成為 Skills Dashboard 的列；finding 則成為它的計數，並透過報告成為 Step 6 所做的編輯，所以它們的箭頭是藍色。
-  只決定某個 step 怎麼做的資料，例如 `config.yaml`、template、criteria、DFD.md、facts、Answers，或 Step 2 與 Step 3 所讀到的 checked skill，維持黑色。
+  Step 2 把選取的 skill 名稱、兩份 template 的標題與共用 term、所宣告檔案的指紋，以及 checked skill 的各行寫進 facts file，所以帶來這些資料的箭頭是藍色。
+  只決定某個 step 怎麼做的資料，例如 `config.yaml`、criteria、DFD.md、facts、Answers，或 Step 3 所讀到的 template 與 checked skill，維持黑色。
 - 有兩個 record 是輪流編輯的，而且兩者在這次執行之前就已存在。
   Skills Dashboard 先由 Step 5、再由 Step 6 編輯，兩者都會讀取自己要合併進去的那張表，所以誰也不會抹掉對方寫的東西。
   checked skill 由 Step 1 到 Step 3 照它被找到時的樣子讀取，只有 Step 6 會依使用者指名的 item 寫入它。
@@ -148,8 +154,9 @@ Step 1 - Resolve Skills and Select Checks
 Step 2 - Scan the Selected Skills
   runs    scan_skill.py
           ├─ reads config.yaml
-          ├─ reads common/templates/SKILL-tmp.md and README-tmp.md: their headings
+          ├─ reads common/templates/SKILL-tmp.md and README-tmp.md: their headings, and SKILL-tmp.md's # TERMINOLOGY
           ├─ reads every text file in <skill>/, SKILL.md and README.md among them
+          ├─ lists the scripts in the scripts/ of each skill group: a script a step names can be there
           ├─ loads common/scripts/depends_on.py: reads every file README.md's header quote declares
           └─ writes the facts file: temp/check-skill/{yymmdd}.{N}/facts.yaml
   reads   the facts file
@@ -159,7 +166,11 @@ Step 3 - Apply the Selected Checks
   reads   the facts file
   reads   for check 1: common/templates/SKILL-tmp.md and README-tmp.md
   reads   for check 2: config.yaml, and <skill>/config.yaml when there is one
-  reads   for checks 3 and 5: <skill>/SKILL.md whole, and for check 5 every script in <skill>/scripts/
+  reads   for checks 3 and 5: <skill>/SKILL.md whole
+  reads   for check 3: each reference or script that a step leaves a claim of the description to
+  reads   for check 5: every script a step runs:
+          in <skill>/scripts/, in <skill>/ itself, or in the scripts/ of a skill group,
+          and every reference in <skill>/ that gives the agent a command to run
   reads   for check 6: common/references/DFD.md, and <skill>/SKILL.md and <skill>/README.md whole
 
 Step 4 - Report the Findings
@@ -197,8 +208,8 @@ check-skill/SKILL.md
  │     the facts Step 2 lists and the arguments it passes, and the fact groups the criteria read
  ├─⇄ check-skill/scripts/update_dashboard.py
  │     the --result format of Step 5, and the dashboard's cells: one for each check
- ├─▶ common/templates/SKILL-tmp.md and README-tmp.md: the headings check 1 compares against,
- │     read from the templates at run time, so a heading added there needs no change here
+ ├─▶ common/templates/SKILL-tmp.md and README-tmp.md: the headings check 1 compares against, and the shared terms of criterion 1.17,
+ │     read from the templates at run time, so a heading or a shared term added there needs no change here
  ├─▶ common/rules/skill-writing.md: what criteria 1.4, 1.7, 1.10 to 1.14 and 5.6 hold a skill to
  ├─▶ common/references/DFD.md: what check 6 holds a Dataflow to
  ├─▶ common/scripts/depends_on.py: the header quote format, and the statuses criterion 1.13 reads

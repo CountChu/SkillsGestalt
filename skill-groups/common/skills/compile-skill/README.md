@@ -6,8 +6,8 @@
 > [run-data-rules.md](../../rules/run-data-rules.md)  `2026-11-07`  `cb4e585a6fbc`
 > [SKILL-tmp.md](../../templates/SKILL-tmp.md)  `2026-11-06`  `0a1b73b86b05`
 > [README-tmp.md](../../templates/README-tmp.md)  `2026-11-06`  `549f2d3ba535`
-> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-06`  `96933f295048`
-> [[SkillCompiler-RSDC]]  `cited`  `2026-10-20`  `0ac8fa44bb74`
+> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-12`  `a731ad143960`
+> [[SkillCompiler-RSDC]]  `cited`  `2026-11-12`  `b54ae4462f11`
 
 This README.md tells about the parts of the compile-skill skill, and about the files that its [SKILL.md](SKILL.md) depends on.
 Each time the skill runs, it reads all of its SKILL.md, and its compile SOP, [SKILL-Compile.md](references/SKILL-Compile.md).
@@ -44,7 +44,7 @@ flowchart TB
     CONFIG[/"config.yaml"/]
     SRC[/"Skill Source: <target>/SKILL.md"/]
     GUIDE[/"compile SOP: SKILL-Compile.md"/]
-    PATHS>"Resolved paths"]
+    PATHS>"Resolved paths and --force"]
     INV>"step inventory and fingerprint"]
     TABLE>"Classification table"]
     CHECKS>"check results"]
@@ -58,7 +58,7 @@ flowchart TB
     CONFIG --> S0
     SRC --> S0
     S0 --> PATHS
-    PATHS --> S1(["Step 1 - Validate the Skill Source"])
+    PATHS --> S1[["Step 1 - Validate the Skill Source"]]
     SRC --> S1
     S1 --> INV
     PATHS --> S2(["Step 2 - Classify and Compile the Step Actions"])
@@ -68,12 +68,12 @@ flowchart TB
     ANSWERS --> S2
     S2 <--> CS
     S2 --> TABLE
-    PATHS --> S3(["Step 3 - Check the Script Contracts"])
+    PATHS --> S3[["Step 3 - Check the Script Contracts"]]
     SRC --> S3
     GUIDE --> S3
     S3 <--> CS
     S3 --> CHECKS
-    PATHS --> S4(["Step 4 - Prove the Deterministic Steps"])
+    PATHS --> S4(["Step 4 - Prove the Deterministic Step Actions"])
     GUIDE --> S4
     SRC --> S4
     S4 <--> CS
@@ -82,8 +82,12 @@ flowchart TB
     TABLE --> USER
     CHECKS --> USER
     RESULTS --> USER
+    CONFIG --> S1
+    CONFIG --> S3
+    ANSWERS --> S0
+    CONFIG --> S2
 
-    linkStyle 10,11,13,14,19,24,25 stroke:#2563eb,stroke-width:2.5px
+    linkStyle 1,7,8,10,11,13,14,19,24,25 stroke:#2563eb,stroke-width:2.5px
 ```
 
 How to read the diagram:
@@ -92,18 +96,18 @@ How to read the diagram:
   The external inputs are `config.yaml`, the Skill Source and the compile SOP, which no step writes.
   The records are the Compiled Script and the target skill's outputs that Step 4's runs write.
   Each step also adds its time and model to the run record, and the diagram does not show this record; the skill writes no step file.
-  A rounded box is a step.
+  A rounded box is a step; a double-edged box is a step that runs a program of the SkillCompiler system — Step 1 the Source Scanner, Step 3 the Contract Checker — whose work SkillCompiler-RSDC §2.3 *Dataflow* draws.
 - A hexagon is a role external to the skill: the user, who supplies the prompt and the Answers, and reads the Classification table, the check results and the Result table.
-  The Answers are the user's replies in Step 2: chore, core work or cognitive for each Deterministic step that runs no program, and whether to overwrite an existing Compiled Script.
+  The Answers are the user's replies in Step 0 — which skill a name means when it matches under more than one root, the target skill when the prompt names none, and whether to compile one still being revised — and in Step 2: chore, core work or cognitive for each Deterministic step that runs no program, and whether to overwrite an existing Compiled Script.
 - A solid arrow moves data, in the direction in which the data moves.
   A two-headed arrow is data that one step reads and also writes: Step 2 reads an existing Compiled Script for the decisions its docstring records, and writes the script again; Step 4's runs find the target skill's earlier outputs and write new ones.
   Step 3 and Step 4 also run the Compiled Script, and write it again, whole, when compile SOP Step 3 corrects it.
   A dotted arrow moves no data: it is a sequence, or a change that a person makes.
 - A blue arrow moves data that goes into a record, or that becomes the content of a record.
-  The fingerprint of the step inventory, the Skill Source and the Answers become the content of the Compiled Script, which Step 3 and Step 4 write again when it is corrected, and Step 4's runs write the target skill's outputs.
+  The Skill Source — whole in Step 2, and in Step 1 through the step inventory and the source fingerprint it yields — and the Answers become the content of the Compiled Script, which Step 3 and Step 4 write again when it is corrected, and Step 4's runs write the target skill's outputs.
   All the other arrows are black.
   Data that only controls how a step operates has a black arrow, although that step writes a record.
-  Examples are `config.yaml`, the paths Step 0 resolved, and the compile SOP.
+  Examples are `config.yaml`, the paths Step 0 resolved and whether the prompt gave `--force`, and the compile SOP.
 
 ## Step Purposes
 
@@ -114,16 +118,17 @@ Each step, with the same name as its heading in SKILL.md, and its Purpose: the c
 - Step 1 - Validate the Skill Source
   Decide whether **that** file is one this skill can compile at all — folded into Step 2, the verdict would come from a reading rather than from the Source Scanner.
 - Step 2 - Classify and Compile the Step Actions
-  Turn the source into code — deciding what each step is and writing the code that does it is the one judgment in this workflow, and the reason the skill exists.
+  Keep the reading that classifies the steps and writes the script apart from the Source Scanner before it and the Contract Checker after it — merged with Step 1 or Step 3, one step would both run a program and judge by reading, and the program's verdict would no longer stand apart from that reading.
 - Step 3 - Check the Script Contracts
   Keep the contract checks, which a program makes, apart from Step 4's proof, which needs judgment, and ahead of it: a script that breaks a contract may do anything once it runs in the workspace.
-- Step 4 - Prove the Deterministic Steps
+- Step 4 - Prove the Deterministic Step Actions
   Show that the compiled steps do what the source says — a script can keep every interface contract and still write the wrong report, and only running it against what the source documents shows that.
 
 ## Files Each Step Uses
 
 This README.md tells one time how the skill obeys the "scripted-versus-not" rule of skill-writing.md:
 **Steps 1 and 3 run a script, and Steps 0, 2 and 4 do not**, because Step 0 decides what the user meant, which no script can, and Steps 2 and 4 are the judgment a compile needs: classifying the steps, writing the script, and judging what its runs produced.
+Step 2 runs the Source Scanner again only on a `run step 2`, to re-derive what Step 1 printed, and Step 4 runs the Compiled Script only as the program it proves.
 
 ```
 Step 0 - Warmup
@@ -136,10 +141,12 @@ Step 0 - Warmup
 
 Step 1 - Validate the Skill Source
   runs    compile-skill/scripts/scan_source.py
+          ├─ reads config.yaml, from the working directory up, when the path is relative: the workspace root it is read from
           ├─ reads <target>/SKILL.md
           └─ prints the step inventory, the fingerprint and the verdict
 
 Step 2 - Classify and Compile the Step Actions
+  runs    compile-skill/scripts/scan_source.py again, on a run step 2: it reads config.yaml and <target>/SKILL.md
   reads   <target>/SKILL.md, whole
   reads   compile-skill/references/SKILL-Compile.md, whole
   asks    the user, with a menu, about each Deterministic step that runs no program
@@ -147,12 +154,13 @@ Step 2 - Classify and Compile the Step Actions
 
 Step 3 - Check the Script Contracts
   runs    compile-skill/scripts/check_compiled.py
+          ├─ reads config.yaml, from the working directory up, when a path is relative: the workspace root it is read from
           ├─ reads <target>/SKILL.md and <target>/skill.py
           └─ runs <target>/skill.py only in the system's temporary directory, outside the workspace, and removes it
   reads   compile-skill/references/SKILL-Compile.md: its Step 3, when a check fails
   writes  <target>/skill.py again, when a check fails
 
-Step 4 - Prove the Deterministic Steps
+Step 4 - Prove the Deterministic Step Actions
   reads   compile-skill/references/SKILL-Compile.md: its Step 4, and its Step 3 when a difference lies in the script
   runs    <target>/skill.py --export-schema, then --step <id> for each Deterministic step
           └─ writes what the target skill's step writes, on a side-effect-free input

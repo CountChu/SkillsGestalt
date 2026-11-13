@@ -21,6 +21,12 @@ of a Deterministic step's work is core work and which a chore is a person's deci
 script's (section 2.5, Core Work or Chore); this list only says where a
 program exists to be called.
 
+A relative --file is read from the root of the workspace - the nearest directory, from the
+current directory up, whose config.yaml has skillGroups - because a step names every path from
+there (run-data-rules.md); an absolute path is read as given, after a leading ~ is expanded.
+from_root() is the one implementation of it: check_compiled.py imports it too. The root is never
+found from this file's own location.
+
 Exit codes: 0 valid, 2 INVALID (stop - no skill.py may be written), 64 no verdict - the command
 was malformed, or the file is missing or cannot be read. A usage error exits 64 rather than
 argparse's 2, which would read as an INVALID source.
@@ -112,6 +118,38 @@ def source_fingerprint(path: str | Path) -> str:
     text = Path(path).read_bytes().decode("utf-8-sig")
     text = text.replace("\r\n", "\n").replace("\r", "\n")
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+class NoWorkspace(Exception):
+    """A relative path was given, and no directory from the current one up is the root of a workspace."""
+
+
+def has_skill_groups(cfg: Path) -> bool:
+    """Whether cfg is the config.yaml of a workspace root: a mapping with a skillGroups mapping."""
+    try:
+        doc = yaml.safe_load(cfg.read_text(encoding="utf-8-sig"))
+    except (OSError, UnicodeDecodeError, yaml.YAMLError):
+        return False
+    return isinstance(doc, dict) and isinstance(doc.get("skillGroups"), dict)
+
+
+def workspace_root() -> Path:
+    """The root of the workspace the skill runs in: the nearest directory, from the current
+    directory up, whose config.yaml has skillGroups - never found from this file."""
+    here = Path.cwd().resolve()
+    root = next((d for d in (here, *here.parents) if has_skill_groups(d / "config.yaml")), None)
+    if root is None:
+        raise NoWorkspace(f"a relative path is read from the workspace root, and no config.yaml with skillGroups "
+                          f"is in {here} or in a directory above it - run from the workspace the skill runs in, "
+                          "or give an absolute path")
+    return root
+
+
+def from_root(path: str | Path) -> Path:
+    """Where a path that a step names is read: a leading ~ expanded, an absolute path as given,
+    and a relative one from the workspace root, which is looked for only then."""
+    p = Path(path).expanduser()
+    return p if p.is_absolute() else workspace_root() / p
 
 
 def headings(lines: list[str]) -> list[tuple[int, int, str]]:
@@ -208,8 +246,8 @@ def main() -> int:
     ap.add_argument("--file", required=True, help="path to the Skill Source (SKILL.md)")
     args = ap.parse_args()
     try:
-        result = scan(args.file)
-    except (OSError, UnicodeDecodeError) as exc:
+        result = scan(from_root(args.file))
+    except (NoWorkspace, OSError, UnicodeDecodeError) as exc:
         print(f"cannot read {args.file}: {exc}")
         return NO_VERDICT_EXIT
 

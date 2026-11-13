@@ -17,6 +17,10 @@ the Skill Source as it is now, read by parsing the file rather than importing it
 Naming and Data Structures). A missing or different fingerprint means the script is
 stale, and nothing else is checked: a stale script is recompiled, never fixed (section 2.7, CLI).
 
+A relative --source or --script is read from the root of the workspace, as scan_source.py's
+from_root() reads it: the nearest directory, from the current directory up, whose config.yaml has
+skillGroups. An absolute path is read as given, after a leading ~ is expanded.
+
 Exit codes: 0 every check passed, 1 at least one failed, 2 the Skill Source is INVALID, 4 the
 Compiled Script is stale - 4 rather than 3, which is the Compiled Script's own handoff code - and
 64 no verdict: the command was malformed, or a file it names is missing or cannot be read.
@@ -38,7 +42,7 @@ from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 
-from scan_source import INVALID_EXIT, NO_VERDICT_EXIT, Parser, scan
+from scan_source import INVALID_EXIT, NO_VERDICT_EXIT, NoWorkspace, Parser, from_root, scan
 
 REFUSAL_EXIT = 2  # design document section 2.7, CLI: a refusal before any work
 HANDOFF_EXIT = 3  # design document section 2.7, CLI: the dedicated handoff status code
@@ -234,14 +238,18 @@ def main() -> int:
     args = ap.parse_args()
 
     try:
-        source = scan(args.source)
-    except (OSError, UnicodeDecodeError) as exc:
+        source = scan(from_root(args.source))
+    except (NoWorkspace, OSError, UnicodeDecodeError) as exc:
         print(f"STOP: cannot read {args.source}: {exc}")
         return NO_VERDICT_EXIT
     if not source.valid:
         print("STOP: the Skill Source is INVALID - run scan_source.py for the reason.")
         return INVALID_EXIT
-    script = Path(args.script).resolve()
+    try:
+        script = from_root(args.script).resolve()
+    except NoWorkspace as exc:
+        print(f"STOP: cannot read {args.script}: {exc}")
+        return NO_VERDICT_EXIT
     if not script.is_file():
         print(f"STOP: no Compiled Script at {script}")
         return NO_VERDICT_EXIT

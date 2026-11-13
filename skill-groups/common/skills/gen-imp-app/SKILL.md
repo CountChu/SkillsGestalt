@@ -250,13 +250,18 @@ step 3
 
 ## Step 0 - Warmup
 
-- Run `.venv` first.
+- Find `{python}`, the Python of the `.venv` at the root of the workspace.
+  It is `.venv/bin/python` on macOS and Linux, and `.venv\Scripts\python.exe` on Windows.
+  Run each script of the steps that follow with `{python}`.
+  Each command runs in a new shell, and a new shell does not use the `.venv` that a different command started.
+  If the workspace has no `.venv`, stop.
+  Tell the user to make it, as step 3 of forge-setup.md in the `common` skill group tells.
 
 - Read the workspace config [config.yaml](config.yaml) at the workspace root and resolve:
   - **`wikiDir`**: the MD report root — this skill's reports go under `{wikiDir}\gen-imp-app\`.
   - **`vaultName`**: the last path segment of `wikiDir` (e.g. `MyVault`) — the Obsidian vault name used to build `obsidian://` links.
   - **`skillGroups`**: the group name -> skills-root map — this skill's own directory is `{skillGroups.common}\skills\gen-imp-app\`, and the group Step 3 writes into is `{skillGroups.<group>}`.
-  - Substitute the resolved values wherever `{wikiDir}`, `{vaultName}`, `{skillGroups.common}` or `{skillGroups.<group>}` appears in the steps below (including in commands).
+  - Substitute the resolved values wherever `{python}`, `{wikiDir}`, `{vaultName}`, `{skillGroups.common}` or `{skillGroups.<group>}` appears in the steps below (including in commands).
   - If `config.yaml` is missing or a needed key is absent, stop and ask the user.
 
 - Check if the below scripts/files exist before running workflow.
@@ -290,7 +295,7 @@ step 3
 
 - Get the Run Number, as run-data-rules.md tells, and write the run record of the run.
   The **session resolver** does this deterministically, so two invocations of the same run cannot land in different directories.
-  - Example: `python {skillGroups.common}\skills\gen-imp-app\scripts\resolve_session.py --app redfish-test --step 1`
+  - Example: `{python} {skillGroups.common}\skills\gen-imp-app\scripts\resolve_session.py --app redfish-test --step 1`
   - On `--step 1` it finds the largest `{N}` of today in `database\skill-runs\gen-imp-app\`, adds 1, creates the Working Dir, and writes the run record at once with `skill`, `run` and an empty `steps`.
     Add the canonical skill invocation to it as `prompt`.
   - On `--step 2` or `--step 3` it reopens the run that `--run {yymmdd}.{N}` names, or else the **newest** run whose `step_0.yaml` records the app.
@@ -483,7 +488,7 @@ step 3
      Write `README.md` under the **owner skill root** with a `# Prompts` section carrying every **prompt log** brief in order, followed by whatever a reader needs to run the app's pieces by hand.
 
 - Run the **owner-skill checker** to verify what was written, rather than trusting that it was.
-  - Example: `python {skillGroups.common}\skills\gen-imp-app\scripts\check_owner_skill.py --skill-dir "{skillGroups.<group>}\skills\imp-{app}" --app-dir "artifacts\{app}-app" --out "checkpoints\gen-imp-app\{yymmdd}.{N}"`
+  - Example: `{python} {skillGroups.common}\skills\gen-imp-app\scripts\check_owner_skill.py --skill-dir "{skillGroups.<group>}\skills\imp-{app}" --app-dir "artifacts\{app}-app" --out "checkpoints\gen-imp-app\{yymmdd}.{N}"`
   - The script:
     1. Parses the SKILL.md frontmatter, and checks `name` equals the parent directory name, that a description is present, and that no placeholder token from the template survives.
     2. Checks the top-level sections appear in the canonical order and that the `## Step N` headings run contiguously from 0.

@@ -306,7 +306,12 @@ Step 4 carries both halves because they are two questions about one running page
 
 - **Purpose**: settle which **target** is being worked on, which **command** applies, and whether the **lifecycle** permits it — the gate has to be enforced before anything is written, because afterwards there is nothing to refuse.
 
-- Run `.venv` first — the **setup tool** needs `PyYAML`.
+- Find `{python}`, the Python of the `.venv` at the root of the workspace.
+  It is `.venv/bin/python` on macOS and Linux, and `.venv\Scripts\python.exe` on Windows.
+  Run each script of the steps that follow with `{python}`: the **setup tool** needs `PyYAML`.
+  Each command runs in a new shell, and a new shell does not use the `.venv` that a different command started.
+  If the workspace has no `.venv`, stop.
+  Tell the user to make it, as step 3 of forge-setup.md in the `common` skill group tells.
   The app itself needs no Python at all.
   **Node** must be on `PATH`; check `node --version` answers.
   There is nothing to `npm install`.
@@ -315,7 +320,7 @@ Step 4 carries both halves because they are two questions about one running page
   - **`wikiDir`**: the MD report root — this skill's report goes under `{wikiDir}\imp-home\`.
   - **`vaultName`**: the last path segment of `wikiDir` (e.g. `MyVault`) — the Obsidian vault name used to build the `obsidian://` link.
   - **`skillGroups`**: the group name -> skills-root map — this skill's own directory is `{skillGroups.common}\skills\imp-home\`.
-  - Substitute the resolved values wherever `{wikiDir}`, `{vaultName}` or `{skillGroups.common}` appears in the steps below, including in commands.
+  - Substitute the resolved values wherever `{python}`, `{wikiDir}`, `{vaultName}` or `{skillGroups.common}` appears in the steps below, including in commands.
   - If `config.yaml` is missing or a needed key is absent, stop and ask the user.
 
 - Get the Run Number, as run-data-rules.md tells, and write the run record of the run.
@@ -391,7 +396,7 @@ Step 4 carries both halves because they are two questions about one running page
 - Read the **target**, the **hub name**, the **seed entry** and the resolved **link list** back from `step_0.yaml`.
 
 - **Run the setup tool** to write the **target frame**:
-  - Example: `python {skillGroups.common}\skills\imp-home\setup_target.py --hub {hub name} --target {target}`
+  - Example: `{python} {skillGroups.common}\skills\imp-home\setup_target.py --hub {hub name} --target {target}`
   - It creates the **target** and its `public\`, and writes the **app config**, `start.cmd`, `README.txt` and the **lifecycle record** with **phase** `setup`.
   - **It writes no `server.js`.**
     A frame is not an app; producing one is what **gen** is for.

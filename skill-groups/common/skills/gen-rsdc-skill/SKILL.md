@@ -141,7 +141,7 @@ The last outputs, which a person, a different skill or a subsequent analysis rea
   When a step needs something that lives in chapter 3 or 4, that thing is a contract — it moves into chapter 2, and the step cites it there.
   This holds for a skill that runs its system; a skill whose work is to write the programs themselves reads their Design, and is not what this skill is for.
 - **The command line is the only interface between the skill and the system.**
-  The skill runs each program as `python <program> <arguments>` and reads back its exit status, the lines it prints and the records it writes; it never imports a program to call its functions.
+  The skill runs each program as `{python} <program> <arguments>` and reads back its exit status, the lines it prints and the records it writes; it never imports a program to call its functions.
   An import ties the skill to the system's inside, which a refactor may rearrange without changing a single argument — breaking the skill without an error.
 - **Where the skill keeps the programs is the skill's to say**, under its CONFIGURATION and its Directory Structure — so the RSDC has no Directory Structure section, the one place this skill departs from the RSDC standard.
   An RSDC holding the tree would name the skill's directory, and go stale whenever the skill moved.
@@ -322,15 +322,20 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - **Purpose**: set the run up — its config, which skill it designs for, a whole run or one step, and the run whose Working Dir every step saves into and whose run record every step adds itself to — so that no later step re-derives where its files go.
 
-- Run `.venv` first.
-  The Source Scanner imports `PyYAML`: check it with `python -c "import yaml"`, and if it is missing, stop and name it.
+- Find `{python}`, the Python of the `.venv` at the root of the workspace.
+  It is `.venv/bin/python` on macOS and Linux, and `.venv\Scripts\python.exe` on Windows.
+  Run each script of the steps that follow with `{python}`: the Source Scanner imports `PyYAML`.
+  Check it with `{python} -c "import yaml"`, and if it is missing, stop and name it.
+  Each command runs in a new shell, and a new shell does not use the `.venv` that a different command started.
+  If the workspace has no `.venv`, stop.
+  Tell the user to make it, as step 3 of forge-setup.md in the `common` skill group tells.
 
 - Read the workspace config [config.yaml](config.yaml) at the workspace root and resolve:
   - **`wikiDir`**: the MD report root — this skill's reports go under `{wikiDir}/gen-rsdc-skill/`.
   - **`vaultName`**: the last path segment of `wikiDir` — the Obsidian vault name used to build `obsidian://` links.
   - **`skillGroups`**: the group name -> skills-root map — a bare skill name resolves to `{skillGroups[<group>]}/skills/<skill-name>/SKILL.md`, and this skill's own directory is `{skillGroups.common}/skills/gen-rsdc-skill/`.
     A root with a leading `~` is under the home directory.
-  - Substitute the resolved values wherever `{wikiDir}`, `{vaultName}`, `{skillGroups.common}` or `{skillGroups[<group>]}` appears in the steps below, including in commands.
+  - Substitute the resolved values wherever `{python}`, `{wikiDir}`, `{vaultName}`, `{skillGroups.common}` or `{skillGroups[<group>]}` appears in the steps below, including in commands.
   - If `config.yaml` is missing or a needed key is absent, stop, and tell the user what is missing.
 
 - This skill calls no API and needs no credential.
@@ -418,7 +423,7 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - Run the **RSDC Checker** on the RSDC standard.
   It reads the standard's version on the Version line its header quote opens with, and the version the RSDC template and its twin record where they name the standard; it checks that each of the two gives its own version the same way; and it compares the fingerprint they record after each of their links to the standard — `> [[RSDC-Standard]]` and `> [[DFD]]`, in their header quote — with that file's content now.
-  - Example: `python {skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py --standard "{skillGroups.common}/references/RSDC-Standard.md"`
+  - Example: `{python} {skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py --standard "{skillGroups.common}/references/RSDC-Standard.md"`
 
 - Act on its exit status:
   - `0`: the RSDC template and its twin record the standard's version, and its content as it is now; continue.
@@ -445,7 +450,7 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 - **Purpose**: learn from a program, not a reading, which steps run which programs — the system is drawn from those programs, and a skill that runs none is best turned away before anything is read.
 
 - Run the **Source Scanner** on the Skill Source.
-  - Example: `python {skillGroups.common}/skills/compile-skill/scripts/scan_source.py --file "{skillGroups.dedi}/skills/check-stop-price/SKILL.md"`
+  - Example: `{python} {skillGroups.common}/skills/compile-skill/scripts/scan_source.py --file "{skillGroups.dedi}/skills/check-stop-price/SKILL.md"`
 
 - Act on its exit status:
   - `0`: continue.
@@ -544,7 +549,7 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - Record the RSDC template on its line of the RSDC's header quote with the **Dependency Checker**, passing the workspace `config.yaml`, through which an RSDC kept in another workspace finds the template.
   Through that line the `chinese` skill copies every sentence the RSDC shares with the template from the template's twin, and a later check can tell when the template changed.
-  - Example: `python {skillGroups.common}/scripts/depends_on.py record "{skillGroups.dedi}/skills/check-stop-price/references/StopPriceChecker-RSDC.md" --target "[[RSDC-Skill-System-tmp]]" --config config.yaml`
+  - Example: `{python} {skillGroups.common}/scripts/depends_on.py record "{skillGroups.dedi}/skills/check-stop-price/references/StopPriceChecker-RSDC.md" --target "[[RSDC-Skill-System-tmp]]" --config config.yaml`
 
 - Save `step_5.yaml` with:
   - `rsdc`: its path.
@@ -592,7 +597,7 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - Run the **RSDC Checker** on the RSDC, with the target skill's name.
   It reads the shape from the template the RSDC's header quote names — the link Step 5 recorded.
-  - Example: `python {skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py --rsdc "{skillGroups.dedi}/skills/check-stop-price/references/StopPriceChecker-RSDC.md" --skill-name check-stop-price`
+  - Example: `{python} {skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py --rsdc "{skillGroups.dedi}/skills/check-stop-price/references/StopPriceChecker-RSDC.md" --skill-name check-stop-price`
 
 - It prints one line per check — `[PASS]`, `[FAIL]` or `[WARN]` — and a verdict.
 
@@ -632,7 +637,7 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
     Its arrows are what the step hands the program, the records the program writes, and the step's own step file: the program writes only its records, and the step only its step file.
   - **Report Contract**, a `# Report Contract` section with `## Presentation Contract` and `## Presentation Form`, when the skill writes an MD report.
     The report is the skill's, so its contract lives here and not in the RSDC; it keeps plain everything the RSDC's Presentation Contract says, and the step that writes the report reads this contract, not the RSDC.
-  - **Workflow**: a step that runs a program gives its full command — `python <program>` with every argument the CLI sets — and what to do on each exit status.
+  - **Workflow**: a step that runs a program gives its full command — `{python} <program>` with every argument the CLI sets — and what to do on each exit status.
 
 - Rules that apply to every edit:
   - Cite only chapters 1 and 2 of the RSDC, by number and heading — §2.6 *Derivation Rules*, or a subsection by its own heading, §2.6 *The Verdict*.
@@ -661,11 +666,11 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
   Its step inventory must also list the steps of the step inventory in `step_3.yaml`; a step that changed without the user's agreement is put back.
 
 - Run the **RSDC Checker** on the RSDC and the Skill Source.
-  - Example: `python {skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py --rsdc "{skillGroups.dedi}/skills/check-stop-price/references/StopPriceChecker-RSDC.md" --skill "{skillGroups.dedi}/skills/check-stop-price/SKILL.md"`
+  - Example: `{python} {skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py --rsdc "{skillGroups.dedi}/skills/check-stop-price/references/StopPriceChecker-RSDC.md" --skill "{skillGroups.dedi}/skills/check-stop-price/SKILL.md"`
 
 - Act on its exit status:
   - `0`: record the RSDC on its line of the Skill Source's header quote with the **Dependency Checker** — the sections of it the skill cites, as they are now — so that a later check can tell when one of them changes; then continue.
-    - Example: `python {skillGroups.common}/scripts/depends_on.py record "{skillGroups.dedi}/skills/check-stop-price/SKILL.md" --target "[[StopPriceChecker-RSDC]]" --cited`
+    - Example: `{python} {skillGroups.common}/scripts/depends_on.py record "{skillGroups.dedi}/skills/check-stop-price/SKILL.md" --target "[[StopPriceChecker-RSDC]]" --cited`
   - `1`: correct the Skill Source for each `[FAIL]`, and run this step again until it passes.
     When the skill needs a name the RSDC does not define, the RSDC lacks a contract: add it to chapter 2 of the RSDC, and run the Step 7 script again as well.
   - `2`: correct the command or the paths, and run it again.

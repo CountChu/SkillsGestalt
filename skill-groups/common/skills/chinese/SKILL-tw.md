@@ -275,11 +275,16 @@ flowchart TB
 
 - **Purpose**：在任何翻譯開始之前，先確定要翻譯的是哪個檔案、它的 twin 要放在哪裡——憑猜測進行的一次執行，會把 twin 寫進另一個 skill 的目錄，而 workflow 後面沒有任何東西會察覺。
 
-- 先執行 `.venv`——Step 1 與 Step 3 的腳本會 import `PyYAML`，而 `diff_md.py` 會執行 `git`。
+- 找出 `{python}`，也就是 workspace 根目錄的 `.venv` 裡的 Python。
+  macOS 與 Linux 上它是 `.venv/bin/python`，Windows 上是 `.venv\Scripts\python.exe`。
+  後面 step 的每個 script 都以 `{python}` 執行：Step 1 與 Step 3 的 script 會 import `PyYAML`，而 `diff_md.py` 會執行 `git`。
+  每個指令都在新的 shell 裡執行，新的 shell 不會沿用另一個指令啟動的 `.venv`。
+  workspace 沒有 `.venv` 時，停下來。
+  請使用者照 `common` skill group 的 forge-setup.md 第 3 步建立它。
 
 - 讀取 workspace 根目錄的 workspace config [config.yaml](config.yaml) 並解析：
   - **`skillGroups`**：群組名稱 -> skills 根目錄的對應——單獨的 skill 名稱解析為 `{skillGroups[<group>]}\skills\<skill-name>\SKILL.md`，本 skill 自己的目錄是 `{skillGroups.common}\skills\chinese\`。
-  - 在下方各 step 中（包含指令內）凡出現 `{skillGroups.common}` 或 `{skillGroups[<group>]}` 之處，都代換為解析後的值。
+  - 在下方各 step 中（包含指令內）凡出現 `{python}`、`{skillGroups.common}` 或 `{skillGroups[<group>]}` 之處，都代換為解析後的值。
   - 若 `config.yaml` 不存在或缺少 `skillGroups`，停止並詢問使用者。
 
 - 本 skill 不呼叫任何 Azure DevOps API，也不需要 `ADO_PAT`——它只讀寫本機檔案。
@@ -327,7 +332,7 @@ flowchart TB
 - 以 `--file` 與 `--keep` 參數執行腳本 `scan_md.py`。
   - `--file`：Step 0 解析出的 source file。
   - `--keep`：**keep-English list**。
-  - 範例：`python {skillGroups.common}\skills\chinese\scripts\scan_md.py --file "skill-groups\common\skills\check-skill\SKILL.md" --keep "{skillGroups.common}\references\tw-keep-english.md"`
+  - 範例：`{python} {skillGroups.common}\skills\chinese\scripts\scan_md.py --file "skill-groups\common\skills\check-skill\SKILL.md" --keep "{skillGroups.common}\references\tw-keep-english.md"`
 
 - 腳本把清冊印到 **stdout**，不寫任何檔案：
   1. 檔案是否有 frontmatter、能否解析，以及它帶有哪些鍵。
@@ -355,7 +360,7 @@ flowchart TB
 - 以 `--en` 與 `--tw` 參數執行腳本 `diff_md.py`。
   - `--en`：Step 0 解析出的 source file。
   - `--tw`：Step 0 推導出的 TW twin 路徑。
-  - 範例：`python {skillGroups.common}\skills\chinese\scripts\diff_md.py --en "skill-groups\common\skills\check-skill\SKILL.md" --tw "skill-groups\common\skills\check-skill\SKILL-tw.md"`
+  - 範例：`{python} {skillGroups.common}\skills\chinese\scripts\diff_md.py --en "skill-groups\common\skills\check-skill\SKILL.md" --tw "skill-groups\common\skills\check-skill\SKILL-tw.md"`
 
 - 腳本從 git 讀取 **baseline**，印到 **stdout**，不寫任何檔案：
   1. 形狀：line for line，或逐個標題比對。
@@ -442,7 +447,7 @@ flowchart TB
   - `--en`：Step 0 解析出的 source file。
   - `--tw`：它旁邊的 TW twin。
   - `--keep`：**keep-English list**。
-  - 範例：`python {skillGroups.common}\skills\chinese\scripts\check_parity.py --en "skill-groups\common\skills\check-skill\SKILL.md" --tw "skill-groups\common\skills\check-skill\SKILL-tw.md" --keep "{skillGroups.common}\references\tw-keep-english.md"`
+  - 範例：`{python} {skillGroups.common}\skills\chinese\scripts\check_parity.py --en "skill-groups\common\skills\check-skill\SKILL.md" --tw "skill-groups\common\skills\check-skill\SKILL-tw.md" --keep "{skillGroups.common}\references\tw-keep-english.md"`
 
 - 腳本為每一項比對在 **stdout** 印出一行，任何一項失敗就以非零值結束：
   1. frontmatter：source file 有 frontmatter 時，兩份都能解析、帶有相同的鍵、持有相同的 `name`，而且來源檔有的 `description` 在 twin 中不是空的；source file 沒有時，twin 也沒有。
@@ -485,7 +490,7 @@ flowchart TB
 - 在 Step 2 就地更新了 twin 的那次執行中，再以同樣的 `--en` 與 `--tw`，加上 `--verify`，執行腳本 `diff_md.py`。
   它檢查 **change set** 之外的每一行或每一節，是否仍逐字是 baseline twin 的內容，有一處不是就以 `1` 結束：`[FAIL]` 指出 Step 2 應該保留的一行或一節，而 `git show <baseline>:<twin path>` 會印出 baseline twin，可以從中還原。
   在 `run step 3` 下沒有執行 Step 2，所以不做這項檢查。
-  - 範例：`python {skillGroups.common}\skills\chinese\scripts\diff_md.py --en "skill-groups\common\skills\check-skill\SKILL.md" --tw "skill-groups\common\skills\check-skill\SKILL-tw.md" --verify`
+  - 範例：`{python} {skillGroups.common}\skills\chinese\scripts\diff_md.py --en "skill-groups\common\skills\check-skill\SKILL.md" --tw "skill-groups\common\skills\check-skill\SKILL-tw.md" --verify`
 
 - 若任一支腳本以非零值結束，逐一回報每個不相符之處及其所在的行，修正 **TW twin**，並重新執行這個 step 直到通過。
   **修正 twin，絕不修正 source file。**

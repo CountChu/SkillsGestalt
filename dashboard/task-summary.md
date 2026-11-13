@@ -7,6 +7,10 @@ task 檔的格式與摘要表的維護方式，見 [task-rules.md](../skill-grou
 
 | Task | Raised | Title | Status | Depends on |
 | --- | --- | --- | --- | --- |
+| [[Task 117]] | 2026-11-13 | 修正 check-skill run 261113.3 找到的 3 個 checker 缺陷 | ⬜ | — |
+| [[Task 116]] | 2026-11-13 | 修正 check-skill 重新檢查時找到的 10 個 checker 缺陷 | ✅ | — |
+| [[Task 115]] | 2026-11-13 | 修正沙盒測試找到的 gen-skill 與 SKILL-tmp.md 問題 | ⬜ | — |
+| [[Task 114]] | 2026-11-12 | 處理 check-skill 兩次檢查剩下的 finding 與 checker 缺陷，並重新檢查 | ✅ | — |
 | [[Task 113]] | 2026-11-13 | AGENTS-tmp.md 的指令能直接跑，找 skill 與載入的 token 變少 | ✅ | — |
 | [[Task 112]] | 2026-11-13 | AGENTS.shared.md 裡通用的規則搬到 AGENTS-tmp.md | ✅ | [[Task 111]] ✅ |
 | [[Task 111]] | 2026-11-13 | work branch 寫在 config.shared.yaml 與 config.local.yaml | ✅ | [[Task 110]] ✅ |

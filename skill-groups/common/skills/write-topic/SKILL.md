@@ -92,8 +92,6 @@ content: 這是一份供維運團隊使用的結構化操作手冊。
   - Substitute the resolved value wherever `{wikiDir}` appears in the steps below (including in commands).
   - If `config.yaml` is missing or `wikiDir` is absent, stop and ask the user.
 
-- Run `.venv` first.
-
 - Parse the user's prompt for required inputs:
   - **Output language**: Inspect the first non-empty line after `/write-topic`.
     If it is the standalone word `Chinese` (case-insensitive), use Traditional Chinese.

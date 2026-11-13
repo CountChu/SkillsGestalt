@@ -7,7 +7,7 @@
 > [SKILL-tmp.md](../../templates/SKILL-tmp.md)  `2026-11-06`  `0a1b73b86b05`
 > [README-tmp.md](../../templates/README-tmp.md)  `2026-11-06`  `549f2d3ba535`
 > [depends_on.py](../../scripts/depends_on.py)  `2026-10-16`  `53b1d3e60eca`
-> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-06`  `96933f295048`
+> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-12`  `a731ad143960`
 
 What the gen-skill skill is made of, and what its [SKILL.md](SKILL.md) depends on.
 A skill loads its whole SKILL.md each time it runs, so the parts a run does not need are kept here: SKILL.md does not link to this file, and no run loads it.
@@ -40,10 +40,11 @@ flowchart TB
     INPUTS>"Parsed inputs"]
     CHOICES>"Output choices"]
     SKILLMD[("SKILL.md")]
-    SUPPORT[("script and reference placeholders")]
+    SUPPORT[("script and reference stubs")]
     READMEMD[("README.md")]
     TWINS[("TW twins")]
     GIT[("git history")]
+    KEEP[("keep-English list")]
 
     USER --> PROMPT
     USER --> CONV
@@ -56,7 +57,7 @@ flowchart TB
     S0 --> INPUTS
     ANSWERS --> S1(["Step 1 - Ask which output files the skill produces"])
     S1 --> CHOICES
-    INPUTS --> S2(["Step 2 - Copy Template"])
+    INPUTS --> S2(["Step 2 - Copy the SKILL template"])
     STMPL --> S2
     S2 --> SKILLMD
     INPUTS --> S3(["Step 3 - Build SKILL.md"])
@@ -80,15 +81,20 @@ flowchart TB
     S6 <--> GIT
     SKILLMD --> USER
     READMEMD --> USER
+    S6 <--> KEEP
+    ANSWERS --> S6
+    INPUTS --> S1
+    INPUTS --> S4
+    INPUTS --> S6
 
-    linkStyle 0,1,2,3,4,5,8,9,10,12,13,14,15,17,19,20,21,22,23,24,25,26,27,29,30,31,32 stroke:#2563eb,stroke-width:2.5px
+    linkStyle 0,1,2,3,4,5,8,9,10,12,13,14,15,17,19,20,21,22,23,24,25,26,27,29,30,31,32,35 stroke:#2563eb,stroke-width:2.5px
 ```
 
 How to read the diagram:
 
 - A parallelogram is an external input: `config.yaml`, the skills already written under the `skillGroups` roots, the two templates, and the rules and references the new skill's header quote declares, `skill-writing.md` and `DFD.md` among them — none of which any step writes.
   A flag is one-run data: the prompt, the conversation above it and the Answers, the inputs Step 0 parsed, and the output choices Step 1 asked for.
-  A cylinder is a record: the new skill's `SKILL.md`, its script and reference placeholders, its `README.md`, its TW twins, and the git history.
+  A cylinder is a record: the new skill's `SKILL.md`, its script and reference stubs, its `README.md`, its TW twins, the keep-English list, and the git history.
   Each step also adds its time and model to the run record, and the diagram does not show this record; the skill writes no step file.
   A rounded box is a step.
 - A hexagon is a role outside the skill: the user, who supplies the prompt, the conversation and the Answers, and reads the new `SKILL.md` and `README.md`.
@@ -96,10 +102,11 @@ How to read the diagram:
 - A blue arrow carries data that is itself written into a record, or turned into a record's content; every other arrow is black.
   The new skill's name, description and steps, and the answers that shape its sections, become the content of `SKILL.md` and `README.md`, so their arrows are blue.
   So do the templates the two files are copied from, and the declared files, whose fingerprints Step 5 records in the header quote.
-  Data that only steers how a step works, such as `config.yaml`, the skills already written, the path Step 2 copies to, the rules Step 3 writes by, or the answer about the twins, stays black.
-- Two records are edited in turn.
+  Data that only steers how a step works, such as `config.yaml`, the skills already written, the path Step 2 copies to and Steps 4 and 6 write into or hand on, the workflow Step 1 checks a `none` answer against, the rules Step 3 writes by, or the answer about the twins, stays black.
+- Three records are edited in turn.
   Step 2 writes `SKILL.md` whole and Step 3 fills it in, reading what it fills; the skill has no `run step N`, so Step 2 runs again only in a new run, which writes the skill afresh once the user has said to overwrite it.
   Step 6 adds a commit to the git history, through the `chinese` skill and on the user's yes, as earlier runs and the user left it.
+  Step 6 also reads the keep-English list as earlier runs left it, and the `chinese` skill can add a term to it.
 
 ## Step Purposes
 
@@ -109,7 +116,7 @@ Each step, named exactly as its heading in SKILL.md, with its Purpose: why it ex
   Settle the name, the description, the group and the steps of the new skill before any file is written — a skill written under a guessed name or group lands where nobody looks for it, or over a skill that already exists.
 - Step 1 - Ask which output files the skill produces
   Settle up front the choices that shape both documents — an MD report, step files, the Working Dir and a pair of twins each decide sections of SKILL.md and README.md alike, and an answer asked for later would rewrite what was already written.
-- Step 2 - Copy Template
+- Step 2 - Copy the SKILL template
   Start SKILL.md as an exact copy of the template, so that every section the template carries is there before any is filled — a SKILL.md written from memory drops the sections nobody remembered.
 - Step 3 - Build SKILL.md
   Write what a run of the new skill needs, and only that — the workflow is the part of SKILL.md that is a judgement about the skill rather than a copy of the template, and the reason the skill is being made.
@@ -141,7 +148,7 @@ Step 0 - Warmup
 Step 1 - Ask which output files the skill produces
   asks    the user: an MD report, step files, the Working Dir, and the TW twins
 
-Step 2 - Copy Template
+Step 2 - Copy the SKILL template
   reads   common/templates/SKILL-tmp.md
   writes  <skill>/SKILL.md
 
@@ -151,7 +158,7 @@ Step 3 - Build SKILL.md
 
 Step 4 - Create supporting files
   reads   <skill>/SKILL.md: the scripts and references its steps name
-  writes  <skill>/scripts/ and <skill>/references/: a placeholder for each
+  writes  <skill>/scripts/ and <skill>/references/: a stub for each
 
 Step 5 - Build README.md
   reads   common/templates/README-tmp.md
@@ -164,7 +171,7 @@ Step 5 - Build README.md
 
 Step 6 - Create the TW twins
   runs    the chinese skill, on SKILL.md and then on README.md (when Step 1's answer was yes)
-          ├─ reads common/references/tw-keep-english.md
+          ├─ reads, and may add a term to, common/references/tw-keep-english.md
           ├─ runs scan_md.py, diff_md.py, check_parity.py
           └─ writes <skill>/SKILL-tw.md and <skill>/README-tw.md, and offers its own commit
 ```

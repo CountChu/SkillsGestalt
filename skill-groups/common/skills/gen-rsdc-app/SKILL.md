@@ -258,11 +258,16 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - **Purpose**: settle which app is documented, where its **design pair** goes, and whether the **design template** is still the standard's shape — before the source is read, since a design written to a stale shape follows rules the standard has since dropped.
 
-- Run `.venv` first — the **dependency checker** needs `PyYAML`.
+- Find `{python}`, the Python of the `.venv` at the root of the workspace.
+  It is `.venv/bin/python` on macOS and Linux, and `.venv\Scripts\python.exe` on Windows.
+  Run each script of the steps that follow with `{python}`: the **dependency checker** needs `PyYAML`.
+  Each command runs in a new shell, and a new shell does not use the `.venv` that a different command started.
+  If the workspace has no `.venv`, stop.
+  Tell the user to make it, as step 3 of forge-setup.md in the `common` skill group tells.
 
 - Read the workspace config [config.yaml](config.yaml) at the workspace root and resolve:
   - **`skillGroups`**: the group name -> skills-root map — this skill's own directory is `{skillGroups.common}\skills\gen-rsdc-app\`.
-  - Substitute the resolved value wherever `{skillGroups.common}` appears in the steps below, including in commands.
+  - Substitute the resolved values wherever `{python}` or `{skillGroups.common}` appears in the steps below, including in commands.
   - If `config.yaml` is missing or the key is absent, stop and ask the user.
 
 - Check the below files exist before running the workflow.
@@ -288,7 +293,7 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
   If the versions differ or a fingerprint has changed, stop before anything is written.
   Name what differs, and say that `RSDC-App-tmp.md` and its reading copy `RSDC-App-tmp-tw.md` are brought up to the standard first — from the standard's "Changes in This Version", or from its git history where the content changed under the same version — and their version and links to the standard recorded anew, in a change of their own.
   A **design pair** written to a stale shape follows rules the standard has since dropped, and once it carries decisions of its own it can only be corrected by hand.
-  - Example: `python {skillGroups.common}/scripts/depends_on.py check "{skillGroups.common}/skills/gen-rsdc-app/assets/RSDC-App-tmp.md"`
+  - Example: `{python} {skillGroups.common}/scripts/depends_on.py check "{skillGroups.common}/skills/gen-rsdc-app/assets/RSDC-App-tmp.md"`
 
 - Display the **app dir**, the **app name**, the **output dir**, the **requirements record** or that there is none, and what the template check found.
 
@@ -325,7 +330,7 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
   - **Link the design template in the header quote, and record it.**
     Under the links to the standard, the English half carries `> [[RSDC-App-tmp]]`; once it is written, record it with the **dependency checker**, passing the workspace `config.yaml`, through which a pair kept in another workspace finds the template.
     The **chinese skill** copies the header quote into the twin as it stands, and finds the template's twin through that line; a later change to the template shows as a change.
-    - Example: `python {skillGroups.common}/scripts/depends_on.py record "{output dir}/{app name}-RSDC.md" --target "[[RSDC-App-tmp]]" --config config.yaml`
+    - Example: `{python} {skillGroups.common}/scripts/depends_on.py record "{output dir}/{app name}-RSDC.md" --target "[[RSDC-App-tmp]]" --config config.yaml`
   - Give the Coding part a **verification obligation** for every rule of the Specification, with every **component** named in at least one and each claim not yet proven marked *not verified* — the rows are the only definition of "proved" the app will have, and a rule no row names is one nothing checks.
   - **Answer the Presentation contract's eight questions, all of them.**
     An app may legitimately answer "there is none"; a question left blank is a gap, and the one about a narrowed view's count matching the next action's scope is the one that most often turns out to be answered "no".
@@ -341,7 +346,7 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 - **Run the RSDC Checker on the English half**, and correct it until no check fails.
   Read each warning, and either correct the English half or leave the warning standing with its reason.
   What the derivation missed — a section left out, a placeholder left — is caught here, before the English half is translated.
-  - Example: `python {skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py --rsdc "{output dir}/{app name}-RSDC.md"`
+  - Example: `{python} {skillGroups.common}/skills/gen-rsdc-skill/scripts/check_rsdc.py --rsdc "{output dir}/{app name}-RSDC.md"`
 
 - Save `step_1.yaml`, with what this step found, to hand back at the end of the run: the **components**, with where each one's source lives and the claims that name it; the **findings**; every defect, with the section that records it; and the **RSDC Checker**'s verdict on the English half, with each warning left standing and its reason.
   Add this step to the run record.

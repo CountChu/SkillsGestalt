@@ -77,6 +77,13 @@ description: 依 skill 內建的系統規範條文，搭配一份「架構文件
   第 3 條的術語索引、撞名檢查、第 1 節／第 2 節的形式要求，**一律只及於納管文件**，不擴及文件庫裡的其他筆記。
   〈依賴〉欄可以指向未納管的外部概念（如 `DBR`），那些不在此列。
 
+找出 `{python}`，也就是 workspace 根目錄的 `.venv` 裡的 Python。
+macOS 與 Linux 上它是 `.venv/bin/python`，Windows 上是 `.venv\Scripts\python.exe`。
+後面步驟的每個腳本都以 `{python}` 執行：check-md-deps 的掃描器與 `depends_on.py` 都需要 `PyYAML`。
+每個指令都在新的 shell 裡執行，新的 shell 不會沿用另一個指令啟動的 `.venv`。
+workspace 沒有 `.venv` 時，停下來。
+請使用者照 `common` skill group 的 forge-setup.md 第 3 步建立它。
+
 保存標準化的 skill 叫用方式，作為 run record 的 `prompt` 欄。
 照 run-data-rules.md 取得 Run Number，並寫出這次執行的 run record。
 把這個步驟加進 run record。
@@ -109,7 +116,7 @@ description: 依 skill 內建的系統規範條文，搭配一份「架構文件
      - **架構文件的檔頭**依〈名稱〉欄的順序逐一列出每份納管文件，記的是那份文件**上次檢查時自己**的指紋。
        它是本 skill 的檢查紀錄，不是依賴宣告。
      - **納管文件的檔頭**一行是一條邊，記的是第 6 條上次比對這個下層時**下層**的指紋。
-   - 執行 check-md-deps 的掃描器：`python3 {skillGroups.common}/skills/check-md-deps/scripts/scan_md_deps.py "<架構文件>" <每份納管文件> --root "{wikiDir}"`。
+   - 執行 check-md-deps 的掃描器：`{python} {skillGroups.common}/skills/check-md-deps/scripts/scan_md_deps.py "<架構文件>" <每份納管文件> --root "{wikiDir}"`。
      它只讀不寫，重算每個連結目標現在的指紋，逐行給出判定：`UNCHANGED` 是記錄之後沒改過；`CHANGED` 是改過；`NO_RECORD` 是還沒記錄過（新納管的文件，或採用紀錄之前就檢查過的），無從判斷；`MISSING`／`UNRESOLVED` 是連結找不到檔案，或名稱在 `wikiDir` 底下不只一份。
    - 除了 `UNCHANGED`，其餘判定都表示那份文件的檢查結果不可採信，步驟 4 會在它的 `待檢查` 打 `✓`：
      - 架構文件裡它那一行不是 `UNCHANGED`：它自己在上次檢查之後改過，或還沒檢查過。
@@ -178,11 +185,11 @@ description: 依 skill 內建的系統規範條文，搭配一份「架構文件
 回報完，把結果寫回架構文件的〈文件狀態〉與〈文件依賴狀態表〉、在架構文件與待查文件的檔頭寫下紀錄，並重新產生依賴圖（mermaid 與 HTML 兩種）——**這一步不必等使用者同意**，它記錄的是「檢查跑過了、數到了什麼」，不是對文件內容的修改：
 
 - 先讓架構文件的檔頭與〈名稱〉欄一致：缺的依欄的順序補一行 `> [[名稱]]`，不帶紀錄；已不納管的那一行刪掉。
-- 在架構文件的檔頭記下待查文件這一版：`python3 {skillGroups.common}/scripts/depends_on.py record "<架構文件>" --target "[[<待查文件>]]" --root "{wikiDir}"`。
+- 在架構文件的檔頭記下待查文件這一版：`{python} {skillGroups.common}/scripts/depends_on.py record "<架構文件>" --target "[[<待查文件>]]" --root "{wikiDir}"`。
 	- 不論查了哪幾條都記：紀錄說的是「這一版查過了」，查了哪幾條寫在總評。
 	- 之後這份文件一改——不論是在 Obsidian 裡、步驟 5 還是別的對話——步驟 1 的依賴掃描都會判為 `CHANGED`。
 	- 待查文件未納管時，架構文件沒有它那一行，不記。
-- 查了第 6 條時，再在待查文件的檔頭記下比對過的下層：對每個比對過的下層執行 `python3 {skillGroups.common}/scripts/depends_on.py record "<待查文件>" --target "[[<下層>]]" --root "{wikiDir}"`，它把下層現在的指紋與今天的日期寫在那一行的連結後面：
+- 查了第 6 條時，再在待查文件的檔頭記下比對過的下層：對每個比對過的下層執行 `{python} {skillGroups.common}/scripts/depends_on.py record "<待查文件>" --target "[[<下層>]]" --root "{wikiDir}"`，它把下層現在的指紋與今天的日期寫在那一行的連結後面：
 	- 下層全部比對過、且檔頭與〈依賴〉欄一致時，省略 `--target`，一次記完。
 	- 比對出矛盾也照記。
    紀錄說的是「這份文件的檢查結果是對著這一版的下層做的」，矛盾本身寫在 `檢查結果`；之後下層一改，步驟 1 的依賴掃描就判為 `CHANGED`。

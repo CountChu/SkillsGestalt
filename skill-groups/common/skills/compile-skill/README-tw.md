@@ -6,8 +6,8 @@
 > [run-data-rules.md](../../rules/run-data-rules.md)  `2026-11-07`  `cb4e585a6fbc`
 > [SKILL-tmp.md](../../templates/SKILL-tmp.md)  `2026-11-06`  `0a1b73b86b05`
 > [README-tmp.md](../../templates/README-tmp.md)  `2026-11-06`  `549f2d3ba535`
-> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-06`  `96933f295048`
-> [[SkillCompiler-RSDC]]  `cited`  `2026-10-20`  `0ac8fa44bb74`
+> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-12`  `a731ad143960`
+> [[SkillCompiler-RSDC]]  `cited`  `2026-11-12`  `b54ae4462f11`
 
 這份 README.md 說明 compile-skill skill 由哪些部分組成，以及它的 [SKILL.md](SKILL.md) 依賴哪些檔案。
 skill 每次執行時，都會讀取整份 SKILL.md，以及它的 compile SOP [SKILL-Compile.md](references/SKILL-Compile.md)。
@@ -44,7 +44,7 @@ flowchart TB
     CONFIG[/"config.yaml"/]
     SRC[/"Skill Source: <target>/SKILL.md"/]
     GUIDE[/"compile SOP: SKILL-Compile.md"/]
-    PATHS>"Resolved paths"]
+    PATHS>"Resolved paths and --force"]
     INV>"step inventory and fingerprint"]
     TABLE>"Classification table"]
     CHECKS>"check results"]
@@ -58,7 +58,7 @@ flowchart TB
     CONFIG --> S0
     SRC --> S0
     S0 --> PATHS
-    PATHS --> S1(["Step 1 - Validate the Skill Source"])
+    PATHS --> S1[["Step 1 - Validate the Skill Source"]]
     SRC --> S1
     S1 --> INV
     PATHS --> S2(["Step 2 - Classify and Compile the Step Actions"])
@@ -68,12 +68,12 @@ flowchart TB
     ANSWERS --> S2
     S2 <--> CS
     S2 --> TABLE
-    PATHS --> S3(["Step 3 - Check the Script Contracts"])
+    PATHS --> S3[["Step 3 - Check the Script Contracts"]]
     SRC --> S3
     GUIDE --> S3
     S3 <--> CS
     S3 --> CHECKS
-    PATHS --> S4(["Step 4 - Prove the Deterministic Steps"])
+    PATHS --> S4(["Step 4 - Prove the Deterministic Step Actions"])
     GUIDE --> S4
     SRC --> S4
     S4 <--> CS
@@ -82,8 +82,12 @@ flowchart TB
     TABLE --> USER
     CHECKS --> USER
     RESULTS --> USER
+    CONFIG --> S1
+    CONFIG --> S3
+    ANSWERS --> S0
+    CONFIG --> S2
 
-    linkStyle 10,11,13,14,19,24,25 stroke:#2563eb,stroke-width:2.5px
+    linkStyle 1,7,8,10,11,13,14,19,24,25 stroke:#2563eb,stroke-width:2.5px
 ```
 
 圖的讀法：
@@ -92,18 +96,18 @@ flowchart TB
   external input 是 `config.yaml`、Skill Source 與 compile SOP，沒有任何 step 寫入它們。
   record 是 Compiled Script，以及 Step 4 的執行所寫出的 target skill 輸出。
   每個 step 也把它的時間與模型加進 run record，圖中不畫這個 record；本 skill 不寫 step file。
-  圓角方框是 step。
+  圓角方框是 step；雙邊框是執行 SkillCompiler 系統程式的 step——Step 1 執行 Source Scanner，Step 3 執行 Contract Checker——它們的工作由 SkillCompiler-RSDC §2.3 *Dataflow* 畫出。
 - 六角形是 skill 外部的 role：使用者，提供 prompt 與 Answers，並閱讀 Classification table、check results 與 Result table。
-  Answers 是使用者在 Step 2 的回答：每個沒有執行程式的 Deterministic step 是 chore、core work 還是 cognitive，以及是否覆寫既有的 Compiled Script。
+  Answers 是使用者在 Step 0 的回答——某個名稱在不只一個 root 下都對得上時指的是哪個 skill、prompt 沒指名時要編譯的 target skill，以及是否編譯一個還在修改中的 skill——與在 Step 2 的回答：每個沒有執行程式的 Deterministic step 是 chore、core work 還是 cognitive，以及是否覆寫既有的 Compiled Script。
 - 實線箭頭沿著資料移動的方向搬移資料。
   雙頭箭頭是某個 step 既讀又寫的資料：Step 2 讀取既有的 Compiled Script，取得它的 docstring 所記錄的決定，再重新寫出 script；Step 4 的執行找到 target skill 先前的輸出，並寫出新的輸出。
   Step 3 與 Step 4 也會執行 Compiled Script，並在 compile SOP Step 3 修正它時，再整份寫出它。
   虛線箭頭不搬移資料：它表示順序，或一項由人做的變更。
 - 藍色箭頭搬移的資料會進入某個 record，或成為某個 record 的內容。
-  step inventory 中的指紋、Skill Source 與 Answers 成為 Compiled Script 的內容，Step 3 與 Step 4 在修正它時會再寫一次，而 Step 4 的執行寫出 target skill 的輸出。
+  Skill Source——在 Step 2 是整份，在 Step 1 則經由它產出的 step inventory 與 source fingerprint——與 Answers 成為 Compiled Script 的內容，Step 3 與 Step 4 在修正它時會再寫一次，而 Step 4 的執行寫出 target skill 的輸出。
   其餘箭頭一律是黑色。
   只決定某個 step 如何運作的資料，箭頭是黑色，即使那個 step 會寫 record。
-  例如 `config.yaml`、Step 0 解析出的路徑，以及 compile SOP。
+  例如 `config.yaml`、Step 0 解析出的路徑與 prompt 是否給了 `--force`，以及 compile SOP。
 
 ## Step Purposes
 
@@ -114,16 +118,17 @@ flowchart TB
 - Step 1 - Validate the Skill Source
   判定**那個**檔案是否根本是本 skill 能編譯的來源——若折進 Step 2，verdict 就會出自閱讀，而不是出自 Source Scanner。
 - Step 2 - Classify and Compile the Step Actions
-  把來源變成程式碼——決定每個 step 是什麼、並寫出做這件事的程式碼，是這個 workflow 中唯一需要判斷的地方，也是本 skill 存在的理由。
+  把分類 step、寫出 script 的閱讀，與它之前的 Source Scanner、之後的 Contract Checker 分開——若與 Step 1 或 Step 3 合併，同一個 step 就會既執行程式、又以閱讀做判斷，程式的 verdict 也就不再獨立於那份閱讀之外。
 - Step 3 - Check the Script Contracts
   把由程式進行的 contract 檢查，與需要判斷的 Step 4 證明分開，並排在它之前：違反 contract 的 script 一旦在 workspace 中執行，什麼事都可能做。
-- Step 4 - Prove the Deterministic Steps
+- Step 4 - Prove the Deterministic Step Actions
   證明編譯出的 step 確實做了來源所說的事——一個 script 可以遵守每一項介面 contract，卻仍然寫出錯誤的報告，而只有對照來源所記載的內容實際執行它，才看得出來。
 
 ## Files Each Step Uses
 
 這份 README.md 只說明一次，這個 skill 如何遵守 skill-writing.md 的「scripted-versus-not」規則：
 **Step 1 與 Step 3 執行 script，Step 0、2 與 4 不執行**，因為 Step 0 要決定使用者的意思，沒有 script 做得到，而 Step 2 與 Step 4 是一次編譯所需要的判斷：為 step 分類、寫出 script，以及判斷它的執行產出了什麼。
+Step 2 只在 `run step 2` 時再執行一次 Source Scanner，以重新推導 Step 1 印出的內容；Step 4 執行 Compiled Script，只是把它當成要證明的程式。
 
 ```
 Step 0 - Warmup
@@ -136,10 +141,12 @@ Step 0 - Warmup
 
 Step 1 - Validate the Skill Source
   runs    compile-skill/scripts/scan_source.py
+          ├─ reads config.yaml, from the working directory up, when the path is relative: the workspace root it is read from
           ├─ reads <target>/SKILL.md
           └─ prints the step inventory, the fingerprint and the verdict
 
 Step 2 - Classify and Compile the Step Actions
+  runs    compile-skill/scripts/scan_source.py again, on a run step 2: it reads config.yaml and <target>/SKILL.md
   reads   <target>/SKILL.md, whole
   reads   compile-skill/references/SKILL-Compile.md, whole
   asks    the user, with a menu, about each Deterministic step that runs no program
@@ -147,12 +154,13 @@ Step 2 - Classify and Compile the Step Actions
 
 Step 3 - Check the Script Contracts
   runs    compile-skill/scripts/check_compiled.py
+          ├─ reads config.yaml, from the working directory up, when a path is relative: the workspace root it is read from
           ├─ reads <target>/SKILL.md and <target>/skill.py
           └─ runs <target>/skill.py only in the system's temporary directory, outside the workspace, and removes it
   reads   compile-skill/references/SKILL-Compile.md: its Step 3, when a check fails
   writes  <target>/skill.py again, when a check fails
 
-Step 4 - Prove the Deterministic Steps
+Step 4 - Prove the Deterministic Step Actions
   reads   compile-skill/references/SKILL-Compile.md: its Step 4, and its Step 3 when a difference lies in the script
   runs    <target>/skill.py --export-schema, then --step <id> for each Deterministic step
           └─ writes what the target skill's step writes, on a side-effect-free input

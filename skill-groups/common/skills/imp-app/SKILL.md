@@ -360,15 +360,20 @@ Step 4 carries both halves of that split and names them as halves, so the judged
 
 - **Purpose**: settle which **app dir** is being worked on, which **command** applies, and whether the **lifecycle** permits it — the gate has to be enforced before anything is written, because afterwards there is nothing to refuse.
 
-- Run `.venv` first — this skill's tools need `PyYAML` to read a config.
-  **Node** must be on `PATH` and so must **Python**; check `node --version` and `python --version` both answer, and record them.
+- Find `{python}`, the Python of the `.venv` at the root of the workspace.
+  It is `.venv/bin/python` on macOS and Linux, and `.venv\Scripts\python.exe` on Windows.
+  Run each script of the steps that follow with `{python}`: this skill's tools need `PyYAML` to read a config.
+  Each command runs in a new shell, and a new shell does not use the `.venv` that a different command started.
+  If the workspace has no `.venv`, stop.
+  Tell the user to make it, as step 3 of forge-setup.md in the `common` skill group tells.
+  **Node** must be on `PATH` and so must **Python**; check that `node --version` answers, and that `python3 --version` or `python --version` does, and record them.
   There is nothing to `npm install`.
 
 - Read the workspace config [config.yaml](config.yaml) at the workspace root and resolve:
   - **`wikiDir`**: the MD report root — this skill's report goes under `{wikiDir}\imp-app\`.
   - **`vaultName`**: the last path segment of `wikiDir` (e.g. `InvLlmWiki`) — the Obsidian vault name used to build the `obsidian://` link.
   - **`skillGroups`**: the group name -> skills-root map — this skill's own directory is `{skillGroups.common}\skills\imp-app\`, and the **shared report rules** are under `{skillGroups.common}\rules\`.
-  - Substitute the resolved values wherever `{wikiDir}`, `{vaultName}` or `{skillGroups.common}` appears in the steps below, including in commands.
+  - Substitute the resolved values wherever `{python}`, `{wikiDir}`, `{vaultName}` or `{skillGroups.common}` appears in the steps below, including in commands.
   - If `config.yaml` is missing or a needed key is absent, stop and ask the user.
 
 - This skill calls no API and needs no credential of its own.
@@ -428,7 +433,7 @@ Step 4 carries both halves of that split and names them as halves, so the judged
   A name the registry does not carry is a stop listing the names it does.
 
 - Resolve the app's session by running the **session resolver**, which owns this deterministically so two invocations of one app cannot land in different directories.
-  - Example: `python {skillGroups.common}/skills/imp-app/scripts/resolve_session.py --app InvCov --command vibe`
+  - Example: `{python} {skillGroups.common}/skills/imp-app/scripts/resolve_session.py --app InvCov --command vibe`
   - It reopens a run of this app — the one the user names, passed as `--run {yymmdd}.{N}`, or else the **newest** one whose `step_0.yaml` carries this **app name** — and gets a new Run Number only when there is none, or when `--new` asks for one: the first **command** against a **app dir** opens the session and every later one joins it, whichever **command** that was.
   - A new Run Number is got as run-data-rules.md tells, and the resolver writes the run record at once, with `skill` and `run`, so a different run cannot take the same number.
   - It finds the root of the workspace this run is in: the directory `--workspace` names, or else the nearest directory, from the current directory up, whose `config.yaml` has `skillGroups`.
@@ -647,7 +652,7 @@ Step 4 carries both halves of that split and names them as halves, so the judged
 ### The checked half
 
 - **Run the test runner**, which owns discovery and execution so that a test cannot be silently skipped.
-  - Example: `python {skillGroups.common}/skills/imp-app/scripts/run_tests.py --app-dir artifacts/InvCov --out "checkpoints/imp-app/{yymmdd}.{N}"`
+  - Example: `{python} {skillGroups.common}/skills/imp-app/scripts/run_tests.py --app-dir artifacts/InvCov --out "checkpoints/imp-app/{yymmdd}.{N}"`
   - It discovers the **unit tests** under `{appDir}\tests\`, runs the `unittest` ones against the **python kernel** and the `node:test` ones against the server, and prints one JSON result carrying each test's outcome, the counts, every source file no test so much as mentions, and every test file named so that neither runner would have discovered it.
   - It saves that result as `unit-tests-{K}.json` in the output directory, with `{K}` one more than the largest one already there, so the result of an earlier **test** of the session stays.
     A relative `--app-dir` or `--out` is resolved against the workspace root, not the current directory.
@@ -747,7 +752,7 @@ Step 4 carries both halves of that split and names them as halves, so the judged
   Shipping an app that does not start locally sends the same failure somewhere with less to debug it.
 
 - **Run the deploy tool**, which owns the copying so that the same files reach every **target** the same way.
-  - Example: `python {skillGroups.common}/skills/imp-app/scripts/deploy_app.py --app-dir artifacts/InvCov --target ftp-server --out "checkpoints/imp-app/{yymmdd}.{N}"` — `--target` repeats, and `--all` is every registered one.
+  - Example: `{python} {skillGroups.common}/skills/imp-app/scripts/deploy_app.py --app-dir artifacts/InvCov --target ftp-server --out "checkpoints/imp-app/{yymmdd}.{N}"` — `--target` repeats, and `--all` is every registered one.
   - It resolves each **target** through the **target list**, copies the code to that entry's `appDir`, writes that destination's own **app config** from that target's values over the **app dir**'s, and prints one JSON manifest of what it wrote, what was already current and what it left alone.
     It saves one `deploy-{target}-{K}.json` per target in the output directory, with `{K}` one more than the largest one of that target already there, so the manifest of an earlier **deploy** stays.
     A relative `--app-dir` or `--out` is resolved against the workspace root, not the current directory.

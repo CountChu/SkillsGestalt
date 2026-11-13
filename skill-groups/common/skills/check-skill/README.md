@@ -7,7 +7,7 @@
 > [SKILL-tmp.md](../../templates/SKILL-tmp.md)  `2026-11-06`  `0a1b73b86b05`
 > [README-tmp.md](../../templates/README-tmp.md)  `2026-11-06`  `549f2d3ba535`
 > [depends_on.py](../../scripts/depends_on.py)  `2026-10-16`  `53b1d3e60eca`
-> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-06`  `96933f295048`
+> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-12`  `a731ad143960`
 
 What the check-skill skill is made of, and what its [SKILL.md](SKILL.md) depends on.
 A skill loads its whole SKILL.md each time it runs, so the parts a run does not need are kept here: SKILL.md does not link to this file, and no run loads it.
@@ -37,9 +37,10 @@ flowchart TB
     DECL[/"files the README declares"/]
     CRIT[/"checking criteria"/]
     DFDDOC[/"DFD.md"/]
+    GSCRIPTS[/"skill-group scripts"/]
     SETTINGS>"Run settings"]
     SEL>"Selection"]
-    FACTS>"facts file"]
+    FACTS[("facts file")]
     FINDINGS>"Findings"]
     REPORT>"Report"]
     CHECKED[("checked skill")]
@@ -82,23 +83,28 @@ flowchart TB
     REPORT --> S6
     S6 <--> CHECKED
     S6 <--> DASH
+    GSCRIPTS --> S3
+    GSCRIPTS --> S2
+    SETTINGS --> S2
+    SETTINGS --> S6
 
-    linkStyle 0,2,4,5,7,8,24,26,27,29,30,31,32,34,35,36 stroke:#2563eb,stroke-width:2.5px
+    linkStyle 0,2,4,5,7,8,9,11,12,13,14,15,24,26,27,29,30,31,32,34,35,36 stroke:#2563eb,stroke-width:2.5px
 ```
 
 How to read the diagram:
 
-- A parallelogram is an external input: `config.yaml`, the two templates, the files a checked skill's README.md declares, the checking criteria and DFD.md — none of which any step writes.
-  A flag is one-run data: the prompt and the Answers, the run settings Step 0 resolves, the selection Step 1 makes, the facts file Step 2 writes, the findings Step 3 records and the report Step 4 prints.
-  The facts file is a file in the Working Dir of the run, but no step and no person reads it after the run, so it is drawn as one-run data.
-  A cylinder is a record: the checked skill — its SKILL.md and README.md, their twins, its scripts and references — and the Skills Dashboard.
+- A parallelogram is an external input: `config.yaml`, the two templates, the files a checked skill's README.md declares, the scripts in a skill group's `scripts/`, which Step 2 lists and Step 3 reads when a step runs one, the checking criteria and DFD.md — none of which any step writes.
+  A flag is one-run data: the prompt and the Answers, the run settings Step 0 resolves, the selection Step 1 makes, the findings Step 3 records and the report Step 4 prints.
+  The facts file is a record: a data file in the Working Dir, which the skill does not remove.
+  A cylinder is a record: the checked skill — its SKILL.md and README.md, their twins, its scripts and references — the facts file and the Skills Dashboard.
   Each step also adds its time and model to the run record, and the diagram does not show this record.
   A rounded box is a step.
-- A hexagon is a role outside the skill: the user, who supplies the prompt and the Answers — the checks chosen in the picker and the items named after the report — and reads the report.
+- A hexagon is a role outside the skill: the user, who supplies the prompt and the Answers — the checks chosen in the picker and the items named after the report — and reads the report; the skill names the user types when Step 0 asks for them count as part of the prompt.
 - A solid arrow moves data, the way the data moves; a two-headed arrow is data one step both reads and writes.
 - A blue arrow carries data that is itself written into a record, or turned into a record's content; every other arrow is black.
   The skill names in the prompt, the paths Step 1 resolves and the date of the run become rows of the Skills Dashboard, and the findings become its counts and, through the report, the edits Step 6 makes, so their arrows are blue.
-  Data that only steers how a step works, such as `config.yaml`, the templates, the criteria, DFD.md, the facts, the Answers, or the checked skill as Steps 2 and 3 read it, stays black.
+  Step 2 writes the selected skill names, the headings and shared terms of the two templates, the fingerprints of the declared files and the lines of the checked skill into the facts file, so the arrows that bring them are blue.
+  Data that only steers how a step works, such as `config.yaml`, the criteria, DFD.md, the facts, the Answers, or the templates and the checked skill as Step 3 reads them, stays black.
 - Two records are edited in turn, and both exist before the run.
   The Skills Dashboard is edited by Step 5 and then by Step 6, each reading the table it merges into, so neither erases what the other wrote.
   The checked skill is read as it is found by Steps 1 to 3, and written only by Step 6, on the items the user names.
@@ -148,8 +154,9 @@ Step 1 - Resolve Skills and Select Checks
 Step 2 - Scan the Selected Skills
   runs    scan_skill.py
           ├─ reads config.yaml
-          ├─ reads common/templates/SKILL-tmp.md and README-tmp.md: their headings
+          ├─ reads common/templates/SKILL-tmp.md and README-tmp.md: their headings, and SKILL-tmp.md's # TERMINOLOGY
           ├─ reads every text file in <skill>/, SKILL.md and README.md among them
+          ├─ lists the scripts in the scripts/ of each skill group: a script a step names can be there
           ├─ loads common/scripts/depends_on.py: reads every file README.md's header quote declares
           └─ writes the facts file: temp/check-skill/{yymmdd}.{N}/facts.yaml
   reads   the facts file
@@ -159,7 +166,11 @@ Step 3 - Apply the Selected Checks
   reads   the facts file
   reads   for check 1: common/templates/SKILL-tmp.md and README-tmp.md
   reads   for check 2: config.yaml, and <skill>/config.yaml when there is one
-  reads   for checks 3 and 5: <skill>/SKILL.md whole, and for check 5 every script in <skill>/scripts/
+  reads   for checks 3 and 5: <skill>/SKILL.md whole
+  reads   for check 3: each reference or script that a step leaves a claim of the description to
+  reads   for check 5: every script a step runs:
+          in <skill>/scripts/, in <skill>/ itself, or in the scripts/ of a skill group,
+          and every reference in <skill>/ that gives the agent a command to run
   reads   for check 6: common/references/DFD.md, and <skill>/SKILL.md and <skill>/README.md whole
 
 Step 4 - Report the Findings
@@ -197,8 +208,8 @@ check-skill/SKILL.md
  │     the facts Step 2 lists and the arguments it passes, and the fact groups the criteria read
  ├─⇄ check-skill/scripts/update_dashboard.py
  │     the --result format of Step 5, and the dashboard's cells: one for each check
- ├─▶ common/templates/SKILL-tmp.md and README-tmp.md: the headings check 1 compares against,
- │     read from the templates at run time, so a heading added there needs no change here
+ ├─▶ common/templates/SKILL-tmp.md and README-tmp.md: the headings check 1 compares against, and the shared terms of criterion 1.17,
+ │     read from the templates at run time, so a heading or a shared term added there needs no change here
  ├─▶ common/rules/skill-writing.md: what criteria 1.4, 1.7, 1.10 to 1.14 and 5.6 hold a skill to
  ├─▶ common/references/DFD.md: what check 6 holds a Dataflow to
  ├─▶ common/scripts/depends_on.py: the header quote format, and the statuses criterion 1.13 reads

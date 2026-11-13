@@ -7,7 +7,7 @@
 > [SKILL-tmp.md](../../templates/SKILL-tmp.md)  `2026-11-06`  `0a1b73b86b05`
 > [README-tmp.md](../../templates/README-tmp.md)  `2026-11-06`  `549f2d3ba535`
 > [depends_on.py](../../scripts/depends_on.py)  `2026-10-16`  `53b1d3e60eca`
-> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-06`  `96933f295048`
+> [chinese/SKILL.md](../chinese/SKILL.md)  `2026-11-12`  `a731ad143960`
 
 gen-skill skill 由哪些部分組成，以及它的 [SKILL.md](SKILL.md) 依賴哪些檔案。
 skill 每次執行都會載入整份 SKILL.md，所以執行時用不到的部分放在這裡：SKILL.md 不連到本檔，也沒有任何一次執行會載入它。
@@ -40,10 +40,11 @@ flowchart TB
     INPUTS>"Parsed inputs"]
     CHOICES>"Output choices"]
     SKILLMD[("SKILL.md")]
-    SUPPORT[("script and reference placeholders")]
+    SUPPORT[("script and reference stubs")]
     READMEMD[("README.md")]
     TWINS[("TW twins")]
     GIT[("git history")]
+    KEEP[("keep-English list")]
 
     USER --> PROMPT
     USER --> CONV
@@ -56,7 +57,7 @@ flowchart TB
     S0 --> INPUTS
     ANSWERS --> S1(["Step 1 - Ask which output files the skill produces"])
     S1 --> CHOICES
-    INPUTS --> S2(["Step 2 - Copy Template"])
+    INPUTS --> S2(["Step 2 - Copy the SKILL template"])
     STMPL --> S2
     S2 --> SKILLMD
     INPUTS --> S3(["Step 3 - Build SKILL.md"])
@@ -80,15 +81,20 @@ flowchart TB
     S6 <--> GIT
     SKILLMD --> USER
     READMEMD --> USER
+    S6 <--> KEEP
+    ANSWERS --> S6
+    INPUTS --> S1
+    INPUTS --> S4
+    INPUTS --> S6
 
-    linkStyle 0,1,2,3,4,5,8,9,10,12,13,14,15,17,19,20,21,22,23,24,25,26,27,29,30,31,32 stroke:#2563eb,stroke-width:2.5px
+    linkStyle 0,1,2,3,4,5,8,9,10,12,13,14,15,17,19,20,21,22,23,24,25,26,27,29,30,31,32,35 stroke:#2563eb,stroke-width:2.5px
 ```
 
 圖的讀法：
 
 - 平行四邊形是 external input：`config.yaml`、`skillGroups` 各根目錄下已經寫好的 skill、兩份 template，以及新 skill 的 header quote 宣告的規則與參考文件——`skill-writing.md` 與 `DFD.md` 也在其中——沒有任何 step 會寫入它們。
   旗形是 one-run data：prompt、它上方的對話與 Answers、Step 0 解析出的輸入，以及 Step 1 詢問到的輸出選擇。
-  圓柱是 record：新 skill 的 `SKILL.md`、它的腳本與參考檔佔位檔、它的 `README.md`、它的 TW twins，以及 git history。
+  圓柱是 record：新 skill 的 `SKILL.md`、它的 script 與參考檔佔位檔、它的 `README.md`、它的 TW twins、keep-English list，以及 git history。
   每個 step 也把自己的時間與模型加進 run record，而圖中不畫這份 record；本 skill 不寫 step 檔。
   圓角方框是 step。
 - 六角形是 skill 之外的 role：使用者，提供 prompt、對話與 Answers，並閱讀新的 `SKILL.md` 與 `README.md`。
@@ -96,10 +102,11 @@ flowchart TB
 - 藍色箭頭承載的資料，本身會被寫進某個 record，或被轉成某個 record 的內容；其餘箭頭一律是黑色。
   新 skill 的名稱、描述與各個 step，以及決定其章節的回答，都成為 `SKILL.md` 與 `README.md` 的內容，所以它們的箭頭是藍色。
   兩份檔案所複製的 template，以及宣告的檔案也是：Step 5 會把這些檔案的指紋記錄在 header quote 中。
-  只決定某個 step 怎麼做的資料，例如 `config.yaml`、已經寫好的 skill、Step 2 複製到的路徑、Step 3 寫作所依的規則，或關於 twin 的回答，維持黑色。
-- 有兩個 record 是輪流編輯的。
+  只決定某個 step 怎麼做的資料，例如 `config.yaml`、已經寫好的 skill、Step 2 複製到、Step 4 與 Step 6 寫入或交出的路徑，Step 1 用來核對 `none` 回答的 workflow、Step 3 寫作所依的規則，或關於 twin 的回答，維持黑色。
+- 有三個 record 是輪流編輯的。
   Step 2 整份寫出 `SKILL.md`，Step 3 填寫它，並讀取它所填寫的內容；本 skill 沒有 `run step N`，所以 Step 2 只會在新的一次執行中重跑，而那次執行要等使用者同意覆寫之後，才會重新寫出這個 skill。
   Step 6 透過 `chinese` skill，在使用者答應時，於先前的執行與使用者留下的 git history 上加一個 commit。
+  Step 6 也會讀取先前的執行留下的 keep-English list，而 `chinese` skill 可能在其中加入一個 term。
 
 ## Step Purposes
 
@@ -109,7 +116,7 @@ flowchart TB
   在寫入任何檔案之前，先確定新 skill 的名稱、描述、群組與各個 step——以猜測的名稱或群組寫出的 skill，會落在沒有人會去找的地方，或蓋掉一個已經存在的 skill。
 - Step 1 - Ask which output files the skill produces
   一開始就把決定兩份文件形狀的選擇問清楚——MD report、step 檔、Working Dir 與一組 twin，各自決定 SKILL.md 與 README.md 兩邊的章節，晚一點才問到的答案，會改寫已經寫好的內容。
-- Step 2 - Copy Template
+- Step 2 - Copy the SKILL template
   讓 SKILL.md 從 template 的完整複本開始，使 template 帶有的每一節在填寫之前都已就位——憑記憶寫出的 SKILL.md，會漏掉沒有人記得的那幾節。
 - Step 3 - Build SKILL.md
   寫出新 skill 執行時需要的內容，而且只寫這些——workflow 是 SKILL.md 中對這個 skill 的判斷、而不是 template 之複本的那一部分，也是建立這個 skill 的理由。
@@ -141,7 +148,7 @@ Step 0 - Warmup
 Step 1 - Ask which output files the skill produces
   asks    the user: an MD report, step files, the Working Dir, and the TW twins
 
-Step 2 - Copy Template
+Step 2 - Copy the SKILL template
   reads   common/templates/SKILL-tmp.md
   writes  <skill>/SKILL.md
 
@@ -151,7 +158,7 @@ Step 3 - Build SKILL.md
 
 Step 4 - Create supporting files
   reads   <skill>/SKILL.md: the scripts and references its steps name
-  writes  <skill>/scripts/ and <skill>/references/: a placeholder for each
+  writes  <skill>/scripts/ and <skill>/references/: a stub for each
 
 Step 5 - Build README.md
   reads   common/templates/README-tmp.md
@@ -164,7 +171,7 @@ Step 5 - Build README.md
 
 Step 6 - Create the TW twins
   runs    the chinese skill, on SKILL.md and then on README.md (when Step 1's answer was yes)
-          ├─ reads common/references/tw-keep-english.md
+          ├─ reads, and may add a term to, common/references/tw-keep-english.md
           ├─ runs scan_md.py, diff_md.py, check_parity.py
           └─ writes <skill>/SKILL-tw.md and <skill>/README-tw.md, and offers its own commit
 ```

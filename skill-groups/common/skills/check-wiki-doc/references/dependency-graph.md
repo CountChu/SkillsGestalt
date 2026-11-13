@@ -127,7 +127,7 @@ graph TD
 一律用腳本產生，不手寫 HTML——每條邊的術語要逐列從上層文件抄出，手抄必然漏列：
 
 ```bash
-python3 {skillGroups.common}/skills/check-wiki-doc/scripts/build_dependency_graph.py \
+{python} {skillGroups.common}/skills/check-wiki-doc/scripts/build_dependency_graph.py \
   --arch "<架構文件路徑>" --root "<wikiDir>"
 ```
 

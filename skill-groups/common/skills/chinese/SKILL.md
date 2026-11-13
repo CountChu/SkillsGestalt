@@ -271,11 +271,16 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 
 - **Purpose**: pin down which file is being translated and where its twin goes before any translating starts — a run that guesses writes the twin into another skill's directory, and nothing later in the workflow would notice.
 
-- Run `.venv` first — the Step 1 and Step 3 scripts import `PyYAML`, and `diff_md.py` runs `git`.
+- Find `{python}`, the Python of the `.venv` at the root of the workspace.
+  It is `.venv/bin/python` on macOS and Linux, and `.venv\Scripts\python.exe` on Windows.
+  Run each script of the steps that follow with `{python}`: the Step 1 and Step 3 scripts import `PyYAML`, and `diff_md.py` runs `git`.
+  Each command runs in a new shell, and a new shell does not use the `.venv` that a different command started.
+  If the workspace has no `.venv`, stop.
+  Tell the user to make it, as step 3 of forge-setup.md in the `common` skill group tells.
 
 - Read the workspace config [config.yaml](config.yaml) at the workspace root and resolve:
   - **`skillGroups`**: the group name -> skills-root map — a bare skill name resolves to `{skillGroups[<group>]}\skills\<skill-name>\SKILL.md`, and this skill's own directory is `{skillGroups.common}\skills\chinese\`.
-  - Substitute the resolved values wherever `{skillGroups.common}` or `{skillGroups[<group>]}` appears in the steps below, including in commands.
+  - Substitute the resolved values wherever `{python}`, `{skillGroups.common}` or `{skillGroups[<group>]}` appears in the steps below, including in commands.
   - If `config.yaml` is missing or `skillGroups` is absent, stop and ask the user.
 
 - This skill calls no Azure DevOps API and needs no `ADO_PAT` — it reads and writes local files only.
@@ -323,7 +328,7 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 - Run the script `scan_md.py` with the `--file` and `--keep` arguments.
   - `--file`: the source file resolved in Step 0.
   - `--keep`: the **keep-English list**.
-  - Example: `python {skillGroups.common}\skills\chinese\scripts\scan_md.py --file "skill-groups\common\skills\check-skill\SKILL.md" --keep "{skillGroups.common}\references\tw-keep-english.md"`
+  - Example: `{python} {skillGroups.common}\skills\chinese\scripts\scan_md.py --file "skill-groups\common\skills\check-skill\SKILL.md" --keep "{skillGroups.common}\references\tw-keep-english.md"`
 
 - The script prints its inventory to **stdout** and writes no file:
   1. Whether the file has a frontmatter, whether it parses, and which keys it carries.
@@ -351,7 +356,7 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 - Run the script `diff_md.py` with the `--en` and `--tw` arguments.
   - `--en`: the source file resolved in Step 0.
   - `--tw`: the TW twin path Step 0 derived.
-  - Example: `python {skillGroups.common}\skills\chinese\scripts\diff_md.py --en "skill-groups\common\skills\check-skill\SKILL.md" --tw "skill-groups\common\skills\check-skill\SKILL-tw.md"`
+  - Example: `{python} {skillGroups.common}\skills\chinese\scripts\diff_md.py --en "skill-groups\common\skills\check-skill\SKILL.md" --tw "skill-groups\common\skills\check-skill\SKILL-tw.md"`
 
 - The script reads the **baseline** from git, prints to **stdout** and writes no file:
   1. The shape: line for line, or heading by heading.
@@ -438,7 +443,7 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
   - `--en`: the source file resolved in Step 0.
   - `--tw`: the TW twin beside it.
   - `--keep`: the **keep-English list**.
-  - Example: `python {skillGroups.common}\skills\chinese\scripts\check_parity.py --en "skill-groups\common\skills\check-skill\SKILL.md" --tw "skill-groups\common\skills\check-skill\SKILL-tw.md" --keep "{skillGroups.common}\references\tw-keep-english.md"`
+  - Example: `{python} {skillGroups.common}\skills\chinese\scripts\check_parity.py --en "skill-groups\common\skills\check-skill\SKILL.md" --tw "skill-groups\common\skills\check-skill\SKILL-tw.md" --keep "{skillGroups.common}\references\tw-keep-english.md"`
 
 - The script prints one line per comparison to **stdout** and exits non-zero if any of them fails:
   1. The frontmatter: where the source file has one, both parse, carry the same keys and hold the same `name`, and a `description` the source has is not empty in the twin; where it has none, neither has the twin.
@@ -481,7 +486,7 @@ Each step opens with a **Purpose**: one sentence saying why that step exists as 
 - In a run whose Step 2 updated the twin in place, also run the script `diff_md.py` with the same `--en` and `--tw`, and `--verify`.
   It checks that every line or section outside the **change set** is still byte for byte what the baseline twin holds, and exits `1` when one is not: a `[FAIL]` names a line or section Step 2 should have kept, and `git show <baseline>:<twin path>` prints the baseline twin to restore it from.
   Under `run step 3` no Step 2 ran, so this check is not made.
-  - Example: `python {skillGroups.common}\skills\chinese\scripts\diff_md.py --en "skill-groups\common\skills\check-skill\SKILL.md" --tw "skill-groups\common\skills\check-skill\SKILL-tw.md" --verify`
+  - Example: `{python} {skillGroups.common}\skills\chinese\scripts\diff_md.py --en "skill-groups\common\skills\check-skill\SKILL.md" --tw "skill-groups\common\skills\check-skill\SKILL-tw.md" --verify`
 
 - If either script exits non-zero, report each mismatch with its line, correct the **TW twin**, and re-run this step until it passes.
   **Fix the twin, never the source file.**

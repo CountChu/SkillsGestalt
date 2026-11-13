@@ -45,6 +45,14 @@ Forge 以 chore [follow-gestalt](../../chores/follow-gestalt.md) 處理這裡的
   - [AGENTS-tmp.md](templates/AGENTS-tmp.md) 的指令改成 `gen_config.py`，也說有 `config.shared.yaml` 時不改 `config.yaml`。
   - `gen_agents_md.py` 讀檔時把 CRLF 換成 LF，`core.autocrlf=true` 的 clone 不再印出 `the template has 0 line(s) {AGENTS-local}, not 1`；只有換行不同的 `AGENTS.md`、`CLAUDE.md` 算 PASS。
   - Forge 要做：跑 `python {skillGroups.common}/scripts/gen_config.py`，commit 改了的 `AGENTS.md`。在多台電腦上、路徑不同的 Forge，可以把 `config.yaml` 改寫成 `config.shared.yaml`，寫這台的 `config.local.yaml`，確認產生的 `config.yaml` 除了第一行都和原本的一樣，再把 `config.yaml`、`config.local.yaml` 與 `AGENTS.md` 移出 git，並改自己的 clone、pull、publish chore。
+- **check-skill 又修了 10 個缺陷，check 4 多了準則 4.7，準則 1.12 也比對粗體句與樹**：準則 4.7 判 `SKILL.md` 用了、卻沒有任何一行定義的名稱，包括兩個以上大寫開頭的字組成的名稱，與 [SKILL-tmp.md](templates/SKILL-tmp.md) 的 `# TERMINOLOGY` 給每個 skill 的 term；step 用到時是 issue，只有定義或 MUST FOLLOW 用到時是 recommendation。
+  準則 1.12 要 README 的粗體句與 Files Each Step Uses 的樹一致；check 3 也拿 step 交給 reference 或 script 去做的主張與那個檔案比，3.2 比對每個 step 寫的東西，修法以 `description_chars` 為準；準則 4 的 term 使用要指所定義的東西；check 6 把 step 交給另一個 skill 的讀寫算成那個 step 的，6.3 把 Step 0 給、之後的 step 用到的值算成讀取。
+  `scan_skill.py` 不再把 Python 字串裡跳脫過的反斜線當成 UNC 路徑，script 的註解裡也找 code span，code 裡的大小寫變體不再算成 term 的變體。
+  Forge 要做的：下次以 check-skill 檢查 skill 時，4.7 與 1.12 可能多出 finding，例如 glossary 沒有定義 step 用到的 Working Dir 或 Run Number，或粗體句說某個 step 不執行 script、樹上卻有它執行的程式；照 finding 修。
+- **check-skill 又修了 12 個缺陷，check 1 多了準則 1.17，check 2 也找 macOS 與 Linux 的絕對路徑**：準則 1.17 比對 `# TERMINOLOGY` 的每個 term 與 [SKILL-tmp.md](templates/SKILL-tmp.md) 的定義，意思不同就是 recommendation，只是用字不同不算。
+  `scan_skill.py` 的絕對路徑也包括 `/Users/<name>`、`/home/<name>`、`/private/...`、`/Volumes/...`，以及爬進這些目錄的 `../` 路徑；標籤加了反引號的 term，例如 `run step N`，只在 inline code 裡比對；行數不再多算一行；`update_dashboard.py` 產生的 `vscode://file/` 連結只有一個斜線。
+  準則 1.3 給 CONFIGURATION 裡的定義定為 recommendation；4.1 不再把一個 step 存的 `step_1.yaml` 算成 literal；6.2 說雙邊框由 gen-rsdc-skill 定義，並照 DFD.md 的 Query 例子說明：資料繼續進入 record 的箭頭是藍色，中途經過旗形也一樣，停在 step 或只控制 step 的是黑色。
+  Forge 要做的：下次以 check-skill 檢查 skill 時，1.17 與 2.5、2.7 可能多出 finding，照 finding 修；不用改什麼別的。
 
 ### 2026-11-12
 
@@ -56,6 +64,21 @@ Forge 以 chore [follow-gestalt](../../chores/follow-gestalt.md) 處理這裡的
     - 在 `config.yaml` 加 `cleanCheckpoints`，把別的 skill 還會讀的 `checkpoints\` 資料夾寫進 `keep`；然後跑 `gen_agents_md.py`。
     - 要做這個 chore 的話，照 [chore-rules.md](rules/chore-rules.md) 的「A Chore of a Different Agency」在摘要表加一列 `clean-checkpoints`。
     - 試跑 `python {skillGroups.common}/skills/clean-checkpoints/scripts/clean_checkpoints.py list --run <yymmdd>.<N>`，看 `temp\clean-checkpoints\<yymmdd>.<N>\items.yaml` 的清單是否正確；這個指令不移任何東西。
+- **check-skill 的 check 5 也讀 skill 根目錄裡的 script，與 step 執行的 skill group 共用 script**：以前 check 5 只讀 `<skill>\scripts\` 底下的 script，所以放在 skill 根目錄的 script（例如 imp-home 的 `setup_target.py`），與放在 skill group 的 `scripts\`、由幾個 skill 共用的 script（例如 InvestForge 的 `.claude\scripts\plan_checklist.py`），5.1 到 5.8 都沒有判過。
+  現在 check 5 讀 step 執行的每一支 script：`scripts\` 底下的、直接放在 skill directory 裡的，與 skill group 的 `scripts\` 裡的；改的是 check-skill 的 SKILL.md 的 Step 3，與 README 的 Dataflow 和 Files Each Step Uses。
+  Forge 要做的：下次以 check-skill 檢查 skill 時，這些 script 第一次被 check 5 判，可能多出 finding，check 5 會從 PASS 變成有 issue；照 finding 修，例如共用 script 把選項給的相對路徑當成相對於目前的目錄（5.8）。
+- **check-skill 的準則 5.8 也管選項給的輸入路徑，並分出 recommendation**：skill 說某個路徑相對於 workspace 根目錄、step 執行的 script 卻從目前的目錄取得它時，不只 `--out`，選項給的任何路徑都算，讀的、寫的都算，例如 `--report`、`--checkpoint`、`--app-dir`。
+  寫到錯的地方，或沒有任何提示就讀到不是 skill 要的檔案，是 issue；script 在讀寫任何東西之前就報錯停下，是 recommendation。
+  gen-imp-app 的 `check_owner_skill.py` 照這條改了：相對的 `--skill-dir` 與 `--app-dir` 也從 workspace 根目錄算起，跟 `--out` 一樣。
+  Forge 要做的：自己的 script 從目前的目錄讀取 skill 說相對於根目錄的路徑時，check-skill 的 5.8 會報 issue 或 recommendation；改成從 workspace 根目錄算起。
+- **`common` 的 skill 以 `{python}`，也就是 workspace 根目錄 `.venv` 的 Python，執行 script；[requirements.txt](requirements.txt) 補上 `click`**：check-skill、chinese、compile-skill、gen-skill、gen-rsdc-skill、gen-rsdc-app、gen-imp-app、imp-app、imp-home、check-md-deps、check-wiki-doc 與 ask-note 的 Step 0 改用 [SKILL-tmp.md](templates/SKILL-tmp.md) 的 `{python}` 寫法，step 執行的指令都以 `{python}` 開頭，不再用新的 shell 裡找不到的 `python`；不跑 script 的 write-topic 拿掉了那一行。
+  workspace 根目錄沒有 `.venv` 時，這些 skill 在 Step 0 就停下來，請使用者照 [forge-setup.md](references/forge-setup.md) 第 3 步建立。
+  gen-rsdc-skill 寫出的 skill 也以 `{python} <program>` 執行程式；imp-app 檢查 `python3 --version` 或 `python --version` 有回應即可。
+  compile-skill 編譯出來的 script 用 `click`，以前 requirements.txt 沒有列，現在列了 `click==8.4.2`。
+  Forge 要做的：根目錄要有 `.venv`，並在其中重新執行 `{python} -m pip install -r {skillGroups.common}/requirements.txt`，讓 `click` 也裝上；自己的 skill 若寫「Run `.venv` first」後直接用 `python`，照 SKILL-tmp.md 的 `{python}` 寫法改，check-skill 的 5.5 會報這種寫法。
+- **check-skill 修了自己的 10 個缺陷，check 1 多了準則 1.16，check 5 也判 reference 給 agent 執行的指令**：`scan_skill.py` 把複數形與只差字首大小寫的寫法算成用了那個 term，只把定義開頭的檔名當成 term 指的檔案，列出它不進去的目錄，把粗體名稱或 code span 後面的 `Step N` 當成那份文件的 step 而不算 forward reference，並到 skill group 的 `scripts\` 找 step 指名的 script。
+  準則 1.16 判 `leftovers` 裡的失效連結、找不到的 script 與沒有 step 指名的 script；4.3 不再把字首大小寫不同與複數算成變體；6.3 的缺口不包括 step 讀回自己寫的東西，也不包括只在對話中顯示的東西；1.8 給的指令改成 `{python} {skillGroups.common}/scripts/placeholders.py convert <file>`。
+  Forge 要做的：下次以 check-skill 檢查 skill 時，1.16 與 check 5 讀到的 reference 指令可能多出 finding，照 finding 修；4.3 原本只因字首大小寫報的 item 不會再出現。
 
 ### 2026-11-10
 

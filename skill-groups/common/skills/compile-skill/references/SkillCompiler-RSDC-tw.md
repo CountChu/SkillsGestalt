@@ -491,6 +491,7 @@ skill compiler 呈現的是資料，不是報告：透過 introspection metadata
 Source Scanner 與 Contract Checker 讀取的每一個位置也都以參數傳入，兩者都不假設自己身在何處。
 從自己所在之處去找輸入的程式，一旦放到別處就會停擺。
 Compiled Script 是唯一的例外，而且只限於它的 Skill Source：它在自己旁邊找 Skill Source，因為它就是在那裡被編譯的；workspace 則從工作目錄找到。
+Source Scanner 或 Contract Checker 收到的相對位置，從 workspace 的根目錄讀起——也就是從工作目錄往上、最近一個 `config.yaml` 有 `skillGroups` 的目錄——因為執行它們的 step 都從那個根目錄指名每一個路徑；絕對位置則照給的讀取，開頭的 `~` 先展開。
 
 下列兩條規則對三支程式都成立：
 

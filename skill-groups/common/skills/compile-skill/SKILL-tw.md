@@ -1,7 +1,7 @@
 ---
 name: compile-skill
 description: >-
-  把一個 skill 的 SKILL.md workflow 編譯成 skill.py——一個放在它旁邊的無頭 Python CLI——讓程式做得到的 step 不必經過 LLM 就能執行，不再消耗 token。它沒有自己的設計：編譯出的 script 必須是什麼樣子，由它 references 中的 compile SOP 決定——每個 step 如何分類（deterministic 或 cognitive、automated 或 interactive）、透過 --step 依 identifier 執行單一 step 的 click CLI、供 caller 讀取的隱藏 --export-schema JSON，以及 cognitive step 不呼叫 LLM、改以 handoff 結束時所用的 exit code。不是 skills/<name>/SKILL.md、或其 Workflow 底下沒有 Step N 標題的來源會被拒絕，且什麼都不寫。來源絕不被編輯；除了這次執行的 run record，skill.py 是唯一的輸出——沒有 MD report，也沒有 step file。每次執行都以實際執行該 script 作結：先檢查其 source fingerprint、schema、handoff 與無頭規則，再以 side-effect-free input 逐一執行每個 deterministic step。觸發語：「compile this skill」、「make skill.py」、「run a skill without the agent」。
+  把一個 skill 的 SKILL.md workflow 編譯成 skill.py——一個放在它旁邊的無頭 Python CLI——讓程式做得到的 step 不必經過 LLM 就能執行，不再消耗 token。編譯出的 script 必須是什麼樣子，由它 references 中的 compile SOP 決定——每個 step 如何分類（deterministic 或 cognitive、automated 或 interactive）、透過 --step 依 identifier 執行單一 step 的 click CLI、供 caller 讀取的隱藏 --export-schema JSON，以及 cognitive step 不呼叫 LLM、改以 handoff 結束時所用的 exit code。不是 skills/<name>/SKILL.md、或其 Workflow 底下沒有 Step N 標題的來源會被拒絕，且不寫 skill.py。來源絕不被編輯；skill.py 與這次執行的 run record 是它僅有的輸出——它自己不寫 MD report，也不寫 step file。接著它會執行 skill.py：先檢查其 source fingerprint、schema、handoff 與無頭規則，再以 side-effect-free input 逐一執行每個 deterministic step，那些執行會寫出該 step 所寫的東西。觸發語：「compile this skill」、「make skill.py」、「run a skill without the agent」。
 ---
 
 本文件為 [SKILL.md](skill-groups/common/skills/compile-skill/SKILL.md) 的繁體中文版。
@@ -16,11 +16,9 @@ description: >-
 - **MD report** — skill 寫進 wiki vault 的 Markdown 報告，放在以該 skill 命名的資料夾中，於結果各節之上帶有標準表頭（Skill、Run record、Created、Updated、Prompt）。
 - **Run Number** — 一次執行的編號 `{yymmdd}.{N}`。
   `{N}` 是本 skill 在該日期的執行序號，從 1 開始。
-- **Step file** — skill 每次執行之 checkpoint 目錄中的 `step_{N}.yaml`，step 把輸出寫在其中，讓後續 step 讀回而不必重算。
+- **Step file** — 一次執行之 Working Dir 中的 `step_{N}.yaml`，step 把輸出寫在其中，讓後續 step 讀回而不必重算。
 - **Run record** — 記下一次執行每個 step 的時間與模型的檔案。
   skill 效率的分析會用到它。
-- **no forward-reference** — 一個 step 絕不可依賴排在它之後的 step 的規則。
-  為了控制流程而指名後面的 step 並不違反它；借用那個 step 的輸出才違反。
 
 # DEDICATED TERMINOLOGY
 
@@ -73,15 +71,11 @@ description: >-
 # MUST FOLLOW
 
 - 必須逐步執行 workflow，並顯示每個 step 的編號。
-- 每個 step 必須自足。
-  **No forward-reference。**
-- 程式能以 deterministic 方式完成的 step 必須以 script 執行。
-  需要閱讀、判斷或摘要的 step **不可**寫成 script——請寫成自然語言指示，讓 agent 直接執行。
 - **遵守 `run step N` 選擇子**：執行 Step N，然後停止；絕不執行更後面的 step。
   本 skill 不寫 step file，因此每個 step 都從 prompt 與磁碟上的檔案重新推導自己的輸入——它做得到，因為 **Skill Source** 與 **Compiled Script** 是任何 step 唯一需要的狀態。
 - **本 skill 既不產出 MD report，也不產出 step file。**
   除了這次執行的 run record，**Compiled Script** 是它唯一的輸出。
-- 一次執行的 Run Number、run record 與 Working Dir，遵守 [run-data-rules.md](skill-groups/common/rules/run-data-rules.md)。
+- 一次執行的 Run Number 與 run record，遵守 [run-data-rules.md](skill-groups/common/rules/run-data-rules.md)；本 skill 不寫 working data，所以它的執行沒有 Working Dir。
   在最後一個 step 之前就停止的執行，照它所說，在 run record 寫入 `result: stopped` 與 `stopped_at`。
 - **每一支程式都由本文件執行；compile SOP 不執行任何程式，也不提任何程式或本 skill。**
   下方的 step 執行 **Source Scanner**、**Contract Checker** 或 **Compiled Script**，並把它們印出與寫出的內容，交給它所指名的 **compile SOP** step，作為該 step 的輸入。
@@ -134,13 +128,17 @@ Compile the report-suts-usage skill into skill.py so I can run it directly.
 
 ## Step 0 - Warmup
 
-- 先執行 `.venv`。
-  Step 1 與 Step 3 的 script 會 import `PyYAML`，而 **Compiled Script** 需要 **compile SOP** Step 2 *Write the Compiled Script* 所指定的直譯器版本與套件。
-  逐一確認它們都在，例如用 `python --version` 與 `python -c "import click, yaml"`；任何一項缺少就停止，並指出缺了什麼——絕不為一個 script 無法在其上執行的工具鏈編譯。
+- 找出 `{python}`，也就是 workspace 根目錄的 `.venv` 裡的 Python。
+  macOS 與 Linux 上它是 `.venv/bin/python`，Windows 上是 `.venv\Scripts\python.exe`。
+  後面 step 的每個 script 都以 `{python}` 執行：Step 1 與 Step 3 的 script 會 import `PyYAML`，而 **Compiled Script** 需要 **compile SOP** Step 2 *Write the Compiled Script* 所指定的直譯器版本與套件。
+  逐一確認它們都在，例如用 `{python} --version` 與 `{python} -c "import click, yaml"`；任何一項缺少就停止，並指出缺了什麼——絕不為一個 script 無法在其上執行的工具鏈編譯。
+  每個指令都在新的 shell 裡執行，新的 shell 不會沿用另一個指令啟動的 `.venv`。
+  workspace 沒有 `.venv` 時，停下來。
+  請使用者照 `common` skill group 的 forge-setup.md 第 3 步建立它。
 
 - 讀取 workspace 根目錄的 workspace config [config.yaml](config.yaml) 並解析：
   - **`skillGroups`**：群組名稱 -> skills 根目錄的對應——裸的 skill 名稱解析為 `{skillGroups[<group>]}\skills\<skill-name>\SKILL.md`，而本 skill 自己的目錄是 `{skillGroups.common}\skills\compile-skill\`。
-  - 在下方各 step 中凡出現 `{skillGroups.common}` 或 `{skillGroups[<group>]}` 之處（包含指令中），都代入解析後的值。
+  - 在下方各 step 中凡出現 `{python}`、`{skillGroups.common}` 或 `{skillGroups[<group>]}` 之處（包含指令中），都代入解析後的值。
   - 若 `config.yaml` 不存在或缺少 `skillGroups`，停止並詢問使用者。
 
 - 本 skill 不呼叫任何屬於自己的 API，也不需要憑證。
@@ -175,7 +173,7 @@ Compile the report-suts-usage skill into skill.py so I can run it directly.
   - 若它已存在，說明這點——但先不詢問：要不要覆寫它，是即將寫入它的那一刻才該問的問題，不該在來源都還沒經過判定之前就問。
   - 若它不存在，`run step 3` 或 `run step 4` 就沒有東西可檢查——說明這點並停止。
 
-- 若 **Skill Source** 旁邊有一個 `main.py`，說明這點並保留它——本 skill 只寫 `skill.py`，要不要移除另一個執行器由使用者決定。
+- 若 **Skill Source** 旁邊有一個 `main.py`，說明這點並保留它——本 skill 只寫 **Compiled Script**，要不要移除另一個執行器由使用者決定。
 
 - 顯示解析後的 **Skill Source** 路徑與 **Compiled Script** 路徑。
 
@@ -185,7 +183,7 @@ Compile the report-suts-usage skill into skill.py so I can run it directly.
 ## Step 1 - Validate the Skill Source
 
 - 對 Step 0 解析出的 **Skill Source** 執行 **Source Scanner**，也就是 `scan_source.py`。
-  - 範例：`python {skillGroups.common}/skills/compile-skill/scripts/scan_source.py --file "{skillGroups.common}/skills/chinese/SKILL.md"`
+  - 範例：`{python} {skillGroups.common}/skills/compile-skill/scripts/scan_source.py --file "{skillGroups.common}/skills/chinese/SKILL.md"`
 
 - 依 exit code 處置：
   - `0`，valid：繼續，並留下它印出的 **step inventory** 與 **source fingerprint**。
@@ -207,7 +205,7 @@ Compile the report-suts-usage skill into skill.py so I can run it directly.
 
 - 做 **compile SOP** Step 1 *Classify the Step Actions*，交給它 **Skill Source**、**step inventory**，重新編譯時再加上既有 **Compiled Script** 的 docstring，並為使用者做到下列兩點：
   - 把它的分類呈現為一張 **Classification table**，欄位為 **Step identifier**、**Title**、**Step Action type**、**Arguments**、**Program**——它所呼叫的程式，或它沒有呼叫程式時使用者的決定——與 **Why**——用一行說明是什麼決定了該 type。
-    表中 cognitive 的那幾列就是 **handoff steps**：這次執行不會編譯的 step。
+    表中 cognitive 的那幾列就是 **handoff steps**。
   - 把它的每一個 core work 或 chore 問題，以選單向使用者提出：每個 step 一個問題，引用該 step 做什麼，提供下列三個選項，推薦其中一個並說明理由——重新編譯時，推薦既有 **Compiled Script** 的 docstring 所記錄的決定：
     1. **Chore**——本 skill 把它寫進 **Compiled Script**。
     2. **Core work**——這次執行停止。
@@ -226,7 +224,7 @@ Compile the report-suts-usage skill into skill.py so I can run it directly.
 ## Step 3 - Check the Script Contracts
 
 - 對 **Skill Source** 與 **Compiled Script** 執行 **Contract Checker**，也就是 `check_compiled.py`。
-  - 範例：`python {skillGroups.common}/skills/compile-skill/scripts/check_compiled.py --source "{skillGroups.common}/skills/chinese/SKILL.md" --script "{skillGroups.common}/skills/chinese/skill.py"`
+  - 範例：`{python} {skillGroups.common}/skills/compile-skill/scripts/check_compiled.py --source "{skillGroups.common}/skills/chinese/SKILL.md" --script "{skillGroups.common}/skills/chinese/skill.py"`
   - 它只在系統的暫存目錄、也就是 workspace 之外執行 script，因為驗證執行不可找到 workspace 的 `config.yaml`，這是 run-data-rules.md 對隔離測試所允許的；結束時會移除該目錄，不執行任何 deterministic **Step Action** 的實際工作：那由 Step 4 證明。
 
 - 依 exit code 處置：
@@ -246,18 +244,18 @@ Compile the report-suts-usage skill into skill.py so I can run it directly.
 - 把這個 step 加進 run record。
 
 
-## Step 4 - Prove the Deterministic Steps
+## Step 4 - Prove the Deterministic Step Actions
 
 - 以 `--export-schema` 執行磁碟上的 **Compiled Script**，把它印出的 **Step Action** 清單連同 **Skill Source** 交給 **compile SOP** Step 4 *Prove the Steps*：它為每個 deterministic **Step Action** 選一個 **side-effect-free input**，或說明該 step 為何不執行。
-  - 範例：`python {skillGroups.common}/skills/chinese/skill.py --export-schema`
+  - 範例：`{python} {skillGroups.common}/skills/chinese/skill.py --export-schema`
 
-- 照它說的方式，以它選的輸入執行它選定的每個 step：`python <Compiled Script> --step <id>`，再加上那些參數。
+- 照它說的方式，以它選的輸入執行它選定的每個 step：`{python} <Compiled Script> --step <id>`，再加上那些參數。
   把每次執行的 exit code、印出的內容與寫出的東西，交回 **compile SOP** Step 4 *Prove the Steps* 判斷。
 
 - 它判定差異出在 script 時，以那項差異作為輸入做 **compile SOP** Step 3 *Correct the Script*，重做 Step 3，再重做本 step。
 
 - 顯示：
-  - 執行單一 **Step Action** 的指令：`python <Compiled Script> --step <id>`，再加上該 step 宣告的參數。
+  - 執行單一 **Step Action** 的指令：`{python} <Compiled Script> --step <id>`，再加上該 step 宣告的參數。
   - 一張 **Result table**，欄位為 **Step identifier**、**Step Action type** 與 **Result**——`passed` 並附上它產生的東西、`not run` 並附上原因，或對 **handoff step** 標 `handoff`，並指名使用者或 agent 必須在該處執行的來源 step。
 
 - 把這個 step 加進 run record，並寫入 `result: completed`，因為這是最後一個 step。

@@ -1,6 +1,6 @@
 ---
 name: gen-skill
-description: Creates a new skill from the SKILL and README templates, step by step - it parses the skill name and description from the prompt, asks which outputs the new skill produces, which Working Dir it uses and whether it gets 繁體中文 twins, copies the SKILL template into the chosen skillGroups root and generates the workflow by replacing every placeholder, and creates a placeholder for any script or reference file that workflow needs. It then writes the skill's README.md from the README template - the Dataflow, the Purpose of each step, the files each step uses, what changes together, and the files its header quote declares, whose fingerprints depends_on.py records. An existing skill of the same name is overwritten only once the user confirms. When the user asked for twins, it has the chinese skill write SKILL-tw.md and README-tw.md rather than translating anything itself.
+description: Creates a new skill from the SKILL and README templates, step by step - it parses the skill name and description from the prompt, asks which outputs the new skill produces, which Working Dir it uses and whether it gets 繁體中文 twins, copies the SKILL template into the chosen skillGroups root and generates the workflow it infers from the conversation above the prompt by replacing every placeholder, and creates a stub for any script or reference file that workflow needs. It then writes the skill's README.md from the README template - the Dataflow, the Purpose of each step, the files each step uses, what changes together, and the files its header quote declares, whose fingerprints depends_on.py records. An existing skill of the same name is overwritten only once the user confirms. When the user asked for twins, the chinese skill writes SKILL-tw.md and README-tw.md, may add a term to the shared keep-English list, and commits the twins on the user's yes. Every run writes its run record.
 ---
 
 # TERMINOLOGY
@@ -63,7 +63,7 @@ The last outputs, which a person, a different skill or a subsequent analysis rea
   Every step feeds the next and none of them is expensive, so there is nothing worth resuming into.
   Never invent a step selector for it.
 - **This skill produces neither an MD report nor step files.**
-  Its output is the **new skill directory**: the `SKILL.md` Step 2 copies and Step 3 fills in, any `scripts\` or `references\` placeholder file Step 4 creates, the `README.md` Step 5 writes, and the **TW twins** when the user asked for them in Step 1.
+  Its output is the **new skill directory**: the `SKILL.md` Step 2 copies and Step 3 fills in, any `scripts\` or `references\` stub file Step 4 creates, the `README.md` Step 5 writes, and the **TW twins** when the user asked for them in Step 1.
   Beside it, every run writes its own **Run record**.
 - Obey [run-data-rules.md](skill-groups/common/rules/run-data-rules.md) for the Run Number, the run record and the Working Dir of a run.
   A run that stops before its last step writes `result: stopped` and `stopped_at` in the run record, as it tells.
@@ -106,6 +106,13 @@ https://dev.azure.com/contoso/Firmware/_build/results?buildId=1234500&view=resul
 # Workflow
 
 ## Step 0 - Warmup
+
+- Find `{python}`, the Python of the `.venv` at the root of the workspace.
+  It is `.venv/bin/python` on macOS and Linux, and `.venv\Scripts\python.exe` on Windows.
+  Run each script of the steps that follow with `{python}`: the **Dependency Checker** needs `PyYAML`.
+  Each command runs in a new shell, and a new shell does not use the `.venv` that a different command started.
+  If the workspace has no `.venv`, stop.
+  Tell the user to make it, as step 3 of forge-setup.md in the `common` skill group tells.
 
 - Read the workspace config [config.yaml](config.yaml) at the workspace root and resolve:
   - **`skillGroups`**: the group name -> skills-root path map (e.g. `common` / `dedi` / `external`).
@@ -173,7 +180,7 @@ https://dev.azure.com/contoso/Firmware/_build/results?buildId=1234500&view=resul
 - Add this step to the run record.
 
 
-## Step 2 - Copy Template
+## Step 2 - Copy the SKILL template
 
 - Copy the **SKILL template** to the **new skill directory**'s `SKILL.md`, and display the destination path.
 
@@ -207,7 +214,7 @@ https://dev.azure.com/contoso/Firmware/_build/results?buildId=1234500&view=resul
   - Keep the run-data-rules line and the display-the-paths line in every skill, because every skill writes a run record; without an MD report, the paths line shows only the run record.
 
 - Edit Step 0 - Warmup:
-  - Remove the `.venv` line if the skill does not need a virtual environment.
+  - Remove the `{python}` bullet if no step of the skill runs a script.
   - In the `config.yaml` bullet, keep only the keys the skill actually needs (drop `wikiDir` when Step 1 said no MD report).
   - Remove the `ADO_PAT` resolution and validation bullets if the skill does not call Azure DevOps.
   - Remove the scripts/files check section, or list the skill's scripts in place of `{SCRIPT_PATH_1}`.
@@ -226,8 +233,8 @@ https://dev.azure.com/contoso/Firmware/_build/results?buildId=1234500&view=resul
 
 ## Step 4 - Create supporting files
 
-- If any step written in Step 3 runs a script, create a placeholder script file for it under the **new skill directory**'s `scripts\`.
-- If any step written in Step 3 needs a reference template, create a placeholder file for it under the **new skill directory**'s `references\`.
+- If any step written in Step 3 runs a script, create a stub script file for it under the **new skill directory**'s `scripts\`.
+- If any step written in Step 3 needs a reference template, create a stub file for it under the **new skill directory**'s `references\`.
 - Display the list of created files.
 
 - Add this step to the run record.
@@ -268,7 +275,7 @@ https://dev.azure.com/contoso/Firmware/_build/results?buildId=1234500&view=resul
 - Leave no **placeholder** behind — before finishing, scan the file for a capital letter right after `{`; only `{PLACEHOLDER}` may remain.
 
 - Record the header quote with the **Dependency Checker**, which writes the date and the fingerprint after each line:
-  - Example: `python {skillGroups.common}\scripts\depends_on.py record "{skillGroups[<group>]}\skills\<skill-name>\README.md"`
+  - Example: `{python} {skillGroups.common}/scripts/depends_on.py record "<new skill directory>/README.md"`, with the **new skill directory** as an absolute path: the script reads a relative path from the current directory, not from the workspace root.
   - It exits `2` when a line names no file: correct that link, and record again.
 
 - Display the `README.md` path as a clickable Markdown link.
@@ -280,8 +287,8 @@ https://dev.azure.com/contoso/Firmware/_build/results?buildId=1234500&view=resul
 
 - If Step 1's answer was `no`, say that no twin was written, and go on to the last two items of this step.
 
-- If it was `yes`, run the `chinese` skill against the **new skill directory**'s `SKILL.md`, then against its `README.md`, handing it each path — e.g. `/chinese {skillGroups[<group>]}\skills\<skill-name>\SKILL.md`.
-  Each run writes one of the **TW twins** beside its source, keeps every heading, inline-code span, link target and placeholder token in English — the `README.md`'s header quote among them — and ends with its own parity check; the run on `SKILL.md` also adds the pairing line under the twin's frontmatter.
+- If it was `yes`, run the `chinese` skill against the **new skill directory**'s `SKILL.md`, then against its `README.md`, handing it each path — e.g. `/chinese {skillGroups[<group>]}/skills/<skill-name>/SKILL.md`.
+  Each run writes one of the **TW twins** beside its source, keeps every heading, inline-code span, link target and placeholder token in English — the `README.md`'s header quote among them — and ends with its own parity check, then offers to commit the twin with its source, which it does only on the user's yes, and it may add a term to the keep-English list; the run on `SKILL.md` also adds the pairing line under the twin's frontmatter.
 
 - Do not translate either file here, and do not edit the generated `SKILL.md` or `README.md` while doing it — the `chinese` skill treats its source as read-only.
 

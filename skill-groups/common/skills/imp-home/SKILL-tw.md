@@ -298,7 +298,12 @@ Step 4 同時承載兩半，是因為它們是關於同一個執行中頁面的�
 
 - **Purpose**：定案正在處理的是哪一個 **target**、套用的是哪一個 **command**，以及 **lifecycle** 是否允許它——這道閘門必須在寫出任何東西之前執行，因為在那之後就沒有東西可以拒絕了。
 
-- 先執行 `.venv`——**setup tool** 需要 `PyYAML`。
+- 找出 `{python}`，也就是 workspace 根目錄的 `.venv` 裡的 Python。
+  macOS 與 Linux 上它是 `.venv/bin/python`，Windows 上是 `.venv\Scripts\python.exe`。
+  後面 step 的每個 script 都以 `{python}` 執行：**setup tool** 需要 `PyYAML`。
+  每個指令都在新的 shell 裡執行，新的 shell 不會沿用另一個指令啟動的 `.venv`。
+  workspace 沒有 `.venv` 時，停下來。
+  請使用者照 `common` skill group 的 forge-setup.md 第 3 步建立它。
   app 本身完全不需要 Python。
   **Node** 必須在 `PATH` 上；確認 `node --version` 有回應。
   沒有任何東西需要 `npm install`。
@@ -307,7 +312,7 @@ Step 4 同時承載兩半，是因為它們是關於同一個執行中頁面的�
   - **`wikiDir`**：MD report 的根目錄——這個 skill 的報告放在 `{wikiDir}\imp-home\` 底下。
   - **`vaultName`**：`wikiDir` 的最後一段路徑（例如 `MyVault`）——用來組出 `obsidian://` 連結的 Obsidian vault 名稱。
   - **`skillGroups`**：群組名稱 -> skills 根目錄的對應表——這個 skill 自己的目錄是 `{skillGroups.common}\skills\imp-home\`。
-  - 在底下的步驟裡，凡是出現 `{wikiDir}`、`{vaultName}` 或 `{skillGroups.common}` 的地方都代入解析出來的值，包含出現在指令裡的。
+  - 在底下的步驟裡，凡是出現 `{python}`、`{wikiDir}`、`{vaultName}` 或 `{skillGroups.common}` 的地方都代入解析出來的值，包含出現在指令裡的。
   - 如果 `config.yaml` 不存在、或缺了某個需要的鍵，就停下來問使用者。
 
 - 依 run-data-rules.md 所說取得 Run Number，並寫出這次執行的 run record。
@@ -383,7 +388,7 @@ Step 4 同時承載兩半，是因為它們是關於同一個執行中頁面的�
 - 從 `step_0.yaml`，把 **target**、**hub name**、**seed entry** 與已解析的 **link list** 讀回來。
 
 - **執行 setup tool** 來寫出 **target frame**：
-  - 例如：`python {skillGroups.common}\skills\imp-home\setup_target.py --hub {hub name} --target {target}`
+  - 例如：`{python} {skillGroups.common}\skills\imp-home\setup_target.py --hub {hub name} --target {target}`
   - 它會建立 **target** 與它的 `public\`，並寫出 **app config**、`start.cmd`、`README.txt`，以及 **phase** 為 `setup` 的 **lifecycle record**。
   - **它不寫 `server.js`。**
     一個框架不是一個 app；把 app 做出來是 **gen** 的事。

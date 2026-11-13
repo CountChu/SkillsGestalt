@@ -25,7 +25,7 @@ Each check carries a number, and each of its criteria is addressed as `<check>.<
   Judge the `body` region only: a literal path or a plain-prose phrase in `frontmatter` or `prompt_examples` is written without the config or the glossary in view and is intentional.
   The one exception is a check whose subject *is* the frontmatter — `Description accuracy` reads the `description` field itself.
 - **A fact from outside `SKILL.md` carries no region.**
-  It carries its `file`, its `kind` (`script`, `reference`, `twin`, `skill config`, `doc`, `other`) and the `backticked` / `fenced` / `commented` flags instead, and those are what say whether the path is being *used* or merely *shown*.
+  It carries its `file`, its `kind` (`script`, `reference`, `template`, `twin`, `skill config`, `doc`, `other`) and the `backticked` / `fenced` / `commented` flags instead, and those are what say whether the path is being *used* or merely *shown*.
   The `readme_shape` and `dataflow` facts are of the skill's `README.md`: their line numbers are lines of that file, and a finding against one cites `README.md`.
 
 ## 1. Template alignment
@@ -50,6 +50,7 @@ Report a missing section only when the skill plainly needs it.
 3. **Glossary placement** — does `terms_defined_in_configuration` name a term that `# CONFIGURATION` defines rather than merely gives a path for?
    `# CONFIGURATION` carries concrete values; the glossary owns definitions.
    A `- **X** — <path>` line is correct there; a `- **X** — <what X means>` line belongs in `# TERMINOLOGY` or `# DEDICATED TERMINOLOGY`.
+   Such a definition is a recommendation: the skill runs the same, but the glossary owns definitions, and a second one drifts from the first.
    `# CONFIGURATION` has at most three groups, in the template's order: the inputs and tools the run reads or runs, the working data of a run, and the last outputs; a line in the wrong group, such as a template among the outputs, is a recommendation.
    The Working Dir lines of the working-data group are criterion 15's to judge.
 4. **MUST FOLLOW contract** — does it declare the step-by-step rule, its `run step N` rule — how the selector behaves, or an explicit statement that the skill has none — and its output contract (MD report / step files, or an explicit statement that it produces neither)?
@@ -60,7 +61,7 @@ Report a missing section only when the skill plainly needs it.
    Judge each entry in `forward_references` against what the reference does: naming a later step to route control flow (`skip ahead when Step N found nothing`) is allowed, borrowing a later step's output is an issue.
 8. **Leftover placeholders** — is any `{PLACEHOLDER}` token still present, in `SKILL.md` or, read from `readme_shape.placeholder_tokens`, in `README.md`, or any placeholder in a retired form, read from `old_placeholder_tokens` in `leftovers` and in `readme_shape`?
    A token left behind from a template is always an issue; a token the step is *showing* rather than using is not — read `backticked` and `fenced`, which say whether it sits in an inline-code span or a fenced block.
-   A placeholder in a retired form is always an issue, shown or not: the fix is `python {skillGroups.common}\scripts\placeholders.py convert <file>`, which converts it in the file and its twin.
+   A placeholder in a retired form is always an issue, shown or not: the fix is `{python} {skillGroups.common}/scripts/placeholders.py convert <file>`, which converts it in the file and its twin.
 9. **Prompt Examples** — is there at least one `/`-invocation example, does one show `run step N` where the skill honours it, and does the workflow actually parse what the examples show?
 10. **Step Purposes** — does `README.md`'s `## Step Purposes` list every `## Step N` of `SKILL.md`, named exactly as its heading and in its order, each with its Purpose indented beneath?
     Read `readme_shape.step_purposes`: `steps_missing`, `items_not_steps`, `items_without_purpose` and `order_ok`.
@@ -70,9 +71,11 @@ Report a missing section only when the skill plainly needs it.
     Read `readme_shape.readme_content_in_skill_md`: `found` and `links_to_readme`.
     Each is an issue: every run loads the whole `SKILL.md`, a second copy beside the one in `README.md` drifts from it, and a link leads a run into a file that holds nothing a run needs.
     The fix moves the content into `README.md`, or deletes it when `README.md` already holds it.
-12. **Files Each Step Uses** — does `README.md`'s `## Files Each Step Uses` answer the scripted-versus-not rule once, in a bold sentence, and name every step exactly as its heading in its tree?
-    Read `readme_shape.files_each_step_uses`: `answers_scripted_rule`, `steps_missing` and `items_not_steps`.
+12. **Files Each Step Uses** — does `README.md`'s `## Files Each Step Uses` answer the scripted-versus-not rule once, in a bold sentence that agrees with its tree, and name every step exactly as its heading in its tree?
+    Read `readme_shape.files_each_step_uses`: `answers_scripted_rule`, `scripted_rule`, `steps_missing`, `items_not_steps`, and the `runs` of each of its `steps` — the programs the step itself runs, not those a script it runs starts.
     A step left out or misnamed is an issue: a reader matching the tree to the Workflow either cannot find the step or finds a different one.
+    A step that the sentence says runs no script while its `runs` lines name one is an issue, and so is the reverse: the reader is told something false about what the step runs.
+    A program that the section's prose sets apart is no disagreement — a script a step runs only to record the run or to mark the dashboard — and neither is another skill a step hands its work to.
     A missing answer is a recommendation, since the steps still say what each one runs.
 13. **Tracked dependencies** — is every file that `README.md`'s header quote declares still as it was when it was recorded?
     Read `readme_shape.header_quote`: each entry carries the status `depends_on.py check` gives it.
@@ -89,6 +92,16 @@ Report a missing section only when the skill plainly needs it.
     A generic `Temp Dir` or `Checkpoint Dir` in the body after `# CONFIGURATION` is a recommendation: the fix is `Working Dir`, and a full path to a file in it, such as `checkpoints\<skill>\{yymmdd}.{N}\step_3.yaml`, becomes `step_3.yaml` in the Working Dir.
     A name the skill only *shows* (`backticked` or `fenced`), or one that names the two kinds where they are the subject, as when a skill asks a writer to select one, is not a finding; a command example may keep a concrete path that a script needs.
     A skill that writes no working data has no Working Dir line, and that is not a finding.
+16. **Leftover links and scripts** — does every `skill-groups` link of `SKILL.md` resolve, does every script that `SKILL.md` names exist, and does `SKILL.md` name every script of the skill?
+    Read `leftovers`: `broken_github_links`, `scripts_named_but_missing` and `scripts_on_disk_not_named`.
+    A link that resolves to no file is an issue: a run that follows it finds nothing.
+    A named script that is missing is an issue when a step runs it from this skill; a name that a step gives as a file of a different skill, of the skill a run works on, or of what the run writes — such as the `skill.py` that compile-skill writes — is not a finding.
+    A script of the skill that `SKILL.md` never names is a recommendation, unless a script that a step runs imports it: no step runs it, so it is left over, or a step lost its command.
+17. **Shared terms** — does each term of `# TERMINOLOGY` mean what the SKILL template defines it to mean?
+    Read `terminology.shared_terms`: each term with its definition, and, when the template defines it, the template's (`template_text`) and whether the two have the same words (`same_words`).
+    The template's `# TERMINOLOGY` holds the terms that mean the same thing in every skill, so a definition that says something else is a recommendation: the term then means one thing in this skill and another in the rest.
+    Other words for the same meaning are not a finding, and neither is the skill's own name or a value of its own in place of a placeholder of the template.
+    A term the template does not define belongs in `# DEDICATED TERMINOLOGY`, a recommendation.
 
 ## 2. Config conformance
 
@@ -109,9 +122,9 @@ A path baked into a script breaks exactly as one baked into a step does, and not
    A placeholder that is never resolved is an issue.
 4. **`skillGroups` resolution** — does the skill reach its own directory, or another skill's, through `{skillGroups.<group>}` rather than a literal `skill-groups\...`?
    A hardcoded `skill-groups\` path breaks as soon as the skill moves between groups.
-5. **Absolute paths** — is a machine-specific absolute path (e.g. `C:\Users\...`) baked into the SKILL.md where a config key or a workspace-relative path belongs?
+5. **Absolute paths** — is a machine-specific absolute path (e.g. `C:\Users\...`, `/Users/<name>/...`) baked into the SKILL.md where a config key or a workspace-relative path belongs?
 6. **Group placement** — does the skill sit under the `skillGroups` root its content implies: project-agnostic in `common`, project-specific in `dedi`, imported third-party in `external`?
-7. **Hardcoded paths outside `SKILL.md`** — does any script, reference, twin or other file under the skill directory bake in a literal wiki path, a machine-specific absolute path (`C:\Users\...`, `D:\...`), a UNC share (`\\host\share\...`) or a literal `skill-groups\` path?
+7. **Hardcoded paths outside `SKILL.md`** — does any script, reference, twin or other file under the skill directory bake in a literal wiki path, a machine-specific absolute path (`C:\Users\...`, `D:\...`, `/Users/<name>/...`, `/home/<name>/...`, or a `../` path that climbs into one), a UNC share (`\\host\share\...`) or a literal `skill-groups\` path?
    Read `dir_config_shape.hardcoded_paths`; each fact carries its `file`, `kind` and `line`.
    A path the file **uses** — a default, a constant, a fallback — is an issue: it is invisible from `SKILL.md`, so no other criterion can reach it.
    A path the file merely **shows** is not a finding, which `commented`, `fenced` and `backticked` settle — a usage example in a module docstring, a `--help` string or a fenced block is documentation, and a placeholder host (`\\host\share`) is documentation even where those flags are false.
@@ -127,6 +140,7 @@ A path baked into a script breaks exactly as one baked into a step does, and not
 
 - **The workflow is authoritative.**
   When the description and the steps disagree, it is the description that is wrong — never report the workflow as needing to change to match the description.
+  A claim that a step leaves to a reference or a script it names is judged against that file: the file's work is the step's.
 - Judge **accuracy and coverage, never style**.
   Wording, tone and sentence structure are the author's call, and so is length below the 1024-character limit criterion 1.1 enforces.
   Report a finding only where the description claims something the workflow does not do, or omits something the workflow always does.
@@ -136,11 +150,12 @@ A path baked into a script breaks exactly as one baked into a step does, and not
 - **A fix must never push the description over that limit.**
   Naming an unstated output or action lengthens it, and a description over the limit costs what criterion 1.1 says — a worse defect than the omission it fixes.
   When there is no room, the fix names what to cut to make room.
+  Its length now is `template_shape.frontmatter.description_chars`; count no characters by hand.
 
 1. **Overstated** — does the description claim an input, action or output that no step performs?
    This is an issue: it gets the skill selected for work it cannot do.
 2. **Unstated output** — does the skill always write something the description never names?
-   Compare against every output the MUST FOLLOW contract declares — MD report, step files, run record, data store, HTML page.
+   Compare against what each step writes, not only against the outputs the MUST FOLLOW contract declares — MD report, step files, run record, data store, HTML page: where the contract and the description agree, only the steps show what both leave out.
 3. **Unstated action** — does a step do something material the description omits, such as writing to ADO, connecting to a host, triggering a pipeline, sending mail, or mutating a shared file?
 4. **Stale** — does the description still describe behaviour a step has since changed, such as a renamed output directory or a dropped argument?
 5. **Trigger coverage** — would a user asking in plain language for what this skill does actually match this description?
@@ -148,33 +163,42 @@ A path baked into a script breaks exactly as one baked into a step does, and not
 
 ## 4. Terminology usage
 
-**Why it exists** — it holds the glossary to account: a term is only worth defining if the prose actually uses it, and nothing else in a run compares a definition against its use.
+**Why it exists** — it holds the glossary to account: a term is only worth defining if the prose uses it, in the form the glossary gives and for the thing the glossary defines, a name the steps lean on is only safe once the glossary defines it, and nothing else in a run compares the glossary with the prose.
 
 - Judge prose only.
   A term's lowercase form inside a **data key** (`store_file`, `stored`), a **CLI flag** (`--share-root`), a **user-facing string**, or a **code identifier** is correct as written — never report it.
 - A variant is only a defect when it means the **same thing** as the term.
   Confirm the referent first — the same words can name a different object, and capitalising them would then invert the meaning.
+- A use counts only when it means the thing the glossary defines.
+  `used` lists every line with the term's words, and the same words can name another thing, as "the `common` skill group" names one group where gen-skill's **Skill group** is the key the new skill is written under.
 
-1. **Literal instead of term** — does a section name the raw artefact where a term is defined for it (e.g. `step_1.yaml` where **Step file** is defined)?
+1. **Literal instead of term** — does a section name the raw artefact where a term is defined for it (e.g. `step_{N}.yaml` where **Step file** is defined)?
+   A step that names one file of that kind is not a finding: SKILL-tmp.md has each step save its own `step_1.yaml` or `step_2.yaml` by name.
    The glossary entry that introduces the literal keeps it; every other prose use should be the term.
 2. **Wrong term** — does a section use one term where another is meant (e.g. naming the directory when the thing referred to lives *inside* the file)?
    This is an issue, not style: it misstates the referent.
-3. **Variant spelling** — is a defined term written in a different case or form (`store file` for **Store file**, `launched run` for **Launched run**)?
+3. **Variant spelling** — is a defined term written in a different case or form (`md report` for **MD report**, `checkpoint dir` for **Checkpoint Dir**)?
+   The first letter and a plural are not a variant: a glossary label opens its bullet with a capital, as SKILL-tmp.md writes **Run record**, and running text writes it in lowercase, as SKILL-tmp.md writes the run record.
 4. **Restated definition** — does a section re-explain what a term means instead of using it?
    The glossary owns the definition; a step that repeats it will drift from it.
 5. **Unused term** — is a term defined but never used outside the glossary?
+   Read `unused_terms`, and for every other term confirm that at least one of its uses means the defined thing; a term whose every use names something else is unused too.
    Either the prose should use it, or the term should go.
 6. **Heading consistency** — do table column headers and section names use the terms they refer to?
+7. **Undefined name** — does `SKILL.md` use a name that no line of it defines, in the glossary, under `# CONFIGURATION` or anywhere else?
+   Read `undefined_names`: each name of two or more capitalised words, and each term that SKILL-tmp.md's `# TERMINOLOGY` gives every skill (`template_term`), that the file uses without defining it, with every line that uses it.
+   A name for something the run handles — data a step reads, writes or passes on, a directory, a record — is an issue when a step uses it, and a recommendation when only a definition or `# MUST FOLLOW` does: [skill-writing.md](skill-groups/common/rules/skill-writing.md) gives each noun the steps need one definition in the glossary, and a run that meets an undefined one guesses what it is.
+   A name for nothing the run handles is not a finding: a proper name, such as Simplified Technical English, a heading of another document, or a feature the skill says it lacks, as in "This skill has no `run step N` selector".
 
 ## 5. Cross-platform compatibility
 
 **Why it exists** — a command that works on the author's machine reads identically to one that works everywhere, and nothing else in a run ever executes the commands, so this is the only pass that asks whether they would survive a different shell.
 
-A skill and the tools or commands it and its Python scripts invoke must run on Windows, macOS and Linux — or say which platform they assume.
+A skill and the tools or commands that its steps, its references and its Python scripts invoke must run on Windows, macOS and Linux — or say which platform they assume.
 Its steps must also run on every agent: a step names the action, never a tool that only one agent has ([skill-writing.md](../../../rules/skill-writing.md)).
 
 - Judge commands the skill **invokes**, not commands it merely **shows**.
-  A command in a fenced block or an inline-code span that a step tells the agent to run is in scope; a command quoted as an example of what not to do is not — read `backticked` and `fenced` together with the surrounding prose.
+  A command in a fenced block or an inline-code span that a step, or a reference that a step has the agent follow, tells the agent to run is in scope; a command quoted as an example of what not to do is not — read `backticked` and `fenced` together with the surrounding prose.
 - **A declared platform is not a defect.**
   A skill that states it runs on one platform only — one built on Outlook COM automation or a Windows Scheduled Task says so plainly — keeps its `powershell` and `cmd` commands without a finding.
   Judge the undeclared assumption, never the declared one.
@@ -197,8 +221,10 @@ Its steps must also run on every agent: a step names the action, never a tool th
    A file written through `tempfile`, `os.tmpdir()`, `mkdtemp` or `/tmp` is an issue: a different run, a different agent and the user cannot find these files, and on a failure nobody can see how much of the work the run did.
    A recommendation is a temporary file in `temp\` or `checkpoints\` but not in the Working Dir of a run, such as `temp\{skill}-{what}.py`; a step that runs a script which writes temporary files, but does not give it the Run Number; and a step or a script that removes the Working Dir or a file in it, which the user removes manually.
    The one exception is a test that must not find the files of the workspace, such as its `config.yaml`, and that removes its directory when it stops, also after an error: it is not a finding.
-8. **Paths that follow the current directory or the script's location** — does a script that a step runs take the workspace root, the Working Dir or an `--out` path relative to the current directory, or find the workspace root from its own location, where it should use the root of the workspace the skill runs in: the directory an option of its command names, or else the nearest directory, from the current directory up, whose `config.yaml` has `skillGroups`?
-   It is an issue when a run from a different directory writes its data in the wrong place, for example a new `checkpoints\` beside the current directory.
+8. **Paths that follow the current directory or the script's location** — does a script that a step runs take a path relative to the current directory where the skill gives it relative to the workspace root — the workspace root itself, the Working Dir, or any path that an option names, input or output, such as `--out`, `--report`, `--checkpoint` or `--app-dir` — or find the workspace root from its own location?
+   It should use the root of the workspace the skill runs in: the directory an option of its command names, or else the nearest directory, from the current directory up, whose `config.yaml` has `skillGroups`.
+   It is an issue when a run from a different directory writes its data in the wrong place, for example a new `checkpoints\` beside the current directory, or reads a different file from the one the skill means without saying so.
+   It is a recommendation when the script stops with an error before it reads or writes anything, as with `no SKILL.md at ...`: nothing goes to the wrong place, but the step fails from every other directory.
    It is an issue too when a script finds the root by walking up from its own file — `__file__` in Python, `__dirname` in Node — to a `config.yaml`: a workspace that reads the skill group in place from a different workspace then reads that workspace's `skillGroups` and `wikiDir`, and writes its run records and its Working Dir there.
    A file of the skill or of its skill group that a script finds from its own location, such as the skill's own config, is not a finding: it belongs to the skill group, not to a workspace.
 
@@ -212,6 +238,7 @@ A Dataflow left in `SKILL.md` is criterion 1.11's to report, never this check's.
 
 - **The steps are what runs.**
   Where the diagram and a step disagree about what the step reads or writes, the diagram is what changes — unless the step itself breaks a rule the diagram is read for, such as a record with a second writer, and then the finding is against the step.
+  A step that hands its work to another skill by name reads and writes what that skill does: a read or a write of that skill that the diagram draws is what runs, so it stays, and the step's section need not restate it.
 - **Only what a step reads or writes at run time is an edge.**
   A document a step only cites — a rules file it follows, a section it names — is not data the step reads, and leaving it off the diagram is not a finding.
 - Severity: an **issue** when the diagram states something false or leaves out something that runs — a step, a read, a write, a writer; a **recommendation** when only the notation is off and nothing it states is false — a colour, a line of the legend.
@@ -220,14 +247,17 @@ A Dataflow left in `SKILL.md` is criterion 1.11's to report, never this check's.
    Read `steps_not_drawn` and `processes_not_steps`.
    A step left out or misnamed is an issue: a reader matching the drawing to the Workflow either cannot find the step or finds a different one.
 2. **Shapes and lines** — is the Dataflow drawn as a mermaid flowchart, with a legend beneath it that says what each shape and each kind of line means?
-   Is every node drawn in the shape of its kind, as DFD.md gives them — an external input a parallelogram, one-run data a flag, a record a cylinder, a step a rounded box, or a double-edged box for a step that runs a program of an RSDC system, and a role outside the skill a hexagon?
+   Is every node drawn in the shape of its kind, as DFD.md gives them — an external input a parallelogram, one-run data a flag, a record a cylinder, a step a rounded box, and a role outside the skill a hexagon — or, for a step that runs a program of an RSDC system, a double-edged box, which DFD.md does not give and gen-rsdc-skill draws?
    Is an arrow blue exactly when its data is written into a record or turned into a record's content, and does no solid arrow join two pieces of data directly?
+   Follow the data of each arrow to where it ends: the arrow is blue when the data goes on into a record, also through a flag on the way, as DFD.md's Query does into Search counts, and black when the data stops at the step it reaches or only steers it, as the same Query does at Search.
    Read `mermaid_blocks`, `nodes`, `edges`, `edges_between_data` and `legend_lines`.
    A Dataflow with no diagram is an issue, since there is nothing to read; so is a shape that misstates its node's kind, since the shape is what tells a reader whether the data outlives the run; and so is a solid arrow between two pieces of data, since it draws data moving with no step to move it.
    A colour or a legend that is off is a recommendation.
 3. **Agreement with the steps** — does what the diagram says each step reads and writes match what the step's own section reads and writes at run time?
    Compare each step's section with its arrows.
+   A value that Step 0 gives and a later step uses is a read of that step, also when the step only finds or places a file with it, such as the Run Number or a resolved path: an arrow from the flag that holds the value, or from where Step 0 read it, such as the Workspace configuration, draws that read, and either one is enough.
    A gap either way is an issue: a read the diagram leaves out is data whose source nobody drew, and a write it leaves out is a record whose writer nobody sees.
+   A step that reads back what it wrote itself, and what a step only shows in the chat, are not gaps: neither hides where data comes from or who writes a record.
 4. **One writer per record** — does every record have exactly one writer: each data file in the Working Dir, each step file, each section of the MD report?
    Read `multi_writer_records`, and `records_edited_in_turn`.
    A record that a later step writes without reading it is an issue, whether the diagram draws it or the steps do it: re-running one of them silently erases the other's result.

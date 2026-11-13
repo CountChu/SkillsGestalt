@@ -37,6 +37,13 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 
 #### 2026-11-13
 
+- `m1` 這台：拿進 `countdell` 的 8 個快照，`04a90cc` 到 `49cf1fc`（[[Task 103]] 到 [[Task 113]]），變動 57 個檔，掃描 `nothing found`。
+  舊的 `m1`（`470e461`）存成 tag `archive/m1-261113-pull`；本機 `main` 從 `593cb10` 移到 `49cf1fc`。
+  rebase 停在第 7 個 commit：`m1` 開頭幾個 commit 用的 Task 104 到 107 和 `countdell` 的同號 task 撞在一起，到最後一個 commit 才改名為 114 到 117。
+  經使用者同意改做 squash：`git rebase --abort`，再以 `git merge --squash 470e461` 把 18 個 commit 的淨改動做成一個 commit（`3db4156`），原本的 commit 留在那個 tag。
+  衝突都兩邊留：`chore-summary.md` 2026-11-10 的兩筆發佈紀錄，`1cd81c2` 之後的 `593cb10` 在前；`CHANGES.md` 合成一節 2026-11-13 與一節 2026-11-12，`countdell` 的條目在前；`task-summary.md` 的 117 到 114 放在 113 之上。
+  新快照改用 `gen_config.py`：建了本機的 `config.local.yaml`（`wikiDir` 照舊、`workBranch: m1`），重新產生的 `config.yaml` 只多了註解與 `workBranches`、`workBranch`。
+  `gen_config.py --check`、`check_tasks.py` 與 `check_chores.py` 都是 PASS，`incoming` 印出 `nothing to pull`。
 - 在 DevBox 的 `devbox` 做：拿進 `countdell` 發佈的快照 `2f07db8`（SkillsGestalt 2026-11-13），變動 1 個檔，是 `chore-summary.md` 的執行紀錄；作者與 committer 是 CountChu，`incoming` 的掃描是 `nothing found`。
   經使用者同意，舊的 `devbox`（`44a3890`）存成 tag `archive/devbox-261113-pull`；本機 `main` 從 `5e7a102` 移到 `2f07db8`；`devbox` 的 2 個 commit rebase 上去，沒有衝突，成為 `1b10a06` 與 `fd9a3e7`。
   `### publish-gestalt` 的 2026-11-13 自動合併：`devbox` 的 2 筆在上面，`countdell` 發佈 `9b7b872` 那 1 筆在下面。
@@ -132,6 +139,10 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 
 #### 2026-11-10
 
+- 第二次（`m1`）：先做 [[pull-gestalt]]，拿進 `countdell` 的 `94db4c4`；之後以 `m1` 的 `0def18d` 做出快照 `593cb10`，接在 `94db4c4` 之後，推到 `main`；變動 5 個檔、4 個 commit，主要是 [[Task 101]]。
+  `check` 與 `publish` 的掃描都是 `nothing found`；訊息有兩段英文摘要，照使用者的決定不加 Co-Authored-By。
+  `m1` 跟著從 `593cb10` 重新開始（`483b85e`），`archive/m1-261110` 從 `dda8233` 改指 `0def18d`；經使用者同意，早上的歷史另存成 tag `archive/m1-261110-1`（指向 `dda8233`）。
+  GitHub 上確認：`main` 有 13 個 commit，最新的是 `593cb10`，tree 和本機做出的 `619f93f` 相同，299 個檔裡沒有排除的路徑。
 - 第二次發佈：以 `countdell` 的 `015b0f6` 做出快照 `94db4c4`，接在 `b080dc7` 之後，推到 `main`；變動 9 個檔，是 [[Task 102]]（`publish_snapshot.py` 可以由 `publish:` 設定、`--orphan`）與 [[keep-english]] 261110 稽核。
   先做 [[pull-gestalt]]：本機的 `main` 和 `origin/main` 都是 `b080dc7`，`nothing to pull`；`check` 與 `publish` 的掃描都是 `nothing found`。
   `countdell` 跟著從 `94db4c4` 重新開始（`de150e1`）；同一天第二次發佈，tag `archive/countdell-261110` 從 `65a42e4` 移到 `015b0f6`。

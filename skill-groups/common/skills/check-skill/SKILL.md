@@ -33,7 +33,7 @@ Terms specific to this skill's domain.
 - **checking criteria** — the rubric the six checks apply: the rules every check follows, and the numbered criteria of each one.
   **It owns the criteria**; this document owns the workflow that runs them, so a new or changed criterion is a change to that file and never to a step.
 - **facts file** — the YAML the scan writes in the **Working Dir** of the run: one YAML document per checked skill, holding facts only and never verdicts.
-  It is the input every check reads.
+  It is the input of every check that reads a fact group: checks 1, 2, 4 and 6.
 - **fact group** — one top-level key of a checked skill's facts-file document: `template_shape`, `config_shape`, `dir_config_shape`, `leftovers`, `readme_shape`, `terminology`, `dataflow`.
 - **region** — the part of a `SKILL.md` a fact was found in: `frontmatter`, `prompt_examples` or `body`.
   Only `body` is judged.
@@ -82,7 +82,7 @@ The last outputs, which a person, a different skill or a subsequent analysis rea
 
 - **Run record** — `database\skill-runs\check-skill\{yymmdd}.{N}.yaml`, under the workspace root.
 - **Skills Dashboard** — `{wikiDir}\dashboard\skills.md`, where `wikiDir` comes from the workspace [config.yaml](config.yaml) (resolved in Step 0) — never hardcode the wiki root.
-- **Checked skill** — the SKILL.md, README.md, twins and scripts of a checked skill; Step 6 changes them only for the items that the user names.
+- **Checked skill** — the **skill directory** of each **checked skill**, `{skillGroups[<group>]}\skills\<skill-name>\`.
 
 # MUST FOLLOW
 
@@ -111,7 +111,7 @@ The last outputs, which a person, a different skill or a subsequent analysis rea
 - **Every file and line the report cites must be a clickable link.**
   The report is read in the chat, and a checked skill usually lives outside this workspace, so only an absolute target can resolve to it.
   - Format: `[<file>:<n>](<absolute-path>:<n>)` — e.g. `[SKILL.md:44](C:/Users/.../skill-groups/dedi-boot-times/skills/report-boot-times-html/SKILL.md:44)`.
-  - `<absolute-path>` is the file the finding was found in — the checked skill's own `SKILL.md`, or the script, reference or config file a check-2 finding names — resolved through `skillGroups`, written with **forward slashes** throughout.
+  - `<absolute-path>` is the file the finding was found in — the checked skill's own `SKILL.md` or `README.md`, or the script, reference or config file that the finding names — resolved through `skillGroups`, written with **forward slashes** throughout.
     A backslash silently breaks the link.
     Wrap the target in `<…>` when the path holds a space.
   - Applies to every Problem and Original line, and every line cited in prose.
@@ -149,14 +149,19 @@ report-pipeline
 
 ## Step 0 - Warmup
 
-- Run `.venv` first — the scan script imports `PyYAML`.
+- Find `{python}`, the Python of the `.venv` at the root of the workspace.
+  It is `.venv/bin/python` on macOS and Linux, and `.venv\Scripts\python.exe` on Windows.
+  Run each script of the steps that follow with `{python}`: the scan script imports `PyYAML`.
+  Each command runs in a new shell, and a new shell does not use the `.venv` that a different command started.
+  If the workspace has no `.venv`, stop.
+  Tell the user to make it, as step 3 of forge-setup.md in the `common` skill group tells.
 
 - Read the workspace config [config.yaml](config.yaml) at the workspace root and resolve:
   - **`skillGroups`**: the group name -> skills-root map — every checkable skill lives at `{skillGroups[<group>]}\skills\<skill-name>\SKILL.md`, and this skill's own directory is `{skillGroups.common}\skills\check-skill\`.
   - **`wikiDir`**: the wiki root — the **Skills Dashboard** lives under `{wikiDir}\dashboard\`.
     It is also the value the config-conformance check compares against, so it can tell a skill that correctly resolves `wikiDir` from one that hardcodes a wiki path.
   - **`vaultName`**: the last path segment of `wikiDir` (e.g. `MyVault`) — the Obsidian vault name used to build the dashboard's `obsidian://` link.
-  - Substitute the resolved values wherever `{skillGroups.common}`, `{wikiDir}` or `{vaultName}` appears in the steps below (including in commands).
+  - Substitute the resolved values wherever `{python}`, `{skillGroups.common}`, `{wikiDir}` or `{vaultName}` appears in the steps below (including in commands).
   - If `config.yaml` is missing or a needed key is absent, stop and ask the user.
 
 - This skill calls no Azure DevOps API and needs no `ADO_PAT` — it reads local files only.
@@ -184,8 +189,7 @@ report-pipeline
 
 - If a required input is missing, ask the user for it.
 
-- Read the clock **once** here and keep the `{yymmdd-hh}` stamp for the whole run, so the dashboard rows of one run cannot land under two stamps across an hour or midnight rollover.
-  The dashboard keeps only the date, so every run on the same day records the same one.
+- Read the clock **once** here and keep the `{yymmdd-hh}` stamp for the whole run.
 
 - Get the **Run Number**, as run-data-rules.md tells, and write the run record of the run.
 
@@ -233,17 +237,17 @@ report-pipeline
     The script reads the required headings out of it, so the reference is never a shape remembered in code.
   - `--readme-template`: the README template path Step 0 confirmed, read the same way for the headings of `README.md`.
   - `--depends-on`: `{skillGroups.common}\scripts\depends_on.py`, which the script loads to read each `README.md`'s header quote as `depends_on.py check` reads it.
-  - Example: `python {skillGroups.common}/skills/check-skill/scripts/scan_skill.py --skill report-pipeline --skill triage-test-case --run-number {yymmdd}.{N} --template "{skillGroups.common}/templates/SKILL-tmp.md" --readme-template "{skillGroups.common}/templates/README-tmp.md" --depends-on "{skillGroups.common}/scripts/depends_on.py"`
+  - Example: `{python} {skillGroups.common}/skills/check-skill/scripts/scan_skill.py --skill report-pipeline --skill triage-test-case --run-number {yymmdd}.{N} --template "{skillGroups.common}/templates/SKILL-tmp.md" --readme-template "{skillGroups.common}/templates/README-tmp.md" --depends-on "{skillGroups.common}/scripts/depends_on.py"`
   - The script takes a relative path from the workspace root, never from the current directory, and reads `\` and `/` as separators alike.
     It does not remove the **Working Dir**.
 
 - The script collects **facts only, never verdicts** — it records what each file contains and leaves every judgement to the checks:
   1. Resolves each skill under the `skillGroups` roots and reads its `SKILL.md`.
-  2. Records the **template-shape** facts: whether the YAML frontmatter parses and carries `name` / `description`, whether `name` equals the directory name, the lengths of `name` and `description` in characters (`name_chars`, `description_chars`) and whether `name` holds only lowercase letters, digits and hyphens (`name_charset_ok`), the top-level headings the SKILL template itself defines (`required_headings`, read from the `--template` file so a change to the template changes the reference), which of them the skill has, which are absent (`missing_headings`), whether the present ones keep the template's relative order, the `## Step N` headings found, whether they run contiguously from 0, whether Step 0 is titled `Warmup`, every step reference that points forward, and the **Working Dir** facts (`working_dir`): each Working Dir, Temp Dir or Checkpoint Dir line of `# CONFIGURATION` with the kind its path gives (`configuration_lines`, `kinds`), and each `Temp Dir` or `Checkpoint Dir` name and each `temp\` or `checkpoints\` path that the body has after it (`names_after_configuration`, `paths_after_configuration`).
-  3. Records the **config-shape** facts of that `SKILL.md`: every literal `wiki\` / `wiki/` path, every `{wikiDir}` / `{vaultName}` / `{skillGroups...}` placeholder and whether Step 0 resolves it, every machine-specific absolute path, every UNC share path, and every `skill-groups\...` path written literally instead of through `skillGroups`.
-  4. Records the **dir-config-shape** facts: the same hardcoded-path facts for **every other text file in the skill directory** — its scripts, its references, its 繁體中文 twin, its own `config.yaml` — each carrying the file, that file's `kind` (`script`, `reference`, `twin`, `skill config`, `doc`, `other`), the line, whether the line is a comment or a Python docstring (`commented`), and whether the skill has a `config.yaml` of its own (`has_own_config`).
-     It also lists the files it skipped with the reason — a binary, or one over the scan's size limit — so a file nobody checked is never mistaken for a clean one.
-  5. Records the **leftovers**: any `{PLACEHOLDER}` token, any placeholder in a retired form on a list of its own (`old_placeholder_tokens`), any `skill-groups` rules link that does not resolve on disk, any `scripts\*.py` the SKILL.md names but that is missing, and any script on disk the SKILL.md never names.
+  2. Records the **template-shape** facts: whether the YAML frontmatter parses and carries `name` / `description`, whether `name` equals the directory name, the lengths of `name` and `description` in characters (`name_chars`, `description_chars`) and whether `name` holds only lowercase letters, digits and hyphens (`name_charset_ok`), the top-level headings the SKILL template itself defines (`required_headings`, read from the `--template` file so a change to the template changes the reference), which of them the skill has, which are absent (`missing_headings`), whether the present ones keep the template's relative order, the `## Step N` headings found, whether they run contiguously from 0, whether Step 0 is titled `Warmup`, every step reference that points forward — a `Step N` right after a bold name or a code span, such as `**compile SOP** Step 2`, is a step of that document and goes on a list of its own (`other_document_steps`) — and the **Working Dir** facts (`working_dir`): each Working Dir, Temp Dir or Checkpoint Dir line of `# CONFIGURATION` with the kind its path gives (`configuration_lines`, `kinds`), and each `Temp Dir` or `Checkpoint Dir` name and each `temp\` or `checkpoints\` path that the body has after it (`names_after_configuration`, `paths_after_configuration`).
+  3. Records the **config-shape** facts of that `SKILL.md`: every literal `wiki\` / `wiki/` path, every `{wikiDir}` / `{vaultName}` / `{skillGroups...}` placeholder and whether Step 0 resolves it, every machine-specific absolute path — a drive letter, a home or volume directory such as `/Users/<name>` or `/home/<name>`, or a `../` path that climbs into one — every UNC share path, and every `skill-groups\...` path written literally instead of through `skillGroups`.
+  4. Records the **dir-config-shape** facts: the same hardcoded-path facts for **every other text file in the skill directory** — its scripts, its references, its 繁體中文 twin, its own `config.yaml` — each carrying the file, that file's `kind` (`script`, `reference`, `template`, `twin`, `skill config`, `doc`, `other`), the line, whether the line is a comment or a Python docstring (`commented`), and whether the skill has a `config.yaml` of its own (`has_own_config`).
+     It also lists the files it skipped with the reason — a binary, one over the scan's size limit, or a directory it does not enter (`__pycache__`, `.git`, `.venv`, `node_modules`, `temp`) — so a file nobody checked is never mistaken for a clean one.
+  5. Records the **leftovers**: any `{PLACEHOLDER}` token, any placeholder in a retired form on a list of its own (`old_placeholder_tokens`), any `skill-groups` rules link that does not resolve on disk, any `*.py` the SKILL.md names that is neither a script of the skill — under its `scripts\` or directly in its **skill directory** — nor one in the `scripts\` of a skill group, and any script of the skill that the SKILL.md never names.
   6. Tags every fact with the region it was found in, whether it sits inside an inline-code span (`backticked`) or a fenced block (`fenced`), and the whole line it came from (`line_text`) — a literal path is expected in `frontmatter` and `prompt_examples` and suspect only in `body`, a token that is quoted or fenced is being *shown* rather than left behind, and the line is what a finding quotes.
      A fact from outside `SKILL.md` carries its file and `commented` flag in place of a region.
      The same token on two lines of one file, and what the fields settle:
@@ -256,9 +260,10 @@ report-pipeline
        backticked: false -> the token really was left behind. A finding, which
                             quotes this whole line from line_text.
      ```
-  7. Records the **terminology** facts: whether the skill has a glossary section (any `#` heading whose name contains `TERMINOLOGY`), each term it defines, every line outside the glossary where that term is used exactly, every line where a case- or form-variant of it appears instead, every line where a filename the definition introduces is used raw, and every term defined under a `CONFIGURATION` heading rather than in the glossary (`terms_defined_in_configuration`).
+  7. Records the **terminology** facts: whether the skill has a glossary section (any `#` heading whose name contains `TERMINOLOGY`), each term it defines, every line outside the glossary where that term is used — as written, in the plural, or with its first letter in the other case — every line where a case- or form-variant of it appears instead, every line where the filename that opens its definition is used raw, every term defined under a `CONFIGURATION` heading rather than in the glossary (`terms_defined_in_configuration`), each term of `# TERMINOLOGY` with the definition the SKILL template gives it, if it gives one (`shared_terms`), and each name the file uses that no `- **Name** —` line of it defines — a name of two or more capitalised words, or a term the SKILL template defines for every skill — with every line that uses it (`undefined_names`).
+     Each use carries the `backticked`, `fenced` and `line_text` of item 6, a term whose label is in backticks, such as `run step N`, is matched only inside inline code or a fenced block, and the words of any other term in another case inside code are a code identifier, never a variant.
      A skill with no glossary yields `has_glossary: false`, and its `CONFIGURATION` definitions are still recorded.
-  8. Records the **readme-shape** facts of the skill's `README.md`: whether it has one (`has_readme`), and whether it and `SKILL.md` have 繁體中文 twins; its title, and the `#` and `##` headings the README template defines (`required_headings`, read from the `--readme-template` file), which are absent (`missing_headings`) and whether the present ones keep the template's order; every dependency its header quote declares, with the status `depends_on.py check` gives it — `UNCHANGED`, `CHANGED`, `NO_RECORD`, `NOTHING_CITED` or `MISSING`; against the Workflow, every step its Step Purposes leaves out, misnames or gives no Purpose, and every step the tree of its Files Each Step Uses leaves out or misnames, and whether that section answers the scripted-versus-not rule in a bold sentence; every `{PLACEHOLDER}` token in it, and every placeholder in a retired form on a list of its own (`old_placeholder_tokens`); and every line of `SKILL.md` that holds what belongs in `README.md` — a `# Dataflow` or `# Steps at a Glance` heading, a `- **Purpose**:` line, the paragraph that introduces the Purposes — or links to it.
+  8. Records the **readme-shape** facts of the skill's `README.md`: whether it has one (`has_readme`), and whether it and `SKILL.md` have 繁體中文 twins; its title, and the `#` and `##` headings the README template defines (`required_headings`, read from the `--readme-template` file), which are absent (`missing_headings`) and whether the present ones keep the template's order; every dependency its header quote declares, with the status `depends_on.py check` gives it — `UNCHANGED`, `CHANGED`, `NO_RECORD`, `NOTHING_CITED` or `MISSING`; against the Workflow, every step its Step Purposes leaves out, misnames or gives no Purpose, and every step the tree of its Files Each Step Uses leaves out or misnames, with the programs each step of the tree itself runs (`runs`), and the bold sentence by which that section answers the scripted-versus-not rule (`scripted_rule`); every `{PLACEHOLDER}` token in it, and every placeholder in a retired form on a list of its own (`old_placeholder_tokens`); and every line of `SKILL.md` that holds what belongs in `README.md` — a `# Dataflow` or `# Steps at a Glance` heading, a `- **Purpose**:` line, the paragraph that introduces the Purposes — or links to it.
   9. Records the **dataflow** facts of the `## Dataflow` in the skill's `README.md`, every line number a line of that file: whether it has one (`has_dataflow`) and how many mermaid diagrams it holds; every node of its first diagram with the shape it is drawn in, every arrow with whether it is dotted, two-headed or blue, and how many lines of legend follow the diagram; against the Workflow, every step the diagram leaves out or misnames; and every record a later step overwrites, every record several steps edit in turn, every piece of data nothing supplies, every solid arrow between two pieces of data, every read of something a later step writes, and every record that steps before its first writer read as it was found.
   10. Writes the facts file in the **Working Dir** of the `--run-number` run — one YAML document per skill — and prints to **stdout** its absolute path plus one summary row per skill.
 
@@ -283,11 +288,11 @@ report-pipeline
 
   | # | Check | Input |
   |---|-------|-------|
-  | 1 | Template alignment | the templates at `{skillGroups.common}\templates\SKILL-tmp.md` and `{skillGroups.common}\templates\README-tmp.md`, plus the `template_shape`, `readme_shape` and `terminology` fact groups |
+  | 1 | Template alignment | the templates at `{skillGroups.common}\templates\SKILL-tmp.md` and `{skillGroups.common}\templates\README-tmp.md`, plus the `template_shape`, `readme_shape`, `terminology` and `leftovers` fact groups |
   | 2 | Config conformance | the workspace [config.yaml](config.yaml), plus the `config_shape` and `dir_config_shape` fact groups, and the checked skill's own `config.yaml` when it has one |
-  | 3 | Description accuracy | each selected skill's **whole** `SKILL.md` — its `description` field, its `# MUST FOLLOW` contract and every step section. This check reads no fact group |
+  | 3 | Description accuracy | each selected skill's **whole** `SKILL.md` — its `description` field, its `# MUST FOLLOW` contract and every step section — each reference or script that a step leaves a claim of the description to, and `template_shape.frontmatter.description_chars` |
   | 4 | Terminology usage | the `terminology` fact group. A skill whose facts say `has_glossary: false` is out of scope — its verdict is ➖ `no glossary — not applicable` and it finds nothing, rather than inventing terms it never claimed; its missing glossary is already an issue check 1 raises |
-  | 5 | Cross-platform compatibility | each selected skill's **whole** `SKILL.md` and every script under its `scripts\` — the commands a step tells the agent to run, every tool a step names, and each script's subprocess and platform-specific calls. This check reads no fact group |
+  | 5 | Cross-platform compatibility | each selected skill's **whole** `SKILL.md`, each reference in its **skill directory** that gives the agent a command to run, and every script that a step runs: each script under its `scripts\`, each one directly in its **skill directory**, and each one in the `scripts\` of a skill group, which several skills can share — the commands a step tells the agent to run, every tool a step names, each script's subprocess and platform-specific calls, and the paths it reads and writes. This check reads no fact group |
   | 6 | Dataflow | the `dataflow` fact group, [DFD.md](skill-groups/common/references/DFD.md), and each selected skill's **whole** `SKILL.md` and `README.md` — every step's section, to compare what it reads and writes with what the Dataflow in `README.md` draws. A skill whose facts say `has_dataflow: false` is out of scope — its verdict is ➖ `no Dataflow — not applicable`; its missing `README.md` or Dataflow is already an issue check 1 raises |
 
 - Judge each selected skill against the **checking criteria** — its `Rules that apply to every check` section, then the section of the check being applied, restricted to the criteria Step 1 put in scope.
@@ -306,7 +311,7 @@ report-pipeline
   - Check 5 — the criteria that passed, every command judged shown rather than invoked, and every platform the skill declares, since a declared platform is not a defect.
   - Check 6 — the criteria that passed, how many steps, pieces of data and arrows were compared, and every skill skipped for having no Dataflow, named explicitly, since a skipped skill is not a conforming one.
 
-- Record, apart from every finding, each **checker defect** the judging exposed — a fact `scan_skill.py` got wrong, or a criterion that misled — with the line that misled it.
+- Record, apart from every finding, each **checker defect** the judging exposed, with the line that misled it.
 
 - Add this step to the run record.
 
@@ -391,8 +396,7 @@ report-pipeline
 - **Close the report with these, in this order, and nothing else:**
   1. **Root cause** — only when findings in several checks come from one cause: name the cause and the item numbers it drives.
      The items stay under their checks; never move them here.
-  2. **Checker defects** — each one Step 3 recorded, citing the line that misled the scan or the check, stated plainly as a defect in `scan_skill.py` or in a check's own instructions rather than in the checked skill.
-     Unnumbered and uncounted — a checker bug is not the author's debt.
+  2. **Checker defects** — each **checker defect** Step 3 recorded, citing the line that misled the scan or the check.
   3. **Not selected** — the checks this run did not apply, named in one line, since an unrun check is not a clean one.
   4. **How to apply** — the user applies items by naming their numbers (e.g. `fix 1.1 3.2`, `fix 1.2(a)`, `fix all of check 1`), and nothing changes until they do.
 
@@ -411,7 +415,7 @@ report-pipeline
   - `--skill`, `--group`, `--path`: the skill, its group and its absolute `SKILL.md` path, as Step 1 resolved them.
     The group names the section the row is filed under.
   - `--result`: once per check that ran, as `<check>:<issues>:<recommendations>` from Step 3's counts; as `<check>:<issues>:<recommendations>:<criteria>` for a check narrowed to some criteria, joined by `+` (e.g. `1:0:1:1.3+1.5`); and as `4:na` for a skill with no glossary, or `6:na` for one with no Dataflow.
-  - Example: `python {skillGroups.common}/skills/check-skill/scripts/update_dashboard.py --dashboard "{wikiDir}/dashboard/skills.md" --run {yymmdd-hh} --skill report-pipeline --group dedi-triage-pipeline --path "<absolute SKILL.md path>" --result 1:1:5 --result 2:0:0 --result 3:0:2 --result 4:na`
+  - Example: `{python} {skillGroups.common}/skills/check-skill/scripts/update_dashboard.py --dashboard "{wikiDir}/dashboard/skills.md" --run {yymmdd-hh} --skill report-pipeline --group dedi-triage-pipeline --path "<absolute SKILL.md path>" --result 1:1:5 --result 2:0:0 --result 3:0:2 --result 4:na`
 
 - The script:
   1. Creates the dashboard with its header when it does not exist yet, and otherwise reads its table back.
@@ -452,9 +456,8 @@ report-pipeline
   - **Never edit outside the checked skill's directory.**
     A **checker defect** is fixed in this skill only when the user asks for it separately.
 
-- **After the last item, mark the skill on the dashboard as needing a re-check**, so its row is not mistaken for a check of the edited skill:
-  - Example: `python {skillGroups.common}/skills/check-skill/scripts/update_dashboard.py --dashboard "{wikiDir}/dashboard/skills.md" --skill imp-app --mark-modified`
-  - The cells stay as the last check left them — they describe the skill before these edits — and the next run that re-applies every check clears the **needs check** mark.
+- **After the last item, set the skill's needs check mark on the dashboard**, so its row is not mistaken for a check of the edited skill:
+  - Example: `{python} {skillGroups.common}/skills/check-skill/scripts/update_dashboard.py --dashboard "{wikiDir}/dashboard/skills.md" --skill imp-app --mark-modified`
 
 - Add this step to the run record of the run whose report the user answered.
   Its `result` stays `completed`.

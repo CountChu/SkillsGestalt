@@ -361,15 +361,20 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
 
 - **Purpose**：定下正在處理哪一個 **app dir**、哪一個 **command** 適用、以及 **lifecycle** 是否允許它——那道閘門必須在任何東西被寫出之前被強制，因為事後就沒有東西可以拒絕了。
 
-- 先執行 `.venv`——這個 skill 的工具需要 `PyYAML` 來讀一份 config。
-  **Node** 必須在 `PATH` 上，**Python** 也必須；檢查 `node --version` 與 `python --version` 兩者都有回應，並把它們記下來。
+- 找出 `{python}`，也就是 workspace 根目錄的 `.venv` 裡的 Python。
+  macOS 與 Linux 上它是 `.venv/bin/python`，Windows 上是 `.venv\Scripts\python.exe`。
+  後面 step 的每個 script 都以 `{python}` 執行：這個 skill 的工具需要 `PyYAML` 來讀一份 config。
+  每個指令都在新的 shell 裡執行，新的 shell 不會沿用另一個指令啟動的 `.venv`。
+  workspace 沒有 `.venv` 時，停下來。
+  請使用者照 `common` skill group 的 forge-setup.md 第 3 步建立它。
+  **Node** 必須在 `PATH` 上，**Python** 也必須；檢查 `node --version` 有回應，`python3 --version` 或 `python --version` 也有回應，並把它們記下來。
   沒有任何東西要 `npm install`。
 
 - 讀 workspace 根目錄的 workspace config [config.yaml](config.yaml) 並解析：
   - **`wikiDir`**：MD report 的根目錄——這個 skill 的報告放在 `{wikiDir}\imp-app\` 底下。
   - **`vaultName`**：`wikiDir` 路徑的最後一段（例如 `InvLlmWiki`）——用來組出 `obsidian://` 連結的 Obsidian vault 名稱。
   - **`skillGroups`**：群組名稱 -> skills 根目錄的對映——這個 skill 自己的目錄是 `{skillGroups.common}\skills\imp-app\`，而 **shared report rules** 在 `{skillGroups.common}\rules\` 底下。
-  - 把解析出來的值代入底下 step 裡每一處出現 `{wikiDir}`、`{vaultName}` 或 `{skillGroups.common}` 的地方，包含指令裡。
+  - 把解析出來的值代入底下 step 裡每一處出現 `{python}`、`{wikiDir}`、`{vaultName}` 或 `{skillGroups.common}` 的地方，包含指令裡。
   - 如果 `config.yaml` 不存在、或缺少某個需要的鍵，停下並問使用者。
 
 - 這個 skill 不呼叫任何 API，也不需要自己的任何憑證。
@@ -429,7 +434,7 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
   一個 registry 沒有承載的名稱，是一次停下並列出它有承載的那些名稱。
 
 - 執行 **session resolver** 來解析這個 app 的工作階段，它以 deterministic 的方式擁有這件事，於是同一個 app 的兩次呼叫不可能落在不同的目錄裡。
-  - 例：`python {skillGroups.common}/skills/imp-app/scripts/resolve_session.py --app InvCov --command vibe`
+  - 例：`{python} {skillGroups.common}/skills/imp-app/scripts/resolve_session.py --app InvCov --command vibe`
   - 它重新開啟這個 app 的一次執行——使用者指名、以 `--run {yymmdd}.{N}` 傳入的那一次，否則就是 `step_0.yaml` 帶著這個 **app name** 的**最新**那一次——並且只在完全沒有、或 `--new` 要求時，才取得一個新的 Run Number：對一個 **app dir** 的第一個 **command** 開啟這個工作階段，之後每一個都加入它，無論那是哪一個 **command**。
   - 新的 Run Number 依 run-data-rules.md 所說取得，而且 resolver 立刻寫出帶 `skill` 與 `run` 的 run record，於是另一次執行不可能拿到同一個編號。
   - 它找出這次執行所在的 workspace 的根目錄：`--workspace` 指名的目錄，否則就是從目前的目錄往上、`config.yaml` 含有 `skillGroups` 的最近一個目錄。
@@ -648,7 +653,7 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
 ### The checked half
 
 - **執行 test runner**，它擁有發現與執行，於是一個測試不可能被無聲地跳過。
-  - 例：`python {skillGroups.common}/skills/imp-app/scripts/run_tests.py --app-dir artifacts/InvCov --out "checkpoints/imp-app/{yymmdd}.{N}"`
+  - 例：`{python} {skillGroups.common}/skills/imp-app/scripts/run_tests.py --app-dir artifacts/InvCov --out "checkpoints/imp-app/{yymmdd}.{N}"`
   - 它發現 `{appDir}\tests\` 底下的 **unit tests**，用 `unittest` 那些對著 **python kernel** 跑、用 `node:test` 那些對著伺服器跑，並印出一份 JSON 結果，承載每個測試的結果、各項計數、每一個沒有任何測試提到過的原始檔，以及每一個命名成兩個 runner 都不會發現的測試檔案。
   - 它把那份結果存成輸出目錄裡的 `unit-tests-{K}.json`，`{K}` 比那裡已有的最大值多 1，於是這個工作階段更早一次 **test** 的結果留著。
     相對的 `--app-dir` 或 `--out` 對著 workspace 根目錄解析，而不是對著目前的目錄。
@@ -748,7 +753,7 @@ Step 4 承載那道切分的兩個半邊，並把它們指名為半邊，於是�
   把一個在本地啟動不了的 app 送出去，是把同一個失敗送到一個更難除錯的地方。
 
 - **執行 deploy tool**，它擁有那些複製，於是同一批檔案以同一種方式抵達每一個 **target**。
-  - 例：`python {skillGroups.common}/skills/imp-app/scripts/deploy_app.py --app-dir artifacts/InvCov --target ftp-server --out "checkpoints/imp-app/{yymmdd}.{N}"`——`--target` 可以重複，而 `--all` 是每一個登記過的。
+  - 例：`{python} {skillGroups.common}/skills/imp-app/scripts/deploy_app.py --app-dir artifacts/InvCov --target ftp-server --out "checkpoints/imp-app/{yymmdd}.{N}"`——`--target` 可以重複，而 `--all` 是每一個登記過的。
   - 它透過 **target list** 解析每一個 **target**、把程式碼複製到那筆項目的 `appDir`、用這個 target 的值蓋過 **app dir** 的值寫出那個目的地自己的 **app config**，並印出一份 JSON 清單，列出它寫了什麼、什麼本來就已經是最新的、以及它放著沒動什麼。
     它為每一個 target 在輸出目錄裡存一份 `deploy-{target}-{K}.json`，`{K}` 比那個 target 在那裡已有的最大值多 1，於是更早一次 **deploy** 的清單留著。
     相對的 `--app-dir` 或 `--out` 對著 workspace 根目錄解析，而不是對著目前的目錄。

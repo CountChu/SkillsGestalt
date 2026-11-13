@@ -32,11 +32,21 @@ STEP_HEAD = re.compile(r"^##\s+Step\s+(\d+)\s*-?\s*(.*)$")
 PURPOSE = re.compile(r"^\s*-\s+\*\*Purpose\*\*")
 TOP_HEAD = re.compile(r"^#\s+(.+)$")
 STEP_REF = re.compile(r"\bSteps?\s+(\d+)\s*(?:-|to|and)\s*(\d+)|\bSteps?\s+(\d+)")
+# A Step N right after a bold name or a code span, and a space, is a step of that document: **compile SOP** Step 2.
+OTHER_DOCUMENT_STEP = re.compile(r"(?:\*\*|`)\s+$")
 WIKI_PATH = re.compile(r"(?<![\w/\\{-])wiki[\\/][\w.*-]*")
-# The lookbehind keeps a URL scheme out - `http://host` would otherwise read as drive `p`.
-ABS_PATH = re.compile(r"(?<![\w:])[A-Za-z]:[\\/][\w.$%\\/-]+")
-# 2-4 leading slashes, since a UNC written in Python source carries its own escaping.
-UNC_PATH = re.compile(r"\\{2,4}[\w.$-]{2,}\\{1,2}[\w.$-]+")
+# A machine-specific absolute path: a drive letter - the lookbehind keeps a URL scheme out, since
+# `http://host` would otherwise read as drive `p` - or a home or volume directory of macOS and Linux,
+# also when a relative path climbs into one, as `../../Users/<name>/...` does.
+ABS_PATH = re.compile(
+    r"(?<![\w:])[A-Za-z]:[\\/][\w.$%\\/-]+"
+    r"|(?<![\w.:/~-])/(?:Users|home|private|Volumes)/[\w.$%/-]+"
+    r"|(?<![\w./])(?:\.\./)+(?:Users|home)/[\w.$%/-]+"
+)
+# A UNC share: two leading backslashes and single separators, or four and double ones where Python
+# source escapes each backslash. Two and two is no share but an escaped path that starts at a
+# separator, as `\\common\\templates` is in a docstring.
+UNC_PATH = re.compile(r"(?<![\w.$\\-])(?:\\{2}[\w.$-]{2,}\\(?!\\)[\w.$-]+|\\{4}[\w.$-]{2,}\\{2}[\w.$-]+)")
 GITHUB_PATH = re.compile(r"(?<![\w/])(?:\.github|skill-groups)[\\/][\w.\\/-]+")
 CODE_SPAN = re.compile(r"``.+?``|`[^`]*`")  # double-backtick spans first, or a bare token inside one reads as outside
 # A placeholder a template leaves to be filled: {UPPER_SNAKE}.
@@ -51,11 +61,18 @@ MD_LINK = re.compile(r"\]\(((?:\.github|skill-groups)[^)]+)\)")
 NAMED_SCRIPT = re.compile(r"([\w-]+\.py)")
 ANY_HEAD = re.compile(r"^#{1,2}\s+(.+)$")
 TERM_DEF = re.compile(r"^- \*\*(.+?)\*\*\s+[-\u2014]")
+# A code span that opens a definition, after its dash and an article: the raw artefact the term stands for.
+OPENING_SPAN = re.compile(r"^\s*[-\u2014]+\s*(?:(?:the|a|an)\s+)?`([^`]+)`")
 BACKTICKED = re.compile(r"`([^`]+)`")
 # The two kinds of Working Dir (run-data-rules.md), and the names a skill gives them.
 WORKING_DIR_TERMS = ("Working Dir", "Temp Dir", "Checkpoint Dir")
 WORKING_DIR_NAME = re.compile(r"\b(?:Temp|Checkpoint) Dir\b")
 WORKING_DIR_PATH = re.compile(r"(?<![\w.-])(temp|checkpoints)[\\/]")
+# A name of two or more capitalised words, such as Checkpoint Dir: the form a skill gives the things its
+# steps pass between them. A determiner before it, and a Step that a number follows, are not part of it.
+TITLE_NAME = re.compile(r"(?<![\w.#/{-])([A-Z][a-z]+(?: [A-Z][a-z]+)+)(?![\w-])")
+NAME_DETERMINERS = {"The", "A", "An", "Each", "Every", "This", "That", "These", "Those", "Its", "Their",
+                    "Any", "No", "Both", "All", "Some", "One"}
 FILE_LITERAL = re.compile(r"^[\w.-]+\.\w+$")
 COMMENT_LEAD = re.compile(r"^\s*(#|//|/\*|\*|<!--|REM\b|::)")
 NAME_CHARSET = re.compile(r"[a-z0-9-]+")
@@ -66,6 +83,8 @@ README_HEAD = re.compile(r"^(#{1,2})\s+(.+?)\s*$")
 SECTION_HEAD = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
 STEP_ITEM = re.compile(r"^-\s+(Step\s+\d+\s+-\s+.+?)\s*$")
 TREE_STEP = re.compile(r"^(Step\s+\d+\s+-\s+.+?)\s*$")
+# A program a step itself runs: a `runs` line of its block, not one nested under a script it runs.
+TREE_RUNS = re.compile(r"^\s+runs\s+(.+?)\s*$")
 PURPOSE_INTRO = re.compile(r"opens with a \*\*Purpose\*\*")
 README_LINK = re.compile(r"\]\(<?(?:\./)?README(?:-tw)?\.md")
 SCRIPTED_RULE = re.compile(r"\*\*[^*]*\bscripts?\b[^*]*\*\*")
@@ -200,6 +219,13 @@ def required_headings(template: Path) -> list:
     return out
 
 
+def heading_texts(path: Path) -> set:
+    """The text of every heading of a file, at any level, outside fenced blocks."""
+    lines = path.read_text(encoding="utf-8").split("\n")
+    in_fence = fenced(lines)
+    return {m.group(2) for i, ln in enumerate(lines) if not in_fence[i] and (m := SECTION_HEAD.match(ln))}
+
+
 def regions(lines):
     """Map each 0-based line index to 'frontmatter', 'prompt_examples' or 'body'."""
     region = ["body"] * len(lines)
@@ -244,8 +270,53 @@ def sections(lines):
     return out
 
 
-def terminology(lines, secs):
-    """Glossary terms, where each is used, and where a variant or raw literal is used instead."""
+def same_term(text: str, term: str) -> bool:
+    """Whether text is the term itself, its first letter in either case.
+
+    A glossary label opens its bullet with a capital, as SKILL-tmp.md writes **Run record**, and
+    running text writes the same term in lowercase, as it writes the run record.
+    """
+    return text == term or (text[1:] == term[1:] and text[:1].lower() == term[:1].lower())
+
+
+def opening_literal(tail: str) -> list:
+    """The filename that opens a definition, the raw artefact the term stands for; a filename the
+    definition only mentions later, such as SKILL.md in a definition of the skill directory, is not."""
+    m = OPENING_SPAN.match(tail)
+    return [m.group(1)] if m and FILE_LITERAL.match(m.group(1)) else []
+
+
+def glossary_entries(lines, heading: str) -> dict:
+    """The terms defined under the `# <heading>` section, outside fenced blocks: for each, its line
+    and its definition - the bullet's text after the dash and its continuation lines, its spaces collapsed."""
+    in_fence = fenced(lines)
+    entries, cur, term = {}, None, None
+    for i, ln in enumerate(lines):
+        if in_fence[i]:
+            continue
+        m = TOP_HEAD.match(ln)
+        if m:
+            cur, term = m.group(1).strip(), None
+            continue
+        if cur != heading:
+            continue
+        d = TERM_DEF.match(ln)
+        if d:
+            term = d.group(1).replace("`", "")
+            entries[term] = {"line": i + 1, "text": ln[d.end():].strip(), "code": "`" in d.group(1)}
+        elif term and ln.startswith("  ") and ln.strip():
+            entries[term]["text"] += " " + ln.strip()
+        else:
+            term = None
+    for e in entries.values():
+        e["text"] = " ".join(e["text"].split())
+    return entries
+
+
+def terminology(lines, secs, in_fence, region, template_terms, heading_names):
+    """Glossary terms, where each is used, and where a variant or raw literal is used instead;
+    each term of `# TERMINOLOGY` against the definition the SKILL template gives it; and each
+    name the file uses that nothing in it defines."""
     glossary = {s for s in set(secs) if "TERMINOLOGY" in s.upper()}
     # A term defined under CONFIGURATION is a definition the glossary does not own.
     in_config = [
@@ -266,27 +337,49 @@ def terminology(lines, secs):
         tail = ln.split("**", 2)[-1]
         terms.append({
             "term": m.group(1).replace("`", ""),
+            # A label in backticks, such as **`run step N`**, is a literal token: only inline code uses it.
+            "code_term": "`" in m.group(1),
             "defined_at": i + 1,
             "defined_in": secs[i],
-            # A filename in the definition is the raw artefact the term stands for.
-            "literals": [x for x in BACKTICKED.findall(tail) if FILE_LITERAL.match(x)],
+            "literals": opening_literal(tail),
         })
+
+    def tags(i, ln, start, end):
+        spans = [(c.start(), c.end()) for c in CODE_SPAN.finditer(ln)]
+        return {"backticked": any(s <= start and end <= e for s, e in spans), "fenced": in_fence[i], "line_text": ln.strip()}
 
     for t in terms:
         used, variants, literal_uses = [], [], []
-        rx = re.compile(r"(?<![\w-])" + re.escape(t["term"]) + r"(?![\w-])", re.I)
+        # A plural is the term too: "step files" uses **Step file**.
+        rx = re.compile(r"(?<![\w-])(" + re.escape(t["term"]) + r")(?:e?s)?(?![\w-])", re.I)
         for i, ln in enumerate(lines):
             if secs[i] in glossary:
                 continue
             for m in rx.finditer(ln):
-                rec = {"line": i + 1, "section": secs[i], "text": m.group(0)}
-                (used if m.group(0) == t["term"] else variants).append(rec)
+                rec = {"line": i + 1, "section": secs[i], "text": m.group(0), **tags(i, ln, m.start(), m.end())}
+                if t["code_term"] and not rec["backticked"] and not rec["fenced"]:
+                    continue
+                same = same_term(m.group(1), t["term"])
+                # The words of a plain term in another case inside code are a code identifier, such as
+                # `{PLACEHOLDER}` for **placeholder**: criterion 4 never judges one, so it is no variant.
+                if not same and not t["code_term"] and (rec["backticked"] or rec["fenced"]):
+                    continue
+                (used if same else variants).append(rec)
             for lit in t["literals"]:
-                if lit in ln:
-                    literal_uses.append({"line": i + 1, "section": secs[i], "literal": lit})
+                k = ln.find(lit)
+                if k >= 0:
+                    literal_uses.append({"line": i + 1, "section": secs[i], "literal": lit, **tags(i, ln, k, k + len(lit))})
         t["used"] = used
         t["variants"] = variants
         t["literal_uses"] = literal_uses
+
+    # Each term of `# TERMINOLOGY` means the same thing in every skill: SKILL-tmp.md gives its definition.
+    shared_terms = [
+        {"term": term, "line": e["line"], "in_template": term in template_terms,
+         "same_words": term in template_terms and e["text"] == template_terms[term]["text"],
+         "text": e["text"], "template_text": template_terms.get(term, {}).get("text")}
+        for term, e in glossary_entries(lines, "TERMINOLOGY").items()
+    ]
 
     return {
         "has_glossary": True,
@@ -294,7 +387,66 @@ def terminology(lines, secs):
         "terms": terms,
         "unused_terms": [t["term"] for t in terms if not t["used"] and not t["variants"]],
         "terms_defined_in_configuration": in_config,
+        "shared_terms": shared_terms,
+        "undefined_names": undefined_names(lines, secs, in_fence, region, template_terms, heading_names),
     }
+
+
+def undefined_names(lines, secs, in_fence, region, template_terms, heading_names):
+    """Each name the file uses that no `- **Name** —` line of it defines, in the glossary, under
+    CONFIGURATION or anywhere else: a name of capitalised words, and a term the SKILL template defines
+    for every skill. A name that a heading's words hold, of this file or of either template, names a
+    section and not a thing; the frontmatter and the prompt examples are not searched."""
+    defined = [m.group(1).replace("`", "") for ln in lines if (m := TERM_DEF.match(ln))]
+    headings = set(heading_names) | {m.group(2) for ln in lines if (m := SECTION_HEAD.match(ln))}
+
+    def defines(name):
+        return any(re.fullmatch(re.escape(d) + r"(?:e?s)?", name, re.I) for d in defined)
+
+    # A code term, such as `run step N`, is only used in code; any other term only outside it.
+    shared = [
+        (term, e.get("code", False), re.compile(r"(?<![\w-])(" + re.escape(term) + r")(?:e?s)?(?![\w-])", re.I))
+        for term, e in template_terms.items() if not defines(term)
+    ]
+    found = {}
+
+    def note(name, template_term, i, ln):
+        # A name and its plural are one name: House Rule and House Rules.
+        key = name.casefold()
+        key = next((k for k in (key, key[:-1] if key.endswith("s") else key + "s") if k in found), key)
+        rec = found.setdefault(key, {"name": name, "template_term": False, "uses": []})
+        rec["template_term"] = rec["template_term"] or template_term
+        if all(u["line"] != i + 1 for u in rec["uses"]):
+            rec["uses"].append({"line": i + 1, "section": secs[i], "line_text": ln.strip()[:400]})
+
+    for i, ln in enumerate(lines):
+        if in_fence[i] or region[i] != "body" or SECTION_HEAD.match(ln):
+            continue
+        spans = [(c.start(), c.end()) for c in CODE_SPAN.finditer(ln)]
+
+        def in_code(a, b):
+            return any(s <= a and b <= e for s, e in spans)
+
+        for m in TITLE_NAME.finditer(ln):
+            if in_code(m.start(), m.end()):
+                continue
+            words = m.group(1).split()
+            while words and words[0] in NAME_DETERMINERS:
+                words.pop(0)
+            if words and words[-1] in ("Step", "Steps") and re.match(r"\s*\d", ln[m.end():]):
+                words.pop()
+            if len(words) < 2:
+                continue
+            name = " ".join(words)
+            # A verb before a defined name, as in Read Plan Docs, leaves the name defined.
+            if any(defines(" ".join(words[k:])) for k in range(len(words) - 1)) or any(name in h for h in headings):
+                continue
+            note(name, False, i, ln)
+        for term, code, rx in shared:
+            for m in rx.finditer(ln):
+                if code == in_code(m.start(), m.end()):
+                    note(term, True, i, ln)
+    return sorted(found.values(), key=lambda r: r["uses"][0]["line"])
 
 
 def working_dir(lines, secs, region, in_fence):
@@ -620,22 +772,32 @@ def step_purposes(lines, in_fence, headings) -> dict:
 
 
 def files_each_step_uses(lines, in_fence, headings) -> dict:
-    """The steps the tree of README.md's Files Each Step Uses names, and whether its prose answers the
-    scripted-versus-not rule in a bold sentence."""
+    """The steps the tree of README.md's Files Each Step Uses names, with the programs each one runs,
+    and the bold sentence of its prose that answers the scripted-versus-not rule."""
     span = section(lines, in_fence, "Files Each Step Uses", 2)
     if span is None:
         return {"present": False}
     start, end = span
-    steps = [
-        {"step": m.group(1), "line": i + 1}
-        for i in range(start + 1, end)
-        if in_fence[i] and not lines[i].lstrip().startswith("```") and (m := TREE_STEP.match(lines[i]))
-    ]
+    steps, cur = [], None
+    for i in range(start + 1, end):
+        if not in_fence[i] or lines[i].lstrip().startswith("```"):
+            continue
+        if m := TREE_STEP.match(lines[i]):
+            cur = {"step": m.group(1), "line": i + 1, "runs": []}
+            steps.append(cur)
+        elif cur is not None and (r := TREE_RUNS.match(lines[i])):
+            cur["runs"].append({"line": i + 1, "text": r.group(1)})
     listed = [s["step"] for s in steps]
+    rule = [
+        {"line": i + 1, "text": m.group(0)}
+        for i in range(start + 1, end) if not in_fence[i]
+        for m in SCRIPTED_RULE.finditer(lines[i])
+    ]
     return {
         "present": True,
         "line": start + 1,
-        "answers_scripted_rule": any(SCRIPTED_RULE.search(lines[i]) for i in range(start + 1, end) if not in_fence[i]),
+        "answers_scripted_rule": bool(rule),
+        "scripted_rule": rule,
         "steps": steps,
         "steps_missing": [h for h in headings if h not in listed],
         "items_not_steps": [s for s in listed if s not in headings],
@@ -749,12 +911,16 @@ def file_kind(rel: Path) -> str:
 
 def scan_dir(skill_dir: Path) -> dict:
     """Hardcoded-path facts for every text file in the skill directory except its own SKILL.md."""
-    files, hardcoded, skipped = [], [], []
+    files, hardcoded, skipped, skipped_dirs = [], [], [], set()
     for path in sorted(skill_dir.rglob("*")):
         if not path.is_file():
             continue
         rel = path.relative_to(skill_dir)
-        if any(part in SKIP_DIRS for part in rel.parts) or rel.as_posix() == "SKILL.md":
+        hit = next((k for k, part in enumerate(rel.parts[:-1]) if part in SKIP_DIRS), None)
+        if hit is not None:
+            skipped_dirs.add(Path(*rel.parts[:hit + 1]).as_posix())
+            continue
+        if rel.as_posix() == "SKILL.md":
             continue
         suffix = path.suffix.lower()
         if suffix not in TEXT_SUFFIXES:
@@ -776,7 +942,9 @@ def scan_dir(skill_dir: Path) -> dict:
         in_comment = [False] * len(lines) if markdown else commented(lines, suffix)
         found = 0
         for i, ln in enumerate(lines, 1):
-            spans = [(c.start(), c.end()) for c in CODE_SPAN.finditer(ln)] if markdown else []
+            # Backticks mark code in Markdown and in a script's comments and docstrings; elsewhere in a
+            # script they are its syntax, such as a template literal of JavaScript.
+            spans = [(c.start(), c.end()) for c in CODE_SPAN.finditer(ln)] if markdown or in_comment[i - 1] else []
             for fact, pattern in PATH_FACTS:
                 for m in pattern.finditer(ln):
                     found += 1
@@ -794,10 +962,12 @@ def scan_dir(skill_dir: Path) -> dict:
         files.append({
             "file": rel.as_posix(),
             "kind": file_kind(rel),
-            "lines": len(lines),
+            "lines": len(text.splitlines()),
             "reads_config_yaml": [i for i, ln in enumerate(lines, 1) if "config.yaml" in ln],
             "hardcoded_paths": found,
         })
+    # A directory the scan does not enter is listed once, so an unread file is never taken for a clean one.
+    skipped.extend({"file": d + "/", "reason": "a directory the scan does not enter"} for d in sorted(skipped_dirs))
     return {
         "has_own_config": (skill_dir / "config.yaml").is_file(),
         "files_scanned": files,
@@ -835,7 +1005,7 @@ def frontmatter(text: str, lines, skill_name: str) -> dict:
 
 
 def scan(path: Path, group: str, name: str, required: list, readme_required: list, root: Path,
-         dep, dep_config) -> dict:
+         dep, dep_config, group_scripts: set, template_terms: dict, heading_names: set) -> dict:
     text = path.read_text(encoding="utf-8")
     lines = text.split("\n")
     region = regions(lines)
@@ -848,7 +1018,7 @@ def scan(path: Path, group: str, name: str, required: list, readme_required: lis
         if m:
             headings.setdefault(m.group(1).strip(), i)
 
-    steps, forward_refs, cur = [], [], None
+    steps, forward_refs, other_document_steps, cur = [], [], [], None
     for i, ln in enumerate(lines, 1):
         m = STEP_HEAD.match(ln)
         if m:
@@ -859,8 +1029,13 @@ def scan(path: Path, group: str, name: str, required: list, readme_required: lis
             continue
         for r in STEP_REF.finditer(ln):
             nums = [int(x) for x in r.groups() if x]
-            if any(n > cur for n in nums):
-                forward_refs.append({"line": i, "in_step": cur, "ref": r.group(0)})
+            if not any(n > cur for n in nums):
+                continue
+            ref = {"line": i, "in_step": cur, "ref": r.group(0)}
+            if OTHER_DOCUMENT_STEP.search(ln[:r.start()]):
+                other_document_steps.append({**ref, "line_text": ln.strip()})
+            else:
+                forward_refs.append(ref)
 
     readme_facts, readme_lines, readme_fence = readme(path.parent, name, steps, readme_required, dep, dep_config)
     readme_facts["readme_content_in_skill_md"] = readme_content_in_skill_md(lines, in_fence)
@@ -881,8 +1056,8 @@ def scan(path: Path, group: str, name: str, required: list, readme_required: lis
         return out
 
     numbers = [s["number"] for s in steps]
-    scripts_dir = path.parent / "scripts"
-    on_disk = sorted(p.name for p in scripts_dir.glob("*.py")) if scripts_dir.is_dir() else []
+    # The scripts of the skill: under its scripts/ and directly in its directory.
+    on_disk = sorted({p.name for d in (path.parent / "scripts", path.parent) if d.is_dir() for p in d.glob("*.py")})
     named = {m for m in NAMED_SCRIPT.findall(text)}
 
     broken_links = []
@@ -896,7 +1071,7 @@ def scan(path: Path, group: str, name: str, required: list, readme_required: lis
         "skill": name,
         "group": group,
         "path": str(path),
-        "lines": len(lines),
+        "lines": len(text.splitlines()),
         "template_shape": {
             "frontmatter": frontmatter(text, lines, name),
             "required_headings": required,
@@ -910,6 +1085,7 @@ def scan(path: Path, group: str, name: str, required: list, readme_required: lis
             "step_numbers_contiguous_from_0": numbers == list(range(len(numbers))),
             "step_0_is_warmup": bool(steps) and steps[0]["number"] == 0 and "Warmup" in steps[0]["title"],
             "forward_references": forward_refs,
+            "other_document_steps": other_document_steps,
             "working_dir": working_dir(lines, secs, region, in_fence),
         },
         "config_shape": {
@@ -930,11 +1106,12 @@ def scan(path: Path, group: str, name: str, required: list, readme_required: lis
             "placeholder_tokens": collect(PLACEHOLDER),
             "old_placeholder_tokens": collect(OLD_PLACEHOLDER),
             "broken_github_links": broken_links,
-            "scripts_named_but_missing": sorted(n for n in named if n not in on_disk and n in text),
+            # A script of a skill group, such as common/scripts/depends_on.py, is not missing.
+            "scripts_named_but_missing": sorted(n for n in named if n not in on_disk and n not in group_scripts),
             "scripts_on_disk_not_named": sorted(n for n in on_disk if n not in named),
         },
         "readme_shape": readme_facts,
-        "terminology": terminology(lines, secs),
+        "terminology": terminology(lines, secs, in_fence, region, template_terms, heading_names),
         "dataflow": dataflow(readme_lines, readme_fence, steps, path.parent / "README.md"),
     }
 
@@ -1001,6 +1178,8 @@ def main():
     required = required_headings(template)
     if not required:
         raise SystemExit(f"SKILL template defines no top-level heading: {template}")
+    # The terms every skill shares, with the definitions the template gives them.
+    template_terms = glossary_entries(template.read_text(encoding="utf-8").split("\n"), "TERMINOLOGY")
 
     readme_template = workspace_path(args.readme_template, root)
     if not readme_template.is_file():
@@ -1008,6 +1187,8 @@ def main():
     readme_required = readme_required_headings(readme_template)
     if not readme_required:
         raise SystemExit(f"README template defines no heading but its title: {readme_template}")
+    # The words of every heading of both templates: a name they hold names a section, not a thing.
+    heading_names = heading_texts(template) | heading_texts(readme_template)
 
     depends_on = workspace_path(args.depends_on, root)
     if not depends_on.is_file():
@@ -1015,13 +1196,22 @@ def main():
     dep = load_depends_on(depends_on)
     dep_config = dep.load_config(config)
 
+    # The scripts every skill can run: the *.py in the scripts/ of each skill group.
+    group_scripts = set()
+    for group_root in groups.values():
+        if group_root:
+            group_dir = workspace_path(str(group_root), root) / "scripts"
+            if group_dir.is_dir():
+                group_scripts |= {p.name for p in group_dir.glob("*.py")}
+
     docs, missing = [], []
     for name in args.skill:
         group, path = find_skill(groups, name, root)
         if path is None:
             missing.append(name)
             continue
-        docs.append(scan(path, group, name, required, readme_required, root, dep, dep_config))
+        docs.append(scan(path, group, name, required, readme_required, root, dep, dep_config, group_scripts, template_terms,
+                         heading_names))
 
     for name in missing:
         print(f"# not found under any skillGroups root: {name}", file=sys.stderr)

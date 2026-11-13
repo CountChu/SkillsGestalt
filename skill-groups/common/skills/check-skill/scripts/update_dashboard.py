@@ -279,7 +279,9 @@ def vscode_url(skill_md, workspace=None):
     target = workspace_path(skill_md, workspace)
     if not target.is_file():
         sys.exit(f"--path is not a file: {skill_md}")
-    return "vscode://file/" + quote(str(target.resolve()).replace("\\", "/"), safe="/:")
+    # One slash after the authority: a POSIX path keeps its leading slash, so it is stripped here,
+    # and the link names the file the same way on every platform.
+    return "vscode://file/" + quote(str(target.resolve()).replace("\\", "/").lstrip("/"), safe="/:")
 
 
 def main():
