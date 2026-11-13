@@ -91,6 +91,10 @@ from datetime import date
 from pathlib import Path
 from urllib.parse import unquote
 
+for _stream in (sys.stdout, sys.stderr):  # a Windows console or pipe can be cp1252: print Chinese text and icons
+    if hasattr(_stream, 'reconfigure'):
+        _stream.reconfigure(encoding='utf-8')
+
 HEADER = '| Task | Raised | Title | Status | Depends on |'
 ID = r'\d+(?:\.\d+)?'
 FILE_RE = re.compile(rf'^Task ({ID})\.md$')

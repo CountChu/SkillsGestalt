@@ -168,4 +168,4 @@ python {skillGroups.common}/scripts/check_chores.py --summary dashboard/chore-su
   It compares the names, the sequence, the links, the titles, the Started dates and the 何時要做 cells.
   It also compares the 上次執行 cells, the status icons, the run records and the chapter numbers.
   If they do not agree, it stops with the exit code `1`.
-- If Windows cannot show the Chinese text and the icons, set `PYTHONIOENCODING=utf-8` first.
+- The command writes its output in UTF-8, also on a Windows console.

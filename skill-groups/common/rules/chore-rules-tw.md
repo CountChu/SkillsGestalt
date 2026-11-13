@@ -168,4 +168,4 @@ python {skillGroups.common}/scripts/check_chores.py --summary dashboard/chore-su
   它比對名稱、順序、連結、標題、Started 日期與何時要做。
   它也比對上次執行、狀態圖示、執行紀錄與章的編號。
   有不一致時，它以 exit code `1` 結束。
-- Windows 預設的編碼印不出中文與圖示時，先設 `PYTHONIOENCODING=utf-8`。
+- 這個指令以 UTF-8 輸出，在 Windows 主控台也一樣。

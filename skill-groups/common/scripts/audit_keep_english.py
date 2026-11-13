@@ -39,6 +39,10 @@ CHINESE = Path(__file__).resolve().parents[1] / 'skills' / 'chinese' / 'scripts'
 sys.path.insert(0, str(CHINESE))
 from scan_md import fence_spans, keep_english, prose_lines  # noqa: E402
 
+for _stream in (sys.stdout, sys.stderr):  # a Windows console or pipe can be cp1252: print Chinese text and icons
+    if hasattr(_stream, 'reconfigure'):
+        _stream.reconfigure(encoding='utf-8')
+
 SKIP_DIRS = {'.git', 'node_modules', '.venv', 'venv', '__pycache__', 'checkpoints', '.obsidian'}
 VERSION_RE = re.compile(r'^>\s*Version:\s*(\d{6})\s*$')
 REPORT_RE = re.compile(r'^(\d{4}-\d{2}-\d{2})-(\d{6})\.txt$')

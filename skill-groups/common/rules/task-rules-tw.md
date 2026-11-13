@@ -219,4 +219,4 @@ python {skillGroups.common}/scripts/check_tasks.py --summary dashboard/task-summ
   它比對編號、順序、連結、標題與 Raised 日期。
   它也比對狀態圖示、Depends on 行、日期 section 與章的編號。
   有不一致時，它以 exit code `1` 結束。
-- Windows 預設的編碼印不出中文與圖示時，先設 `PYTHONIOENCODING=utf-8`。
+- 這個指令以 UTF-8 輸出，在 Windows 主控台也一樣。

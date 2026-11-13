@@ -81,7 +81,20 @@ from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import unquote
 
-import yaml
+try:
+    import yaml
+except ModuleNotFoundError:  # this python has no PyYAML: run again with the python of the .venv at the root
+    import os
+    import subprocess
+    for venv in (Path('.venv/Scripts/python.exe'), Path('.venv/bin/python')):
+        if venv.is_file() and not os.environ.get('GESTALT_VENV_RERUN'):
+            sys.exit(subprocess.run([str(venv), *sys.argv], env={**os.environ, 'GESTALT_VENV_RERUN': '1'}).returncode)
+    print(f'{sys.executable} has no PyYAML, and the root has no .venv with it: pip install pyyaml', file=sys.stderr)
+    sys.exit(2)
+
+for _stream in (sys.stdout, sys.stderr):  # a Windows console or pipe can be cp1252: print Chinese text and icons
+    if hasattr(_stream, 'reconfigure'):
+        _stream.reconfigure(encoding='utf-8')
 
 DIGITS = 12
 # The line a header quote may open with: the document's own version, the date of it as yymmdd.

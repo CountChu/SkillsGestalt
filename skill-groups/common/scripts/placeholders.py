@@ -26,6 +26,10 @@ import re
 import sys
 from pathlib import Path
 
+for _stream in (sys.stdout, sys.stderr):  # a Windows console or pipe can be cp1252: print Chinese text and icons
+    if hasattr(_stream, 'reconfigure'):
+        _stream.reconfigure(encoding='utf-8')
+
 # The retired form, as every skill that reads placeholders matches it: capitals, digits and
 # underscores between three underscores on each side.
 OLD_RE = re.compile(r"___[A-Z0-9_]+___")

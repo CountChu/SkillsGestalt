@@ -7,6 +7,17 @@ Forge 以 chore [follow-gestalt](../../chores/follow-gestalt.md) 處理這裡的
 
 ### 2026-11-13
 
+- **`AGENTS.md` 的指令能直接跑，載入的 token 變少**（Task 113）：
+  - [gen_config.py](scripts/gen_config.py)、[gen_agents_md.py](scripts/gen_agents_md.py) 與 [depends_on.py](scripts/depends_on.py)：用的 python 沒有 PyYAML 時，改用根目錄 `.venv` 的 python 重跑自己；沒有這個 `.venv` 就以 `2` 結束。`scripts/` 裡每個 script 都以 UTF-8 輸出，不必再設 `PYTHONIOENCODING`。
+  - [AGENTS-tmp.md](templates/AGENTS-tmp.md) 的 Skills 一節：`{skillGroupRoots}` 換成一張表，列出每個 skill group、它的根目錄與它的 skill 名稱；agent 查表找 skill，表裡沒有就看 `chores/<name>.md`，不再一個 group 一個 group 去讀。所以新增或刪除 skill 之後要再跑 `gen_config.py`，不然 `--check` 是 FAIL。
+  - 產生的 `AGENTS.md` 不再有標題下面的 STE 紀錄與 Technical words；`gen_agents_md.py --ste FILE`（`gen_config.py` 也有這個參數）把含這些行的全文寫到 FILE，給 `check_ste.py` 檢查。
+  - 每個 agency 都要有 `config.shared.yaml` 與 `workBranches`：`gen_config.py` 與 `gen_agents_md.py` 在根目錄沒有 `config.shared.yaml` 時以 `2` 結束；`gen_agents_md.py` 在 `config.yaml` 沒有 `workBranches`、或它沒列出 `workBranch` 時也以 `2` 結束。所以模板不再寫「If the root has a `config.shared.yaml`」與「If the `config.yaml` has `workBranches`」。
+  - [config-forge-tmp.yaml](templates/config-forge-tmp.yaml) 改成 `config.shared.yaml` 的範本：只有 `{WORK_BRANCH}` 要手動換；`{gestaltRoot}`、`{wikiDir}`、`{wikiRootDir}`、`{workBranch}` 留著，由 `config.local.yaml` 給值。[forge-setup.md](references/forge-setup.md) 與中文版的第 2、5、8 步、「Change an Older Workspace」與「After a Change」跟著改；[follow-gestalt](../../chores/follow-gestalt.md) 改跑 `gen_config.py`。
+  - Forge 要做：
+    - 還沒有 `config.shared.yaml` 的：`git mv config.yaml config.shared.yaml`；每台電腦不同的值（路徑與 `workBranch`）改成 `{wikiDir}` 這樣的 placeholder，值寫進每台的 `config.local.yaml`；`.gitignore` 加 `/config.yaml` 與 `/config.local.yaml`。
+    - `config.shared.yaml` 要有 `workBranches`，列出每個 clone 的 work branch。
+    - 跑 `gen_config.py`，commit `config.shared.yaml`、`.gitignore` 與 `AGENTS.md`。
+    - 原本對 `AGENTS.md` 跑 `check_ste.py` 的，改成對 `--ste` 寫出的檔跑。自己的 chore 或文件裡要求設 `PYTHONIOENCODING` 的地方可以拿掉。
 - **每個 agency 都要有 `workBranch`；[AGENTS-tmp.md](templates/AGENTS-tmp.md) 加一節 Work Branch and Commits：在 `workBranch` 上工作，commit 訊息不加 `Co-Authored-By`，根目錄的 `.claude/settings.json` 讓 Claude Code 不加**（Task 112）：
   - 這些規則原本只在 SkillsGestalt 的 `AGENTS.shared.md`，現在每個 agency 的 `AGENTS.md` 都有。
   - [gen_agents_md.py](scripts/gen_agents_md.py)：`config.yaml` 沒有 `workBranch`，或有 `workBranches` 卻沒列出 `workBranch` 時，以 `2` 結束。所以沒有 `workBranch` 的 Forge，`gen_agents_md.py --check` 會從 PASS 變成結束碼 `2`。

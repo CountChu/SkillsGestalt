@@ -94,6 +94,11 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 
 #### 2026-11-13
 
+- 第四次發佈：以 `devbox` 的 `828652e` 做出快照 `b16b300`，接在 `8e9e9d1` 之後，推到 `main`；變動 39 個檔，是 [[Task 110]]、[[Task 111]]、[[Task 112]] 與第三次發佈的執行紀錄。
+  先做 [[pull-gestalt]]：`incoming` 印出 `nothing to pull`；`check` 與 `publish` 的掃描都是 `nothing found`。
+  發佈前把 `c39a780` 存成 tag `archive/devbox-261113-3`，因為下面一筆引用它；發佈後 `archive/devbox-261113` 從 `c39a780` 移到 `828652e`，`devbox` 從 `b16b300` 重新開始（`5381a4e`）。
+  用 git 確認：`git ls-remote` 的 `main` 是 `b16b300`；`origin/main` 的 tree 沒有排除的路徑，有 `AGENTS.shared.md` 與 `config.shared.yaml`；快照訊息沒有 `Co-Authored-By` trailer，只有摘要裡說這條規則的一句。
+  別台下次 [[pull-gestalt]] 時，`config.local.yaml` 要有 `wikiDir` 與自己的 `workBranch`，不然 `gen_config.py` 以 `2` 結束（[[Task 111]]、[[Task 112]]）。
 - 第三次發佈：以 `devbox` 的 `c39a780` 做出快照 `8e9e9d1`，接在 `countdell` 發佈的 `2f07db8` 之後，推到 `main`；變動 28 個檔，是 [[Task 108]]、[[Task 109]] 與這台第二次發佈、pull 的執行紀錄。
   先做 [[pull-gestalt]]：`incoming` 印出 `nothing to pull`。第一次 `check` 的掃描找到 [[Task 109]] 裡描述掃描結果的那一行有使用者目錄的路徑，改掉並 commit（`c39a780`）之後，`check` 與 `publish` 都是 `nothing found`。
   `devbox` 跟著從 `8e9e9d1` 重新開始（`029ccba`）；tag `archive/devbox-261113` 從 `31e193e` 移到 `c39a780`。發佈後把 `31e193e` 存成 tag `archive/devbox-261113-2`，因為下面一筆與 `fd9a3e7` 的訊息引用它。

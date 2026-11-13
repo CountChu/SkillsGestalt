@@ -20,17 +20,22 @@ it is: write paths with / or in single quotes, as the line of config.shared.yaml
 
 config.yaml starts with a comment line that names the two files. Then, in the same run, the script runs
 gen_agents_md.py with the same --root and --check, because AGENTS.md takes its paths from config.yaml.
-A workspace without config.shared.yaml keeps its config.yaml as it is, and the script only runs
-gen_agents_md.py; so each workspace can run this one command.
+Each workspace has config.shared.yaml: without it, the script stops with 2.
 
   (no flag)  write config.yaml, then AGENTS.md and CLAUDE.md
   --check    write nothing; compare config.yaml, AGENTS.md and CLAUDE.md with what would be written
+  --ste FILE passed to gen_agents_md.py: also write AGENTS.md with its STE header to FILE
+
+A python without PyYAML, such as the one of the system, runs the script again with the python of the
+.venv at the root, .venv/Scripts/python.exe or .venv/bin/python, so that AGENTS.md can give the command
+as python gen_config.py. Without such a .venv it stops with 2. Its output is UTF-8 on each console.
 
 Run it from the root of the workspace after a change to config.shared.yaml, to config.local.yaml, to the
 template of AGENTS.md or to AGENTS.shared.md. Each file is read with its CRLF line ends made LF; config.yaml
 is written with LF. Exit status: 0 the files are written, or are already what it would write; 1 under
 --check, one is not; 2 a file is missing or unreadable, config.local.yaml is not a mapping of names to
 values, config.shared.yaml uses a name that config.local.yaml does not have, or the result is not valid YAML.
+gen_agents_md.py stops with 2 also when config.yaml has no workBranch, or no workBranches that lists it.
 """
 from __future__ import annotations
 
@@ -41,7 +46,20 @@ import subprocess
 import sys
 from pathlib import Path
 
-import yaml
+try:
+    import yaml
+except ModuleNotFoundError:  # this python has no PyYAML: run again with the python of the .venv at the root
+    import os
+    import subprocess
+    for venv in (Path('.venv/Scripts/python.exe'), Path('.venv/bin/python')):
+        if venv.is_file() and not os.environ.get('GESTALT_VENV_RERUN'):
+            sys.exit(subprocess.run([str(venv), *sys.argv], env={**os.environ, 'GESTALT_VENV_RERUN': '1'}).returncode)
+    print(f'{sys.executable} has no PyYAML, and the root has no .venv with it: pip install pyyaml', file=sys.stderr)
+    sys.exit(2)
+
+for _stream in (sys.stdout, sys.stderr):  # a Windows console or pipe can be cp1252: print Chinese text and icons
+    if hasattr(_stream, 'reconfigure'):
+        _stream.reconfigure(encoding='utf-8')
 
 TEMPLATE = 'config.shared.yaml'
 LOCAL = 'config.local.yaml'
@@ -117,32 +135,34 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--root', type=Path, default=Path('.'), help='the root of the workspace (default: .)')
     ap.add_argument('--check', action='store_true', help='compare config.yaml, AGENTS.md and CLAUDE.md with what would be written; write nothing')
+    ap.add_argument('--ste', type=Path, help='passed to gen_agents_md.py: also write AGENTS.md with its STE header to this file')
     a = ap.parse_args()
 
     root = a.root.resolve()
     failed = False
     if not (root / TEMPLATE).is_file():
-        print(f'{TARGET}: kept as it is - there is no {TEMPLATE}')
+        fail(f'{root / TEMPLATE}: no such file: each agency keeps its settings in it, and the values of each '
+             f'computer in {LOCAL}; move them there from {TARGET}, as forge-setup.md tells')
+    text = render(root)
+    target = root / TARGET
+    now = target.read_bytes().decode('utf-8').replace('\r\n', '\n') if target.is_file() else ''
+    if not a.check:
+        if now != text:
+            target.write_bytes(text.encode('utf-8'))
+        print(f'{TARGET}: {"written" if now != text else "unchanged"}')
+    elif now == text:
+        print(f'{TARGET}: PASS - it is what {TEMPLATE} and {LOCAL} make')
     else:
-        text = render(root)
-        target = root / TARGET
-        now = target.read_bytes().decode('utf-8').replace('\r\n', '\n') if target.is_file() else ''
-        if not a.check:
-            if now != text:
-                target.write_bytes(text.encode('utf-8'))
-            print(f'{TARGET}: {"written" if now != text else "unchanged"}')
-        elif now == text:
-            print(f'{TARGET}: PASS - it is what {TEMPLATE} and {LOCAL} make')
-        else:
-            sys.stdout.writelines(difflib.unified_diff(now.splitlines(True), text.splitlines(True),
-                                                       TARGET, f'{TARGET} from {TEMPLATE}'))
-            print(f'\n{TARGET}: FAIL - it is not what {TEMPLATE} and {LOCAL} make.')
-            print(f'Change {TEMPLATE} or {LOCAL}, not {TARGET}, and then run gen_config.py without --check.')
-            failed = True
+        sys.stdout.writelines(difflib.unified_diff(now.splitlines(True), text.splitlines(True),
+                                                   TARGET, f'{TARGET} from {TEMPLATE}'))
+        print(f'\n{TARGET}: FAIL - it is not what {TEMPLATE} and {LOCAL} make.')
+        print(f'Change {TEMPLATE} or {LOCAL}, not {TARGET}, and then run gen_config.py without --check.')
+        failed = True
     sys.stdout.flush()
 
     command = [sys.executable, str(Path(__file__).with_name('gen_agents_md.py')), '--root', str(root)]
-    code = subprocess.run(command + (['--check'] if a.check else [])).returncode
+    command += (['--check'] if a.check else []) + (['--ste', str(a.ste)] if a.ste else [])
+    code = subprocess.run(command).returncode
     if code == 2:
         sys.exit(2)
     if failed or code:

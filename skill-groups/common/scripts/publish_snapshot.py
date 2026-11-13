@@ -95,6 +95,10 @@ import sys
 import shutil
 from pathlib import Path
 
+for _stream in (sys.stdout, sys.stderr):  # a Windows console or pipe can be cp1252: print Chinese text and icons
+    if hasattr(_stream, 'reconfigure'):
+        _stream.reconfigure(encoding='utf-8')
+
 # The values of SkillsGestalt. The "publish:" section of the config.yaml at the root changes them (configure()).
 NAME = 'SkillsGestalt'   # the first word of the subject of a snapshot
 CHORE = 'publish-gestalt'   # the chore that the commit that starts WORK again names

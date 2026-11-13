@@ -20,12 +20,16 @@ InvestForge 就是照這些 step 建立的 Forge。
    例如 `~/Library/CloudStorage/Dropbox/2-Areas-I/BookForge`。
    兩個根目錄並排時，script 在第 5 步寫出的連結比較短。
    檢查：在根目錄執行 `git status`，看得到它是一個 repository。
-2. **把 [config-forge-tmp.yaml](../templates/config-forge-tmp.yaml) 複製成根目錄的 `config.yaml`，再換掉每個 placeholder。**
-   `{GESTALT_ROOT}` 是 SkillsGestalt 的根目錄。
-   `{WIKI_DIR}` 是這個 Forge 的 vault，`{WIKI_ROOT_DIR}` 是裝著所有 agency 的 vault 的目錄。
-   `{WORK_BRANCH}` 是這個 clone 的 work branch，例如 `m1`：每個 clone 各有一個，不能是 `main`。
-   每個值外面的引號要留著。
-   檢查：`config.yaml` 的值裡沒有 `{GESTALT_ROOT}`、`{WIKI_DIR}`、`{WIKI_ROOT_DIR}` 或 `{WORK_BRANCH}`。
+2. **把 [config-forge-tmp.yaml](../templates/config-forge-tmp.yaml) 複製成根目錄的 `config.shared.yaml`，並在它旁邊寫 `config.local.yaml`。**
+   在 `config.shared.yaml` 裡，把 `{WORK_BRANCH}` 換成這個 clone 的 work branch，例如 `m1`。
+   `config.local.yaml` 寫這台電腦的值，一行一個，例如 `workBranch: m1`。
+   它寫 `gestaltRoot`（SkillsGestalt 的根目錄）與 `workBranch`。
+   它也寫 `wikiDir`（這個 Forge 的 vault）與 `wikiRootDir`（裝著所有 agency 的 vault 的目錄）。
+   檢查：`config.shared.yaml` 裡沒有 `{WORK_BRANCH}`，`config.local.yaml` 有這四個值。
+
+   在 `.gitignore` 加 `/config.yaml` 與 `/config.local.yaml` 兩行，因為每台電腦的值都不同。
+   每個 clone 各有一個 work branch，不能是 `main`。
+   這個 Forge 在另一台電腦的 clone，寫它自己的 `config.local.yaml`，並把它的 work branch 加進 `config.shared.yaml` 的 `workBranches`。
 3. **在根目錄建立 Python environment `.venv`，並安裝 `common` skill group 需要的套件。**
    從根目錄執行 `python3 -m venv .venv`（Windows 上是 `py -m venv .venv`），再執行 `{python} -m pip install -r {skillGroups.common}/requirements.txt`。
    這一步與後面的 step 裡，`{python}` 是 `.venv` 的 Python：`.venv/bin/python`，Windows 上是 `.venv\Scripts\python.exe`。
@@ -51,12 +55,14 @@ InvestForge 就是照這些 step 建立的 Forge。
      }
    }
    ```
-5. **產生 `AGENTS.md` 與 `CLAUDE.md`：從根目錄執行 `{python} {skillGroups.common}/scripts/gen_agents_md.py`。**
-   script 用 `config.yaml` 的值與 `AGENTS.shared.md` 填入 `common` skill group 的 template，寫出 `AGENTS.md`。
+5. **產生 `config.yaml`、`AGENTS.md` 與 `CLAUDE.md`：從根目錄執行 `{python} {skillGroups.common}/scripts/gen_config.py`。**
+   script 用 `config.shared.yaml` 與 `config.local.yaml` 產生 `config.yaml`。
+   再用 `config.yaml` 的值與 `AGENTS.shared.md` 填入 `common` skill group 的 template，寫出 `AGENTS.md`。
    它也寫出 `CLAUDE.md`，裡面只有一行 `@AGENTS.md`。
-   不要改 `AGENTS.md` 或 `CLAUDE.md`。
+
+   不要改 `config.yaml`、`AGENTS.md` 或 `CLAUDE.md`。
    要改規則，就改 `AGENTS.shared.md`，再執行一次 script。
-   檢查：`{python} {skillGroups.common}/scripts/gen_agents_md.py --check` 對兩個檔都印出 `PASS`。
+   檢查：`{python} {skillGroups.common}/scripts/gen_config.py --check` 對三個檔都印出 `PASS`。
 6. **把這次的設定記成第一個 task：寫 `tasks/Task 1.md` 與 `dashboard/task-summary.md`。**
    git 不保留空的目錄，而沒有 `tasks/` 時，task 的檢查就會停下來。
    用下面兩段文字。
@@ -68,7 +74,7 @@ InvestForge 就是照這些 step 建立的 Forge。
    這個 Forge 不做這個 chore 時，拿掉這一列與 `keepEnglishChore` 那一行。
    這個 Forge 有自己的 chore 之前，沒有 `chores/` 目錄。
    檢查：`AGENTS.md` 給出的 `check_chores.py` 指令印出 `PASS`。
-8. **commit `.gitignore`、`config.yaml`、`AGENTS.shared.md`、`.claude/settings.json`、`AGENTS.md`、`CLAUDE.md`、`tasks/` 與 `dashboard/`。**
+8. **commit `.gitignore`、`config.shared.yaml`、`AGENTS.shared.md`、`.claude/settings.json`、`AGENTS.md`、`CLAUDE.md`、`tasks/` 與 `dashboard/`。**
    然後在 `tasks/Task 1.md` 寫下設定完成，改它的狀態，再 commit 一次。
    檢查：`git status` 沒有任何變動。
 
@@ -154,7 +160,10 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 - **把只有這個 workspace 才有的規則，從 `CLAUDE.md` 搬到 `AGENTS.shared.md`。**
   `common` skill group 的 template 已經有的規則不要搬。
   template 有 twin、Markdown 檔、task 與 chore 的規則。
-- **把 [config-forge-tmp.yaml](../templates/config-forge-tmp.yaml) 有、而 `config.yaml` 沒有的值加上去，例如 `agencies` 與 `keepEnglishChore`。**
+- **用 `git mv` 把 `config.yaml` 改名為 `config.shared.yaml`，再對它做第 2 步。**
+  把 [config-forge-tmp.yaml](../templates/config-forge-tmp.yaml) 有、而這個檔沒有的值加上去，例如 `agencies`、`workBranches` 與 `keepEnglishChore`。
+  這台電腦的每個路徑寫成 placeholder，例如 `{wikiDir}`。
+  它的值寫在 `config.local.yaml`。
 - **workspace 的某個 chore 和 SkillsGestalt 的 chore 做同樣的工作時，刪掉它的檔。**
   它那一列的 Chore 欄，寫成 SkillsGestalt 那個 chore 的文字名稱。
   它的執行紀錄搬到摘要表的 `## 執行紀錄` 一節，報告搬到 `checkpoints/chores/<name>`。
@@ -164,4 +173,4 @@ Status：🔁 使用中　⏸️ 暫停　⏹️ 停用。
 
 Forge 直接讀 SkillsGestalt 原本的位置。
 所以 SkillsGestalt 一改，Forge 立刻跟著變。
-這樣的改動之後，再執行一次 `AGENTS.md` 的 `gen_agents_md.py`、`check_tasks.py` 與 `check_chores.py` 指令。
+這樣的改動之後，再執行一次 `AGENTS.md` 的 `gen_config.py`、`check_tasks.py` 與 `check_chores.py` 指令。

@@ -19,9 +19,9 @@ Then, and after each change to the `config.shared.yaml` or the `config.local.yam
 python {skillGroups.common}/scripts/gen_config.py
 ```
 
-If the root has a `config.shared.yaml`, the command first makes the `config.yaml` from it and from `config.local.yaml`.
-Then, do not change the `config.yaml`: change `config.shared.yaml` for all the computers, or `config.local.yaml` for only this computer.
-If the root has no `config.shared.yaml`, run the command also after each change to the `config.yaml`.
+Also run it after you add or remove a skill, because it makes the table of skills in the section "Skills".
+The command first makes the `config.yaml` from the `config.shared.yaml` and the `config.local.yaml`.
+Do not change the `config.yaml`: change `config.shared.yaml` for all the computers, or `config.local.yaml` for only this computer.
 
 {AGENTS-shared-top}
 
@@ -32,16 +32,19 @@ For example, in `/check-skill asd-ste 5.6`, the skill is `check-skill`, and `asd
 When a request gives the name of a skill without `/`, do the same.
 
 Each skill is in a skill group.
-The `skillGroups` of the `config.yaml` at the root gives the root directory of each skill group:
+This table gives each skill group of the `skillGroups` of the `config.yaml` at the root, its root directory, and the names of its skills:
 
 {skillGroupRoots}
 
 A skill is in `<root of its skill group>/skills/<name of the skill>/SKILL.md`, for example `{skillGroups.common}/skills/chinese/SKILL.md`.
 These skills are not in the skill list of the agent.
-For each root in the list, in sequence, read `<root>/skills/<name of the skill>/SKILL.md` until you find the file.
+Find the name in the table, and read the `SKILL.md` of the first skill group that has the name.
+Then do its steps.
+
 Do not use a file search, a glob pattern or a text search to find a skill.
-If no skill group has this file, tell the user, and stop.
-When you find the file, read it, and then do its steps.
+If the table does not have the name, it is not a skill.
+If the root has `chores/<name>.md`, it is a chore: see the section "Chores".
+If not, tell the user, and stop.
 
 Before you change a skill, read its `README.md`, if it has one, and [skill-writing.md]({skillGroups.common}/rules/skill-writing.md).
 Make each change that the section "When the Skill Is Changed" of the `README.md` gives, in the same run.
@@ -69,8 +72,8 @@ When you add such a file, give it a name that follows this list.
 
 Do your work on the branch that `workBranch` in the `config.yaml` at the root gives.
 Each clone of this agency has its own work branch.
-If the `config.yaml` has `workBranches`, it gives the list of them.
-If the root has a `config.shared.yaml`, the `config.local.yaml` of each computer sets `workBranch`.
+The `workBranches` of the `config.yaml` gives the list of them.
+The `config.local.yaml` of each computer sets `workBranch`.
 
 Do not put a `Co-Authored-By` line in a commit message.
 The `.claude/settings.json` at the root stops this line in the commits of Claude Code.

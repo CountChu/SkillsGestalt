@@ -19,14 +19,14 @@ Forge 照本 chore 定期看它，把新的條目做完，再確認自己的檢�
 
 1. 照時間先後，讀「處理到」之後的每一筆，照它的「Forge 要做」做。
    要做的事比較多時，在本 agency 的 tasks 開一個 task，在那裡做。
-2. 從根目錄執行 `python {skillGroups.common}/scripts/gen_agents_md.py`，重新產生 AGENTS.md 與 CLAUDE.md。
+2. 從根目錄執行 `python {skillGroups.common}/scripts/gen_config.py`，重新產生 config.yaml、AGENTS.md 與 CLAUDE.md。
 3. 執行 AGENTS.md 給出的 `check_tasks.py` 與 `check_chores.py` 指令，都要 PASS。
 4. 在摘要表 `## 執行紀錄` 的 `### follow-gestalt` 下記一筆：處理了哪幾筆、處理到哪一筆（日期與 commit）、開了哪個 task；摘要表的「上次執行」改成當天。
 5. 只提交本 agency 自己的檔，前綴 `chore follow-gestalt: `。
 
 ## 4. 驗證
 
-- `gen_agents_md.py --check` 是 PASS。
+- `gen_config.py --check` 是 PASS。
 - `check_tasks.py` 與 `check_chores.py` 都是 PASS。
 - `CHANGES.md` 裡沒有比「處理到」更新的條目。
 

@@ -219,4 +219,4 @@ python {skillGroups.common}/scripts/check_tasks.py --summary dashboard/task-summ
   It compares the numbers, the sequence, the links, the titles and the Raised dates.
   It also compares the status icons, the Depends on lines, the day sections and the chapter numbers.
   If they do not agree, it stops with the exit code `1`.
-- If Windows cannot show the Chinese text and the icons, set `PYTHONIOENCODING=utf-8` first.
+- The command writes its output in UTF-8, also on a Windows console.

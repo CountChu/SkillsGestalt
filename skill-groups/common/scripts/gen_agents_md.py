@@ -31,8 +31,11 @@ The template is read as written, but for:
   {taskSummary!q}     the two are set apart: the tasks and the summary can each be anywhere, such as in the vault
   {choreSummary}      choreSummary in config.yaml, or dashboard/chore-summary.md when it is not set
   {choreSummary!q}    the same, in double quotes when the value holds a space - for a command
-  {skillGroupRoots}   a line of its own, replaced by a list of each skill group of skillGroups in config.yaml,
-                      in its order, with its root as written there: - `common`: `skill-groups/common`
+  {skillGroupRoots}   a line of its own, replaced by a table of each skill group of skillGroups in config.yaml,
+                      in its order, with its root as written there and the names of its skills - each
+                      directory of <root>/skills with a SKILL.md - as a table: | `common` | `skill-groups/common` | `asd-ste`,
+                      `chinese` |. So the agent finds a skill, or knows that there is none, with no read; and
+                      a skill that is added or removed needs this script again
   {{name}}            {name}, as it is: for a sentence that has to show a placeholder
   {AGENTS-shared-top} a line of its own, replaced by the top part of AGENTS.shared.md
   {AGENTS-shared}     a line of its own, replaced by the rest of AGENTS.shared.md
@@ -50,8 +53,16 @@ AGENTS.shared.md may open with a "> Technical words: ..." line. That line does n
 is: its words join the template's own "> Technical words:" line, so that the STE check of AGENTS.md knows
 them all, and its blank line goes with it.
 
+The quotes under the title - the STE records and the Technical words - are for the STE check only, and an
+agent reads AGENTS.md in each session: so AGENTS.md is written without them. --ste writes the full text,
+with them, to a file of its own, for check_ste.py.
+
   (no flag)  write AGENTS.md and CLAUDE.md
   --check    write nothing; compare the two files with what it would write, and print the difference
+  --ste FILE also write AGENTS.md with its STE header to FILE
+
+A python without PyYAML runs the script again with the python of the .venv at the root, as
+gen_config.py does. Its output is UTF-8 on each console.
 
 Each file is read with its CRLF line ends made LF, as a Git for Windows clone with core.autocrlf=true
 checks it out; the files are written with LF. A CRLF AGENTS.md or CLAUDE.md that is otherwise the same
@@ -61,7 +72,8 @@ Run it from the root of the workspace after a change to the template, to AGENTS.
 config.yaml. A workspace that has a config.shared.yaml runs gen_config.py instead: it makes config.yaml,
 and then runs this script. Exit status: 0 the two files are written, or are already what it would write; 1 under --check,
 one is not; 2 a file is missing or unreadable, the template names a value config.yaml does not have, or
-config.yaml has no workBranch, the work branch of this clone, or a list workBranches without it.
+the root has no config.shared.yaml, or config.yaml has no workBranch, the work branch of this clone, or no
+list workBranches with it: each agency has the three, on each computer.
 An agency that still has the AGENTS-local.md or the CLAUDE-local.md of an older version, and no
 AGENTS.shared.md, stops with 2: rename the file to AGENTS.shared.md, and its {AGENTS-local} or
 {CLAUDE-local} line to {AGENTS-shared}. An AGENTS.shared.md that still has such a line also stops with 2.
@@ -77,7 +89,20 @@ import re
 import sys
 from pathlib import Path
 
-import yaml
+try:
+    import yaml
+except ModuleNotFoundError:  # this python has no PyYAML: run again with the python of the .venv at the root
+    import os
+    import subprocess
+    for venv in (Path('.venv/Scripts/python.exe'), Path('.venv/bin/python')):
+        if venv.is_file() and not os.environ.get('GESTALT_VENV_RERUN'):
+            sys.exit(subprocess.run([str(venv), *sys.argv], env={**os.environ, 'GESTALT_VENV_RERUN': '1'}).returncode)
+    print(f'{sys.executable} has no PyYAML, and the root has no .venv with it: pip install pyyaml', file=sys.stderr)
+    sys.exit(2)
+
+for _stream in (sys.stdout, sys.stderr):  # a Windows console or pipe can be cp1252: print Chinese text and icons
+    if hasattr(_stream, 'reconfigure'):
+        _stream.reconfigure(encoding='utf-8')
 
 TEMPLATE = 'templates/AGENTS-tmp.md'
 LOCAL = 'AGENTS.shared.md'
@@ -94,6 +119,24 @@ TASK_PATHS = {'tasksDir': 'tasks', 'taskSummary': 'dashboard/task-summary.md', '
 TASK_PATH = re.compile(r'\{(tasksDir|taskSummary|choreSummary)(!q)?\}')
 GROUP = re.compile(r'\{skillGroups\.(\w+)\}')
 LINK_GROUP = re.compile(r'\]\(\{skillGroups\.(\w+)\}')
+SHARED_CONFIG = 'config.shared.yaml'
+
+
+def skill_names(value: str, root: Path) -> list[str]:
+    """The names of the skills of a skill group: each directory of <root of the group>/skills with a SKILL.md."""
+    base = Path(os.path.expanduser(value))
+    skills = (base if base.is_absolute() else root / base) / 'skills'
+    return sorted(p.name for p in skills.iterdir() if (p / 'SKILL.md').is_file()) if skills.is_dir() else []
+
+
+def drop_ste_header(text: str) -> str:
+    """The text without the quotes under its title - the STE records and the Technical words - which only
+    the STE check reads."""
+    lines = text.split('\n')
+    i = 1
+    while i < len(lines) and (not lines[i] or lines[i].startswith('>')):
+        i += 1
+    return '\n'.join(lines[:1] + [''] + lines[i:])
 
 
 def fail(message: str) -> None:
@@ -128,8 +171,12 @@ def render(root: Path) -> str:
         fail(f'{root / "config.yaml"}: workBranch is not set: each clone names its work branch, '
              f'in config.local.yaml when the root has config.shared.yaml')
     listed = config.get('workBranches')
-    if listed is not None and (not isinstance(listed, list) or work not in [str(b) for b in listed]):
-        fail(f'{root / "config.yaml"}: workBranches does not list workBranch {work}')
+    if not isinstance(listed, list) or work not in [str(b) for b in listed]:
+        fail(f'{root / "config.yaml"}: workBranches does not list workBranch {work}: '
+             f'it is the list of the work branch of each clone, in config.shared.yaml')
+    if not (root / SHARED_CONFIG).is_file():
+        fail(f'{root / SHARED_CONFIG}: no such file: each agency keeps its settings in it, and the values '
+             f'of each computer in config.local.yaml; gen_config.py makes config.yaml from the two')
     common = Path(os.path.expanduser(groups['common']))
     template = read((common if common.is_absolute() else root / common) / TEMPLATE)
     if not (root / LOCAL).is_file():
@@ -155,7 +202,9 @@ def render(root: Path) -> str:
         if lines.count(slot) != 1:
             fail(f'the template has {lines.count(slot)} line(s) {slot}, not 1')
     lines[lines.index(LOCAL_SLOT)] = bottom.strip('\n')
-    lines = ['\n'.join(f'- `{k}`: `{v}`' for k, v in groups.items()) if l == ROOTS_SLOT else l for l in lines]
+    roots = '\n'.join(['| Skill group | Root | Skills |', '| --- | --- | --- |'] + [
+        f'| `{k}` | `{v}` | {", ".join(f"`{s}`" for s in skill_names(v, root)) or "—"} |' for k, v in groups.items()])
+    lines = [roots if l == ROOTS_SLOT else l for l in lines]
     i = lines.index(TOP_SLOT)
     if top.strip():
         lines[i] = top.strip('\n')
@@ -197,10 +246,15 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--root', type=Path, default=Path('.'), help='the root of the workspace (default: .)')
     ap.add_argument('--check', action='store_true', help='compare AGENTS.md and CLAUDE.md with what would be written; write nothing')
+    ap.add_argument('--ste', type=Path, help='also write AGENTS.md with its STE header to this file, for check_ste.py')
     a = ap.parse_args()
 
     root = a.root.resolve()
-    wanted = {'AGENTS.md': render(root), 'CLAUDE.md': CLAUDE_TEXT}
+    full = render(root)
+    if a.ste:
+        a.ste.write_bytes(full.encode('utf-8'))
+        print(f'{a.ste}: written, with the STE header')
+    wanted = {'AGENTS.md': drop_ste_header(full), 'CLAUDE.md': CLAUDE_TEXT}
     failed = False
     for name, text in wanted.items():
         target = root / name
